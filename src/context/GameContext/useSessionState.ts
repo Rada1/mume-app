@@ -11,7 +11,8 @@ import {
 import { useMessageLog } from '../../hooks/useMessageLog';
 import { useSessionRecorder } from '../../hooks/useSessionRecorder';
 import { useEntityRegistry } from '../../hooks/useEntityRegistry';
-import { classifyOccupant } from '../../services/classification/classifyOccupant';
+import { useRoomCharacters } from '../../hooks/useRoomCharacters';
+import { useRoomObjects } from '../../hooks/useRoomObjects';
 import { useUIStore } from '../../stores/useUIStore';
 import { useVitalsStore } from '../../stores/useVitalsStore';
 import { useRoomStore } from '../../stores/useRoomStore';
@@ -92,9 +93,10 @@ export const useSessionState = (
     const roomDesc = rStore?.roomDesc ?? '';
     const roomExits = Array.isArray(rStore?.exits) ? rStore.exits : Object.keys(rStore?.exits || {});
     const roomZone = rStore?.roomZone ?? '';
-    const roomPlayers = useMemo(() => Object.values(rStore?.chars || {}).filter(c => classifyOccupant(c)?.kind === 'player'), [rStore?.chars]);
-    const roomNpcs = useMemo(() => Object.values(rStore?.chars || {}).filter(c => classifyOccupant(c)?.kind === 'npc'), [rStore?.chars]);
-    const roomItems = rStore?.items ?? [];
+    const { roomChars, roomPlayers, roomNpcs } = useRoomCharacters(
+        rStore.chars, cStore.groupMembers, rStore.roomNum, rStore.mapId, characterName
+    );
+    const roomItems = useRoomObjects(rStore.items, roomChars);
     const { whoList, setWhoList, whereList, setWhereList } = rStore;
 
     const { selectedObjectIds, toggleObjectSelection, clearObjectSelection } = ui;
@@ -379,7 +381,7 @@ export const useSessionState = (
             isRidingRef,
             roomPlayers,
             roomNpcs,
-            roomChars: rStore.chars,
+            roomChars,
             setRoomChars,
             roomItems, setRoomItems,
             inventoryLines, setInventoryLines,
@@ -446,7 +448,7 @@ export const useSessionState = (
         level, currentName, setCurrentName, registry, quests,
         lightningEnabled, rStore.whoList, setWhoList, whereList, setWhereList, ui.selectedObjectIds,
         ui.toggleObjectSelection, ui.clearObjectSelection, recorder, discoveredItems,
-        gameTime, setGameTime, rStore.roomNum, rStore.chars, captureSession,
+        gameTime, setGameTime, rStore.roomNum, roomChars, captureSession,
         expandedContainers, containerContents
     ]);
 };

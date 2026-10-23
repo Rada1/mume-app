@@ -7,7 +7,7 @@
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Swords, Target } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
-import { useActiveRoom, useActiveVitals } from '../../stores/useActiveGameState';
+import { useActiveOpponent, useActiveRoom, useActiveVitals } from '../../stores/useActiveGameState';
 import { useInputStore } from '../../stores/useInputStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import {
@@ -19,10 +19,10 @@ import { ActionCommandRow } from './ActionCommandRow';
 import { RightPanelSkills } from './RightPanelSkills';
 import { useGuildPracticeActions } from '../../hooks/useGuildPracticeActions';
 import {
-    getAssistTargetSuggestions, getRoomTargetSuggestions, getSelfAndRoomAlliesTargetSuggestions,
+    getAssistTargetSuggestions, getMountTargetSuggestions, getRoomTargetSuggestions, getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions
 } from '../../utils/commandSuggestionUtils';
-import { BLANK_TARGET_VALUE } from '../../utils/commandTargetUtils';
+import { BLANK_TARGET_VALUE, isOffensiveSingleTargetCommand } from '../../utils/commandTargetUtils';
 import type { GmcpOccupant, PracticeData } from '../../types';
 import { MainTab, ActionItem, COMBAT_ACTIONS, UTILITY_ACTIONS, CLASS_KEYS } from './rightActionData';
 import { getSkillOrSpellSyntax, getSpellManaCost } from '../../utils/spellSyntaxUtils';
@@ -30,8 +30,12 @@ import { getRememberedCommandTarget, isCompatibleGlobalTarget, rememberCommandTa
 import { doesCommandMatchDeckItem, doesCommandMatchSkill } from '../../utils/commandFeedbackUtils';
 import { MovementPad } from './MovementPad';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
+import { ContextualCommandSuggestions } from './ContextualCommandSuggestions';
+import { useSuggestedNowActions } from '../../hooks/useSuggestedNowActions';
 import './RightActionPanel.css';
 import './RightActionTerminal.css';
+import { SkillsSyncPrompt } from './SkillsSyncPrompt';
+import { usePanelDataStore } from '../../stores/usePanelDataStore';
 
 interface RightActionPanelProps {
     skillsOnly?: boolean;
@@ -52,9 +56,13 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
         setTarget: (target: string | null) => void;
         characterName?: string;
     };
-    const { target } = useActiveVitals() as { target: string | null };
+    const activeVitals = useActiveVitals();
+    const { target, inCombat, isRiding, position } = activeVitals;
+    const combatOpponent = useActiveOpponent();
+    const isMounted = isRiding || position === 'riding' || position === 'mounted';
     const { roomNum } = useActiveRoom();
-    const guildPractice = useGuildPracticeActions(gameState === 'playing', roomNum, roomNpcs, practice?.practiceData, executeCommand);
+    const skillsReady = usePanelDataStore(state => state.status.skills === 'ready');
+    const guildPractice = useGuildPracticeActions(gameState === 'playing', roomNum, roomNpcs, practice?.practiceData, executeCommand, false, skillsReady);
     const setInput = useInputStore(s => s.setInput);
     const requestTargetPicker = useInputStore(s => s.requestTargetPicker);
     const [activeTab, setActiveTab] = useState<MainTab>(() => {
@@ -81,9 +89,8 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
     const [targetOverrides, setTargetOverrides] = useState<Record<string, string>>({});
     const pressTimerRef = useRef<number | undefined>(undefined);
     const hintTimerRef = useRef<number | undefined>(undefined);
-    const lastPracticeRequestAtRef = useRef(0);
     const visibleTab = skillsOnly ? 'skills' : activeTab;
-    useEffect(() => { setTargetOverrides({}); }, [target]);
+    useEffect(() => { setTargetOverrides({}); }, [combatOpponent.name, target]);
     useEffect(() => { setTargetOverrides({}); }, [roomNum]);
     const choicesFor = (item: ActionItem) => item.cmd.trim().toLowerCase() === 'assist'
         ? getAssistTargetSuggestions([...roomPlayers, ...roomNpcs], characterName)
@@ -95,33 +102,27 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
             const selected = targetOverrides[item.label];
             return selected && selected !== BLANK_TARGET_VALUE ? selected : null;
         }
-        return targetOverrides[item.label]
-        || getRememberedCommandTarget(item.cmd)
-        || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
-        || choicesFor(item)[0]?.value || null;
+        const explicitTarget = targetOverrides[item.label];
+        if (explicitTarget) return explicitTarget;
+        if (isOffensiveSingleTargetCommand(item.cmd)) {
+            if (inCombat) return combatOpponent.name;
+            return isCompatibleGlobalTarget(item.cmd, target) ? target : null;
+        }
+        return getRememberedCommandTarget(item.cmd)
+            || (isCompatibleGlobalTarget(item.cmd, target) ? target : null)
+            || choicesFor(item)[0]?.value || null;
     };
     const primeTargetCommand = (item: ActionItem) => {
         setInput(item.cmd);
         requestTargetPicker();
         window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
     };
-    const requestPracticeData = useCallback(() => {
-        if (embedded || gameState !== 'playing' || guildPractice.hasGuildmaster || practice?.practiceData) return;
-        if (Date.now() - lastPracticeRequestAtRef.current < 5000) return;
-        lastPracticeRequestAtRef.current = Date.now();
-        executeCommand('practice', true, true, false, true);
-    }, [embedded, executeCommand, gameState, guildPractice.hasGuildmaster, practice?.practiceData]);
-
-    useEffect(() => {
-        if (skillsOnly && !embedded) requestPracticeData();
-    }, [embedded, requestPracticeData, skillsOnly]);
 
     const handleSelectTab = (tab: MainTab) => {
         if (!skillsOnly) {
             setActiveTab(tab);
             localStorage.setItem('mume-right-panel-tab', tab);
         }
-        if (tab === 'skills') requestPracticeData();
         triggerHaptic?.(10);
     };
 
@@ -131,8 +132,10 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
         pressTimerRef.current = window.setTimeout(() => setPressedLabel(null), 320);
     }, []);
 
-    const fireAction = (item: ActionItem) => {
-        const chosenTarget = item.needsTarget ? actionTarget(item) : null;
+    const fireAction = (item: ActionItem, preferCurrentOpponent = false) => {
+        const chosenTarget = item.needsTarget
+            ? preferCurrentOpponent ? combatOpponent.name : actionTarget(item)
+            : null;
         const allowsBlankTarget = item.cmd.trim().toLowerCase() === 'assist';
         if (item.needsTarget && !chosenTarget && !allowsBlankTarget) {
             triggerHaptic?.(30);
@@ -158,6 +161,12 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
         const kind = skillTargetKind(name);
         const norm = name.toLowerCase();
         const command = isSpellClass ? `cast '${norm}'` : norm;
+        const explicitTarget = targetOverrides[name];
+        if (explicitTarget) return explicitTarget;
+        if (isOffensiveSingleTargetCommand(command)) {
+            if (inCombat) return combatOpponent.name;
+            return isCompatibleGlobalTarget(command, target) ? target : null;
+        }
         if (norm === 'rescue') return targetOverrides[name] || '1.ally';
         if (norm === 'bless') {
             return targetOverrides[name] || getSelfAndRoomAlliesTargetSuggestions(
@@ -169,18 +178,20 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
                 [...roomPlayers, ...roomNpcs], roomItems, characterName
             )[0]?.value || 'self';
         }
-        return targetOverrides[name] || getRememberedCommandTarget(command)
+        return getRememberedCommandTarget(command)
             || (isCompatibleGlobalTarget(command, target) ? target : null)
             || getRoomTargetSuggestions(
             [...roomPlayers, ...roomNpcs], roomItems, kind, characterName
         )[0]?.value || null;
     };
 
-    const fireSkill = (name: string, isSpell = false) => {
+    const fireSkill = (name: string, isSpell = false, preferCurrentOpponent = false) => {
         const norm = name.toLowerCase();
         if (PASSIVE_SKILLS.has(norm)) return;
         const needsTgt = TARGETED_SKILLS.has(norm);
-        const chosenTarget = needsTgt ? skillTarget(name) : null;
+        const chosenTarget = needsTgt
+            ? preferCurrentOpponent ? combatOpponent.name : skillTarget(name)
+            : null;
         if (needsTgt && !chosenTarget) {
             triggerHaptic?.(30);
             setNeedsTargetHint(name);
@@ -222,6 +233,29 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
             hotkey: skill.isPassive || hotkey >= 9 ? null : ++hotkey
         }));
     }, [selectedClass, abilities, isSpellClass, practice?.practiceData?.skills]);
+    const nearbyMounts = useMemo(() => getMountTargetSuggestions(roomNpcs).slice(1), [roomNpcs]);
+
+    const suggestedNow = useSuggestedNowActions({
+        inCombat,
+        opponentName: combatOpponent.name,
+        isRiding: isMounted,
+        globalTarget: target,
+        mounts: nearbyMounts,
+        skills: displayedSkills,
+        isSpellClass,
+        onRunCommand: command => executeCommand(command),
+        onAttack: () => fireAction(COMBAT_ACTIONS[0], true),
+        onUseSkill: (name, isSpell) => fireSkill(name, isSpell, true),
+        onMountCommand: (verb, mount) => {
+            if (mount) {
+                executeCommand(`${verb} ${mount}`);
+                return;
+            }
+            setInput(`${verb} `);
+            requestTargetPicker();
+            window.setTimeout(() => document.getElementById('mud-input')?.focus(), 50);
+        }
+    });
 
     const primeSkillCommand = (name: string, isSpell: boolean) => {
         const norm = name.toLowerCase();
@@ -315,6 +349,9 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
                 onSelect={handleSelectTab}
                 skillsOnly={skillsOnly}
                 onClose={onClose}
+                aboveTabs={!skillsOnly && !embedded && gameState === 'playing'
+                    ? <ContextualCommandSuggestions model={suggestedNow} />
+                    : null}
             />
 
             {needsTargetHint && (
@@ -326,6 +363,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
 
             {/* Scrollable Content Deck */}
             <div className="right-panel-content">
+                <SkillsSyncPrompt />
                 {visibleTab === 'combat' && (
                     <div className="right-panel-grid" role="region" aria-label="Combat Actions">
                         {COMBAT_ACTIONS.map((item, idx) => (
@@ -356,7 +394,7 @@ export const RightActionPanel: FC<RightActionPanelProps> = ({ skillsOnly = false
                     </div>
                 )}
 
-                {visibleTab === 'skills' && (
+                {visibleTab === 'skills' && skillsReady && (
                     <RightPanelSkills items={displayedSkills} selectedClass={selectedClass}
                         onSelectClass={key => { setSelectedClass(key); triggerHaptic?.(10); }}
                         isSpellClass={isSpellClass} pressedLabel={pressedLabel}

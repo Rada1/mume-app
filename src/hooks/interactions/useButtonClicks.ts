@@ -5,6 +5,7 @@ import { extractMumeKeyword, formatMumeTarget, sanitizeGameTarget } from '../../
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { isDesktopInlineActionPanel } from '../../utils/popoverPanelUtils';
 
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
@@ -44,7 +45,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        if (popoverState && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
+        const keepInlinePanelOpen = isDesktopInlineActionPanel(popoverState, window.innerWidth);
+        if (popoverState && !keepInlinePanelOpen && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
             setPopoverState(null);
         }
         if (targetEl?.classList) { 
@@ -77,7 +79,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
         const popoverAxes = getInlineCategoryAxes(popoverState?.category || popoverState?.setId);
         const isNpcContext = popoverAxes.isCharacter || !!popoverState?.setId?.startsWith('npc');
-        let finalContext = popoverAxes.isObject
+        let finalContext = popoverAxes.categoryId === 'cat-mount-object' ? effectiveContext || '' : popoverAxes.isObject
             ? extractMumeKeyword(effectiveContext || '')
             : formatMumeTarget(effectiveContext) || effectiveContext || '';
         let detectedParent = parentNoun;
@@ -252,7 +254,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }, 10);
         } else {
             // Prepend 'get' if item is in a container, unless the command is already a get/look/take
-            const isAlreadyGet = /^(get|look|take|buy|sell|mend)\b/i.test(finalCmd);
+            const isAlreadyGet = /^(get|look|take|buy|sell|mend|unsaddle)\b/i.test(finalCmd);
             if (detectedParent && finalContext && !isAlreadyGet) {
                 // For nested items, finalContext (e.g. '2.boots') is the exact target
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });

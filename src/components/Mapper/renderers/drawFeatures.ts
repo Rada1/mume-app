@@ -1448,7 +1448,8 @@ export const drawFeatures = (
                         }
 
                         if (hasExit) {
-                            const exFlags = ghostExits?.[d]?.flags || localRoom?.exits?.[d]?.flags || [];
+                            const exFlags = localRoom?.exits?.[d]?.mapFlagsEdited
+                                ? localRoom.exits[d].flags || [] : ghostExits?.[d]?.flags || localRoom?.exits?.[d]?.flags || [];
                             if (exFlags.some((f: string) => f === 'CLIMB')) {
                                 drawClimbIndicator(ctx, wx, wy, s, d, invZoom);
                             }
@@ -1463,8 +1464,8 @@ export const drawFeatures = (
 
                 // 3. Indicators and Flags (Zoom > 0.3)
                 if (camera.zoom > 0.3) {
-                    const hasLiveMob = localRoom?.mobFlags && localRoom.mobFlags.length > 0;
-                    const hasLiveLoad = localRoom?.loadFlags && localRoom.loadFlags.length > 0;
+                    const hasLiveMob = localRoom?.mapFlagsEdited || (localRoom?.mobFlags && localRoom.mobFlags.length > 0);
+                    const hasLiveLoad = localRoom?.mapFlagsEdited || (localRoom?.loadFlags && localRoom.loadFlags.length > 0);
                     
                     const mobF = hasLiveMob ? localRoom.mobFlags! : (rData[7] || []);
                     const loadF = hasLiveLoad ? localRoom.loadFlags! : (rData[8] || []);
@@ -1808,8 +1809,8 @@ export const drawAnimatingFlags = (rCtx: RenderContext) => {
         const anchorX = rx * s + s / 2, anchorY = ry * s + s / 2;
         const localRoom = allRooms[`m_${vnum}`] || allRooms[vnum];
         
-        const hasLiveMob = localRoom?.mobFlags && localRoom.mobFlags.length > 0;
-        const hasLiveLoad = localRoom?.loadFlags && localRoom.loadFlags.length > 0;
+        const hasLiveMob = localRoom?.mapFlagsEdited || (localRoom?.mobFlags && localRoom.mobFlags.length > 0);
+        const hasLiveLoad = localRoom?.mapFlagsEdited || (localRoom?.loadFlags && localRoom.loadFlags.length > 0);
         const mobF = hasLiveMob ? localRoom.mobFlags! : (rData[7] || []);
         const loadF = hasLiveLoad ? localRoom.loadFlags! : (rData[8] || []);
         const questF = localRoom?.roomQuestFlags || [];

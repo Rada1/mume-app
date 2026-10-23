@@ -27,7 +27,11 @@ import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
 import { MapSwipeWheelOverlay } from './MapSwipeWheelOverlay';
 import { MapDoorTapFeedback } from './MapDoorTapFeedback';
+import { MapMarkerManager } from './MapMarkerManager';
+import { useMapMarkerEditor } from '../../hooks/useMapMarkerEditor';
+import type { MapContextMenuPosition } from '../../types';
 import './Mapper.css';
+import './MapPopupSurfaces.css';
 
 interface MapperProps {
     isMinimized?: boolean;
@@ -163,6 +167,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
     // Use shared state from MapperContext
     const context = useMapper();
+    const markerEditor = useMapMarkerEditor();
     const {
         rooms, setRooms, markers, setMarkers, currentRoomId,
         handleAddRoom, handleDeleteRoom, roomsRef,
@@ -172,7 +177,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         autoCenter, setAutoCenter, viewZ, setViewZ, infoRoomId, setInfoRoomId,
         renderVersion, triggerRender, activeMapFilter, setActiveMapFilter,
         mapSearchQuery, setMapSearchQuery,
-        regionLabels, setExploredMarkers,
+        regionLabels,
         playerPosRef, moveAnimRef, selectedSearchRoomId, setSelectedSearchRoomId,
         closestRoomId, filterPathIds, filterPathDistance, matchedRoomIds
     } = context;
@@ -254,7 +259,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     }, [handleCenterOnPlayer]);
 
     // We still keep the context menu local to the instance for better UX (each window has its own context menu)
-    const [localContextMenu, setLocalContextMenu] = useState<{ x: number, y: number, wx: number, wy: number, roomId: string | null } | null>(null);
+    const [localContextMenu, setLocalContextMenu] = useState<MapContextMenuPosition | null>(null);
     const setContextMenu = setLocalContextMenu;
     const { isOpen: isMapFindOpen, selectedRoomId: findRoomId, anchor: findAnchor, open: openMapFind, close: closeMapFind } = useMapperFindPanel();
     const mobileFindPanelHost = isMobile && typeof document !== 'undefined'
@@ -279,6 +284,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         selectedRoomIds, setSelectedRoomIds,
         selectedMarkerId, setSelectedMarkerId,
         cameraRef, mode, currentRoomId,
+        onEditMarker: markerEditor.open,
         isMobile,
         isDesignMode: props.isDesignMode || false,
         isMinimized: effectiveIsMinimized,
@@ -317,15 +323,6 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
         onTraceHover
     });
 
-    const handleAddMarker = useCallback((wx: number, wy: number, z: number) => {
-        const id = Math.random().toString(36).substr(2, 9);
-        setMarkers(prev => ({
-            ...prev,
-            [id]: { id, x: wx, y: wy, z, text: 'New Marker', dotSize: 5, fontSize: 12, createdAt: Date.now() }
-        }));
-        setExploredMarkers(prev => new Set([...prev, id]));
-    }, [setMarkers, setExploredMarkers]);
-
     const effectiveLighting = 'none';
     const clearMapRoute = useCallback(() => {
         setActiveMapFilter(null);
@@ -346,13 +343,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             zIndex: infoRoomId ? 2900 : undefined,
         } as React.CSSProperties}>
             {isImmersionMode && !isMobile && (
-                <>
-                    <div className="mapper-overlay mapper-sun-overlay" />
-                    <div className="mapper-overlay mapper-moon-overlay" />
-                    <div className="mapper-overlay mapper-artificial-overlay" />
-                    <div className="mapper-overlay mapper-dark-overlay" />
-                    <div className="mapper-overlay mapper-fog-overlay" />
-                </>
+                <div className="mapper-overlay mapper-fog-overlay" />
             )}
             <MapCanvas
                 ref={canvasRef}
@@ -428,7 +419,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 joystickActive={joystick?.joystickActive}
             />
             {isWalking && (
-                <div className="map-autowalk-popup" onPointerDown={event => event.stopPropagation()} onMouseDown={event => event.stopPropagation()}>
+                <div className="map-autowalk-popup map-popup-surface" onPointerDown={event => event.stopPropagation()} onMouseDown={event => event.stopPropagation()}>
                     <div className="map-autowalk-info">
                         <span className="map-autowalk-pulse-dot" aria-hidden="true" />
                         <span>Autowalk · {Math.max(0, walkPath.length - 1)} {walkPath.length - 1 === 1 ? 'room' : 'rooms'} left</span>
@@ -441,7 +432,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             {!isWalking && closestRoomId && (
                 (filterPathIds.length > 1 || (selectedSearchRoomId && selectedSearchRoomId.replace(/^(m_|r_)/, '') === closestRoomId.replace(/^(m_|r_)/, ''))) && (
                 <div 
-                    className="map-go-there-popup"
+                    className="map-go-there-popup map-popup-surface"
                     onPointerDown={(e) => e.stopPropagation()}
                     onMouseDown={(e) => e.stopPropagation()}
                 >
@@ -503,6 +494,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             />}
             {!effectiveIsMinimized && <MapDoorTapFeedback />}
 
+
             {isTracingMode && !effectiveIsMinimized && (
                 <button
                     className="btn-secondary"
@@ -527,6 +519,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
 
             {isMobile && !mapSwipeWheel && <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />}
 
+            {markerEditor.isOpen && <MapMarkerManager editor={markerEditor} />}
+
             {localContextMenu && (
                 <MapperContextMenu
                     x={localContextMenu.x}
@@ -536,7 +530,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                     onClose={() => setLocalContextMenu(null)}
                     onDelete={() => { if (localContextMenu.roomId) handleDeleteRoom(localContextMenu.roomId); setLocalContextMenu(null); triggerRender(); }}
                     onInfo={() => { setInfoRoomId(localContextMenu.roomId); setLocalContextMenu(null); }}
-                    onAddMarker={() => { handleAddMarker(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
+                    onAddMarker={() => { markerEditor.create(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
                     onAddRoom={() => { handleAddRoom(localContextMenu.wx, localContextMenu.wy, viewZ !== null ? viewZ : (currentRoomId && rooms[currentRoomId] ? rooms[currentRoomId].z || 0 : 0)); setLocalContextMenu(null); triggerRender(); }}
                     onSyncLocation={() => { handleSyncLocation(localContextMenu.wx, localContextMenu.wy); setLocalContextMenu(null); triggerRender(); }}
                     onFind={() => { openMapFind(localContextMenu.roomId, { x: localContextMenu.x, y: localContextMenu.y }); setInfoRoomId(null); setLocalContextMenu(null); }}

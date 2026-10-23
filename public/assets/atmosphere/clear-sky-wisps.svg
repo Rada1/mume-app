@@ -1,0 +1,14 @@
+<!-- @file clear-sky-wisps.svg — Two faint, isolated ribbons for otherwise clear skies. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 400">
+  <defs>
+    <filter id="haze" x="-20%" y="-70%" width="140%" height="240%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012 0.035" numOctaves="2" seed="23" result="noise"/>
+      <feDisplacementMap in="SourceGraphic" in2="noise" scale="24" xChannelSelector="R" yChannelSelector="G"/>
+      <feGaussianBlur stdDeviation="10 6"/>
+    </filter>
+  </defs>
+  <g fill="#eef4f8" filter="url(#haze)">
+    <path opacity="0.4" d="M370 108 C435 89 478 104 540 88 C594 74 637 80 690 68 C642 92 602 86 550 104 C479 123 445 102 370 108Z"/>
+    <path opacity="0.28" d="M636 196 C685 182 716 192 758 180 C799 169 821 178 856 165 C817 187 789 180 756 194 C713 208 685 191 636 196Z"/>
+  </g>
+</svg>

@@ -141,12 +141,16 @@ const normalizeItemText = (text: string): string => (
 const withoutLeadingArticle = (text: string): string => text.replace(/^(?:a|an|the)\s+/i, '');
 
 const stateFromText = (normalized: string): Pick<ItemTierResult, 'state' | 'stateLabel'> => {
+    const conditions = [...normalized.matchAll(/\(([^()]*)\)/g)];
     for (const [state, words] of Object.entries(stateWords) as Array<[ItemStateTier, string[]]>) {
-        const match = words.find(word => normalized.includes(`(${word})`));
-        if (match) return { state, stateLabel: match };
+        const match = conditions.find(condition => condition[1].split(',').some(word => words.includes(word.trim())));
+        if (match) return { state, stateLabel: match[1] };
     }
     return {};
 };
+
+export const classifyItemCondition = (text: string): Pick<ItemTierResult, 'state' | 'stateLabel'> =>
+    stateFromText(normalizeItemText(text));
 
 export const classifyItemTier = (text: string): ItemTierResult => {
     const normalized = normalizeItemText(text);

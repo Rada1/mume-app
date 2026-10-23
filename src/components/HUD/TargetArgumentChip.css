@@ -1,0 +1,20 @@
+/** @file TargetArgumentChip.css — Accepted arguments retain the suggestion target's highlight colors. */
+
+/* --- Shared Target Highlight Profiles --- */
+.docked-argument-chip[data-target-kind] { --argument-chip-color: #dfbf6c; }
+.docked-argument-chip[data-target-kind="enemy"] { --argument-chip-color: #f87171; }
+.docked-argument-chip[data-target-kind="ally"] { --argument-chip-color: #61c290; }
+.docked-argument-chip[data-target-kind="room"] { --argument-chip-color: #f8fafc; }
+.docked-target-badge.has-target.docked-argument-chip[data-target-kind] {
+    color: var(--argument-target-color, var(--text-primary, #f8fafc));
+    background: color-mix(in srgb, var(--argument-chip-color) 12%, transparent);
+    border: 0 !important;
+    border-radius: 0;
+    box-shadow: none;
+    font: inherit;
+    font-weight: 700;
+    max-width: min(45vw, 360px);
+}
+.docked-target-badge.has-target.docked-argument-chip[data-target-kind]:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--argument-chip-color) 22%, transparent);
+}

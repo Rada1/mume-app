@@ -5,35 +5,23 @@
 
 import React from 'react';
 import { Play, RotateCcw, Upload, Volume2 } from 'lucide-react';
-import { AUDIO_MANIFEST } from '../../constants/audioManifest';
-import { audioManager } from '../../services/audio/AudioManager';
-import { useSettingsStore } from '../../stores/useSettingsStore';
-
-interface SoundEffectOverridesProps {
-    isSoundEnabled: boolean;
-}
+import type { SoundEffectOverridesProps } from '../../types';
+import { useSoundEffectEditor } from '../../hooks/useSoundEffectEditor';
 
 // --- Logic Section ---
-const SoundEffectOverrides: React.FC<SoundEffectOverridesProps> = ({ isSoundEnabled }) => {
-    const customSoundEffects = useSettingsStore(state => state.customSoundEffects);
-    const removeCustomSoundEffect = useSettingsStore(state => state.removeCustomSoundEffect);
-    const setCustomSoundEffect = useSettingsStore(state => state.setCustomSoundEffect);
-
-    const handleOverrideUpload = (key: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) setCustomSoundEffect(key, URL.createObjectURL(file));
-    };
+const SoundEffectOverrides: React.FC<SoundEffectOverridesProps> = ({ isSoundEnabled, channel }) => {
+    const { effects, customSoundEffects, removeCustomSoundEffect, handleOverrideUpload, preview } = useSoundEffectEditor(channel);
 
     return (
         <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
             <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Volume2 size={16} /> Default Sound Effects
+                <Volume2 size={16} /> {channel === 'ui' ? 'UI Sounds' : 'Sound Effects'}
             </label>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>
-                Preview default game sound effects or upload custom overrides.
+                Preview {channel === 'ui' ? 'interface sounds' : 'game sound effects'} or upload custom overrides.
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '300px', overflowY: 'auto', paddingRight: '4px' }}>
-                {Object.entries(AUDIO_MANIFEST.effects).map(([key, config]) => {
+                {effects.map(([key, config]) => {
                     const hasOverride = !!customSoundEffects[key];
                     return (
                         <div key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -48,7 +36,7 @@ const SoundEffectOverrides: React.FC<SoundEffectOverridesProps> = ({ isSoundEnab
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                 <button
-                                    onClick={() => audioManager.playEffect(key, { skipJitter: true })}
+                                    onClick={() => preview(key)}
                                     style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
                                     title="Preview sound"
                                 >

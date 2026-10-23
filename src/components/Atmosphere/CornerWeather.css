@@ -1,0 +1,204 @@
+/** @file CornerWeather.css — Soft weather glimpses confined to the sky and ground corners. */
+
+/* --- One opacity blend, independent of global Performance Mode transitions --- */
+.environment-root.front > .environment-weather-layers {
+    position: absolute;
+    inset: 0;
+    z-index: 24;
+    pointer-events: none;
+    isolation: isolate;
+    transition: none !important;
+}
+.environment-weather-layers > .environment-weather-transition-layer {
+    mix-blend-mode: plus-lighter;
+    transition: none !important;
+}
+.corner-weather-cloud-motion {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: none !important;
+}
+
+.environment-weather-transition-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 24;
+    pointer-events: none;
+}
+
+/* --- Sky veil matches the lighting vignette footprint --- */
+.corner-weather-sky {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 56%;
+    height: 58%;
+    z-index: 24;
+    pointer-events: none;
+    overflow: hidden;
+    mask-image: radial-gradient(ellipse 100% 100% at 100% 0%, #000 0%, #000 38%, transparent 94%);
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 100% 0%, #000 0%, #000 38%, transparent 94%);
+}
+.environment-weather-scene.lighting-state-sun .corner-weather-sky {
+    /* This box is 56% by 58% of the client, matching the light's full-client ellipse. */
+    mask-image: radial-gradient(ellipse 100% 100% at 100% 0%, var(--sunlight-fade-stops));
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 100% 0%, var(--sunlight-fade-stops));
+}
+.corner-weather-clouds {
+    position: absolute;
+    inset: -12%;
+    background: url('/assets/atmosphere/veiled-cloud-wisps.svg') 0 0 / 900px 100% repeat-x;
+    opacity: 0.75;
+    filter: brightness(0);
+    animation: veiled-cloud-drift 140s linear infinite;
+    z-index: 1;
+}
+.corner-weather-sky.weather-cloud .corner-weather-clouds {
+    /* Cloud banks float through the sky; the veil dissolves the whole layer into the client. */
+    inset: auto -20%;
+    top: 2%;
+    height: 82%;
+    background-image: url('/assets/atmosphere/drifting-clouds.svg');
+    /* Match the 900px drift cycle to the tile width so the animation also loops cleanly. */
+    background-size: 900px 100%;
+    opacity: 1;
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 68%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 8%, #000 68%, transparent 100%);
+}
+/* Rain has a continuous ceiling, rather than individual drifting cloud ribbons. */
+.corner-weather-sky:is(.weather-rain, .weather-heavy-rain) .corner-weather-clouds {
+    display: none;
+}
+.corner-weather-sky.weather-rain::before,
+.corner-weather-sky.weather-heavy-rain::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(165deg, rgba(1, 4, 10, 0.97), rgba(3, 7, 13, 0.93) 65%, rgba(3, 7, 13, 0.75));
+}
+.corner-weather-cloud-cover {
+    position: absolute;
+    inset: -4%;
+    z-index: 1;
+    background: url('/assets/atmosphere/rain-cloud-ceiling.svg') center / 100% 100% no-repeat;
+    opacity: 0.72;
+    pointer-events: none;
+}
+.environment-weather-scene.lighting-state-sun .corner-weather-sky:is(.weather-rain, .weather-heavy-rain)::before {
+    background:
+        radial-gradient(ellipse 90px 65px at 89% 14%, rgba(237, 240, 229, 0.36), transparent 100%),
+        radial-gradient(ellipse 60% 55% at 90% 12%, rgba(188, 198, 204, 0.32), transparent 100%),
+        linear-gradient(165deg, rgba(122, 135, 146, 0.98), rgba(97, 112, 127, 0.95) 65%, rgba(79, 95, 112, 0.8));
+}
+/* Moonlight spreads broadly through the overcast; moonless rain stays darker. */
+.environment-weather-scene.lighting-state-moon .corner-weather-sky:is(.weather-rain, .weather-heavy-rain)::before {
+    background:
+        radial-gradient(ellipse 65% 50% at 89% 14%, rgba(120, 151, 202, 0.13), transparent 100%),
+        radial-gradient(ellipse 45% 25% at 58% 32%, rgba(100, 133, 184, 0.04), transparent 100%),
+        linear-gradient(165deg, rgba(20, 30, 46, 0.97), rgba(12, 21, 34, 0.95) 65%, rgba(8, 15, 25, 0.8));
+}
+.environment-weather-scene.lighting-state-dark .corner-weather-sky:is(.weather-rain, .weather-heavy-rain)::before {
+    background: linear-gradient(165deg, rgba(5, 8, 14, 0.99), rgba(4, 7, 12, 0.98) 65%, rgba(2, 4, 8, 0.92));
+}
+.environment-weather-scene.lighting-state-moon .corner-weather-cloud-cover {
+    filter: brightness(0.46) saturate(0.82);
+}
+.environment-weather-scene.lighting-state-dark .corner-weather-cloud-cover {
+    filter: brightness(0.36) saturate(0.82);
+}
+
+.environment-weather-scene.lighting-state-sun .corner-weather-clouds { filter: none; }
+.environment-weather-scene.lighting-state-sun .weather-cloud .corner-weather-clouds {
+    filter: brightness(0.52);
+    /* Let the sky veil control the fade instead of multiplying it by a vertical mask. */
+    mask-image: none;
+    -webkit-mask-image: none;
+}
+.environment-weather-scene.lighting-state-moon .weather-cloud .corner-weather-clouds { filter: brightness(0.46) saturate(0.82); }
+.environment-weather-scene.lighting-state-dark .weather-cloud .corner-weather-clouds { filter: brightness(0.08) saturate(0.15); }
+.environment-weather-scene.lighting-state-sun .weather-heavy-rain .corner-weather-clouds { filter: brightness(0.85) blur(2px); }
+.corner-weather-sky.has-lightning::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background: radial-gradient(ellipse at 85% 12%, rgba(215, 227, 250, 0.28), transparent 75%);
+}
+
+/* --- Short blurred rain and slow indistinct snow --- */
+.corner-precipitation { position: absolute; inset: 0; z-index: 2; }
+.corner-precipitation span {
+    position: absolute;
+    left: var(--particle-x);
+    top: -24px;
+    pointer-events: none;
+    opacity: 0;
+}
+.corner-precipitation.is-rain span {
+    width: 1px;
+    height: 12px;
+    background: linear-gradient(transparent, rgba(205, 221, 240, 0.72), transparent);
+    filter: blur(0.6px);
+    animation: corner-rain-fall var(--particle-duration) linear var(--particle-delay) infinite;
+}
+.weather-heavy-rain .corner-precipitation.is-rain span { height: 18px; width: 1.5px; }
+.corner-precipitation.is-snow span {
+    width: var(--particle-size);
+    height: var(--particle-size);
+    border-radius: 50%;
+    background: rgba(229, 236, 243, 0.55);
+    filter: blur(1px);
+    animation: corner-snow-fall var(--snow-duration) linear var(--particle-delay) infinite;
+}
+
+/* --- Ground fog gathers in the smaller terrain corner --- */
+.corner-weather-fog {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 42%;
+    height: 38%;
+    z-index: 24;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse 85% 35% at 100% 89%, rgba(169, 185, 191, 0.25), transparent 100%),
+        radial-gradient(ellipse 55% 30% at 78% 70%, rgba(154, 172, 181, 0.14), transparent 100%);
+    mask-image: radial-gradient(ellipse 100% 100% at 100% 100%, #000 5%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 100% 100% at 100% 100%, #000 5%, transparent 100%);
+    filter: blur(9px);
+    animation: corner-fog-breathe 22s ease-in-out infinite alternate;
+}
+
+/* --- Restrained motion behind the masks --- */
+@keyframes veiled-cloud-drift {
+    from { background-position: 0 0; }
+    to { background-position: -900px 0; }
+}
+@keyframes corner-rain-fall {
+    0% { opacity: 0; transform: translate(0, 0) rotate(9deg); }
+    12%, 65% { opacity: 0.65; }
+    100% { opacity: 0; transform: translate(-35px, 60vh) rotate(9deg); }
+}
+@keyframes corner-snow-fall {
+    0% { opacity: 0; transform: translate(0, 0); }
+    15%, 60% { opacity: 0.7; }
+    45% { transform: translate(18px, 26vh); }
+    100% { opacity: 0; transform: translate(-14px, 60vh); }
+}
+@keyframes corner-fog-breathe {
+    from { opacity: 0.6; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(-2%); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .corner-weather-cloud-motion { transform: none !important; }
+    .corner-weather-clouds, .corner-weather-fog { animation: none; }
+    .corner-precipitation { display: none; }
+}
+
+/* Keep this gentle sky drift visible alongside the vignette in Performance Mode. */
+@media (prefers-reduced-motion: no-preference) {
+    .app-container.performance-mode .corner-weather-clouds {
+        animation: veiled-cloud-drift 140s linear infinite !important;
+    }
+}

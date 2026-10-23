@@ -17,8 +17,9 @@ export const normalizeGmcpWeather = (value: unknown): WeatherType | null => {
 
     const lower = trimmed.toLowerCase();
     if (lower === '~' || lower.includes('cloud') || lower.includes('overcast')) return 'cloud';
-    if (lower === '\'' || lower === '"') return 'rain';
-    if (lower === '*') return 'heavy-rain';
+    if (lower === '\'') return 'rain';
+    if (lower === '"') return 'heavy-rain';
+    if (lower === '*') return 'snow';
     if (lower.includes('snow')) return 'snow';
     if (lower.includes('rain')) return lower.includes('heavy') ? 'heavy-rain' : 'rain';
     if (lower === 'clear' || lower === 'none' || lower === 'calm') return lower as WeatherType;

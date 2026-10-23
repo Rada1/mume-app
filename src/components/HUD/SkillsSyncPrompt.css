@@ -1,0 +1,10 @@
+/** @file SkillsSyncPrompt.css — Terminal skill sync controls. */
+/* --- Sync Prompt --- */
+.skills-sync-prompt { display: flex; flex-direction: column; gap: 8px; padding: 10px 0; color: var(--text-muted, #a69b84); font: inherit; font-size: 11px; }
+.skills-sync-prompt button { align-self: flex-start; padding: 6px 9px; color: #d8bb62; border: 1px solid #64532a; background: transparent; font: inherit; cursor: pointer; }
+.skills-sync-prompt button:disabled { opacity: .65; cursor: wait; }
+.skills-sync-prompt.is-synced { padding: 4px 0; }
+.skills-sync-prompt.is-command-header { display:flex; flex-direction:row; align-items:center; padding:0; }
+.skills-sync-prompt.is-command-header button { display:inline-flex; align-items:center; justify-content:center; align-self:stretch; width:28px; min-height:28px; padding:6px; border:0; background:var(--command-tree-surface-hover,#3b3024); color:#f0d477; }
+.skills-sync-prompt.is-command-header button:hover:not(:disabled),.skills-sync-prompt.is-command-header button:focus-visible { background:#4a3b26; color:#ffe28b; }
+.tactical-line-wrapper > .skills-sync-prompt { max-width: 165px; pointer-events: auto; }

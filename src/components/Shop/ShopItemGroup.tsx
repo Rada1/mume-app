@@ -4,8 +4,12 @@
  */
 
 import React from 'react';
+import { ChevronRight } from 'lucide-react';
 import type { ShopItem, ShopVariant } from '../../types';
 import { getShopProductCount } from '../../utils/shopVariantParser';
+import { ItemConditionText } from '../Messages/ItemConditionText';
+import { formatMumePrice } from '../../utils/gameUtils';
+import { CommandTreeObjectTargetLabel } from '../HUD/CommandTreeObjectTargetLabel';
 
 type ShopItemGroupProps = {
     item: ShopItem;
@@ -17,6 +21,7 @@ type ShopItemGroupProps = {
     targeting: boolean;
     selectOnRelease?: boolean;
     compact?: boolean;
+    objectColorTargets?: boolean;
     onSelect: (item: ShopItem) => void;
     onToggle: (num: number) => void;
     onInspect: (num: number) => void;
@@ -24,7 +29,7 @@ type ShopItemGroupProps = {
 
 // --- Render Section ---
 export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
-    item, variants, expanded, loading, selectedNum, compareNum, targeting, selectOnRelease = false, compact = false,
+    item, variants, expanded, loading, selectedNum, compareNum, targeting, selectOnRelease = false, compact = false, objectColorTargets = false,
     onSelect, onToggle, onInspect
 }) => {
     const count = getShopProductCount(item.name);
@@ -45,15 +50,18 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                     onSelect(item);
                 }}>
                 <span className="shop-item-num">{item.num}.</span>
-                <span className="shop-item-name">{variantName}{count && !compact && <small className="shop-stock-count">{count} in stock</small>}</span>
+                <span className="shop-item-name" title={compact ? `${variantName}${item.vnum ? ` <${item.vnum}>` : ''}` : undefined}>{objectColorTargets
+                    ? <CommandTreeObjectTargetLabel label={variantName} location="room"><ItemConditionText content={variantName} /></CommandTreeObjectTargetLabel>
+                    : <ItemConditionText content={variantName} />}{count && !compact && <small className="shop-stock-count">{count} in stock</small>}</span>
                 {count && compact && <button type="button" className="shop-stock-inline" aria-expanded={expanded}
+                    aria-label={`${expanded ? 'Hide' : 'Show'} ${count} in stock for ${variantName}`}
                     onPointerDown={event => event.stopPropagation()}
                     onPointerUp={event => event.stopPropagation()}
                     onClick={event => { event.stopPropagation(); onToggle(item.num); }}>
-                    {expanded ? '▾' : '▸'} {count} in stock
+                    <span className="shop-stock-inline-count">{count}</span><span>in stock</span><ChevronRight size={10} aria-hidden="true" />
                 </button>}
                 {item.vnum && <span className="shop-item-vnum">&lt;{item.vnum}&gt;</span>}
-                <span className="shop-item-price">{item.price}</span>
+                <span className="shop-item-price" title={item.price}>{formatMumePrice(item.price)}</span>
             </div>
             {count && !compact && <div className="shop-product-expand-bar">
                 <button type="button" className="shop-product-expand" aria-expanded={expanded}
@@ -65,7 +73,7 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
             {expanded && <div className="shop-variant-list" aria-label={`${variantName} stock`}>
                 {loading ? <div className="shop-variant-empty">Loading stock…</div>
                     : variants?.length ? variants.map((variant, index) => {
-                        const variantItem: ShopItem = { num: variant.num, name: `${variantName} (${variant.condition})`, price: variant.price };
+                        const variantItem: ShopItem = { num: variant.num, name: variant.condition ? `${variantName} (${variant.condition})` : variantName, price: variant.price };
                         return <div key={`${variant.num}-${index}`} className={`shop-variant-row${selectedNum === variant.num ? ' selected' : ''}`}
                             data-shop-target-value={selectOnRelease ? variant.num : undefined}
                             onPointerDown={event => {
@@ -78,8 +86,10 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                                 onSelect(variantItem);
                             }}>
                             <span className="shop-item-num">{variant.num}.</span>
-                            <span className="shop-variant-condition">{variant.condition}</span>
-                            <span className="shop-item-price">{variant.price}</span>
+                            <span className="shop-variant-condition">{objectColorTargets
+                                ? <CommandTreeObjectTargetLabel label={variantName} location="room">{variant.condition || variantName}</CommandTreeObjectTargetLabel>
+                                : variant.condition || variantName}</span>
+                            <span className="shop-item-price" title={variant.price}>{formatMumePrice(variant.price)}</span>
                             <button type="button" className="shop-variant-inspect" onPointerDown={event => event.stopPropagation()}
                                 onClick={() => onInspect(variant.num)}>Inspect</button>
                         </div>;

@@ -3,6 +3,7 @@ import { Plus } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 import { useGame } from '../../context/GameContext';
 import { doesCommandMatchQuickButton } from '../../utils/commandFeedbackUtils';
+import { useQuickButtonDockAnchor } from '../../hooks/useQuickButtonDockAnchor';
 import './QuickButtonBar.css';
 
 const SWIPE_THRESHOLD = 40;
@@ -91,6 +92,7 @@ export const QuickButtonBar: React.FC = () => {
     const addQuickButton = useUIStore(s => s.addQuickButton);
     const removeQuickButton = useUIStore(s => s.removeQuickButton);
     const { executeCommand, triggerHaptic, viewport } = useGame();
+    const barRef = useQuickButtonDockAnchor(Boolean(viewport?.isMobile));
 
     const [isCreating, setIsCreating] = useState(false);
     const [labelInput, setLabelInput] = useState('');
@@ -210,7 +212,7 @@ export const QuickButtonBar: React.FC = () => {
     }, [isCreating, closeCreate]);
 
     return (
-        <div className="quick-button-bar">
+        <div ref={barRef} className="quick-button-bar">
             {isCreating && (
                 <div className="quick-create-form" ref={formRef}>
                     <div style={{

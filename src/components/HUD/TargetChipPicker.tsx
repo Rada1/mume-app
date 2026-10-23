@@ -6,6 +6,7 @@
 // --- Logic Section ---
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { Crosshair } from 'lucide-react';
 import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { getTargetItemTierClassName } from '../../utils/itemTier';
 import { useSettingsStore } from '../../stores/useSettingsStore';
@@ -189,7 +190,7 @@ export const TargetChipPicker: FC<Props> = ({
                     {commonTargets.length > 0 && <div className="docked-target-picker-column-title">Room targets</div>}
                     <div className="docked-target-picker-list">
                 {suggestions.length ? suggestions.map(suggestion => {
-                    const isSelected = normalizedTarget === suggestion.value.trim().toLowerCase();
+                    const isSelected = Boolean(normalizedTarget) && normalizedTarget === suggestion.value.trim().toLowerCase();
                     return <button
                         key={suggestion.key}
                         type="button"
@@ -206,6 +207,7 @@ export const TargetChipPicker: FC<Props> = ({
                         onClick={event => chooseOnClick(event, suggestion.value)}
                     >
                         <span className={getTargetItemTierClassName(suggestion.label)}>{suggestion.label}</span>
+                        {isSelected && <Crosshair size={14} className="docked-target-picker-crosshair" aria-label="Current target"/>}
                         {showMeta && <small>{suggestion.meta}</small>}
                     </button>;
                 }) : <div className="docked-target-picker-empty">No entities in the room</div>}
@@ -215,7 +217,7 @@ export const TargetChipPicker: FC<Props> = ({
                     <div className="docked-target-picker-column-title">Common PvP</div>
                     <div className="docked-target-picker-list">
                         {commonTargets.map(suggestion => {
-                            const isSelected = normalizedTarget === suggestion.value.trim().toLowerCase();
+                            const isSelected = Boolean(normalizedTarget) && normalizedTarget === suggestion.value.trim().toLowerCase();
                             return <button
                                 key={suggestion.key}
                                 type="button"
@@ -230,7 +232,7 @@ export const TargetChipPicker: FC<Props> = ({
                                     scrollPointersRef.current.delete(event.pointerId);
                                 }}
                                 onClick={event => chooseOnClick(event, suggestion.value)}
-                            ><span>{suggestion.label}</span></button>;
+                            ><span>{suggestion.label}</span>{isSelected && <Crosshair size={14} className="docked-target-picker-crosshair" aria-label="Current target"/>}</button>;
                         })}
                     </div>
                 </section>}

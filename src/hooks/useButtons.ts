@@ -10,6 +10,7 @@ import MASTER_SETTINGS from '../constants/mastersettings.json';
 import { useButtonPersistence } from './useButtonPersistence';
 import { useButtonLogic } from './useButtonLogic';
 import { useButtonStore } from '../stores/useButtonStore';
+import { usePanelDataStore } from '../stores/usePanelDataStore';
 
 export const useButtons = (deps: {
     abilities: Record<string, number>,
@@ -49,11 +50,12 @@ export const useButtons = (deps: {
     });
 
     const { rawButtons, setRawButtons } = useButtonStore();
+    const skillsReady = usePanelDataStore(state => state.status.skills === 'ready');
 
     const buttons = useButtonLogic({
         rawButtons,
         activeSet,
-        abilities,
+        abilities: skillsReady ? abilities : {},
         characterClass,
         characterName,
         characterInfo,
@@ -61,7 +63,7 @@ export const useButtons = (deps: {
         isSmartPopulateEnabled,
         target,
         inlineCategories,
-        practiceData
+        practiceData: skillsReady ? practiceData : null
     });
     const { resetToDefaults } = useButtonPersistence(rawButtons, setRawButtons, uiPositions, setUiPositions);
 

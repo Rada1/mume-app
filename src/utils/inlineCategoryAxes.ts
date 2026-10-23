@@ -20,6 +20,8 @@ export interface InlineCategoryAxes {
     isTargetable: boolean;
 }
 
+export type EntityHighlightKind = 'object' | 'room' | 'enemy' | 'ally' | 'other';
+
 // --- Logic Section ---
 
 const LEGACY_CATEGORY_IDS: Record<string, string> = {
@@ -42,6 +44,7 @@ const LEGACY_CATEGORY_IDS: Record<string, string> = {
 };
 
 const CATEGORY_AXES: Record<string, Omit<InlineCategoryAxes, 'categoryId'>> = {
+    'cat-mount-object': { family: 'object', location: 'room', isCharacter: false, isObject: true, isInlineAction: true, isTargetable: false },
     'cat-ally': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-ally-remote': { family: 'character', location: 'none', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
     'cat-enemy': { family: 'character', location: 'room', isCharacter: true, isObject: false, isInlineAction: true, isTargetable: true },
@@ -62,6 +65,11 @@ export const normalizeInlineCategoryId = (id: string | null | undefined): string
     if (!id) return 'cat-object';
     const lowered = id.toLowerCase();
     return toCategoryId(id) || LEGACY_CATEGORY_IDS[lowered] || id;
+};
+
+export const canSetTargetChipFromCategory = (id: string | null | undefined): boolean => {
+    const categoryId = normalizeInlineCategoryId(id);
+    return categoryId === 'cat-npc' || categoryId === 'cat-enemy';
 };
 
 export const getInlineCategoryAxes = (
@@ -89,6 +97,17 @@ export const getInlineCategoryAxes = (
         isInlineAction: false,
         isTargetable: false,
     };
+};
+
+export const getEntityHighlightKind = (id: string | null | undefined): EntityHighlightKind => {
+    if (!id) return 'other';
+    const categoryId = normalizeInlineCategoryId(id);
+    const axes = getInlineCategoryAxes(categoryId);
+    if (axes.family === 'room') return 'room';
+    if (axes.isObject) return 'object';
+    if (['cat-enemy', 'cat-npc'].includes(categoryId)) return 'enemy';
+    if (['cat-ally', 'cat-ally-remote', 'cat-player', 'cat-mount'].includes(categoryId)) return 'ally';
+    return 'other';
 };
 
 export const getInlineCategoryLabel = (id: string | null | undefined): string => {

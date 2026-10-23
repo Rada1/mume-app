@@ -1,3 +1,6 @@
+/** @file mapperTypes.ts — Mapper room, exit, and annotation contracts. */
+import type { MapRoomAttribute } from '../../types/mapMarkers';
+// --- Mapper data contracts ---
 export interface MapperRoom {
     id: string;
     gmcpId: number;
@@ -10,9 +13,15 @@ export interface MapperRoom {
     terrain: string;
     exits: Record<string, MapperExit>;
     notes: string;
+    /** An explicitly edited empty note must not fall back to imported map notes. */
+    notesEdited?: boolean;
     contents?: string;
     mobFlags?: string[];
     loadFlags?: string[];
+    /** Explicit local flags replace imported flags, including an empty selection. */
+    mapFlagsEdited?: boolean;
+    /** Room Info owns explicit alignment, lighting, and travel attributes. */
+    mapAttributesEdited?: MapRoomAttribute[];
     roomQuestFlags?: string[];
     light?: string | number | null;
     sundeath?: number;
@@ -25,6 +34,8 @@ export interface MapperRoom {
 }
 
 export interface MapperExit {
+    /** Local exit/door flag selection overrides imported flag metadata. */
+    mapFlagsEdited?: boolean;
     target: string;
     closed: boolean;
     hasDoor?: boolean;

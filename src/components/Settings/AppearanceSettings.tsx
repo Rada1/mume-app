@@ -7,6 +7,7 @@ import React from 'react';
 import FontSizeSetting from './FontSizeSetting';
 import { ToggleRow } from './SettingHelpers';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { AliasSyncControl } from '../Controls/AliasSyncControl';
 
 interface AppearanceSettingsProps {
     fontFamily: string;
@@ -136,6 +137,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     value={showCommandSuggestions}
                     onToggle={() => setShowCommandSuggestions(!showCommandSuggestions)}
                 />
+                <AliasSyncControl />
 
                 <ToggleRow
                     label="Show Timestamps"

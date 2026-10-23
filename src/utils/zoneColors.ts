@@ -3,33 +3,35 @@
  * @description Curated zone colors for immersion atmosphere and room highlights.
  */
 
+import { normalizeZoneName } from './zoneName';
+
 // --- Constants Section ---
 
 export const KNOWN_ZONE_COLORS: Record<string, string> = {
-    // Good zones use Rivendell green.
-    'bree': '#318c66',
-    'fornost': '#318c66',
-    'lorien': '#318c66',
-    'rivendell': '#318c66',
-    'valinor': '#318c66',
-    'blue mountains': '#318c66',
-    'grey havens': '#318c66',
-    'shire': '#318c66',
+    // Strongly good zones use a light sea-green.
+    'bree': '#69b68f',
+    'fornost': '#69b68f',
+    'lorien': '#69b68f',
+    'rivendell': '#69b68f',
+    'valinor': '#69b68f',
+    'blue mountains': '#69b68f',
+    'grey havens': '#69b68f',
+    'shire': '#69b68f',
+    'lorien surroundings': '#69b68f',
+    'the lorien surroundings': '#69b68f',
 
-    // Semi-good zones use Bree blue.
-    'fangorn': '#467db3',
-    'rohan': '#467db3',
-    'ettenmoors': '#467db3',
-    'gladden fields': '#467db3',
-    'lhun valley': '#467db3',
-    'lorien surroundings': '#467db3',
-    'the lorien surroundings': '#467db3',
-    'midgewaters': '#467db3',
-    'old forest': '#467db3',
-    'road to fornost': '#467db3',
-    'road to grey havens': '#467db3',
-    'road to tharbad': '#467db3',
-    'tower hills': '#467db3',
+    // Semi-good zones use a light blue with a green hue.
+    'fangorn': '#75b2e8',
+    'rohan': '#75b2e8',
+    'ettenmoors': '#75b2e8',
+    'gladden fields': '#75b2e8',
+    'lhun valley': '#75b2e8',
+    'midgewaters': '#75b2e8',
+    'old forest': '#75b2e8',
+    'road to fornost': '#75b2e8',
+    'road to grey havens': '#75b2e8',
+    'road to tharbad': '#75b2e8',
+    'tower hills': '#75b2e8',
 
     // Neutral zones use the tested mauve.
     'dunland': '#968894',
@@ -97,7 +99,7 @@ export const hashStringToColor = (str: string): string => {
  */
 export const getZoneColor = (zone: string | null | undefined): string => {
     if (!zone) return DEFAULT_ZONE_COLOR;
-    const clean = zone.replace(/[()]/g, '').trim().toLowerCase();
+    const clean = normalizeZoneName(zone);
     if (!clean) return DEFAULT_ZONE_COLOR;
 
     if (KNOWN_ZONE_COLORS[clean]) {
@@ -182,4 +184,10 @@ export const getZoneTextColor = (zone: string | null | undefined, isLightMode = 
     const targetL = Math.max(l, 68);
     const targetS = s < 30 ? s : Math.min(Math.max(s, 55), 80);
     return hslToHex(h, targetS, targetL);
+};
+
+/** Keeps the client rim visible in dark zones while preserving the zone hue. */
+export const getZoneFrameColor = (zone: string | null | undefined): string => {
+    const { h, s, l } = hexToHsl(getZoneColor(zone));
+    return hslToHex(h, s, Math.max(l, 55));
 };

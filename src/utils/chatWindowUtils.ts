@@ -9,6 +9,7 @@ import type { Message, ParleyState } from '../types';
 
 const OUTGOING_CHAT_COMMANDS = new Set([
     'ask',
+    'act',
     'group',
     'gsay',
     'emote',
@@ -40,7 +41,7 @@ export interface ChatReplyDetails {
 }
 
 export const CHAT_PARLEY_CHANNELS: ChatReplyDetails['command'][] = [
-    'tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'group', 'pray'
+    'tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act', 'group', 'pray'
 ];
 
 // Strips leftover ANSI escapes/XML-ish tags from sender/target names so the
@@ -60,7 +61,7 @@ export const normalizeChatChannel = (value?: string): string => {
     const normalized = (value || 'chat').toLowerCase().replace(/s$/, '');
     if (normalized === 'song') return 'sing';
     if (normalized === 'gsay') return 'group';
-    if (normalized === 'tell the group') return 'group';
+    if (normalized === 'tell the group' || normalized === 'tell group') return 'group';
     return normalized;
 };
 
@@ -72,13 +73,13 @@ export const getChatChannelColor = (channel?: string, commColor?: string): strin
         say: 'var(--ansi-bright-cyan, #38bdf8)',
         ask: 'var(--ansi-bright-cyan, #38bdf8)',
         yell: 'var(--ansi-bright-magenta, #c084fc)',
-        shout: 'var(--ansi-bright-magenta, #fb7185)',
+        shout: 'var(--ansi-bright-red, #f87171)',
         whisper: 'var(--ansi-bright-magenta, #a78bfa)',
         narrate: 'var(--ansi-bright-yellow, #f5f749)',
         pray: 'var(--ansi-bright-yellow, #facc15)',
-        sing: 'var(--ansi-bright-magenta, #f0abfc)',
-        song: 'var(--ansi-bright-magenta, #f0abfc)',
-        group: 'var(--ansi-bright-cyan, #38bdf8)',
+        sing: 'var(--ansi-bright-yellow, #f5f749)',
+        song: 'var(--ansi-bright-yellow, #f5f749)',
+        group: 'var(--ansi-bright-green, #44ff70)',
     };
     return colorMap[norm] || 'var(--ansi-bright-cyan, #38bdf8)';
 };
@@ -123,6 +124,7 @@ const CHAT_VERBS: Record<string, [string, string]> = {
     group: ['tells the group', 'tell the group'],
     narrate: ['narrates', 'narrate'],
     pray: ['prays', 'pray'],
+    act: ['acts', 'act'],
     say: ['says', 'say'],
     shout: ['shouts', 'shout'],
     sing: ['sings', 'sing'],
@@ -190,6 +192,7 @@ export const getChatReplyDetails = (message: Message): ChatReplyDetails | null =
     let command: ChatReplyDetails['command'];
     switch (details.channel) {
         case 'ask':
+        case 'act':
         case 'emote':
         case 'group':
         case 'narrate':

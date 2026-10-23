@@ -30,8 +30,8 @@ export function useMobileHeaderTabs(isMobile: boolean, menuOpen: boolean, setMen
     const isCommandPanelOpen = hasCommandGuide && activePanel === 'commands';
     const isSkillsPanelOpen = hasSkillsPanel && activePanel === 'skills';
     const isGearPanelOpen = hasGearPanel && activePanel === 'gear';
-    const showChatWindow = hasChatWindow && activePanel === 'chat';
-    const isHelpOpen = hasHelpPanel && activePanel === 'help';
+    const showChatWindow = hasChatWindow && (!isMobile || activePanel === 'chat');
+    const isHelpOpen = hasHelpPanel && (!isMobile || activePanel === 'help');
 
     const toggleHeaderTab = (tab: HeaderTab): boolean => {
         const current = {

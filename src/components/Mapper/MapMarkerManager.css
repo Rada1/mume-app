@@ -1,0 +1,52 @@
+/** @file Marker manager layout and touch-friendly controls. */
+
+/* --- Editor Surface --- */
+.map-marker-editor-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 20000;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 10px;
+    box-sizing: border-box;
+    background: rgb(0 0 0 / 30%);
+}
+.map-marker-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 360px;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: auto;
+    box-sizing: border-box;
+    padding: 12px;
+    background: #242424 !important;
+    color: #d8d2c0;
+    font: 12px var(--font-mono, monospace);
+}
+.map-marker-editor header, .map-marker-editor footer, .map-marker-undo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.map-marker-editor header { color: #c9a84c; }
+.map-marker-editor button, .map-marker-editor input {
+    font: inherit;
+    color: inherit;
+    background: #333;
+    border: 0;
+    border-radius: 0;
+    padding: 8px;
+    min-height: 34px;
+    box-sizing: border-box;
+}
+.map-marker-editor button { cursor: pointer; }
+.map-marker-editor input { width: 100%; min-width: 0; }
+.map-marker-editor label { display: grid; gap: 5px; }
+.map-marker-editor form { display: grid; gap: 12px; }
+.map-marker-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.map-marker-editor .map-marker-delete { color: #ff9393; margin-right: auto; }
+.map-marker-editor button:focus-visible, .map-marker-editor input:focus-visible { outline: 1px solid #c9a84c; outline-offset: -1px; }

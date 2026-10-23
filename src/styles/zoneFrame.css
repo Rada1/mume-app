@@ -1,0 +1,28 @@
+/** @file Zone-colored client rim and focused edge glow. */
+
+/* --- Color Transition --- */
+@property --zone-frame-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #8293ad;
+}
+
+/* --- Client Frame --- */
+.app-container.immersion-mode::after {
+    --zone-frame-rim: color-mix(in srgb, var(--zone-frame-color) 85%, transparent);
+    --zone-frame-glow: color-mix(in srgb, var(--zone-frame-color) 48%, transparent);
+    --zone-frame-soft-glow: color-mix(in srgb, var(--zone-frame-color) 18%, transparent);
+    --zone-frame-shadow: inset 0 0 12px 2px var(--zone-frame-glow),
+        inset 0 0 28px var(--zone-frame-soft-glow);
+    content: '';
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    /* Above client panels and below modal surfaces. */
+    z-index: 65002;
+    background: transparent !important;
+    border: 2px solid var(--zone-frame-rim);
+    box-shadow: var(--zone-frame-shadow);
+    transition: --zone-frame-color 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}

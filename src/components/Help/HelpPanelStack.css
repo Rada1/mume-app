@@ -1,0 +1,34 @@
+/** @file HelpPanelStack.css — Help chrome shared with the desktop client panel stack. */
+
+/* --- Stacked Help Surface --- */
+.app-container .client-panel-stack-slot .help-panel-header {
+    min-height: 28px;
+    margin: 10px 12px 0;
+    padding: 0 0 8px 24px !important;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2) !important;
+    font-size: 0.62rem !important;
+    text-transform: uppercase !important;
+}
+.app-container .client-panel-stack-slot .help-panel-title-group::before { content: none !important; }
+.client-panel-stack-slot .help-panel-topic-badge { font-size: 10px; font-weight: 400; letter-spacing: normal; }
+.client-panel-stack-slot .help-panel-title-group { overflow: hidden; }
+.client-panel-stack-slot .help-panel-header-actions { flex-shrink: 0; }
+.client-panel-stack-slot .help-panel-header-actions button { width: 26px; height: 26px; padding: 0; }
+.client-panel-stack-slot .help-panel-header-actions button:last-child {
+    border: 1px solid rgba(201, 168, 76, 0.24);
+    border-radius: 4px;
+    color: #b7a88b;
+}
+.app-container .client-panel-stack-slot .help-panel :is(.help-panel-tabs, .help-panel-search-bar, .help-panel-view, .help-wiki-pane) {
+    background: transparent;
+}
+.app-container .client-panel-stack-slot .help-panel :is(.help-topic-btn, .help-panel-keyword-chip) {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+.app-container .client-panel-stack-slot .help-panel :is(.help-topic-btn, .help-panel-keyword-chip):hover {
+    background: var(--command-panel-surface-hover);
+}
+.client-panel-stack-slot .help-panel-pre { font-size: 12px; overflow-wrap: anywhere; }
+.client-panel-stack-slot .help-panel-split-game { border: 0; }

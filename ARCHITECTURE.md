@@ -39,8 +39,12 @@ Use clear, visual separators for logical blocks within a file. This helps AI age
 - **Structural Changes include:** Adding a new Context Provider, a new UI Layer, or refactoring a core Hook's API.
 
 ## 5. State & Logic Separation
+- **Panel pagination:** Preserve the player's server pager preference. Intercept viewer prompts before game-prompt boundary handling; active panel snapshots and silent captures advance via raw Return without restarting command middleware. Manual and snooped viewers must not auto-advance.
 - **Context (`src/context/`):** Shared game and UI state (HP, target, drawer status).
 - **Hooks (`src/hooks/`):** Headless business logic (Networking, Parsing, Command Controller).
+- **Corner sky transitions:** `useEnvironmentSceneTransition.ts` owns one one-second frame clock for weather and lighting snapshots. Interrupted updates retain the visible weighted scenes rather than promoting a partially visible target to full opacity. Each new destination gets a fresh second from that mix; cancelled callbacks must remain inert even when their destination repeats. `useEnvironmentTransitions.ts` projects those weights into the vignette and weather layer inputs; each retained scene owns its lighting/weather classes. Avoid global `:has()` weather rules that restyle an outgoing scene before incoming clouds are visible. Cloud entry translation uses the same progress, with slow background drift continuing on the retained cloud element.
+- **Solar sky blending:** `useEnvironmentTransitions` accepts calibrated `gameTime`; `twilightSceneLayers.ts` projects outdoor natural-light contributions into the real day/night profiles over the full 60-second dawn/dusk window. Stars derive their opacity from those same visible night contributions. The clock blend preserves both endpoint appearances and absorbs cutoff source packets without a second visual fade. Indoor/artificial lighting retains the room transition clock; full-screen lighting overlays remain independent.
+- **Visual solar schedule:** `solarTiming.ts` uses the listed `SOLAR_HOURS` dawn/dusk values as the visual sunrise/sunset. Both `sunPosition.ts` and `twilightAppearance.ts` use this shared schedule: the sun appears at dawn and disappears at dusk; the 60-real-second day/night transition starts 30 seconds before and ends 30 seconds after each crossing.
 - **Components (`src/components/`):** Pure "Presentational" layers. They should be "thin" and only handle rendering.
 - **Shaper (`src/shaper/`):** Privileged builder workspace. Domain model, validation, and future collaboration/deploy logic stay headless under `model/`, `hooks/`, `collaboration/`, or `deployment/`; components only render the builder UI.
 
@@ -58,6 +62,8 @@ Inline log actions must resolve through this invariant:
 ```text
 inline entity -> category -> traits -> buttons
 ```
+
+Command input can query this same model in reverse: command template → eligible buttons → entity traits → current targets. `src/utils/reverseCommandTargets.ts` uses the shared trait resolver and action eligibility filter, with candidates from `commandActionTargetModel.ts`. `doorActionTargets.ts` projects named GMCP doors into both the target panel and suggestions. Learned Bash belongs to both offense and door actions. Multi-argument commands and special catalog inputs retain their staged resolvers.
 - **Categories:** Classify the entity (`cat-enemy`, `cat-npc`, `cat-inventory-object`) and own default trait IDs.
 - **Traits:** Reusable action bundles (`trait-combat`, `trait-examine`, `trait-container`) and own button IDs.
 - **Buttons:** Concrete commands (`btn-kill`, `btn-examine`).
@@ -69,8 +75,44 @@ To maintain UI precision and prevent "highlight sprawl," the text parsing pipeli
 - **Word Boundaries:** All regex matches in the `Tokenizer` must use word boundaries (`\b`) to prevent partial word matches and overlapping interactive spans.
 - **Null Safety:** Rendering logic in the Mapper and Interaction utilities must implement defensive null checks (e.g., `(color || '')`) to remain robust against incomplete GMCP packets during rapid room transitions.
 
+## Map Annotation Overrides
+
+Marker editing uses `useMapMarkerEditor.ts` with a thin `MapMarkerManager.tsx` view. Persist deletion tombstones separately so bundled text markers cannot resurrect after reload. Room flag edits use `MapperRoom.mapFlagsEdited` to make local selections, including empty arrays, authoritative over imported flags. Preserve this field during room updates, honor it in both renderers, and invalidate cached room icons when an explicit selection changes. See `docs/map-annotations.md`.
+
+Room Info owns attribute editing in play mode; `mapAttributesEdited` records overrides per field. Marker clicks open the marker editor directly, while room context menus expose room actions.
+
+The pencil beside attribute badges opens the compact room/exit editor underneath. Add flag menus share `useRoomFlagEditor.ts`; selected flags are removable chips. Exit `mapFlagsEdited` preserves local metadata while GMCP continues to update live closed/locked state. Worker marker hit bounds follow worker label anchoring, font size, rotation, and the room-coordinate offset.
+
+## Client Macros
+
+Client macro definitions and invocations are intercepted in `useCommandController.ts` before command splitting. Settings, `/alias`, `/unalias`, and hotkeys share `useClientMacroStore.ts`. Definition commands save without executing their bodies. Resolve nested macros before dispatch, rejecting recursive or oversized chains, and execute each step through the normal command controller. Register macro keyboard handling before default numpad/F-key handling. See `docs/custom-keybindings.md`.
+
 ## 10. Shaper Access Boundary
 Shaper Mode is a privileged building surface, not a normal player feature.
 - **Fail Closed:** Shaper must stay hidden unless `canAccessShaper()` returns true.
 - **No Direct Deploy:** Draft editing, validation, command preview, and future MCP tools must not bypass human-approved deploy locks.
 - **Concept First:** Shaper edits operate on concept drafts. Live map/game state is baseline/reference data unless deployment explicitly applies commands.
+
+
+## Command Panel V2
+The default command workspace is command-first: six root groups (bottom strip on desktop, horizontal bar on mobile) (Abilities, Movement, Vision, Objects, Social, Character) -> one menu with organizational section headers and commands -> valid targets. `CommandPanelV2.tsx` renders the tree; `useCommandTree.ts` owns navigation and trait-based target filtering; `useCommandTreeController.ts` reuses execution, captures, chat, shop and practice. Quick Mood, Cast Speed, Alertness and Stance controls remain visible. Root category hovers switch immediately; nested hover previews wait 180 ms; clicks and keyboard focus open immediately. `UnifiedCommandPanel.tsx` offers a persistent Legacy switch to `UnifiedCommandPanelLegacy.tsx`. Frozen V1 references and restoration notes are in `docs/archive/command-panel-v1/`.
+
+Desktop command docking uses slots in MainContentLayer.tsx and LogDockedInput.tsx. CommandPanelV2.tsx portals the character summary and quick controls into the map region, keeps command input aligned with the log, and fills the remaining right region with category buttons. CommandDockStrip.css owns the full-width bottom grid; category menus anchor above their button and additional columns extend left.
+
+Desktop chat and group are independent floating panels, rendered by ChatTranscriptWindow.tsx and GroupStatusWindow.tsx. useFloatingClientPanel.ts owns saved geometry, header dragging, corner resizing, keyboard movement/resizing, viewport bounds, and snapping to nearby panels/client edges through floatingPanelGeometry.ts. FloatingClientPanel.css owns their opaque surfaces. Desktop chat is excluded from the exclusive dock layout; mobile keeps its existing dock behavior.
+
+CapturedDetailsSidePanel.tsx also uses the shared floating client panel on desktop: Details opens at the top-right with saved geometry, supports snapping with Chat/Group, and stays open when interacting elsewhere. Its report content scrolls within the resized window; ModalsLayer.tsx preserves floating reports during outside clicks.
+
+ParleyChannelChip.tsx and useParleyChannelMenu.ts share the destination cascade between ChatCommunicationBar.tsx and LogDockedInput.tsx: hover the chip for channels, hover Tell/Whisper/Ask for recipients, then select a recipient to commit both. Tell uses online players; Whisper/Ask use shared room-character entries and exclude self. Non-directed channels commit on click. Menus open upward with recipient columns to the left, retain click/focus access, and never send messages during destination selection.
+
+Nested command, inventory/equipment, and parley menus use menuVerticalPlacement.ts to choose upward or downward placement based on available viewport space. Nested columns stay aligned with their parent row; the chosen side also bounds their scroll height. useUpwardCommandBranches.ts retains its existing name but now supports both directions.
+
+The header's former Group panel is now an Entities window. GroupStatusWindow.tsx renders Group Members and Room Entities sections; useRoomEntitiesPanel.ts projects shared room-character entries, keeps listed group members out of the other-entities section, and updates selected-target metadata plus the current target without executing game actions. GroupTableView.tsx supports an optional member-selection callback. Existing floating group geometry/preferences remain compatible.
+
+Action target rows share currentCommandTarget.ts for NPC/enemy current-target matching, red highlighting, and crosshairs. CommandTreeCommandList.tsx uses commandDefaultTarget.ts to execute a clicked command against the current target only if targetsFor(button) includes it; otherwise it opens target selection. Hover/focus still previews alternatives. Observation defaults reuse executeCommandTreeObservation so Look/Examine/Consider retain Details capture, and Help/spectate restrictions remain enforced.
+
+On mobile, an open V2 command guide portals into the command bar slots as an in-flow four-row console: command input, one six-button action row, one six-button state/equipment/inventory row, then character info. CommandDockStrip.css uses explicit six-column grids to prevent wrapping and keeps mobile menu widths inside the viewport. The separate desktop three-region strip and rotated-landscape layout retain their own geometry.
+
+Mobile minimaps render their canvas directly at the preview frame size in KeyboardMapPreview.css, without scaling or cropping a larger map surface. The renderer observes these native bounds; the frame owns the edge fade. useMapperInteractions.ts pans the compact map with one finger instead of invoking movement gestures. The initial mobile camera zoom is DEFAULT_MOBILE_MAP_ZOOM (0.7) in mapperUtils.ts; desktop camera defaults are independent.
+
+Command panel eligibility prepares `getEligibleActionButtonIds` from `src/utils/actionUtils.ts` once per target and passes the resulting set to `isButtonValidForEntity`. Keep these sets scoped to a single rebuild so trait edits, character restrictions, and room changes remain live. `useCommandTree.ts` memoizes catalog normalization separately from target eligibility. Regression coverage lives in `src/utils/actionUtils.performance.test.ts` and `src/hooks/useCommandTree.performance.test.tsx`.

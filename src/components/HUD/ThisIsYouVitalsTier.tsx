@@ -7,6 +7,8 @@
 import React, { FC } from 'react';
 import { StatDelta } from './StatDelta';
 import { formatRegen } from '../../utils/regenUtils';
+import { getVitalPercent, isVitalLow, type VitalKind } from '../../utils/vitalStatus';
+import type { VitalsScoreSnapshot } from '../../types';
 
 export interface VitalsTierDeltas {
     hp?: { amount: number; id: number } | null;
@@ -16,67 +18,116 @@ export interface VitalsTierDeltas {
     pb?: { amount: number; id: number } | null;
     db?: { amount: number; id: number } | null;
     armour?: { amount: number; id: number } | null;
-    wimpy?: { amount: number; id: number } | null;
 }
 
 export interface ThisIsYouVitalsTierProps {
-    hp: number | null | undefined;
-    maxHp?: number | null | undefined;
-    mana: number | null | undefined;
-    maxMana?: number | null | undefined;
-    move: number | null | undefined;
-    maxMove?: number | null | undefined;
+    hpStatus?: string | null;
+    manaStatus?: string | null;
+    moveStatus?: string | null;
     ob: number | null | undefined;
     pb: number | null | undefined;
     db: number | null | undefined;
     armour: number | null | undefined;
-    wimpy: number | null | undefined;
-    onWimpyChange: () => void;
-    canAdjustWimpy: boolean;
     regen: { hp: number; mana: number; move: number };
     deltas: VitalsTierDeltas;
+    vitalPercentages: Record<VitalKind, number | null>;
+    scoreSnapshot: VitalsScoreSnapshot | null;
+    isVitalsRefreshHeld: boolean;
+    isVitalsRefreshDisabled: boolean;
+    isRequestingVitalsScore: boolean;
+    onVitalsRefreshStart: () => void;
+    onVitalsRefreshEnd: () => void;
 }
+
+type VitalStatusTone = 'good' | 'warning' | 'critical' | 'neutral';
+
+const getVitalStatusTone = (status: string | null | undefined): VitalStatusTone => {
+    const normalized = status?.trim().toLowerCase();
+    if (!normalized) return 'neutral';
+    if (['healthy', 'fine', 'full', 'burning', 'hot', 'warm', 'unwearied', 'steadfast', 'rested'].includes(normalized)) {
+        return 'good';
+    }
+    if (['hurt', 'wounded', 'cold', 'icy', 'tired', 'slow'].includes(normalized)) return 'warning';
+    if (['bad', 'awful', 'dying', 'stunned', 'frozen', 'weak', 'fainting', 'exhausted'].includes(normalized)) {
+        return 'critical';
+    }
+    return 'neutral';
+};
 
 // --- Render Section ---
 export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
-    hp,
-    maxHp,
-    mana,
-    maxMana,
-    move,
-    maxMove,
+    hpStatus,
+    manaStatus,
+    moveStatus,
     ob,
     pb,
     db,
     armour,
-    wimpy,
-    onWimpyChange,
-    canAdjustWimpy,
     regen,
-    deltas
+    deltas,
+    vitalPercentages,
+    scoreSnapshot,
+    isVitalsRefreshHeld,
+    isVitalsRefreshDisabled,
+    isRequestingVitalsScore,
+    onVitalsRefreshStart,
+    onVitalsRefreshEnd
 }) => {
+    const formatScoreValue = (value: number, maximum: number): string =>
+        maximum > 0 ? `${value} / ${maximum}` : String(value);
+    const getVitalValueClass = (kind: VitalKind, status?: string | null): string => {
+        const snapshotPercent = scoreSnapshot
+            ? getVitalPercent(kind, scoreSnapshot[kind === 'health' ? 'hp' : kind === 'mana' ? 'mana' : 'move'], scoreSnapshot[kind === 'health' ? 'maxHp' : kind === 'mana' ? 'maxMana' : 'maxMove'], status)
+            : null;
+        const percent = scoreSnapshot ? snapshotPercent : vitalPercentages[kind];
+        const lowClass = isVitalLow(percent) ? ' is-low-vital' : '';
+        return scoreSnapshot
+            ? `this-is-you-vital-numbers${lowClass}`
+            : `this-is-you-vital-status is-${getVitalStatusTone(status)}${lowClass}`;
+    };
+
     return (
             <div className="this-is-you-tier-vitals" role="group" aria-label="Vitals and combat ratings">
             <div className="this-is-you-vitals-cluster">
             {/* Pure Numerical Vitals */}
-            <div className="this-is-you-vitals-group" role="group" aria-label="Vitals">
+            <div
+                className={`this-is-you-vitals-group this-is-you-vitals-refresh${isVitalsRefreshHeld ? ' is-holding' : ''}`}
+                role="button"
+                aria-disabled={isVitalsRefreshDisabled}
+                aria-pressed={isVitalsRefreshHeld}
+                aria-busy={isRequestingVitalsScore}
+                title="Hold to reveal exact vitals and request an updated score"
+                tabIndex={isVitalsRefreshDisabled ? -1 : 0}
+                onPointerDown={(event) => {
+                    if (isVitalsRefreshDisabled || event.button !== 0) return;
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                    onVitalsRefreshStart();
+                }}
+                onPointerUp={onVitalsRefreshEnd}
+                onPointerCancel={onVitalsRefreshEnd}
+                onLostPointerCapture={onVitalsRefreshEnd}
+                onKeyDown={(event) => {
+                    if (isVitalsRefreshDisabled || event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return;
+                    event.preventDefault();
+                    onVitalsRefreshStart();
+                }}
+                onKeyUp={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') onVitalsRefreshEnd();
+                }}
+                onBlur={onVitalsRefreshEnd}
+            >
                 <div className="this-is-you-telemetry-cell this-is-you-health-cell">
                     <div className="this-is-you-cell-header this-is-you-health-header">
                         <span className="label hp">HEALTH</span>
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.hp)})</span>
-                        <button
-                            type="button"
-                            className="this-is-you-wimpy-badge"
-                            title="Tap to cycle the automatic flee threshold"
-                            aria-label={`Automatic flee at ${wimpy === 0 ? 'off' : `${wimpy ?? 'unknown'} HP`}. Tap to change.`}
-                            disabled={!canAdjustWimpy}
-                            onClick={onWimpyChange}
-                        >
-                            Flee <strong>{wimpy !== undefined && wimpy !== null && wimpy > 0 ? wimpy : 'off'}</strong>
-                        </button>
                     </div>
                     <div className="this-is-you-cell-val" data-vital-type="health">
-                        {hp ?? '—'}{maxHp ? ` / ${maxHp}` : ''}<StatDelta delta={deltas.hp} />
+                        <span className={getVitalValueClass('health', hpStatus)}>
+                            {scoreSnapshot
+                                ? formatScoreValue(scoreSnapshot.hp, scoreSnapshot.maxHp)
+                                : hpStatus?.trim() || '—'}
+                        </span>
+                        {scoreSnapshot && <StatDelta delta={deltas.hp} />}
                     </div>
                 </div>
 
@@ -86,7 +137,12 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.mana)})</span>
                     </div>
                     <div className="this-is-you-cell-val" data-vital-type="mana">
-                        {mana ?? '—'}{maxMana ? ` / ${maxMana}` : ''}<StatDelta delta={deltas.mana} />
+                        <span className={getVitalValueClass('mana', manaStatus)}>
+                            {scoreSnapshot
+                                ? formatScoreValue(scoreSnapshot.mana, scoreSnapshot.maxMana)
+                                : manaStatus?.trim() || '—'}
+                        </span>
+                        {scoreSnapshot && <StatDelta delta={deltas.mana} />}
                     </div>
                 </div>
 
@@ -96,16 +152,21 @@ export const ThisIsYouVitalsTier: FC<ThisIsYouVitalsTierProps> = ({
                         <span className="regen" title="Regen rate per tick">({formatRegen(regen.move)})</span>
                     </div>
                     <div className="this-is-you-cell-val" data-vital-type="move">
-                        {move ?? '—'}{maxMove ? ` / ${maxMove}` : ''}<StatDelta delta={deltas.move} />
+                        <span className={getVitalValueClass('move', moveStatus)}>
+                            {scoreSnapshot
+                                ? formatScoreValue(scoreSnapshot.move, scoreSnapshot.maxMove)
+                                : moveStatus?.trim() || '—'}
+                        </span>
+                        {scoreSnapshot && <StatDelta delta={deltas.move} />}
                     </div>
                 </div>
             </div>
             </div>
 
             {/* Combat capabilities */}
-            <div className="this-is-you-combat-slot" role="group" aria-label="Combat">
+            <div className="this-is-you-combat-slot" role="group" aria-label="Combat stats">
                 <div className="this-is-you-combat-heading">
-                    <span>COMBAT</span>
+                    <span>COMBAT STATS</span>
                 </div>
                 <div className="this-is-you-capabilities-cell">
                     <div className="this-is-you-capabilities-row">

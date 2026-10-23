@@ -11,20 +11,22 @@ describe('zoneColors', () => {
     });
 
     it('groups known zones by alignment color', () => {
-        expect(getZoneColor('Valinor')).toBe('#318c66');
-        expect(getZoneColor('(Valinor)')).toBe('#318c66');
-        expect(getZoneColor('The Shire')).toBe('#318c66');
-        expect(getZoneColor('the shire')).toBe('#318c66');
-        expect(getZoneColor('Shire')).toBe('#318c66');
-        expect(getZoneColor('(the Shire)')).toBe('#318c66');
-        expect(getZoneColor('Rivendell')).toBe('#318c66');
-        expect(getZoneColor('Bree')).toBe('#318c66');
+        expect(getZoneColor('Valinor')).toBe('#69b68f');
+        expect(getZoneColor('(Valinor)')).toBe('#69b68f');
+        expect(getZoneColor('The Shire')).toBe('#69b68f');
+        expect(getZoneColor('the shire')).toBe('#69b68f');
+        expect(getZoneColor('Shire')).toBe('#69b68f');
+        expect(getZoneColor('(the Shire)')).toBe('#69b68f');
+        expect(getZoneColor('Rivendell')).toBe('#69b68f');
+        expect(getZoneColor('Bree')).toBe('#69b68f');
+        expect(getZoneColor('Lorien Surroundings')).toBe('#69b68f');
+        expect(getZoneColor('the Lorien Surroundings')).toBe('#69b68f');
         expect(getZoneColor('Moria')).toBe('#a51c24');
         expect(getZoneColor('Dol Guldur')).toBe('#a51c24');
         expect(getZoneColor('the Troll Warrens')).toBe('#a51c24');
         expect(getZoneColor('the Trollshaws')).toBe('#8246ad');
-        expect(getZoneColor('the Road to Tharbad')).toBe('#467db3');
-        expect(getZoneColor('the Old Forest')).toBe('#467db3');
+        expect(getZoneColor('the Road to Tharbad')).toBe('#75b2e8');
+        expect(getZoneColor('the Old Forest')).toBe('#75b2e8');
         expect(getZoneColor('the Central Anduin Vale')).toBe('#968894');
         expect(getZoneAmbientGlow('Moria')).toBe('rgba(165, 28, 36, 0.18)');
     });

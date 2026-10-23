@@ -1,9 +1,10 @@
 /** @file mapperUtils.ts — Shared mapper geometry, state, and presentation utilities. */
 import type { MapperExit } from './mapperTypes';
+import { getMapperRoomNote } from '../../utils/mapperRoomNotes';
 
 // --- Logic Section ---
 export const GRID_SIZE = 50;
-export const DEFAULT_MOBILE_MAP_ZOOM = 0.75;
+export const DEFAULT_MOBILE_MAP_ZOOM = 0.7;
 
 // Strips ANSI/VT100 escape sequences (e.g. "\x1b[32m...\x1b[0m") from a string.
 // MUME room names sometimes arrive with embedded color codes; we never want the
@@ -71,11 +72,12 @@ export const normalizeRoomFlag = (
     disabledValues: readonly string[]
 ): boolean | null => {
     if (typeof value === 'boolean') return value;
-    if (typeof value === 'number') return value === 1 ? true : value === 0 ? false : null;
+    // MMapper enums: 0 = unspecified, 1 = allowed, 2 = forbidden.
+    if (typeof value === 'number') return value === 1 ? true : value === 2 ? false : null;
     if (typeof value !== 'string') return null;
     const normalized = value.trim().toUpperCase().replace(/[\s-]+/g, '_');
     if (['TRUE', 'YES', '1', ...enabledValues].includes(normalized)) return true;
-    if (['FALSE', 'NO', '0', ...disabledValues].includes(normalized)) return false;
+    if (['FALSE', 'NO', '2', ...disabledValues].includes(normalized)) return false;
     return null;
 };
 
@@ -373,7 +375,7 @@ export const checkRoomFilter = (
     const mobFlags = (localRoom?.mobFlags || preloadedData?.[7] || []) as string[];
     const loadFlags = (localRoom?.loadFlags || preloadedData?.[8] || []) as string[];
 
-    const notes = (localRoom?.notes || preloadedData?.[15] || '') as string;
+    const notes = getMapperRoomNote(localRoom, preloadedData?.[15]);
     const contents = (localRoom?.contents || preloadedData?.[16] || '') as string;
 
     // A free-text query matches a room that carries the term as a *flag*, in its

@@ -29,7 +29,7 @@ interface EnvironmentGlowProps {
     input: string;
 }
 
-const ZONE_COLOR_TRANSITION_MS = 3500;
+const ZONE_COLOR_TRANSITION_MS = 7000;
 
 export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     terrain,

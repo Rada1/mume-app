@@ -1,0 +1,13 @@
+/** @file HelpTopicComposer.css — Fixed help command chip matching the Chat composer. */
+
+/* --- Composer Section --- */
+.help-topic-composer { width: 100%; box-sizing: border-box; margin: 0; }
+.help-topic-command {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding: 4px 8px;
+    background: #292929;
+    color: #4ade80;
+    font: 700 11px var(--font-mono, monospace);
+}

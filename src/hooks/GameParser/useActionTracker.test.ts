@@ -84,6 +84,26 @@ describe('useActionTracker - onGet and onDrop', () => {
         expect(onDrop).not.toHaveBeenCalled();
     });
 
+    it('removes one saddle from inventory after the game confirms it was put on a mount', () => {
+        let inventoryLines: DrawerLine[] = [
+            { id: 'saddle-1', stableId: 'saddle-1', text: 'a leather saddle', html: 'a leather saddle', isItem: true, context: 'saddle' },
+            { id: 'saddlebag', stableId: 'saddlebag', text: 'a leather saddlebag', html: 'a leather saddlebag', isItem: true, context: 'saddlebag' },
+            { id: 'saddle-2', stableId: 'saddle-2', text: 'a riding saddle', html: 'a riding saddle', isItem: true, context: 'saddle' }
+        ];
+        const setInventoryLines = vi.fn((update: DrawerLine[] | ((previous: DrawerLine[]) => DrawerLine[])) => {
+            inventoryLines = typeof update === 'function' ? update(inventoryLines) : update;
+        });
+        const onSaddle = vi.fn();
+        const deps = createDeps({ inventoryLines, setInventoryLines, onSaddle });
+        const { result } = renderHook(() => useActionTracker(deps));
+        const response = "You put a saddle on a pack horse's back.";
+
+        result.current.trackAction(response, response, response.toLowerCase());
+
+        expect(inventoryLines.map(line => line.id)).toEqual(['saddlebag', 'saddle-2']);
+        expect(onSaddle).toHaveBeenCalledTimes(1);
+    });
+
     it('moves a back-worn bow into the wielded slot after a draw response', () => {
         let eqLines: DrawerLine[] = [{
             id: 'longbow', stableId: 'longbow', text: 'an elven longbow', html: 'an elven longbow',

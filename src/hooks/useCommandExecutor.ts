@@ -105,7 +105,6 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             }
         };
 
-        initAudio();
         
         // --- 1. Construct Context ---
         const context: CommandContext = {
@@ -145,6 +144,8 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         } else if (!silent) {
             addMessage('error', 'Not connected.');
         }
+
+        initAudio();
 
         if (!silent && !isSystem) {
             recordEffectTimerCommand(finalCmd);
@@ -190,6 +191,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
             w: 'w', west: 'w',
             u: 'u', up: 'u',
             d: 'd', down: 'd',
+            flee: 'flee',
             look: 'look', l: 'look',
             exits: 'exits',
             scan: 'scan'

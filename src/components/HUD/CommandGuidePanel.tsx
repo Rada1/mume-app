@@ -5,11 +5,18 @@ import { Backpack, BookOpen, Compass, HelpCircle, MessageCircle, Search, Sparkle
 import { useGame } from '../../context/GameContext';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useInputStore } from '../../stores/useInputStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
 import { buildCommandGuideEntries, type GuideCategory, type GuideEntry } from './commandGuideData';
 import { CLASS_KEYS } from './rightActionData';
 import type { PracticeClassKey } from '../../utils/practiceClassCatalog';
 import { MovementPad } from './MovementPad';
 import './CommandGuidePanel.css';
+import { UnifiedCommandPanel } from './UnifiedCommandPanel';
+
+interface CommandGuidePanelProps {
+    initialScope?: 'selected' | 'room' | 'self';
+    onClose?: () => void;
+}
 
 const ENTRIES = buildCommandGuideEntries();
 type GuideView = 'Start' | 'All' | GuideCategory;
@@ -31,11 +38,14 @@ const FEATURED_COMMANDS: Record<GuideCategory, string[]> = {
     'Other': ['open', 'close', 'use', 'rest', 'stand', 'sleep', 'wake']
 };
 
-export const CommandGuidePanel: React.FC = () => {
-    const { abilities, characterClass, executeCommand } = useGame();
+export const CommandGuidePanel: React.FC<CommandGuidePanelProps> = ({ initialScope, onClose }) => {
+    const { abilities, characterClass, executeCommand, viewport } = useGame();
+    const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
     const isMobile = useCommandPanelStore(state => state.isMobileGuideOpen);
     const setOpen = useCommandPanelStore(state => isMobile ? state.setIsMobileGuideOpen : state.setIsOpen);
     const requestedTab = useCommandPanelStore(state => state.requestedTab);
+    const shopOpenRequest = useCommandPanelStore(state => state.shopOpenRequest);
+    const practiceOpenRequest = useCommandPanelStore(state => state.practiceOpenRequest);
     const clearRequestedTab = useCommandPanelStore(state => state.clearRequestedTab);
     const setInput = useInputStore(state => state.setInput);
     const requestTargetPicker = useInputStore(state => state.requestTargetPicker);
@@ -47,6 +57,11 @@ export const CommandGuidePanel: React.FC = () => {
     });
     const [showAll, setShowAll] = useState(false);
     const [isFinderOpen, setIsFinderOpen] = useState(false);
+    const [showUnifiedCommandPanel, setShowUnifiedCommandPanel] = useState(false);
+
+    useEffect(() => {
+        if (shopOpenRequest > 0 || practiceOpenRequest > 0) setShowUnifiedCommandPanel(true);
+    }, [practiceOpenRequest, shopOpenRequest]);
 
     useEffect(() => {
         if (!requestedTab) return;
@@ -89,6 +104,9 @@ export const CommandGuidePanel: React.FC = () => {
         if (!entry.abilityClass) return null;
         return (abilities[entry.name.toLowerCase()] || 0) > 0;
     };
+
+    if (!viewport.isMobile) return <UnifiedCommandPanel initialScope={initialScope} onClose={onClose} />;
+    if (isReadabilityMode || showUnifiedCommandPanel) return <UnifiedCommandPanel initialScope={initialScope} onClose={() => setOpen(false)} />;
 
     return <aside className="command-guide-panel" aria-label="Command guide">
         <header className="command-guide-heading">

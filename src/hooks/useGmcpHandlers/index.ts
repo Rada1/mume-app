@@ -330,6 +330,10 @@ export const useGmcpHandlers = (props: GmcpHandlersProps) => {
             props.setWhereList([]);
         },
         onCharRide,
+        onMsspTime: (time: import('../../types').MumeTime) => {
+            // Text time/clock reports and Event.Sun are more precise than MSSP's hourly calendar.
+            if (!props.gameTime) props.setGameTime(time);
+        },
         // State Setters (Mandatory for GmcpDecoder)
         setStats: props.setStats,
         setWeather: props.setWeather,

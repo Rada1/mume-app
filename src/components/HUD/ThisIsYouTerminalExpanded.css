@@ -1,0 +1,162 @@
+/**
+ * @file ThisIsYouTerminalExpanded.css
+ * @description Expanded desktop console layout.
+ */
+
+/* --- Expanded Desktop Rows --- */
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-body-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vitals-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vitals-group::before {
+    flex: 0 0 64px;
+    height: auto;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-telemetry-cell {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    min-height: 22px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-health-cell {
+    flex: 0 0 auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-val {
+    order: 1;
+    grid-column: auto;
+    grid-row: auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .regen {
+    order: 2;
+    grid-column: auto;
+    grid-row: auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-combat-slot,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-states,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-modes {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-combat-heading,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-states::before,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-modes::before {
+    flex: 0 0 64px;
+    height: auto;
+    min-height: 0;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-combat-heading,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-states::before {
+    font-size: 0.56rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-capabilities-cell {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-capabilities-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 2px 8px;
+    font-size: 0.6rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-capabilities-row > span {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+    min-height: 22px;
+    grid-template-columns: none;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-capability-label {
+    min-width: auto;
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pills-row {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pill-wrapper {
+    flex: 0 0 auto;
+    width: auto;
+    height: auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pill {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 2px 5px;
+    border: 0;
+    border-radius: 3px;
+    font-size: 0.58rem;
+    grid-template-columns: none;
+    gap: 5px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pill-category,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pill-value {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-pill-category {
+    font-size: 0.56rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-mode-indicator {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    width: auto;
+    min-height: 22px;
+    grid-template-columns: max-content max-content;
+    gap: 6px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-buffs-row {
+    margin-top: 2px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-combat-slot,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-states {
+    display: none;
+}

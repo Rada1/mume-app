@@ -1,0 +1,44 @@
+/** @file EnvironmentTransitions.css — Shared pacing for lighting and weather changes. */
+
+/* --- Slow ambient lighting transitions --- */
+.environment-root.back .client-lighting-overlay {
+    transition: opacity 7s ease-in-out, backdrop-filter 7s ease-in-out;
+}
+
+.environment-root.back .client-terrain-ambient-aura {
+    transition: background 7s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.environment-root.back .lighting-container {
+    transition: opacity 7s ease-in-out, filter 7s ease-in-out;
+}
+
+.environment-root.back > .overlay-layer {
+    transition: background 7s ease-in-out;
+}
+
+.environment-root.front > .client-dark-overlay,
+.environment-root.front > .client-star-veil {
+    transition: opacity 7s ease-in-out, background 7s ease-in-out;
+}
+
+/* --- Supporting weather layers; scene opacity is owned by the frame clock --- */
+
+.environment-root.front .storm-overlay-layer,
+.environment-root.front .weather-layer,
+.environment-root.front .fog-layer {
+    transition: opacity 7s ease-in-out;
+}
+
+.environment-root.front .weather-layer.weather-cloud,
+.environment-root.front .fog-active {
+    transition: opacity 7s ease-in-out;
+}
+
+/* Preserve the quick compositing fade used while the log or a gesture is moving. */
+body.ui-scrolling .environment-root.front > :not(.embers-container):not(.environment-vignette-layers):not(.environment-weather-layers):not(.environment-twilight-vignette):not(.client-star-veil),
+body.ui-gesturing .environment-root.front > :not(.embers-container):not(.environment-vignette-layers):not(.environment-weather-layers):not(.environment-twilight-vignette):not(.client-star-veil) {
+    opacity: 0 !important;
+    transition: opacity 0.22s ease !important;
+}
+

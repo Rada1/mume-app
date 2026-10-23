@@ -24,15 +24,17 @@ import PracticeColumnHeaderCard from '../Practice/PracticeColumnHeaderCard';
 import { useMessageLogPlayback, useMessageLogRender, useMessageLogShell } from '../../context/GameContext';
 import { useMessageStore } from '../../stores/useMessageStore';
 import { useRoomStore } from '../../stores/useRoomStore';
+import { formatZoneDisplayName } from '../../utils/zoneName';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
-import { getMumeCommandMatch } from '../../utils/mumeCommandCatalog';
+import { SentCommandText } from './SentCommandText';
 import { useActionTimerStore } from '../../stores/useActionTimerStore';
 import { getRoomTerrainVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirection } from '../../utils/movementDirections';
 import { RunnerIcon } from '../HUD/PromptBox';
 import { useLiveLogPaneResize } from '../../hooks/useLiveLogPaneResize';
+import { useCurrentMapRoomNote } from '../../hooks/useCurrentMapRoomNote';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -65,22 +67,6 @@ const wrapHtmlWordsForRipple = (html: string): string => {
         });
         return `${boundary}${wrappedText}`;
     });
-};
-
-/**
- * Expands a user-typed command into the l(ook) display format.
- * Returns null when no expansion applies (typed full word, unknown cmd, or has args).
- */
-const expandCommandDisplay = (raw: string): { typed: string; remainder: string; suffix: string } | null => {
-    const trimmed = raw.trim();
-    if (!trimmed) return null;
-    const match = getMumeCommandMatch(trimmed);
-    if (!match.entry) return null;
-    const { token, suffix, entry } = match;
-    // No expansion needed if the user already typed the full command word
-    if (token === entry.full) return null;
-    const remainder = entry.full.slice(token.length);
-    return { typed: token, remainder, suffix };
 };
 
 const arrowToDirection: Record<string, string> = {
@@ -169,6 +155,18 @@ const ResourceGainBadge = ({ gain }: { gain?: Message['resourceGain'] }) => {
     );
 };
 
+const CurrentRoomMapNote = React.memo(() => {
+    const roomNote = useCurrentMapRoomNote();
+    if (!roomNote) return null;
+
+    return (
+        <div className="room-map-note">
+            <span className="room-map-note-label">Note:</span>{' '}
+            <span className="room-map-note-text">{roomNote}</span>
+        </div>
+    );
+});
+
 
 interface MessageLogProps {
     onLogClick: (e: React.MouseEvent) => void;
@@ -182,6 +180,7 @@ interface MessageLogProps {
 
 const MessageItem = React.memo(({
     msg,
+    showCurrentRoomNote = false,
     inCombat,
     scrollToBottom,
     executeCommand,
@@ -198,6 +197,7 @@ const MessageItem = React.memo(({
     lineIndex,
 }: {
     msg: Message,
+    showCurrentRoomNote?: boolean,
     executeCommand: (cmd: string, silent?: boolean) => void,
     inCombat: boolean,
     scrollToBottom?: (force?: boolean, immediate?: boolean, source?: string) => void;
@@ -368,6 +368,13 @@ const MessageItem = React.memo(({
     }, [msg.replyCommand, msg.replyTarget, setParley, triggerHaptic, playClickSound]);
 
     const showTimestamp = isTimestampEnabled && msg.type !== 'gmcp-event';
+    const promptVitalPercentages = React.useMemo(() => ({
+        health: msg.promptHPPercent,
+        opponentHealth: msg.promptOpponentHealthPercent ?? undefined,
+        bufferHealth: msg.promptBufferHealthPercent ?? undefined,
+        mana: msg.promptManaPercent,
+        move: msg.promptMovePercent
+    }), [msg.promptHPPercent, msg.promptOpponentHealthPercent, msg.promptBufferHealthPercent, msg.promptManaPercent, msg.promptMovePercent]);
     const timestampEl = showTimestamp ? (
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
@@ -439,15 +446,7 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     <div className={`user-command-bubble${isAwaitingResponse ? ' awaiting-response' : ''}`}>
                         <span className="message-content user-command-text">
-                            {(() => {
-                                const expansion = expandCommandDisplay(msg.textRaw || '');
-                                if (!expansion) {
-                                    return <TokenRenderer tokens={msg.tokens} fallbackHtml={decodeCommandEntities(msg.textRaw || '')} splitFirstWord={true} />;
-                                }
-                                return <>
-                                    {expansion.typed}<span className="user-command-expansion">({expansion.remainder})</span>{decodeCommandEntities(expansion.suffix)}
-                                </>;
-                            })()}
+                            <SentCommandText message={msg} />
                         </span>
                     </div>
                 </div>
@@ -460,8 +459,8 @@ const MessageItem = React.memo(({
                     {timestampEl}
                     <span className="message-content prompt-text">
                         {!viewport.isMobile && hasInlinePromptModes(msg.textOnly || msg.textRaw || '')
-                            ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} />
-                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} highlightPromptVitals />}
+                            ? <PromptInlineControls text={msg.textOnly || msg.textRaw || ''} tokens={msg.tokens} promptVitalPercentages={promptVitalPercentages} />
+                            : <TokenRenderer tokens={msg.tokens} fallbackHtml={sanitizedContent} highlightPromptVitals promptVitalPercentages={promptVitalPercentages} />}
                     </span>
                 </div>
             ) : entityCountPrompt ? (
@@ -543,7 +542,7 @@ const MessageItem = React.memo(({
                                     const rawZone = msg.isXmlRoomName
                                         ? (msg.roomZone || useRoomStore.getState().roomZone)?.trim()
                                         : undefined;
-                                    const formatted = rawZone ? (rawZone.startsWith('(') && rawZone.endsWith(')') ? rawZone : `(${rawZone})`) : null;
+                                    const formatted = rawZone ? `(${formatZoneDisplayName(rawZone)})` : null;
                                     const titleHtml = sanitizeMumeHtml(content.split(/<div class="room-desc-line">/i, 1)[0]);
                                     return (
                                         <span className="room-title-badge">
@@ -602,6 +601,9 @@ const MessageItem = React.memo(({
                 </div>
             )}
             </>}
+            {showCurrentRoomNote && msg.isRoomBlockEnd && (
+                <CurrentRoomMapNote />
+            )}
         </div>
     );
 });
@@ -767,6 +769,14 @@ const MessageLog: React.FC<MessageLogProps> = ({
 
         return list.filter(message => !(message.type === 'game' && parseEntityCountPrompt(message.textOnly || message.textRaw || '')));
     }, [messages, replayMessages, sessionMode, showSpectatePromptInLog, replayer.state.currentTime, isSpectateMode, activeView, spectateBuffer.isLive, spectateBuffer.displayCutoff, hidePrompt]);
+
+    const roomNoteEndIndex = useMemo(() => {
+        if (sessionMode === 'replay' || isSpectateMode) return -1;
+        for (let i = displayMessages.length - 1; i >= 0; i--) {
+            if (displayMessages[i].isRoomBlockEnd) return i;
+        }
+        return -1;
+    }, [displayMessages, sessionMode, isSpectateMode]);
 
     const lastUserMsgIndex = useMemo(() => {
         for (let i = displayMessages.length - 1; i >= 0; i--) {
@@ -1173,6 +1183,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                             >
                                 <MessageItem
                                     msg={msg as any}
+                                    showCurrentRoomNote={virtualItem.index === roomNoteEndIndex}
                                     inCombat={inCombat}
                                     scrollToBottom={scrollToBottom}
                                     executeCommand={executeCommand}
@@ -1226,6 +1237,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
                                 <MessageItem
                                     key={msg.id}
                                     msg={msg}
+                                    showCurrentRoomNote={displayMessages.length - Math.min(30, displayMessages.length) + index === roomNoteEndIndex}
                                     inCombat={inCombat}
                                     scrollToBottom={returnToLive}
                                     executeCommand={executeCommand}

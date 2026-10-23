@@ -1,28 +1,26 @@
-/** @file RoomLootGroundItems.css — Compact, touch-friendly ground-loot controls. */
-
-/* --- Logic Section --- */
-.room-loot-ground { border-top: 0; }
-.room-loot-ground > header { display: flex; align-items: center; gap: 8px; padding: 9px 12px 6px; color: var(--room-loot-accent, #dfbf6c); }
-.room-loot-ground > header span { color: var(--room-loot-muted, #a99c86); font-size: 10px; }
-.room-loot-ground > header button { min-height: 34px; margin-left: auto; border: 0; border-radius: 0; padding: 4px 9px; color: var(--room-loot-accent, #dfbf6c); background: transparent; }
+/** @file RoomLootGroundItems.css — Selectable ground loot and command actions. */
+/* --- Item Rows --- */
 .room-loot-ground-list { display: grid; }
-.room-loot-ground-row { min-height: 43px; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 6px; padding: 4px 10px 4px 12px; border-top: 0; }
-.room-loot-ground-row .room-loot-ground-item { min-width: 0; display: flex; align-items: center; gap: 7px; color: var(--room-loot-text, #d4cdb8); }
-.room-loot-ground-item > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.room-loot-ground-item .gear-selection-control { flex: 0 0 36px; width: 36px; min-height: 36px; }
-.room-loot-ground-row > button, .room-loot-ground-selection button { min-height: 34px; border: 0; border-radius: 0; padding: 4px 9px; color: var(--room-loot-accent, #dfbf6c); background: transparent; }
-.room-loot-ground-row > button:hover, .room-loot-ground-selection button:hover,
-.room-loot-ground > header button:hover { color: #f1e4c3; background: var(--room-loot-hover, rgba(201, 168, 76, .12)); }
-.room-loot-ground-row .room-loot-ground-dismiss { min-width: 34px; padding: 4px; color: var(--room-loot-muted, #a99c86); }
-.room-loot-ground-selection { position: sticky; bottom: 0; display: flex; align-items: center; gap: 6px; padding: 8px; border-top: 0; background: rgba(35, 28, 22, .98); }
-.room-loot-ground-selection > span { margin-right: auto; color: var(--room-loot-muted, #a99c86); font-size: 10px; white-space: nowrap; }
-.room-loot-ground-selection button { white-space: nowrap; }
-.room-loot-overlay.is-mobile .room-loot-ground-selection { flex-wrap: wrap; }
-.room-loot-overlay.is-mobile .room-loot-ground-selection > span { flex: 1 0 100%; }
-@media (min-width: 769px) {
-    .room-loot-ground-item { min-width: 0; }
-    .room-loot-ground-item > span { font-size: 10px; }
-}
-@media (max-width: 768px) {
-    .room-loot-ground-item .gear-selection-control { flex-basis: 44px; width: 44px; min-height: 44px; }
-}
+.room-loot-ground-row { display: flex; align-items: center; min-width: 0; padding-inline: 7px; }
+.room-loot-ground-row[data-selected], .room-loot-item-row[data-selected] { background: rgba(201,168,76,.16); }
+.room-loot-ground-row .room-loot-ground-item { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; padding: 7px 0; border: 0; background: transparent; color: var(--room-loot-text); font: inherit; text-align: left; cursor: pointer; }
+.room-loot-ground-item > span, .room-loot-item-label > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.room-loot-ground-item > small, .room-loot-item-label > small { max-width: 35%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: inherit; color: var(--room-loot-muted); }
+.room-loot-ground-row .gear-selection-control, .room-loot-item-row .gear-selection-control { flex: 0 0 30px; width: 30px; min-height: 30px; border: 0; background: transparent; }
+.room-loot-ground-row:not(.room-loot-corpse-row) .gear-selection-control { margin-right: 25px; }
+.room-loot-ground-row:not(.room-loot-corpse-row):hover, .room-loot-item-row:hover { background: var(--room-loot-hover); }
+
+/* --- Ground objects and nested corpse loot --- */
+.room-loot-corpse-object { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 30px; padding: 7px; color: var(--room-loot-text); font-size: .72rem; list-style: none; cursor: pointer; }
+.room-loot-corpse-object::-webkit-details-marker { display: none; }
+.room-loot-corpse-object > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+.room-loot-corpse-object > small { max-width: 35%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--room-loot-muted); font-size: inherit; }
+.room-loot-corpse-object > svg { flex: none; color: var(--room-loot-accent); }
+details:not([open]) > .room-loot-corpse-object > svg { transform: rotate(-90deg); }
+.room-loot-corpse-object:hover { background: var(--room-loot-hover); }
+.room-loot-corpse-row { position: relative; }
+.room-loot-corpse-row > .room-loot-row { position: relative; flex: 1; width: auto; min-width: 0; padding: 0; }
+.room-loot-corpse-row > .room-loot-row > .room-loot-corpse-object { padding: 7px 56px 7px 0; }
+.room-loot-corpse-row > .room-loot-row > .room-loot-corpse-object > svg { position: absolute; top: 9px; right: 7px; }
+.room-loot-corpse-row > .gear-selection-control { position: absolute; top: 0; right: 32px; align-self: flex-start; flex: 0 0 30px; width: 30px; min-height: 30px; border: 0; background: transparent; }
+.room-loot-corpse-loot { margin: 0 7px 10px 17px; }

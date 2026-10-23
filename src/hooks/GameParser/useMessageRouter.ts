@@ -11,6 +11,7 @@ import { hasXmlTag } from '../../utils/xmlTagUtils';
 import { getTraitsForName } from '../../utils/inlineActionModel';
 import { getPlainRoomObjectDescription, getRoomObjectEntityNames, getTaggedRoomObjectNames, isRoomItemPresenceLine, parseRoomSurfaceItemList } from './roomItemDetection';
 import type { Token } from '../../types';
+import { isRoomCharacterDescription } from '../useRoomObjects';
 
 interface RoomItemDetectionOptions {
     isRoomContext?: boolean;
@@ -97,6 +98,7 @@ export const classifyRoutedMessageType = (
 };
 
 interface MessageRouterDeps {
+    roomCharacters?: GmcpOccupant[];
     capture: import('../../types/capture').CaptureController;
     setWhoList: (val: string[] | ((prev: string[]) => string[])) => void;
     setWhereList: (val: any[] | ((prev: any[]) => any[])) => void;
@@ -147,7 +149,8 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, []);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
-        const plainObjectCandidate = getPlainRoomObjectDescription(textOnly);
+        const candidate = getPlainRoomObjectDescription(textOnly, cleanLine);
+        const plainObjectCandidate = candidate && !isRoomCharacterDescription(candidate, deps.roomCharacters || []) ? candidate : null;
         const directSurfaceList = parseRoomSurfaceItemList(textOnly);
         let surfaceItems = directSurfaceList?.items || [];
         let isSurfaceContinuation = false;
@@ -256,7 +259,7 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
 
         return objects;
     }, [
-        capture, extractNoun, normalizeRoomObjectName,
+        capture, extractNoun, normalizeRoomObjectName, deps.roomCharacters,
         setDiscoveredItems, setRoomItems, registerEntity
     ]);
 

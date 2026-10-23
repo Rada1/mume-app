@@ -431,7 +431,7 @@ export const useDeckTargeting = ({
         : activeItem?.targetKind === 'mounts' ? 'MOUNTS'
         : activeItem?.targetKind === 'group' ? 'GROUP'
         : activeItem?.targetKind === 'shop' ? 'SHOP'
-        : activeItem?.targetKind === 'status-panel' ? 'THIS IS YOU'
+        : activeItem?.targetKind === 'status-panel' ? 'PRACTICE'
         : activeItem?.targetKind === 'inventory-recipient' || activeItem?.targetKind === 'inventory-container' ? 'INVENTORY ITEMS'
         : activeItem?.targetKind ? 'INVENTORY' : 'TARGETS';
 

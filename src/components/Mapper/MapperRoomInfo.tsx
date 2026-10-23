@@ -14,6 +14,7 @@ import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { resolveActionIcon } from '../../utils/actionIcons';
 import { getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { getRoomPortableState, getRoomRidableState } from './mapperUtils';
+import { getMapperRoomNote } from '../../utils/mapperRoomNotes';
 import './MapperRoomInfo.css';
 import './MapperRoomMeta.css';
 
@@ -73,7 +74,7 @@ const deriveMapFlags = (room: any, preloaded: any[] | undefined): string[] => {
     if (portable !== null) labels.push(portable ? 'Portable' : 'No Port');
     if (ridable !== null) labels.push(ridable ? 'Ridable' : 'No Ride');
 
-    return Array.from(new Set([...labels, ...deriveNoteFlags(room?.notes || preloaded?.[15])]));
+    return Array.from(new Set([...labels, ...deriveNoteFlags(getMapperRoomNote(room, preloaded?.[15]))]));
 };
 
 interface MapperRoomInfoProps {

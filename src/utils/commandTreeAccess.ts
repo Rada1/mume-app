@@ -1,0 +1,42 @@
+/** @file commandTreeAccess.ts — Shared doors/container commands and local target grouping. */
+import type { CustomButton, GameEntity, InlineCategoryConfig } from '../types';
+import { EntityCapability } from '../types';
+import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
+import { getResolvedTraitSections } from './inlineActionModel';
+import { isFluidContainer } from './gameUtils';
+import { createButton } from './buttonFactory';
+// --- Shared Command Section ---
+export const COMMAND_TREE_ACCESS_BUTTONS = ['open', 'close', 'lock', 'unlock', 'pick', 'knock'].map(verb => createButton({
+    id: `v2-access-${verb}`, label: verb[0].toUpperCase() + verb.slice(1), command: `${verb} %n`, setId: 'trait-door-actions'
+}));
+export const COMMAND_TREE_CALL_BUTTON = createButton({
+    id: 'v2-call-door', label: 'Call', command: 'call', setId: 'trait-door-actions'
+});
+export const isCommandTreeCallAction = (button: CustomButton | null) => button?.id === COMMAND_TREE_CALL_BUTTON.id;
+export const COMMAND_TREE_CONTAINER_BUTTONS = [...COMMAND_TREE_ACCESS_BUTTONS.filter(button => !/^knock\b/.test(button.command)).map(button => ({...button,
+    id: button.id.replace('v2-access-', 'v2-container-'), setId: 'trait-container'
+})), createButton({id: 'v2-container-empty', label: 'Empty', command: 'empty %n', setId: 'trait-container'})];
+export const isCommandTreeAccess = (button: CustomButton | null) => Boolean(button && /^v2-(?:access|container)-/.test(button.id));
+export const isCommandTreeContainer = (button: CustomButton) => button.id.startsWith('v2-container-');
+export const isLegacyAccessCommand = (button: CustomButton) => /^(?:open|close|lock|unlock|pick|knock|empty)(?:\s+(?:exit(?:\s+%n)?|%n(?:\|exit)?|\$1))?$/i.test(button.command.trim());
+// --- Local Target Section ---
+export const getAccessTargets = (entries: CommandActionTargetEntry[], button: CustomButton, entities: Record<string, GameEntity>, categories: InlineCategoryConfig[]) =>
+    entries.filter(entry => {
+        if (entry.scope === 'remote' || entry.scope === 'global') return false;
+        const isContainerAction = isCommandTreeContainer(button);
+        if (entry.category === 'cat-exit') return !isContainerAction && entry.hasDoor === true;
+        if (!isContainerAction) return false;
+        if (/^knock\b/.test(button.command)) return false;
+        if (!['objects', 'worn', 'inventory'].includes(entry.group)) return false;
+        return Boolean(entry.gearRow?.isContainer || entities[entry.id]?.capabilities.some(capability =>
+                [EntityCapability.Container, EntityCapability.FluidContainer, EntityCapability.DrinkContainer].includes(capability))
+            || isFluidContainer(entry.gearRow?.name || entry.label)
+            || getResolvedTraitSections(entry.category, entry.gearRow?.name || entry.label, categories)
+                .some(section => ['trait-container', 'trait-fluid-container'].includes(section.trait.id)));
+    });
+export const getAccessTargetSections = (entries: CommandActionTargetEntry[]) => [
+    {label: 'Doors', entries: entries.filter(entry => entry.category === 'cat-exit')},
+    {label: 'Room containers', entries: entries.filter(entry => entry.category !== 'cat-exit' && entry.group === 'objects')},
+    {label: 'Inventory containers', entries: entries.filter(entry => entry.group === 'inventory')},
+    {label: 'Worn containers', entries: entries.filter(entry => entry.group === 'worn')}
+].filter(section => section.entries.length > 0);

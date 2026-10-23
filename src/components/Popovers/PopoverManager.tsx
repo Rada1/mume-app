@@ -1,5 +1,6 @@
 import React, { useLayoutEffect } from 'react';
-import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, DrawerLine, GroupMember } from '../../types';
+import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, DrawerLine, GroupMember, PracticeData, GmcpOccupant } from '../../types';
+import type { SelectedTargetInfo } from '../../stores/useUIStore';
 
 interface PopoverManagerProps {
     popoverState: PopoverState | null;
@@ -13,10 +14,10 @@ interface PopoverManagerProps {
     setTarget: (target: string | null) => void;
     handleButtonClick: (btn: CustomButton, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => void;
     triggerHaptic: (ms: number) => void;
-    roomPlayers: string[];
-    roomNpcs: string[];
+    roomPlayers: GmcpOccupant[];
+    roomNpcs: GmcpOccupant[];
     groupMembers: GroupMember[];
-    roomItems: string[];
+    roomItems: GmcpOccupant[];
     inventoryLines: DrawerLine[];
     eqLines: DrawerLine[];
     setSettings: Record<string, any>;
@@ -41,6 +42,7 @@ interface PopoverManagerProps {
     entities: any;
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     selectedObjectIds: Set<string>;
+    toggleObjectSelection: (info: SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
     keywordOverrides: Record<string, string>;
     accountCharacters?: any[];
@@ -52,6 +54,9 @@ interface PopoverManagerProps {
     roomColor?: string;
     characterInfo?: CharacterInfo;
     currentTerrain?: string;
+    abilities?: Record<string, number>;
+    practiceData?: PracticeData | null;
+    isMobile?: boolean;
 }
 import { DialMenu } from './DialMenu';
 import { StandardMenuPopover } from './StandardMenuPopover';
@@ -64,6 +69,7 @@ import { getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/i
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { audioManager } from '../../services/audio/AudioManager';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 
 const formatDialCategoryLabel = (category?: string | null): string => {
     if (!category) return '';
@@ -74,12 +80,25 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     popoverState: parentPopoverState, setPopoverState, popoverRef, setButtons, addMessage, triggerHaptic, handleButtonClick, executeCommand, setTarget, buttons, availableSets, roomPlayers, roomNpcs, groupMembers, roomItems, inventoryLines, eqLines, setSettings, inlineCategories, setInlineCategories, customTraits, setCustomTraits, favorites, setFavorites, parley, setParley, whoList,
     isMendingMode, setIsMendingMode, setMendingTarget, handleTabClick, setGearTab, setCharTab, refreshLogHighlights, practice, openKeywordEdit,
     entities, registerEntity, selectedObjectIds, clearObjectSelection, keywordOverrides, accountCharacters, accountState, setAccountState,
-    playerColor, npcColor, objectColor, roomColor, characterInfo, currentTerrain
+    playerColor, npcColor, objectColor, roomColor, characterInfo, currentTerrain, abilities, practiceData,
+    toggleObjectSelection, isMobile = false
 }) => {
     const theme = useSettingsStore(state => state.theme);
+    const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
     const [localState, setLocalState] = React.useState<any | null>(null);
     const [isClosing, setIsClosing] = React.useState(false);
     const lastAudiblePopoverKeyRef = React.useRef<string | null>(null);
+    const openCommandPanel = useCommandPanelStore(state => state.setIsOpen);
+    const openMobileCommandPanel = useCommandPanelStore(state => state.setIsMobileGuideOpen);
+    const isEntityMenu = !!parentPopoverState?.entityId &&
+        (!parentPopoverState.type || parentPopoverState.type === 'menu') && parentPopoverState.menuDisplay !== 'dial';
+    const isDesktopEntityMenu = !isMobile && isEntityMenu;
+    const isReadabilityMobileEntityMenu = isMobile && isReadabilityMode && isEntityMenu;
+
+    React.useEffect(() => {
+        if (isDesktopEntityMenu) openCommandPanel(true);
+        if (isReadabilityMobileEntityMenu) openMobileCommandPanel(true);
+    }, [isDesktopEntityMenu, isReadabilityMobileEntityMenu, openCommandPanel, openMobileCommandPanel]);
 
     React.useEffect(() => {
         if (parentPopoverState) {
@@ -108,6 +127,11 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [parentPopoverState]);
 
     const popoverState = localState;
+    // Inline entity menus are represented by the unified command panel in mobile readability mode.
+    const isReadabilityMobileInlineMenu = isMobile && isReadabilityMode && !!popoverState?.entityId &&
+        (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
+    const isUnifiedDesktopMenu = !isMobile && !!popoverState?.entityId &&
+        (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         const entityId = popoverState?.entityId;
@@ -132,7 +156,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState?.entityId]);
 
     useLayoutEffect(() => {
-        if (popoverState && popoverState.type !== 'help-card' && popoverRef.current) {
+        if (popoverState && !isReadabilityMobileInlineMenu && popoverState.type !== 'help-card' && popoverRef.current) {
             const el = popoverRef.current;
 
             const positionPopover = () => {
@@ -221,13 +245,13 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             };
         }
         return undefined;
-    }, [popoverState, popoverRef]);
+    }, [popoverState, popoverRef, isReadabilityMobileInlineMenu]);
 
     const lastHoveredIndex = React.useRef<number | null>(null);
     const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
-        if (!popoverState || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
+        if (!popoverState || isUnifiedDesktopMenu || isReadabilityMobileInlineMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
             // Touch pointers need native vertical panning so mobile users can scroll menus.
@@ -363,9 +387,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             // Clean up any persistent highlights from log items
             document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         };
-    }, [popoverState, triggerHaptic, setPopoverState]);
+    }, [popoverState, isUnifiedDesktopMenu, isReadabilityMobileInlineMenu, triggerHaptic, setPopoverState]);
 
-    if (!popoverState) return null;
+    if (!popoverState || isUnifiedDesktopMenu || isReadabilityMobileInlineMenu) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     const detectedCatId = normalizeInlineCategoryId(popoverState.category || popoverState.setId);
@@ -468,7 +492,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         );
     }
 
-    const hasCapturedDetails = !!(popoverState.hasInspectionCard || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines || popoverState.isCapturingWhois || popoverState.capturedWhoisLines);
+    const hasCapturedDetails = !!(popoverState.hasInspectionCard || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines || popoverState.isCapturingWhois || popoverState.capturedWhoisLines || popoverState.isCapturingWho || popoverState.capturedWhoLines || popoverState.isCapturingWhere || popoverState.capturedWhereLines || popoverState.isCapturingRoomAction || popoverState.capturedRoomActionLines || popoverState.isCapturingPersonalAction || popoverState.capturedPersonalActionLines);
     const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
     const isAnchoredDropdown = !!popoverState.sourceRect && !isParleyType && popoverState.type !== 'menu' && popoverState.type !== undefined;
     return (
@@ -479,6 +503,16 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             zIndex: 70000,
             '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
+            {(!popoverState.type || popoverState.type === 'menu') && popoverState.entityId && (
+                <button
+                    type="button"
+                    className="popover-side-panel-close"
+                    aria-label="Close inline actions"
+                    onClick={() => setPopoverState(null)}
+                >
+                    ×
+                </button>
+            )}
             {popoverState.type === 'give-recipient-select' && <RecipientSelectPopover popoverState={popoverState} roomPlayers={roomPlayers} roomNpcs={roomNpcs} groupMembers={groupMembers} executeCommand={executeCommand} setPopoverState={setPopoverState} themeColor={themeColor} />}
             {popoverState.type === 'container' && (
                 <ContainerPopover 
@@ -536,6 +570,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     entities={entities}
                     registerEntity={registerEntity}
                     selectedObjectIds={selectedObjectIds}
+                    toggleObjectSelection={toggleObjectSelection}
                     clearObjectSelection={clearObjectSelection}
                     keywordOverrides={keywordOverrides}
                     accountCharacters={accountCharacters}
@@ -544,6 +579,8 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                     characterInfo={characterInfo}
                     direction={popoverState.direction}
                     currentTerrain={currentTerrain}
+                    abilities={abilities}
+                    practiceData={practiceData}
                 />            )}
         </div>
     );

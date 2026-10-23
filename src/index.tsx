@@ -40,17 +40,20 @@ import { PerfHUD } from './components/Utility/PerfHUD';
 import { useSettingsStore } from './stores/useSettingsStore';
 import { useDisplayMode } from './hooks/useDisplayMode';
 import { normalizeTerrain } from './utils/terrainUtils';
-import { getZoneAmbientGlow } from './utils/zoneColors';
+import { getZoneAmbientGlow, getZoneFrameColor } from './utils/zoneColors';
 import { toThemeLinkedColor } from './utils/themeLinkedColors';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { canAccessShaper } from './shaper/access/shaperAccess';
 import './styles/terminalPanels.css';
+import './components/Messages/ClientPanelStack.css';
+import './components/HUD/CommandMenuSurfaces.css';
 import './components/HUD/MapTerminalDock.css';
 import { cleanupDevServiceWorkers } from './utils/devServiceWorkerCleanup';
 import { useZoneThemeSync } from './hooks/useZoneThemeSync';
 import { useImmersionDamagePulse } from './hooks/useImmersionDamagePulse';
 import { useScreenWakeLock } from './hooks/useScreenWakeLock';
+import './styles/zoneFrame.css';
 import './styles/immersionDamagePulse.css';
 import './styles/classicMode.css';
 import './styles/classicModeLayout.css';
@@ -118,6 +121,9 @@ const MudClient = () => {
     const displayMode = useDisplayMode();
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
+    const isReadabilityInlineSelection = isMobile && isReadabilityMode && !!popoverState?.entityId &&
+        (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
+    const hasVisiblePopover = !!popoverState && !isReadabilityInlineSelection;
     const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     useScreenWakeLock(keepScreenAwake);
@@ -200,13 +206,13 @@ const MudClient = () => {
 
     // Sync popover state to body for CSS selector support across portals
     useEffect(() => {
-        if (popoverState) {
+        if (hasVisiblePopover) {
             document.body.classList.add('has-popover');
         } else {
             document.body.classList.remove('has-popover');
         }
         return () => document.body.classList.remove('has-popover');
-    }, [popoverState]);
+    }, [hasVisiblePopover]);
 
     useEffect(() => {
         document.documentElement.style.setProperty('--accent', accentColor);
@@ -280,9 +286,12 @@ const MudClient = () => {
 
     return (
         <div
-            className={`app-container state-${displayGameState} stage-${isReplayAccountScreen ? 'none' : accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isImmersionMode && isImmersionTextAnimationsEnabled ? 'immersion-text-animations-enabled' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isReadabilityMode && isMobile && displayGameState === 'playing' ? 'readability-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${isRotatedLandscape ? 'is-rotated-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${popoverState ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
+                    className={`app-container state-${displayGameState} stage-${isReplayAccountScreen ? 'none' : accountState?.stage || 'none'} ${theme}-mode ${isImmersionMode ? 'immersion-mode' : ''} ${isImmersionMode && isImmersionTextAnimationsEnabled ? 'immersion-text-animations-enabled' : ''} ${isPerformanceMode || isClassicMode ? 'performance-mode' : ''} ${isClassicMode ? 'classic-mode' : ''} ${isReadabilityMode && isMobile && displayGameState === 'playing' ? 'readability-mode' : ''} ${isMobile ? 'is-mobile' : 'is-desktop'} ${displayMode.isBrowser ? 'display-browser' : 'display-standalone'} ${isLandscape ? 'is-landscape' : ''} ${isRotatedLandscape ? 'is-rotated-landscape' : ''} ${btn.isEditMode ? 'edit-mode-active' : ''} ${isKeyboardOpen ? 'kb-open' : ''} ${hasVisiblePopover ? 'has-popover' : ''} ${ui.mapExpanded ? 'is-map-expanded' : ''} ${ui.drawer !== 'none' ? `has-drawer-open drawer-${ui.drawer}` : ''} ${isMobile && !isLandscape && ui.drawer !== 'none' ? 'drawer-open-portrait' : ''} ${inCombat ? 'in-combat' : ''} ${isNewbieMode ? 'newbie-mode' : ''} ${isDrawerTargetingActive ? 'drawer-targeting-active' : ''} terrain-${normalizeTerrain(currentTerrain || 'building')} lighting-${env?.lighting || 'none'}`}
             style={{
-                ...(isImmersionMode ? { '--terrain-glow-color': getZoneAmbientGlow(displayGameState === 'account' ? null : roomZone) } : {})
+                ...(isImmersionMode ? {
+                    '--terrain-glow-color': getZoneAmbientGlow(displayGameState === 'account' ? null : roomZone),
+                    '--zone-frame-color': getZoneFrameColor(displayGameState === 'account' ? null : roomZone)
+                } : {})
             } as React.CSSProperties}
             ref={containerRef}
             onDragOver={(e: React.DragEvent) => {
@@ -361,12 +370,9 @@ const MudClient = () => {
                         handleSend={handleSendCallback}
                         handleInputSwipe={handleInputSwipe}
                         commandPreview={commandPreview}
-                        setCommandPreview={setCommandPreview}
                         heldButton={heldButton}
-                        setHeldButton={setHeldButton}
                         mumeEditState={mumeEditState}
                         setMumeEditState={setMumeEditState}
-                        wasDraggingRef={wasDraggingRef}
                     />
                 </ErrorBoundary>
 

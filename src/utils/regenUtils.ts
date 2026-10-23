@@ -12,9 +12,9 @@ export type RegenTotals = Record<RegenStat, number>;
 
 interface RegenInput {
     equipped: string[];
-    race?: string;
-    position?: string;
-    alertness?: string;
+    race?: string | null;
+    position?: string | null;
+    alertness?: string | null;
     conditions?: { hungry?: boolean; thirsty?: boolean };
     age?: string | number;
     attributes?: Partial<Record<'int' | 'wis' | 'dex' | 'con' | 'wil', number>>;
@@ -111,16 +111,16 @@ const ageModifier = (age: string | number | undefined, race: string) => {
 /** Adds every known active modifier. Unknown server data is deliberately omitted. */
 export const calculateRegen = ({ equipped, race = '', position = '', alertness = '', conditions, age, attributes = {}, timers, now }: RegenInput): RegenTotals => {
     const totals = emptyTotals();
-    const equipmentText = equipped.join(' ').toLowerCase();
+    const equipmentText = (equipped || []).filter(Boolean).join(' ').toLowerCase();
     for (const entry of EQUIPMENT_REGEN) {
         if (entry.names.some(name => equipmentText.includes(name))) add(totals, entry.regen);
     }
-    const normalizedRace = race.toLowerCase();
+    const normalizedRace = (race || '').toLowerCase();
     const raceKey = Object.keys(RACE_REGEN).find(key => normalizedRace.includes(key));
     if (raceKey) add(totals, RACE_REGEN[raceKey]);
-    const positionBonus = POSITION_REGEN[position.toLowerCase()] || 0;
+    const positionBonus = POSITION_REGEN[(position || '').toLowerCase()] || 0;
     add(totals, { hp: positionBonus, mana: positionBonus, move: positionBonus });
-    const alertnessPenalty = ALERTNESS_REGEN[alertness.toLowerCase()] || 0;
+    const alertnessPenalty = ALERTNESS_REGEN[(alertness || '').toLowerCase()] || 0;
     add(totals, { hp: alertnessPenalty, mana: alertnessPenalty, move: alertnessPenalty });
     // MUME slows all recovery when the character needs food or water. These
     // states do not stack; until exact live measurements are available, use a

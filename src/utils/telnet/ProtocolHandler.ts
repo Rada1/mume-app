@@ -1,4 +1,5 @@
-import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_ECHO, TELNET_GMCP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../../constants';
+/** @file ProtocolHandler.ts — Telnet negotiation and streamed subnegotiation decoding. */
+import { IAC, SB, SE, WILL, WONT, DO, DONT, TELNET_ECHO, TELNET_GMCP, TELNET_MSSP, TELNET_TTYPE, TELNET_NAWS, TTYPE_IS, TTYPE_SEND } from '../../constants';
 
 export type TelnetState = 'DATA' | 'IAC' | 'NEGOTIATE' | 'SUB' | 'SUB_IAC';
 
@@ -120,6 +121,8 @@ export class ProtocolHandler {
                 this.options.sendGMCP('Core.Hello', { client: "Mume AI Studio", version: "1.0.0" });
                 this.options.sendGMCP('Core.Supports.Set', GMCP_SUPPORTS);
             }
+        } else if (cmd === WILL && option === TELNET_MSSP) {
+            this.options.sendBytes([IAC, DO, TELNET_MSSP]);
         } else if (cmd === DO && option === TELNET_NAWS) {
             this.options.sendBytes([IAC, WILL, TELNET_NAWS]);
             this.sendNAWS();

@@ -3,9 +3,12 @@ import { mudParser } from '../services/parser/services/mudParser';
 import { useCommandExecutor } from './useCommandExecutor';
 import { useInteractionHandlers } from './useInteractionHandlers';
 import { useNumpadControls } from './useNumpadControls';
+import { useClientMacroCommands } from './useClientMacroCommands';
+import { useClientMacroHotkeys } from './useClientMacroHotkeys';
 import { useFKeyControls } from './useFKeyControls';
 import { getGateState } from '../components/Mapper/mapperUtils';
 import { CaptureStage } from '../types';
+import { perfMonitor } from '../utils/perfMonitor';
 import { useInputStore } from '../stores/useInputStore';
 import { clearCommandCompletionSounds, queueCommandCompletionSound } from '../services/audio/commandCompletionSounds';
 import { findRoomShopkeeper } from '../utils/shopkeeperUtils';
@@ -238,11 +241,20 @@ export function useCommandController(deps: CommandControllerDeps) {
     const { setInput, isNewbieMode, viewport, triggerHaptic, setTarget, setPendingMove, addMessage, waiting } = deps;
 
     const executor = useCommandExecutor(deps);
+    const handleClientMacro = useClientMacroCommands();
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }) => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }): void => {
         const d = depsRef.current;
+        if (!isSystem && !d.isPasswordMode) {
+            if (cmd.trim().toLowerCase() === '/macros') {
+                d.setSettingsTab('actions'); d.setIsSettingsOpen(true); return;
+            }
+            if (handleClientMacro(cmd,
+                command => executeCommand(command, silent, isSystem, isHistorical, fromDrawer, options),
+                message => d.addMessage('system', message), d.gameState === 'playing')) return;
+        }
         const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, nextCommandIsSilent } = d;
 
         const effectiveSilent = silent || nextCommandIsSilent.current;
@@ -418,7 +430,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         if (!effectiveSilent && !isSystem && recordEntry) {
             recordEntry('ui', { event: 'executeCommand', cmd }, { mask: d.isPasswordMode });
         }
-    }, [executor.executeCommand]);
+    }, [executor.executeCommand, handleClientMacro]);
 
     const getExitState = useCallback((dir: string) => {
         const mapper = depsRef.current.mapperRef?.current;
@@ -433,6 +445,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         return getGateState(room, wEx, dir, rooms, preloaded);
     }, []);
 
+    useClientMacroHotkeys(executeCommand, deps.gameState === 'playing' && !deps.isPasswordMode);
     useNumpadControls(executeCommand, getExitState);
     useFKeyControls(deps.btn?.buttonsRef, executeCommand);
 
@@ -460,18 +473,15 @@ export function useCommandController(deps: CommandControllerDeps) {
 
     const handleSend = useCallback((e?: React.FormEvent) => {
         e?.preventDefault();
-        const cmd = useInputStore.getState().input.trim();
-        if (cmd) {
-            useInputStore.getState().addToHistory(cmd);
-        }
-        useInputStore.getState().setInput('');
+        const inputBeforeSend = useInputStore.getState().input;
+        const cmd = inputBeforeSend.trim();
 
         let finalCmd = cmd;
         const currentMode = deps.parley.mode || (deps.parley.active ? 'parley' : 'command');
-        if (currentMode === 'help' && cmd) {
+        if (currentMode === 'help' && cmd && !cmd.startsWith('/')) {
             finalCmd = `help ${cmd}`;
-        } else if (currentMode === 'parley' && cmd) {
-            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'group', 'pray'];
+        } else if (currentMode === 'parley' && cmd && !cmd.startsWith('/')) {
+            const TARGETLESS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act', 'group', 'pray'];
             const command = deps.parley.command === 'group' ? 'gsay' : deps.parley.command;
             const isTargetless = TARGETLESS.includes(deps.parley.command);
             if (isTargetless) {
@@ -483,7 +493,12 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
         }
 
-        executeCommand(finalCmd, false, false, false, false, { shouldFocus: true });
+        perfMonitor.measureCommandSubmission(() => {
+            executeCommand(finalCmd, false, false, false, false, { shouldFocus: true });
+        });
+        if (cmd) useInputStore.getState().addToHistory(cmd);
+        // Preserve any intentional command prefill produced during execution.
+        if (useInputStore.getState().input === inputBeforeSend) useInputStore.getState().setInput('');
 
     }, [executeCommand, deps.mapperRef, deps.parley]);
 

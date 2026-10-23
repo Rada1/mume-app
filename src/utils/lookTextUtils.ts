@@ -23,7 +23,7 @@ export const isEquipmentHeader = (html: string): boolean => {
 };
 
 export const sanitizeLines = (lines?: string[]): string[] => (
-    (lines || []).map(line => sanitizeMumeHtml(line)).filter(Boolean)
+    (lines || []).map(line => sanitizeMumeHtml(line))
 );
 
 export interface SplitLookLines {

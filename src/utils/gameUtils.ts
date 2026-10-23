@@ -169,20 +169,31 @@ export const parseEnglishNumber = (text: string): number => {
  * Formats a MUME price string into shorthand.
  */
 export const formatMumePrice = (priceStr: string): string => {
-    if (!priceStr) return "";
-    const cleanPrice = priceStr.replace(/<[^>]+>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim();
-    const parts = cleanPrice.toLowerCase().split(/ and |, /);
+    if (!priceStr) return '';
+    const cleanPrice = priceStr.replace(/<[^>]+>/g, '').replace(/\x1b\[[0-9;]*m/g, '').trim().replace(/\.$/, '');
+    const numberWord = /^(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|and)$/;
+    const amounts = [...cleanPrice.matchAll(/([a-z0-9][a-z0-9,\s-]*?)\s+(gold|silver|copper|lauren|celeb|busc|pennies|penny|coins?)(?:\s+(?:coins?|pennies|penny))?/gi)];
     const result: string[] = [];
-    parts.forEach(part => {
-        const match = part.trim().match(/^(.*?)\s+(gold|silver|copper|lauren|celeb|busc|pennies?|coins?)$/);
-        if (match) {
-            const numPart = match[1].trim();
-            const unit = match[2].trim();
-            const value = parseEnglishNumber(numPart);
-            if (value > 0 || (parts.length === 1 && value === 0)) result.push(`${value} ${unit}`);
+    let cursor = 0;
+    for (const match of amounts) {
+        if (!/^[\s,]*(?:and\s+)?$/i.test(cleanPrice.slice(cursor, match.index))) return priceStr;
+        const amount = match[1].toLowerCase().trim().replace(/^and\s+/, '').replace(/^(?:a|an)$/, 'one');
+        const numeric = /^\d+(?:,\d{3})*$/.test(amount);
+        const words = amount.split(/[\s-]+/);
+        if (!numeric && (!words.every(word => numberWord.test(word)) || words.every(word => word === 'and'))) return priceStr;
+        let total = 0;
+        let group = 0;
+        if (!numeric) for (const word of words) {
+            if (word === 'hundred') group *= 100;
+            else if (word === 'thousand') { total += group * 1000; group = 0; }
+            else if (word !== 'and') group += parseEnglishNumber(word);
         }
-    });
-    return result.join(' ');
+        const value = numeric ? Number(amount.replace(/,/g, '')) : total + group;
+        if (!Number.isSafeInteger(value)) return priceStr;
+        result.push(`${value} ${match[2].toLowerCase()}`);
+        cursor = match.index + match[0].length;
+    }
+    return result.length && !cleanPrice.slice(cursor).trim() ? result.join(' ') : priceStr;
 };
 
 /**

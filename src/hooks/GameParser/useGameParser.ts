@@ -23,6 +23,7 @@ import { useAtmosphereParser } from './useAtmosphereParser';
 import { usePromptParser } from './usePromptParser';
 import { useAccountParser } from './useAccountParser';
 import { useTimeParser } from './useTimeParser';
+import { useAliasParser } from './useAliasParser';
 import { useLogGmcpParser } from './useLogGmcpParser';
 import { UseGameParserDeps } from './types';
 import { useSpectateAutomator } from '../useSpectateAutomator';
@@ -45,7 +46,11 @@ import { canBootstrapExpectedCapture } from './captureBootstrap';
 import { consumeCommandCompletionSound } from '../../services/audio/commandCompletionSounds';
 import { beginCharacterInfoRefresh } from '../../utils/characterInfoRefreshTracker';
 import { changesCombatStatsFromSpell } from '../../utils/spellCombatStatUtils';
-import { parseShopVariant } from '../../utils/shopVariantParser';
+import { useCommandShopStore } from '../../stores/useCommandShopStore';
+import { usePanelDataStore } from '../../stores/usePanelDataStore';
+import { useCommandPracticeStore } from '../../stores/useCommandPracticeStore';
+import { useShopListParser } from './useShopListParser';
+import { useGameplayPager } from './useGameplayPager';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
 import { parseWhereScanPlayers } from '../../services/parser/whereScan';
 import { stripAnsiControlSequences, stripNonSgrAnsiSequences } from '../../utils/ansi';
@@ -286,26 +291,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         setRoomName, setRoomDesc, setRoomZone, setCurrentTerrain, setInCombat, 
         setPlayerPosition, setIsRiding, setWeather, setIsFoggy, setLightningEnabled, 
         inventoryLines: sessionInventoryLines, setInventoryLines: sessionSetInventoryLines, setStatsLines: sessionSetStatsLines,
+        roomNum: sessionRoomNum,
         setInfoLines, setScoreLines: sessionSetScoreLines, setQuestLines, setAchievementLines,
         setPracticeLines: sessionSetPracticeLines, setWhoLines, setWhereLines, 
         eqLines: sessionEqLines, setEqLines: sessionSetEqLines, setRoomItems: sessionSetRoomItems,
         roomItems: sessionRoomItems, setContainerContents: sessionSetContainerContents,
         containerContents: sessionContainerContents, setRoomExits, setGameTime
     } = session.game as any;
-
-    useEffect(() => {
-        if (deps.gameState !== 'playing' || typeof window === 'undefined') return;
-        const inventoryTimer = window.setTimeout(() => {
-            deps.executeCommandRef.current?.('inventory', true, true, false, true);
-        }, 0);
-        const equipmentTimer = window.setTimeout(() => {
-            deps.executeCommandRef.current?.('equipment', true, true, false, true);
-        }, 150);
-        return () => {
-            window.clearTimeout(inventoryTimer);
-            window.clearTimeout(equipmentTimer);
-        };
-    }, [deps.gameState, deps.executeCommandRef]);
 
     // 2. Core Logic Hooks
     const { processTriggers } = useTriggerProcessor({ 
@@ -325,22 +317,28 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
     const { finalizeQuests } = useQuestsHandler(setQuests, deps.quests.activeQuests);
     const { registerEntity, extractNoun } = useEntityRegistry();
     const nearbyCaptureRef = useRef<{ active: boolean; isSilent: boolean; lines: DrawerLine[] }>({ active: false, isSilent: false, lines: [] });
-    const shopCaptureRef = useRef<{ active: boolean; items: import('../../types').ShopItem[] }>({ active: false, items: [] });
-    const shopVariantCaptureRef = useRef<import('../../types').ShopVariant[]>([]);
-    const shopVariantLineRef = useRef<string | null>(null);
     const silentEquipmentCaptureProgressRef = useRef<EquipmentCaptureProgress>({ active: false });
     const pendingHelpInterestRef = useRef(false);
     const pendingCommXmlRef = useRef<{ tag: string; line: string; isSnoop: boolean } | null>(null);
     const textMapperStateRef = useRef(createTextMapperState());
     const scoutStopPendingRef = useRef(false);
     const finalizeNearbyCapture = useCallback(() => {
-        if (!nearbyCaptureRef.current.active) return;
         const capture = nearbyCaptureRef.current;
-        setWhereLines([...capture.lines]);
-        if (!capture.isSilent && !deps.isSpectateMode) {
+        const lines = capture.active ? [...capture.lines] : [];
+        if (capture.active) setWhereLines(lines);
+        if (capture.active && !capture.isSilent && !deps.isSpectateMode) {
             gmcpBus.emit('Game.WhereScan', {
-                players: parseWhereScanPlayers(capture.lines.map(line => line.text)),
+                players: parseWhereScanPlayers(lines.map(line => line.text)),
                 startedAt: performance.now(),
+            });
+        }
+        const store = useUIStore.getState();
+        const currentPopover = store.popoverState;
+        if (currentPopover?.isCapturingWhere) {
+            store.setPopoverState({
+                ...currentPopover,
+                capturedWhereLines: lines.map(line => line.html || line.text),
+                isCapturingWhere: false
             });
         }
         nearbyCaptureRef.current = { active: false, isSilent: false, lines: [] };
@@ -349,6 +347,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
     
     // 3. The Reactive Capture Machine (The only capture system left)
     const capture = useCaptureParser({
+        tracksPanelSync: true,
         captureSession: deps.captureSession,
         setCaptureSession: deps.setCaptureSession,
         setInventoryLines: sessionSetInventoryLines,
@@ -424,6 +423,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
     });
 
     const router = useMessageRouter({
+        roomCharacters: [...session.game.roomPlayers, ...session.game.roomNpcs],
         capture,
         setWhoList: session.game.setWhoList, 
         setWhereList: session.game.setWhereList, 
@@ -488,6 +488,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
 
     const actionTracker = useActionTracker({
         capture,
+        roomNum: sessionRoomNum,
         setInventoryLines: sessionSetInventoryLines,
         setEqLines: sessionSetEqLines,
         inventoryLines: sessionInventoryLines,
@@ -514,6 +515,11 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         },
         onDrop: () => {
             deps.playEffect?.('drop');
+            refreshEncumbrance();
+            setTimeout(() => deps.executeCommandRef.current?.('inventory', true, true, false, true), 0);
+        },
+        onSaddle: refreshEncumbrance,
+        onUnsaddle: () => {
             refreshEncumbrance();
             setTimeout(() => deps.executeCommandRef.current?.('inventory', true, true, false, true), 0);
         }
@@ -597,6 +603,16 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         isMobile: deps.isMobile,
     });
 
+    const parseShopList = useShopListParser(capture, deps);
+    const parseGameplayPager = useGameplayPager({
+        gameState: deps.gameState,
+        sendCommand: deps.sendCommand,
+        addMessage: deps.addMessage,
+        ownsCapture: () => capture.isSilent() || capture.isPendingSilent()
+            || nearbyCaptureRef.current.isSilent || deps.help.isHelpActiveRef.current
+            || deps.help.isUiRequestedRef.current,
+    });
+    const parseAliasLine = useAliasParser();
     const time = useTimeParser({
         setGameTime,
         gameTime: deps.gameTime
@@ -670,6 +686,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         }
 
         const lineCapture = isSnoop ? spectateCapture : capture;
+        if (parseGameplayPager(lineToParse, isSnoop)) return;
 
         // --- Help Response Capture ---
         // Intercept help headers, buffer help output until the next prompt, suppress from log, and show in a popup card
@@ -943,6 +960,8 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
             lower = textOnly.toLowerCase();
         }
 
+        if (parseAliasLine(lineToParse, isSnoop, deps.isSpectateMode,
+            command => deps.executeCommandRef.current?.(command, true, true, false, true, { shouldFocus: false }))) return;
         if (isSnoop && textOnly.trim().length === 0 && !isEndPromptLine) return;
         if (!isSnoop && capture.shouldSuppressSilentBlank(textOnly)) return;
 
@@ -1026,6 +1045,10 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         const isProtectedLiveLine = isCombatMessage || isRoomOutput ||
             isSelfPositionFeedback(lower) || isLiveCharacterStateOrMovement(lower) ||
             isImportant;
+        const isSilentWhoCapture = !isSnoop && !isEndPrompt && (
+            (capture.getActiveType() === 'who' && capture.isSilent()) ||
+            (normalizeStageToCaptureType(deps.captureStage.current) === 'who' && capture.isPendingSilent())
+        );
         const isSilentEquipmentCapture = !isSnoop && (
             (capture.getActiveType() === 'equipment' && capture.isSilent()) ||
             (normalizeStageToCaptureType(deps.captureStage.current) === 'equipment' && capture.isPendingSilent())
@@ -1040,7 +1063,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
             /\d+\/\d+ hits, \d+\/\d+ mana, and \d+\/\d+ moves/i.test(lower) &&
             capture.shouldSuppressSilentScoreResponse();
         let isVisible = router.determineVisibility(lower, isSnoop) &&
-            !isSilentEquipmentResponseLine && !isSilentScoreResponseLine;
+            !isSilentWhoCapture && !isSilentEquipmentResponseLine && !isSilentScoreResponseLine;
 
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
@@ -1156,84 +1179,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         const accountParserLine = isAccountPhase ? redactAccountDisplayLine(lineToParse.trimEnd()) : textOnly;
         if (account.parseAccountLine(accountParserLine, isPromptResolved)) return;
         if (stat.parseCompactCombatInfo(textOnly)) return;
-        if (stat.parseGlobalStatus(textOnly, lower)) msgType = 'info' as any;
+        const isShopGoldReply = !isSnoop && usePanelDataStore.getState().isActive('gold');
+        if (stat.parseGlobalStatus(textOnly, lower, !isSnoop)) msgType = 'info' as any;
+        if (isShopGoldReply && usePanelDataStore.getState().status.gold === 'ready') return;
         if (stat.parseDetailedScore(textOnly, lower)) msgType = 'info' as any;
 
         // --- Shop List Capture ---
-        if (!isSnoop && !isAccountPhase) {
-            const shopStore = useUIStore.getState();
-            const variantProduct = shopStore.shopVariantRequest;
-            if (variantProduct !== null) {
-                const candidate = shopVariantLineRef.current
-                    ? `${shopVariantLineRef.current} ${textOnly.trim()}` : textOnly;
-                const variant = parseShopVariant(candidate);
-                if (variant) {
-                    if (/\band$/i.test(variant.price)) {
-                        shopVariantLineRef.current = candidate;
-                    } else {
-                        shopVariantCaptureRef.current.push(variant);
-                        shopVariantLineRef.current = null;
-                    }
-                }
-                if (isCaptureBoundary || (textOnly.trim() === '' && shopVariantCaptureRef.current.length > 0)) {
-                    shopStore.setShopVariants(variantProduct, shopVariantCaptureRef.current);
-                    shopStore.setShopVariantRequest(null);
-                    shopVariantCaptureRef.current = [];
-                    shopVariantLineRef.current = null;
-                }
-            }
-            if (shopCaptureRef.current.active) {
-                if (isCaptureBoundary) {
-                    if (shopCaptureRef.current.items.length > 0) {
-                        shopStore.setShopItems(shopCaptureRef.current.items);
-                    }
-                    shopCaptureRef.current = { active: false, items: [] };
-                } else {
-                    const m = textOnly.match(/^\s*(\d+)\.\s+(.+?)\s+up to\s+(.+?)(?:\s+<([^>]+)>)?\s*\.?\s*$/);
-                    if (m) {
-                        shopCaptureRef.current.items.push({
-                            num: parseInt(m[1], 10),
-                            name: m[2].trim(),
-                            price: m[3].trim(),
-                            vnum: m[4]
-                        });
-                    } else if (textOnly.trim() === '' && shopCaptureRef.current.items.length > 0) {
-                        shopStore.setShopItems(shopCaptureRef.current.items);
-                        shopCaptureRef.current = { active: false, items: [] };
-                    }
-                }
-            } else {
-                const speakerMatch = textOnly.match(/^([A-Z][a-zA-Z\s\'-]+?)\s+(?:says|tells you|asks|whispers|says\s+to\s+you),?\s+['"]?(you can buy:|items? (?:for sale|matching)|\d+ items? for sale)/i);
-                const isShopStart = 
-                    /^you can buy:/i.test(lower) ||
-                    /^items? (?:for sale|matching)/i.test(lower) ||
-                    /^\d+ items? for sale/i.test(lower) ||
-                    !!speakerMatch;
-
-                if (isShopStart) {
-                    let parsedShopkeeperName: string | null = null;
-                    if (speakerMatch) {
-                        parsedShopkeeperName = speakerMatch[1].trim();
-                        const matchingNpc = deps.roomNpcs?.find(npc => 
-                            npc.name?.toLowerCase() === parsedShopkeeperName!.toLowerCase()
-                        );
-                        if (matchingNpc) {
-                            deps.registerEntity(`roomchars:${matchingNpc.id}`, matchingNpc.name, 'room', 'shopkeeper');
-                        }
-                    }
-                    if (parsedShopkeeperName) shopStore.setShopkeeperName(parsedShopkeeperName);
-                    shopCaptureRef.current = { active: true, items: [] };
-                }
-            }
-
-            // Parse 'info %r' money line while shop is open
-            if (shopStore.isShopOpen) {
-                const moneyMatch = textOnly.match(/^([\d,]+\s+gold coins?(?:,\s+[\d,]+\s+silver penn(?:ies|y))?(?:(?:,?\s+and\s+|,\s+)[\d,]+\s+copper penn(?:ies|y))?)\s*\.?\s*$/i);
-                if (moneyMatch) {
-                    shopStore.setShopBalance(moneyMatch[1].trim());
-                }
-            }
-        }
+        if (!isSnoop && !isAccountPhase && parseShopList(textOnly, isCaptureBoundary)) return;
 
         // Action Tracking (for manual inventory updates)
         actionTracker.trackAction(lineToParse, textOnly, lower);
@@ -1262,7 +1214,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         if (!isSnoop && effectiveCaptureBoundary) {
             if (capture.hasSession()) {
                 capture.finalizeSession();
-            } else if (['whois', 'examine', 'consider'].includes(expectedCaptureType)) {
+            } else if (expectedCaptureType === 'practice_action') {
+                const practice = useCommandPracticeStore.getState();
+                practice.complete(practice.requestId, []);
+            } else if (expectedCaptureType === 'shop_action') {
+                const shop = useCommandShopStore.getState();
+                shop.receiveOutput(shop.requestId, []);
+            } else if (['whois', 'examine', 'consider', 'room_action', 'help_action', 'stats', 'score', 'info'].includes(expectedCaptureType)) {
                 const uiStore = useUIStore.getState();
                 const currentPopover = uiStore.popoverState;
                 if (currentPopover?.isCapturingWhois && expectedCaptureType === 'whois') {
@@ -1282,6 +1240,28 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
                         ...currentPopover,
                         capturedConsiderLines: [],
                         isCapturingConsider: false
+                    });
+                } else if (currentPopover?.isCapturingHelp && expectedCaptureType === 'help_action') {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedHelpLines: [],
+                        isCapturingHelp: false
+                    });
+                } else if (currentPopover?.isCapturingRoomAction && expectedCaptureType === 'room_action') {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedRoomActionLines: [],
+                        isCapturingRoomAction: false
+                    });
+                } else if (
+                    currentPopover?.isCapturingPersonalAction &&
+                    ((currentPopover.personalActionKind === 'stat' && expectedCaptureType === 'stats') ||
+                        currentPopover.personalActionKind === expectedCaptureType)
+                ) {
+                    uiStore.setPopoverState({
+                        ...currentPopover,
+                        capturedPersonalActionLines: [],
+                        isCapturingPersonalAction: false
                     });
                 }
             }
@@ -1736,7 +1716,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         gmcpBus.emit('Game.Text', { type: finalType, text: textOnly });
 
     }, [
-        processTriggers, router, combat, room, account, stat, atmosphere, time, parseLogGmcp, actionTracker,
+        processTriggers, router, combat, room, account, stat, atmosphere, time, parseAliasLine, parseShopList, parseGameplayPager, parseLogGmcp, actionTracker,
         deps.addMessage, deps.isNewbieMode, session.game, deps.groupMembers, deps.inlineCategories, deps.btn, session.vitals.target, deps.captureStage, deps.ansiConvert, deps.practiceHandler, deps.spectatePracticeHandler, capture, spectateCapture, finalizeNearbyCapture,
         automator.addToQueue, automator.stopSpectatingName, deps.roomPlayers, deps.roomNpcs, deps.roomItems, deps.bufferName
     ]);

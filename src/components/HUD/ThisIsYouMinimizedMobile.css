@@ -23,7 +23,7 @@
 .this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="Combat"] {
     order: 0;
     padding-left: 12px;
-    border-left: 1px solid rgba(201, 168, 76, 0.2);
+    border-left: 0;
 }
 
 .this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary-group[aria-label="State"] .this-is-you-pill-wrapper {

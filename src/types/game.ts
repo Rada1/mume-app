@@ -45,6 +45,8 @@ export interface GameStats {
     staminaStatus?: string;
 }
 
+export type VitalsScoreSnapshot = Pick<GameStats, 'hp' | 'maxHp' | 'mana' | 'maxMana' | 'move' | 'maxMove'>;
+
 import { Token } from './tokens';
 
 export type MessageType = 'user' | 'system' | 'error' | 'game' | 'combat' | 'prompt' | 'comm' | 'comm-continue' | 'comm-sender' | 'comm-text' | 'practice-skill' | 'practice-header' | 'practice-class-header' | 'practice-column-header' | 'who-list' | 'where-list' | 'room-description' | 'room-name' | 'equipment-list' | 'inventory-list' | 'room-exits' | 'snoop' | 'snoop-command' | 'snoop-vitals' | 'account-prompt' | 'account-menu-item' | 'account-selection' | 'account-selection-edit' | 'account-stat-edit' | 'account-stat-points' | 'account-character-list' | 'quest-list' | 'weather' | 'gmcp-event' | 'movement' | 'status-event';
@@ -58,6 +60,7 @@ export interface Message {
     id: string;
     html: string; // Pre-converted ANSI html
     textRaw: string; // Raw text for logic checks
+    aliasCommandDisplay?: string | null; // Alias meaning when sent, kept stable across later syncs.
     textOnly?: string; // Pure text without any ANSI or HTML formatting
     tokens?: Token[]; // AST tokens for structured rendering
     type: MessageType;
@@ -132,6 +135,7 @@ export interface Message {
     promptManaPercent?: number;
     promptMovePercent?: number;
     promptOpponentHealthPercent?: number | null;
+    promptBufferHealthPercent?: number | null;
 }
 
 export interface MumeTime {
@@ -203,7 +207,7 @@ export interface ActivePrompt {
 export interface ParleyState {
     active: boolean;
     mode?: 'command' | 'parley' | 'help';
-    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'emote' | 'group' | 'pray' | 'none';
+    command: 'tell' | 'whisper' | 'ask' | 'say' | 'narrate' | 'shout' | 'yell' | 'sing' | 'emote' | 'act' | 'group' | 'pray' | 'none';
     target: string | null;
     message: string;
 }

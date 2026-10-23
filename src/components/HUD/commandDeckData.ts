@@ -54,7 +54,7 @@ export const DECK_ACTIONS: Record<TabKey, DeckAction[]> = {
     ],
     social: [
         { label: 'Say', cmd: 'say ' }, { label: 'Narrate', cmd: 'narrate ' },
-        { label: 'Gtell', cmd: 'gtell ' }, { label: 'Yell', cmd: 'yell ' },
+        { label: 'Yell', cmd: 'yell ' },
         { label: 'Tell', cmd: 'tell ' }, { label: 'Whisper', cmd: 'whisper ' },
         { label: 'Emote', cmd: 'emote ' }, { label: 'Social', cmd: 'social', targetKind: 'social' },
     ],

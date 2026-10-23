@@ -1,6 +1,6 @@
 /**
  * @file SoundVolumeSettings.tsx
- * @description Independent master, effects, and music volume controls.
+ * @description Independent master, in-game effects, UI, and music volume controls.
  */
 
 import React from 'react';
@@ -16,6 +16,7 @@ const SoundVolumeSettings: React.FC<SoundVolumeSettingsProps> = ({ isSoundEnable
     const {
         masterVolume, setMasterVolume,
         sfxVolume, setSfxVolume,
+        uiVolume, setUiVolume,
         musicVolume, setMusicVolume
     } = useSettingsStore();
 
@@ -51,7 +52,8 @@ const SoundVolumeSettings: React.FC<SoundVolumeSettingsProps> = ({ isSoundEnable
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {volumeControl('Master Volume', masterVolume, setMasterVolume)}
-                {volumeControl('Sound Effects (Combat, UI)', sfxVolume, setSfxVolume)}
+                {volumeControl('In-Game Sound Effects', sfxVolume, setSfxVolume)}
+                {volumeControl('UI Sounds', uiVolume, setUiVolume)}
                 {volumeControl('Atmosphere & Music', musicVolume, setMusicVolume)}
             </div>
         </div>

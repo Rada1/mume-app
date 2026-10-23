@@ -11,8 +11,8 @@ let lastWhoRequestAt = 0;
 
 // --- Logic Section ---
 
-export const useWhoListRefresh = (whoList: string[], executeCommand: ExecuteCommand) => useCallback(() => {
-    if (whoList.length > 0 || Date.now() - lastWhoRequestAt < WHO_REQUEST_COOLDOWN_MS) return;
+export const useWhoListRefresh = (whoList: string[], executeCommand: ExecuteCommand, refreshOnOpen = false) => useCallback(() => {
+    if ((whoList.length > 0 && !refreshOnOpen) || Date.now() - lastWhoRequestAt < WHO_REQUEST_COOLDOWN_MS) return;
     lastWhoRequestAt = Date.now();
     executeCommand('who', true, true, false, true);
-}, [executeCommand, whoList]);
+}, [executeCommand, whoList, refreshOnOpen]);

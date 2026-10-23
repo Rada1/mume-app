@@ -6,6 +6,8 @@
 import { useCallback, useRef } from 'react';
 import { GameStats, CharacterInfo } from '../../types';
 import { useVitalsStore } from '../../stores/useVitalsStore';
+import { usePanelDataStore } from '../../stores/usePanelDataStore';
+import { useUIStore } from '../../stores/useUIStore';
 import { parseCitizenshipAgeWarFameInfo } from '../../utils/characterInfoUtils';
 import { consumeCharacterInfoRefreshLine, parseWarFameLine } from '../../utils/characterInfoRefreshTracker';
 import { parseCharacterAttributes, toCharacterAttributeValues } from '../../utils/characterAttributeUtils';
@@ -31,10 +33,14 @@ export function useStatParser(deps: StatParserDeps) {
         capture
     } = deps;
 
-    const parseGlobalStatus = useCallback((content: string, contentLower: string) => {
+    const parseGlobalStatus = useCallback((content: string, contentLower: string, allowTrackedRefresh = true) => {
         const attributeValues = toCharacterAttributeValues(parseCharacterAttributes([content]));
-        const refreshedCharacterInfo = consumeCharacterInfoRefreshLine(content);
+        const refreshedCharacterInfo = allowTrackedRefresh ? consumeCharacterInfoRefreshLine(content) : null;
         if (refreshedCharacterInfo) {
+            if (refreshedCharacterInfo.gold !== undefined) {
+                useUIStore.getState().setShopBalance(`${refreshedCharacterInfo.gold} gold`);
+                if (usePanelDataStore.getState().isActive('gold')) usePanelDataStore.getState().complete('gold');
+            }
             if (refreshedCharacterInfo.wimpy !== undefined) {
                 setStats(prev => ({ ...prev, wimpy: refreshedCharacterInfo.wimpy }));
             }

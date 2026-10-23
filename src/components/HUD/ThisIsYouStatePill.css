@@ -19,7 +19,7 @@
 
 .this-is-you-pill {
     background: rgba(22, 17, 12, 0.92);
-    border: 1px solid color-mix(in srgb, var(--state-accent, #c9a84c) 28%, transparent);
+    border: 0;
     padding: 2px 7px;
     border-radius: 4px;
     font-family: var(--font-mono, monospace);
@@ -36,7 +36,6 @@
 
 .this-is-you-pill:hover,
 .this-is-you-pill.is-active {
-    border-color: var(--state-accent, var(--mume-gold, #c9a84c));
     background: rgba(40, 32, 23, 0.98);
     transform: translateY(-1px);
 }

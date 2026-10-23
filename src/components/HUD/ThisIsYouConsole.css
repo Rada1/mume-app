@@ -199,6 +199,41 @@
     gap: 6px;
 }
 
+.this-is-you-console .this-is-you-vitals-refresh {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    touch-action: none;
+    user-select: none;
+    transition: background 120ms ease;
+}
+
+.this-is-you-console .this-is-you-vitals-refresh:hover:not([aria-disabled="true"]),
+.this-is-you-console .this-is-you-vitals-refresh.is-holding {
+    background: rgba(201, 168, 76, 0.08);
+}
+
+.this-is-you-console .this-is-you-vitals-refresh.is-holding {
+    color: #f0cb67;
+}
+
+.this-is-you-console .this-is-you-vitals-refresh:focus-visible {
+    outline: 2px solid #f0cb67;
+    outline-offset: 1px;
+}
+
+.this-is-you-console .this-is-you-vitals-refresh[aria-disabled="true"] {
+    cursor: default;
+}
+
 .this-is-you-telemetry-cell {
     background: #0d0a07;
     border: 1px solid rgba(201, 168, 76, 0.18);
@@ -282,61 +317,6 @@
     color: #9bd2a5;
 }
 
-.this-is-you-wimpy-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    min-height: 0;
-    padding: 0 2px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #9a9182;
-    font: inherit;
-    font-size: 0.52rem;
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-    white-space: nowrap;
-    cursor: pointer;
-}
-
-.this-is-you-wimpy-badge::before,
-.this-is-you-wimpy-badge::after {
-    color: rgba(255, 255, 255, 0.32);
-    font-weight: 500;
-}
-
-.this-is-you-wimpy-badge::before { content: '['; }
-.this-is-you-wimpy-badge::after { content: ']'; }
-.this-is-you-wimpy-badge:hover { color: #fff2c2; }
-.this-is-you-wimpy-badge:hover::before,
-.this-is-you-wimpy-badge:hover::after { color: rgba(201, 168, 76, 0.8); }
-
-.this-is-you-refresh-button {
-    display: flex;
-    flex: 0 0 var(--this-is-you-action-hitbox, 24px);
-    width: var(--this-is-you-action-hitbox, 24px);
-    min-width: var(--this-is-you-action-hitbox, 24px);
-    height: var(--this-is-you-action-hitbox, 24px);
-    min-height: var(--this-is-you-action-hitbox, 24px);
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: #c9a84c;
-    font: inherit;
-    font-size: 0.64rem;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-.this-is-you-refresh-button:hover { background: rgba(201, 168, 76, 0.12); }
-.this-is-you-refresh-button:disabled { cursor: default; opacity: 0.45; }
-
 .this-is-you-combat-heading {
     display: flex;
     align-items: center;
@@ -347,22 +327,6 @@
     font-size: 0.61rem;
     font-weight: 750;
     letter-spacing: 0.14em;
-}
-
-.this-is-you-wimpy-badge strong {
-    color: #ff5555;
-    font-size: inherit;
-}
-
-.this-is-you-wimpy-badge:disabled {
-    cursor: default;
-    opacity: 0.55;
-}
-
-.this-is-you-wimpy-badge:focus-visible,
-.this-is-you-refresh-button:focus-visible {
-    outline: 2px solid #f0cb67;
-    outline-offset: 2px;
 }
 
 /* TIER 3: Category State Pills & Buffs */

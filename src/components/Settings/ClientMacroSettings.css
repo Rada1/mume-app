@@ -1,0 +1,13 @@
+/** @file Client macro settings layout. */
+
+/* --- Form and Saved Macros --- */
+.client-macro-settings { display: grid; gap: 12px; }
+.client-macro-settings p { margin: 0; color: var(--text-dim); font-size: .8rem; line-height: 1.5; }
+.client-macro-settings form, .client-macro-settings label { display: grid; gap: 8px; }
+.client-macro-settings .setting-input { width: 100%; box-sizing: border-box; min-width: 0; }
+.client-macro-settings small { display: block; color: var(--text-dim); font-size: .72rem; }
+.client-macro-settings article { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 12px; background: #292929; }
+.client-macro-settings pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 0; font: inherit; font-size: .8rem; }
+.client-macro-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.client-macro-controls button { width: auto; margin: 0; padding: 8px 12px; cursor: pointer; }
+.client-macro-settings [role="alert"] { color: #ff9393; }

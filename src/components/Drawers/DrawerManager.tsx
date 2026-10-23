@@ -10,11 +10,8 @@ import { Mapper } from '../Mapper/Mapper';
 import { MapperRef } from '../Mapper/mapperTypes';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
-import { CharacterCard } from '../HUD/CharacterCard';
 import { MapRoomInfoHeader } from '../HUD/MapRoomInfoHeader';
-import { useKeyboardMapPreviewScale } from '../Mapper/hooks/useKeyboardMapPreviewScale';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import GroupStatusWindow from '../Messages/GroupStatusWindow';
 import './PlaceholderDrawers.css';
 
 interface DrawerManagerProps {
@@ -35,11 +32,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
         sessionMode, isImmersionMode
     } = useGame() as any;
     const mapperDesktopRef = React.useRef<MapperRef>(null);
-    const mapDrawerRef = React.useRef<HTMLDivElement>(null);
-    const mapViewportRef = React.useRef<HTMLDivElement>(null);
-    useKeyboardMapPreviewScale(viewport.isMobile && viewport.isKeyboardOpen, mapDrawerRef, mapViewportRef);
     const { ui, setUI } = useUI();
-    const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity, hideMapHeaderFooter, showGroupPanel } = useSettingsStore();
+    const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity, hideMapHeaderFooter } = useSettingsStore();
     const showMapDrawer = gameState !== 'account' || sessionMode === 'replay';
 
     // Body classes for desktop layout
@@ -120,11 +114,11 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
             {(!viewport.isMobile || viewport.isLandscape) && showMapDrawer && (
                 <div className="left-drawer-stack open">
                     <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} />
-                    <div ref={mapDrawerRef} className={`map-drawer-desktop open${hideMapHeaderFooter ? ' hide-header-footer' : ''}`} style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
+                    <div  className={`map-drawer-desktop open${hideMapHeaderFooter ? ' hide-header-footer' : ''}`} style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             {!hideMapHeaderFooter && <MapRoomInfoHeader />}
                             {/* Pinned Full Map Canvas */}
-                            <div ref={mapViewportRef} className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
+                            <div  className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
                                 <Mapper
                                     ref={mapperDesktopRef}
                                     characterName={characterName || ''}
@@ -136,14 +130,13 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                                     setCommandPreview={setCommandPreview}
                                 />
                             </div>
-                            {showGroupPanel && !viewport.isMobile && <GroupStatusWindow mapOverlay />}
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Portal target for the tactical action buttons (LineCluster), relocated here
-                from ActionBox. Fixed to the viewport (same technique as .app-terrain-strip)
+            {/* Portal target for the tactical action buttons (LineCluster). Fixed to the viewport
+                (same technique as .app-terrain-strip)
                 rather than nested inside .left-drawer-stack, so it isn't at the mercy of that
                 ancestor's percentage-height resolution — it fills the gap below the map drawer
                 (between its bottom edge and the terrain strip) with its own explicit sizing. */}

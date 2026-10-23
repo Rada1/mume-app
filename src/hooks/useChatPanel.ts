@@ -58,7 +58,7 @@ export const useChatPanel = () => {
     }, [command, executeCommand, inputValue, target, triggerHaptic]);
 
     return {
-        visibleMessages, channels, filter, setFilter,
+        messages, visibleMessages, channels, filter, setFilter,
         command, setCommand, target, setTarget, inputValue, setInputValue,
         whoList, replyToMessage, ensureWhoList, send
     };

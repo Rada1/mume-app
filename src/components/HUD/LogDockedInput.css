@@ -19,7 +19,7 @@
 }
 
 .state-account .message-log-docked-input {
-    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    border-bottom: 0;
 }
 
 .docked-prompt-symbol {
@@ -142,6 +142,12 @@
         min-height: 28px;
         box-sizing: border-box;
     }
+
+    .docked-input-form > .docked-command-target-chip {
+        height: 28px;
+        min-height: 28px;
+        box-sizing: border-box;
+    }
 }
 
 .docked-target-symbol {
@@ -220,16 +226,26 @@
 }
 
 .docked-target-badge.has-target {
-    border-color: rgba(74, 222, 128, 0.78);
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.42), inset 0 0 6px rgba(34, 197, 94, 0.12);
-    color: #86efac;
+    border-color: var(--active-target-highlight-border, rgba(248, 113, 113, 0.82));
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));
+    box-shadow: var(--active-target-highlight-shadow, 0 0 8px rgba(239, 68, 68, 0.44), inset 0 0 6px rgba(248, 113, 113, 0.16));
+    color: var(--active-target-highlight-foreground, #fca5a5);
+}
+
+.docked-target-badge.has-target:hover {
+    border-color: var(--active-target-highlight-hover-border, rgba(248, 113, 113, 0.95));
+    background: var(--active-target-highlight-hover-background, rgba(127, 29, 29, 0.34));
+}
+
+.docked-target-badge.has-target .docked-target-symbol:hover {
+    color: var(--active-target-highlight-foreground, #fca5a5);
 }
 
 .docked-target-badge.is-auto-target {
-    border-color: rgba(248, 113, 113, 0.82);
-    background: rgba(127, 29, 29, 0.24);
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.44), inset 0 0 6px rgba(248, 113, 113, 0.16);
-    color: #fca5a5;
+    border-color: var(--active-target-highlight-border, rgba(248, 113, 113, 0.82));
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));
+    box-shadow: var(--active-target-highlight-shadow, 0 0 8px rgba(239, 68, 68, 0.44), inset 0 0 6px rgba(248, 113, 113, 0.16));
+    color: var(--active-target-highlight-foreground, #fca5a5);
 }
 
 .docked-target-picker {
@@ -239,10 +255,10 @@
     flex-direction: column;
     max-height: min(300px, calc(100dvh - 24px));
     overflow: hidden;
-    border: 1px solid rgba(74, 222, 128, 0.62);
-    border-radius: 8px;
-    background: rgba(12, 16, 23, 0.98);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.62), 0 0 14px rgba(34, 197, 94, 0.2);
+    border: 0;
+    border-radius: 0;
+    background: rgba(23,23,23,.88);
+    box-shadow: none;
     color: #e8dfc9;
     font: 11px var(--font-mono, 'JetBrains Mono', monospace);
     user-select: none;
@@ -253,8 +269,8 @@
 
 .docked-target-picker-title {
     padding: 8px 10px 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: #86efac;
+    border-bottom: 0;
+    color: #9b927c;
     font-size: 9px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -268,7 +284,7 @@
     min-height: 40px;
     padding: 0 10px;
     border: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0;
     background: transparent;
     color: #e8dfc9;
     font: inherit;
@@ -296,7 +312,7 @@
 }
 
 .docked-target-picker-column + .docked-target-picker-column {
-    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    border-left: 0;
 }
 
 .docked-target-picker-column-title {
@@ -335,7 +351,7 @@
     min-height: 34px;
     padding: 7px 9px;
     border: 0;
-    border-radius: 5px;
+    border-radius: 0;
     background: transparent;
     color: inherit;
     font: inherit;
@@ -344,11 +360,10 @@
     touch-action: manipulation;
 }
 
-.docked-target-picker-item:hover,
-.docked-target-picker-item.is-selected {
-    background: rgba(34, 197, 94, 0.18);
-    color: #bbf7d0;
-}
+.docked-target-picker-item:hover,.docked-target-picker-item:focus-visible { background:#303030; }
+.docked-target-picker-item.is-selected { background:var(--active-target-highlight-background, rgba(127,29,29,.24)); }
+.docked-target-picker-item > span:first-child { flex:1 1 auto; min-width:0; }
+.docked-target-picker-crosshair { flex:none; color:#fca5a5; }
 
 .docked-target-picker-item small {
     flex: 0 0 auto;
@@ -365,7 +380,7 @@
 .docked-target-picker-manual {
     flex: 0 0 auto;
     justify-content: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    border-top: 0;
     border-radius: 0;
     color: #f0cb67;
     font-weight: 700;
@@ -440,6 +455,30 @@
     user-select: none;
 }
 
+.app-container:not(.is-mobile) .docked-input-highlight {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    white-space: pre;
+}
+
+@media (min-width: 1025px) {
+    .app-container:not(.is-mobile) .docked-input-highlight:has(.docked-command-target-chip) {
+        top: -6px;
+        bottom: -6px;
+    }
+
+    .app-container:not(.is-mobile) .docked-input-highlight .docked-command-target-chip {
+        height: 28px;
+        min-height: 28px;
+        box-sizing: border-box;
+    }
+}
+
+.app-container:not(.is-mobile) .docked-input-highlight > * {
+    flex: 0 0 auto;
+}
+
 .docked-input-autocomplete {
     color: rgba(240, 203, 103, 0.45);
     font-weight: 700;
@@ -451,7 +490,7 @@
 
 .docked-command-target-chip {
     z-index: 3;
-    margin-right: 0;
+    margin: 0 0 0 8px;
     pointer-events: auto;
 }
 
@@ -612,7 +651,15 @@
 }
 
 .docked-cancel-btn {
-    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 28px;
+    min-height: 28px;
+    box-sizing: border-box;
+    padding: 0;
     background: rgba(239, 68, 68, 0.1);
     border: 1px solid rgba(239, 68, 68, 0.38);
     color: #f87171;
@@ -728,3 +775,79 @@
     height: 34px;
     min-height: 34px;
 }
+
+/* --- Command bar controls use quiet fills without outlined borders. --- */
+.message-log-docked-input .docked-send-btn.is-send-icon {
+    width: 34px;
+    padding: 0;
+}
+.message-log-docked-input .docked-send-btn,
+.message-log-docked-input .docked-repeat-btn,
+.message-log-docked-input .docked-cancel-btn,
+.message-log-docked-input .docked-target-badge,
+.message-log-docked-input .docked-parley-chip {
+    border: 0 !important;
+}
+.message-log-docked-input .docked-send-btn,
+.message-log-docked-input .docked-send-btn:hover,
+.message-log-docked-input .docked-send-btn:active {
+    color: #ffd700;
+}
+.message-log-docked-input .docked-repeat-btn,
+.message-log-docked-input .docked-repeat-btn:hover,
+.message-log-docked-input .docked-repeat-btn:active {
+    background: transparent;
+    color: #ffd700;
+}
+.message-log-docked-input .docked-cancel-btn,
+.message-log-docked-input .docked-cancel-btn:hover,
+.message-log-docked-input .docked-cancel-btn:active {
+    color: #f87171;
+}
+.message-log-docked-input .docked-target-badge.has-target {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));
+    box-shadow: none;
+}
+.message-log-docked-input .docked-target-badge.is-auto-target {
+    box-shadow: none;
+}
+
+/* --- Align the compact target control with the command-bar actions --- */
+.message-log-docked-input .docked-timers-cluster:empty {
+    display: none;
+}
+
+.message-log-docked-input .docked-target-badge {
+    margin-right: 0;
+}
+
+.message-log-docked-input .docked-target-badge:not(.has-target):not(.is-auto-target) {
+    box-sizing: border-box;
+    flex: 0 0 34px;
+    width: 34px;
+    min-width: 34px;
+    height: 28px;
+    min-height: 28px;
+    padding: 0;
+    justify-content: center;
+}
+
+.message-log-docked-input .docked-target-badge:not(.has-target):not(.is-auto-target) .docked-target-symbol {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+.app-container.is-mobile .message-log-docked-input .docked-target-badge:not(.has-target):not(.is-auto-target) {
+    height: 34px;
+    min-height: 34px;
+}
+
+/* --- Neutral Empty Target Control --- */
+.message-log-docked-input .docked-target-badge:not(.has-target) {
+    background:transparent !important;
+    border:0 !important;
+    box-shadow:none;
+    color:rgba(255,255,255,.78);
+}
+.message-log-docked-input .docked-target-badge:not(.has-target) .docked-target-symbol:hover { color:inherit; }

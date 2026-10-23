@@ -1,0 +1,22 @@
+/** @file CommandPanelYouSummary.css — Character-info disclosure without changing the compact header layout. */
+/* --- Header Toggle Section --- */
+.command-tree-you-summary .command-tree-you-toggle {
+    width:100%;
+    padding:0;
+    margin:0;
+    border:0;
+    border-radius:0;
+    background:transparent;
+    color:inherit;
+    font:inherit;
+    text-align:left;
+    cursor:pointer;
+}
+.command-tree-you-toggle:focus-visible { outline:1px solid #c9a84c; outline-offset:3px; }
+.command-tree-v2 .command-tree-you-summary .command-tree-you-toggle {
+    background:transparent;
+    color:inherit;
+    -webkit-tap-highlight-color:transparent;
+}
+.command-tree-you-summary .command-tree-you-expanded[hidden],
+.command-tree-you-summary .command-tree-you-toggle small[hidden] { display:none !important; }

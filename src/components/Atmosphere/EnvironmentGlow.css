@@ -13,7 +13,7 @@
     display: flex;
     align-items: stretch;
     justify-content: stretch;
-    transition: opacity 0.5s ease;
+    transition: opacity 7s ease;
 }
 
 .environment-glow-canvas {
@@ -37,7 +37,7 @@
     pointer-events: none;
     border-radius: inherit;
     z-index: 1;
-    transition: background-color 0.5s ease;
+    transition: background-color 7s ease;
 }
 
 /* Light mode adjustments */
@@ -52,7 +52,7 @@
     pointer-events: none;
     border-radius: inherit;
     z-index: 0;
-    transition: background 0.8s ease;
+    transition: background 7s ease;
 }
 
 /* Ensure login card content sits above background canvas if visible */

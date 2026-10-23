@@ -11,7 +11,7 @@ import { useGearSelection } from '../hooks/useGearSelection';
 import { useObjectDragCommands } from '../hooks/useObjectDragCommands';
 import { useUIStore } from '../stores/useUIStore';
 import { toGearRow, visibleContainerLine } from '../utils/gearPanelUtils';
-import { classifyItemTier } from '../utils/itemTier';
+import { GearItemLabel } from './GearItemLabel';
 import { getShopRoomLabel } from '../utils/shopRoomUtils';
 import { useMobileGearSwipe } from '../hooks/useMobileGearSwipe';
 import { useMapper } from '../context/MapperContext';
@@ -22,9 +22,8 @@ import { GearSelectionCheckbox } from './GearSelectionCheckbox';
 import { GearSelectionActions } from './GearSelectionActions';
 import { getGearSelectionCommands, getGearScopeKey, toObjectDragItem } from '../utils/gearSelectionUtils';
 import './GearPanel.css';
-
+import { PanelDataEmpty } from './HUD/PanelDataEmpty';
 const ShopPanel = React.lazy(() => import('./Shop/ShopPanel').then(module => ({ default: module.ShopPanel })));
-
 interface GearPanelProps { style?: React.CSSProperties }
 type Section = 'worn' | 'carried' | 'room';
 type SelectedGear = { id: string; row: GearRow; section: Section; parentNoun?: string };
@@ -34,11 +33,13 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
     const mapper = useMapper();
     const vitals = useActiveVitals();
     const inlineSettings = useSettingsStore();
-    const gear = useGearPanel();
+    const isShopOpen = useUIStore(state => state.isShopOpen);
+    const [expanded, setExpanded] = useState({ worn: false, carried: false, room: true });
+    const [activeView, setActiveView] = useState<'gear' | 'shop'>(() => isShopOpen ? 'shop' : 'gear');
+    const gear = useGearPanel(activeView === 'gear', expanded.worn, expanded.carried);
     const gearSwipe = useMobileGearSwipe(gear.viewport.isMobile, gear.triggerHaptic);
     const gearSelection = useGearSelection();
     const dragState = useUIStore(state => state.objectDragState);
-    const isShopOpen = useUIStore(state => state.isShopOpen);
     const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
     const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
     const shopRoomLabel = getShopRoomLabel(
@@ -59,22 +60,17 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             if (source.selectedItems?.length) gearSelection.clear();
         },
     });
-    const [expanded, setExpanded] = useState({ worn: true, carried: true, room: true });
     const [selected, setSelected] = useState<SelectedGear | null>(null);
     const [showRecipients, setShowRecipients] = useState(false);
-    const [activeView, setActiveView] = useState<'gear' | 'shop'>('gear');
-
     useEffect(() => {
         setActiveView(isShopOpen ? 'shop' : 'gear');
     }, [isShopOpen]);
-
     const choose = (row: GearRow, section: Section, id: string, parentNoun?: string) => {
         gear.triggerHaptic?.(10);
         gearSelection.clear();
         setShowRecipients(false);
         setSelected(current => current?.id === id ? null : { id, row, section, parentNoun });
     };
-
     const renderRow = (row: GearRow, section: Section, source: DrawerLine[], id: string, parentNoun?: string, parentId?: string, levelItems: GearSelectionItem[] = []) => {
         const nested = Boolean(parentNoun);
         const selectionItem: GearSelectionItem = { id, row, section, parentNoun, parentId };
@@ -82,10 +78,6 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         const selectedForDrag = gearSelection.selection?.scopeKey === selectionScope && gearSelection.isSelected(id);
         const category = nested ? 'cat-container-item' : section === 'worn'
             ? 'cat-worn-object' : section === 'room' ? 'cat-room-object' : 'cat-inventory-object';
-        const itemColor = getInlineGlowColor(category, inlineSettings.inlineCategories,
-            { object: inlineSettings.objectColor }, inlineSettings.theme) || inlineSettings.objectColor;
-        const itemTier = classifyItemTier(row.line.text);
-        const conditionLabel = itemTier.stateLabel || row.condition.replace(/[()]/g, '').trim();
         const isExpanded = gear.expandedContainers.has(row.line.id);
         const contents = gear.containerContents[row.line.id]?.filter(visibleContainerLine) ?? [];
         return <React.Fragment key={id}>
@@ -108,20 +100,7 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
                         sourceLevelItemIds: selectedForDrag ? gearSelection.selection?.sourceLevelItemIds : undefined,
                     })}
                     title={row.noun} aria-label={`Select ${row.name}`}>
-                    {!nested && section === 'worn' && <span className="gear-slot">{row.slotLabel}</span>}
-                    <span className="gear-item-text">
-                        {row.article && <span className="gear-article">{row.article} </span>}
-                        <span
-                            className={`gear-item-name${itemTier.tier ? ` inline-item-tier-${itemTier.tier}` : ''}`}
-                            style={itemTier.tier ? undefined : { color: itemColor }}
-                        >{row.name}</span>
-                        {row.condition && <span
-                            className={`gear-condition-indicator${itemTier.state ? ` item-state-${itemTier.state}` : ' is-unknown'}`}
-                            role="img"
-                            aria-label={`Condition: ${conditionLabel}`}
-                            title={`Condition: ${conditionLabel}`}
-                        />}
-                    </span>
+                    <GearItemLabel row={row} category={category} showSlot={!nested && section === 'worn'} />
                 </button>
                 {row.isContainer && <button className="gear-container-toggle" type="button"
                     onClick={() => gear.toggleContainer(row.line, source)}
@@ -184,7 +163,9 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             </div>
             {expanded[section] && <div className={`gear-section-body${dragState?.target?.type === 'row' && dragState.target.row === dropRow ? ' is-drop-target' : ''}`}
                 data-object-drop-row={dropRow}>
-                {rows.length ? rows.map((row, index) => renderRow(row, section, source, `${section}:${row.line.id}:${index}`, undefined, undefined, levelItems))
+                {section !== 'room' && gear.panelData.status[section === 'worn' ? 'equipment' : 'inventory'] !== 'ready'
+                    ? <PanelDataEmpty kind={section === 'worn' ? 'equipment' : 'inventory'} emptyLabel="" />
+                    : rows.length ? rows.map((row, index) => renderRow(row, section, source, `${section}:${row.line.id}:${index}`, undefined, undefined, levelItems))
                     : <span className="gear-empty">{section === 'worn' ? 'Nothing equipped.' : section === 'room' ? 'No items nearby.' : 'Nothing carried.'}</span>}
             </div>}
         </section>;
@@ -212,7 +193,6 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
         && !gearSelection.items.some(item => item.row.line.id === row.line.id));
     const isCarriedWeapon = selected?.section === 'carried'
         && getObjectTraits(selected.row.line).includes('trait-weapon');
-
     return <aside className="docked-panel gear-panel" style={style} aria-label="Gear and shop panel"
         onPointerDown={gearSwipe.onGearPointerDown}
         onPointerUp={gearSwipe.onGearPointerUp}
@@ -320,5 +300,4 @@ const GearPanel: React.FC<GearPanelProps> = ({ style }) => {
             </>}
     </aside>;
 };
-
 export default React.memo(GearPanel);

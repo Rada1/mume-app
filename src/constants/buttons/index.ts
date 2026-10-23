@@ -4,7 +4,8 @@ import { COMMUNICATION_BUTTONS } from './communication';
 import { INLINE_CATEGORY_BUTTONS } from './inline';
 import { INVENTORY_BUTTONS } from './inventory';
 import { SOCIAL_BUTTONS } from './socials';
-import { DOOR_BUTTONS } from './doors';
+import { DOOR_BUTTONS, EXIT_BUTTONS } from './doors';
+import { WEATHER_BUTTONS } from './weather';
 import { META_BUTTONS } from './meta';
 
 export const ALL_BUTTONS: CustomButton[] = [
@@ -13,6 +14,8 @@ export const ALL_BUTTONS: CustomButton[] = [
     ...COMMUNICATION_BUTTONS,
     ...SOCIAL_BUTTONS,
     ...DOOR_BUTTONS,
+    ...EXIT_BUTTONS,
+    ...WEATHER_BUTTONS,
     ...INLINE_CATEGORY_BUTTONS,
     ...META_BUTTONS
 ];

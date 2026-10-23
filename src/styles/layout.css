@@ -40,26 +40,6 @@
     filter: sepia(0.35) brightness(0.60) contrast(1.05) blur(3px) !important;
 }
 
-/* Edge-to-edge immersion frame mirroring the room card's terrain border and gold hairline inlay */
-.app-container.immersion-mode::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    box-sizing: border-box;
-    pointer-events: none;
-    z-index: 9999;
-    background: transparent !important;
-    border: 1px solid var(--terrain-glow-color, rgba(255, 255, 255, 0.14));
-    box-shadow:
-        inset 0 0 0 1px rgba(232, 176, 32, 0.24),
-        inset 0 0 16px var(--terrain-glow-color, transparent),
-        inset 0 0 40px var(--terrain-glow-color, transparent);
-    transition: --terrain-glow-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
-                border-color 5s cubic-bezier(0.25, 0.1, 0.25, 1),
-                box-shadow 5s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-
 .app-container.is-map-expanded,
 .app-container.has-drawer-open {
     --mobile-gutter-height: calc(40dvh - var(--mobile-bottom-reserved-space, 0px));
@@ -87,8 +67,8 @@
 }
 
 .environment-root.back .background-layer {
-    top: 50%;
-    left: 50%;
+    top: calc(50% + var(--background-pan-y, 0vh));
+    left: calc(50% + var(--background-pan-x, 0vw));
     right: auto;
     bottom: auto;
     transform: translate(-50%, -50%);
@@ -98,7 +78,7 @@
     background-position: center !important;
     opacity: 0.18;
     filter: sepia(1) hue-rotate(195deg) saturate(6) brightness(0.9) !important;
-    transition: opacity 300ms ease-in-out, filter 0.4s ease, left 0.4s ease;
+    transition: opacity 300ms ease-in-out, filter 0.4s ease, left 0.4s ease, top 0.4s ease;
 }
 
 .app-container.immersion-mode .environment-root.back .background-layer {
@@ -113,7 +93,7 @@
    the viewport's, keeping the art's center aligned with the log's center. */
 @media (min-width: 1025px) {
     .environment-root.back .background-layer {
-        left: calc((var(--desktop-map-width, 22vw) + 100% - var(--desktop-character-width, 210px)) / 2);
+        left: calc((var(--desktop-map-width, 22vw) + 100% - var(--desktop-character-width, 210px)) / 2 + var(--background-pan-x, 0vw));
     }
 }
 
@@ -326,6 +306,11 @@
     -webkit-backdrop-filter: blur(8px) !important;
 }
 
+.app-container .content-layer.docked-panels-blurred .docked-panel.command-docked-panel {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
 .app-container .content-layer.docked-panels-blurred .gear-panel > .gear-shop-panel {
     background: transparent !important;
     backdrop-filter: none !important;
@@ -391,17 +376,17 @@
     }
 }
 
-/* Hide the portrait map and controls only for an active docked panel; inactive panels remain mounted. */
+/* Hide the map outside readability mode, plus auxiliary controls, for active docked panels. */
 @media (max-width: 1024px) {
     .message-log-container {
         touch-action: pan-y;
     }
 
-    body.has-docked-panels .mobile-map-panel,
+    body.has-docked-panels .app-container.is-mobile:not(.readability-mode) .mobile-map-panel,
     body.has-docked-panels .hud-clusters-absolute-layer,
     body.has-docked-panels .mobile-tactical-buttons-persistent,
     body.has-docked-panels .mobile-command-deck-persistent,
-    .app-container:has(.content-layer.has-docked-panels) .mobile-map-panel,
+    .app-container.is-mobile:not(.readability-mode):has(.content-layer.has-docked-panels) .mobile-map-panel,
     .app-container:has(.content-layer.has-docked-panels) .hud-clusters-absolute-layer,
     .app-container:has(.content-layer.has-docked-panels) .mobile-tactical-buttons-persistent,
     .app-container:has(.content-layer.has-docked-panels) .mobile-command-deck-persistent {
@@ -3004,10 +2989,10 @@
         left: 0;
         right: 0;
         height: 40px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: rgba(36, 38, 43, 0.28);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        border-bottom: 0;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
         pointer-events: none;
         z-index: 4990;
     }
@@ -3031,8 +3016,8 @@
     }
 
     .light-mode .app-header-glass-strip {
-        border-bottom-color: rgba(0, 0, 0, 0.08);
-        background: rgba(255, 255, 255, 0.24);
+        border-bottom: 0;
+        background: transparent;
     }
 
     .message-log-container {
@@ -3094,10 +3079,10 @@
 
     /* Outer stacks border styling handled in Drawers.css */
 
-    /* Hide redundant middle resizers */
+    /* Keep the log edges available for explicit desktop resizing. */
     .drawer-resize-handle--log-left,
     .drawer-resize-handle--log-right {
-        display: none !important;
+        display: block !important;
     }
 }
 

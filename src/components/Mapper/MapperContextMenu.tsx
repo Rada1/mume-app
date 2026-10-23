@@ -5,6 +5,7 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 import './MapperContextMenu.css';
+import './MapPopupSurfaces.css';
 
 // --- Types ---
 interface MapperContextMenuProps {
@@ -50,7 +51,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
             onPointerDown={onClose}
         />
         <div
-            className="mapper-context-menu"
+            className="mapper-context-menu map-popup-surface"
             role="menu"
             data-mobile={isMobile || undefined}
             style={{

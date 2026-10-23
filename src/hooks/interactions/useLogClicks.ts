@@ -1,12 +1,15 @@
+/** @file useLogClicks.ts — Handles inline log selection, targeting, and command interactions. */
 import { useCallback, useEffect, useRef } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { EntityCapability } from '../../types';
 import { getButtonCommand } from '../../utils/buttonUtils';
 import { formatMumeTarget, formatNpcKeywordTarget, sanitizeGameTarget, isInsideRoomDescription } from '../../utils/gameUtils';
 import { getEffectiveKeyword } from '../../utils/keywordUtils';
-import { getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
+import { canSetTargetChipFromCategory, getInlineCategoryAxes, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { useUIStore } from '../../stores/useUIStore';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
+import { handleLogHelpClick } from '../../utils/logHelpUtils';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) return false;
@@ -114,6 +117,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         // Allow clicks in mobile portrait even if map is open in gutter
         if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
 
+        if (handleLogHelpClick(e, executeCommand, viewport.isMobile)) {
+            return;
+        }
+
         const targetEl = (e.target instanceof HTMLElement) ? e.target.closest('.inline-btn') as HTMLElement : (e.target as any)?.parentElement?.closest('.inline-btn') as HTMLElement;
         const isRoomDesc = isInsideRoomDescription(targetEl);
 
@@ -183,7 +190,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             }
         }
 
-        // Account mode: tapping a character name opens the character action popover (Play, Info, Practice)
+        // Account mode: tapping a character selects its row without opening an action popover.
         if (targetEl.classList.contains('account-char-name') && setAccountState) {
             const name = targetEl.getAttribute('data-context') || targetEl.innerText.trim();
             if (name) {
@@ -192,19 +199,6 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                     return char
                         ? { ...prev, selectedCharacter: char, charSelectTab: null, charInfoLines: [], charPracticeLines: [] }
                         : prev;
-                });
-                const rect = targetEl.getBoundingClientRect();
-                setPopoverState({
-                    type: 'account-character',
-                    x: rect.left + rect.width / 2,
-                    y: rect.bottom,
-                    sourceHeight: rect.height,
-                    sourceRect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
-                    setId: 'account-character',
-                    context: name,
-                    accountCharName: name,
-                    displayName: name,
-                    preferSide: 'top'
                 });
                 triggerHaptic(30);
                 return;
@@ -247,7 +241,14 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 hasInspectionCard: shouldWhois,
                 isCapturingWhois: false,
                 capturedWhoisLines: undefined,
-                  whoisTarget: undefined,
+                whoisTarget: undefined,
+                isCapturingWho: false,
+                capturedWhoLines: undefined,
+                isCapturingWhere: false,
+                capturedWhereLines: undefined,
+                isCapturingRoomAction: false,
+                roomActionKind: undefined,
+                capturedRoomActionLines: undefined,
             };
         };
 
@@ -319,6 +320,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             !isLong &&
             !isMod;
         if (isEntityTap) {
+            const commandPanel = useCommandPanelStore.getState();
+            if (viewport.isMobile) commandPanel.setIsMobileGuideOpen(true);
+            else commandPanel.setIsOpen(true);
+
             const shopStore = useUIStore.getState();
             if (shopStore.isShopOpen && shopStore.heldShopAction === 'compare' && shopStore.compareFirstTarget !== null) {
                 triggerHaptic(30);
@@ -328,8 +333,21 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
                 return;
             }
 
+            // Match room-picker targeting, including repeated taps on the selected entity.
+            if (canSetTargetChipFromCategory(category) && tapAxes.location === 'room' && contextStr) {
+                setTarget(contextStr);
+            }
+
+            // A target tap opens the mobile command panel without bringing up the soft keyboard.
+            if (viewport.isMobile) {
+                const activeElement = document.activeElement;
+                if (activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement) {
+                    activeElement.blur();
+                }
+            }
+
             const glowColor = targetEl.style.getPropertyValue('--glow-color').trim();
-            const accentColor = glowColor || targetEl.style.color || undefined;
+            const accentColor = getComputedStyle(targetEl).color || glowColor || targetEl.style.color || undefined;
             const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
             const isSameOpenMenu = isAlreadySelected && popoverState?.entityId === entityId;
             if (isSameOpenMenu) {

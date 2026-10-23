@@ -6,9 +6,12 @@
 import React from 'react';
 import { useTelnetSocket } from './useTelnetSocket';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
-import { TELNET_GMCP, TELNET_TTYPE, TTYPE_SEND, TTYPE_IS, IAC, SB, SE } from '../constants';
+import { TELNET_GMCP, TELNET_MSSP, TELNET_TTYPE, TTYPE_SEND, TTYPE_IS, IAC, SB, SE } from '../constants';
+import { parseMsspTime } from '../utils/telnet/msspTime';
+import type { MumeTime } from '../types';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { PipelineOrchestrator } from '../services/parser/PipelineOrchestrator';
+import { perfMonitor } from '../utils/perfMonitor';
 import { processIncomingTextChunk } from './telnetTextQueue';
 import { getRoom as getActiveRoom } from '../stores/useRoomStore';
 import { getCombat as getActiveCombat } from '../stores/useCombatStore';
@@ -16,6 +19,7 @@ import { getVitals as getActiveVitals } from '../stores/useVitalsStore';
 import { getSettings } from '../stores/useSettingsStore';
 import { useButtonStore } from '../stores/useButtonStore';
 import { useUIStore } from '../stores/useUIStore';
+import { isPagerPrompt } from '../utils/pagerPrompt';
 
 export interface TelnetConfig {
     connectionUrl: string;
@@ -26,6 +30,7 @@ export interface TelnetConfig {
     onCharNameChange?: (name: string) => void;
     onPositionChange?: (pos: string) => void;
     handlers: {
+        onMsspTime?: (time: MumeTime) => void;
         setStatus: (status: string) => void;
         setStats: any;
         setWeather: any;
@@ -141,7 +146,7 @@ export function useTelnet(config: TelnetConfig) {
 
             // Basic MUME prompt heuristics for non-XML or legacy prompts
             return (clean.endsWith('>') ||
-                clean.toLowerCase().includes('return: continue'));
+                isPagerPrompt(clean));
         };
 
         const isAccountLoginQuestion = (line: string) => {
@@ -385,7 +390,9 @@ export function useTelnet(config: TelnetConfig) {
                     };
 
                     const isAccountMode = configRef.current.getGameState?.() === 'account';
+                    const queuedAt = performance.now();
                     const runProcessing = async () => {
+                        const startedAt = performance.now();
                         try {
                             await processIncomingTextChunk(
                                 chunk,
@@ -394,6 +401,7 @@ export function useTelnet(config: TelnetConfig) {
                                 isAccountMode
                             );
                         } finally {
+                            perfMonitor.recordTextTiming(startedAt - queuedAt, performance.now() - startedAt);
                             queuedTextChunksRef.current--;
                             // A burst of short socket chunks otherwise forms a continuous
                             // promise microtask chain that can postpone paint on mobile.
@@ -505,6 +513,9 @@ export function useTelnet(config: TelnetConfig) {
             PipelineOrchestrator.registerGmcpHandler((p, d) => gmcpDecoder.current?.decode(p, d));
             PipelineOrchestrator.ingestGmcp(pkg, json);
             onGmcp(pkg, json);
+        } else if (cmd === TELNET_MSSP) {
+            const time = parseMsspTime(buffer.slice(1));
+            if (time) configRef.current.handlers.onMsspTime?.(time);
         } else if (cmd === TELNET_TTYPE && buffer[1] === TTYPE_SEND) {
             const bytes = [IAC, SB, TELNET_TTYPE, TTYPE_IS, ...Array.from(new TextEncoder().encode("xterm-256color")), IAC, SE];
             sendBytes(bytes);

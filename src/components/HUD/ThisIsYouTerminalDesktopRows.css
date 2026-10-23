@@ -1,0 +1,86 @@
+/**
+ * @file ThisIsYouTerminalDesktopRows.css
+ * @description Desktop telemetry row alignment.
+ */
+
+/* Keep the telemetry columns on one shared spreadsheet-like row rhythm. */
+.this-is-you-console:not(.is-mobile) {
+    --this-is-you-header-row-height: 17px;
+    --this-is-you-data-row-height: 22px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-vitals-cluster {
+    display: contents;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-vitals-group,
+.this-is-you-console:not(.is-mobile) .this-is-you-combat-slot,
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-states,
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-modes {
+    display: grid;
+    grid-template-rows: var(--this-is-you-header-row-height) repeat(5, var(--this-is-you-data-row-height));
+    align-content: start;
+    row-gap: 0;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-vitals-group {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-vitals-group::before,
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-states::before,
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-modes::before {
+    grid-row: 1;
+    height: var(--this-is-you-header-row-height);
+    line-height: 12px;
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-combat-heading {
+    grid-row: 1;
+    height: var(--this-is-you-header-row-height);
+    min-height: 0;
+    line-height: 12px;
+    margin: 0;
+    padding-bottom: 5px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-telemetry-cell,
+.this-is-you-console:not(.is-mobile) .this-is-you-capabilities-row > span,
+.this-is-you-console:not(.is-mobile) .this-is-you-mode-toggle,
+.this-is-you-console:not(.is-mobile) .this-is-you-mode-indicator,
+.this-is-you-console:not(.is-mobile) .this-is-you-pill-wrapper {
+    box-sizing: border-box;
+    height: var(--this-is-you-data-row-height);
+    min-height: 0;
+    align-self: stretch;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-combat-slot {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-capabilities-cell,
+.this-is-you-console:not(.is-mobile) .this-is-you-capabilities-row,
+.this-is-you-console:not(.is-mobile) .this-is-you-pills-row {
+    display: contents;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-capabilities-row > span,
+.this-is-you-console:not(.is-mobile) .this-is-you-pill-wrapper {
+    grid-column: 1;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-states {
+    align-items: stretch;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-pill-wrapper {
+    width: 100%;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-pill {
+    height: 100%;
+}
+

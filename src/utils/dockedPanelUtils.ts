@@ -11,7 +11,7 @@ export const DOCKED_PANEL_ORDER: readonly DockedPanelId[] = [
 ] as const;
 
 export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
-    commands: '--desktop-character-width',
+    commands: '--desktop-command-panel-width',
     chat: '--desktop-chat-width',
     group: '--desktop-group-width',
     gear: '--desktop-gear-width',
@@ -21,7 +21,7 @@ export const PANEL_WIDTH_VARS: Record<DockedPanelId, string> = {
 };
 
 export const PANEL_DEFAULT_WIDTHS: Record<DockedPanelId, string> = {
-    commands: '260px',
+    commands: '460px',
     chat: '24vw',
     group: '30vw',
     gear: '30vw',

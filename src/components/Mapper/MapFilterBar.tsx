@@ -14,6 +14,7 @@ import {
 } from './MapFilterCategories';
 import { MapFilterSubflagsDropup } from './MapFilterSubflagsDropup';
 import './MapFilterBar.css';
+import './MapPopupSurfaces.css';
 
 // --- Props ---
 
@@ -157,7 +158,7 @@ export const MapFilterBar: React.FC<MapFilterBarProps> = ({
     return (
         <div
             ref={barRef}
-            className={`map-filter-bar ${isCollapsed ? 'collapsed' : ''} ${floatingPanel ? 'floating-find-panel' : ''}`}
+            className={`map-filter-bar ${isCollapsed ? 'collapsed' : ''} ${floatingPanel ? 'floating-find-panel map-popup-surface' : ''}`}
             style={floatingPanel ? {
                 top: floatingPosition
                     ? `clamp(8px, ${floatingPosition.y}px, max(8px, calc(100% - 420px)))`

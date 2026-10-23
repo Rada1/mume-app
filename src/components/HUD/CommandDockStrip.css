@@ -1,0 +1,306 @@
+/** @file CommandDockStrip.css — Desktop strip aligned with map, log, and action regions. */
+/* --- Strip Layout --- */
+.app-container .content-layer:has(.command-dock-shell) {
+    padding-bottom:calc(58px + env(safe-area-inset-bottom, 0px)) !important;
+    transition:none;
+}
+.app-container .message-log-container:has(.command-dock-shell) { overflow:visible !important; }
+.command-tree-v2.command-dock-shell {
+    position:fixed;
+    inset:auto 0 env(safe-area-inset-bottom, 0px);
+    z-index:65000;
+    display:grid;
+    grid-template-columns:var(--message-log-left, 25vw) var(--message-log-width, 50vw) minmax(0, 1fr);
+    grid-template-rows:auto 58px;
+    width:100vw;
+    max-width:100vw;
+    max-height:none;
+    padding:0 !important;
+    overflow:visible !important;
+    background:transparent !important;
+    box-sizing:border-box;
+    pointer-events:none !important;
+}
+.command-dock-summary,.command-dock-controls,.command-dock-input-main,.command-dock-actions { pointer-events:auto; }
+.command-dock-summary .command-tree-you-vital-tooltip { top:auto; bottom:calc(100% + 4px); }
+.command-dock-summary {
+    grid-area:1 / 1;
+    width:100%;
+    min-width:0;
+    padding:0 4px 4px;
+    box-sizing:border-box;
+    align-self:end;
+}
+.command-dock-summary .command-tree-you-summary { width:100%; margin:0; }
+.message-log-docked-input.command-dock-row { display:contents; }
+.command-dock-input-main {
+    grid-area:2 / 2;
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    min-height:58px;
+    padding:5px 8px;
+    overflow:visible;
+    background:var(--command-tree-surface);
+}
+.command-dock-input-main.is-inline { display:contents; }
+.command-dock-input-main .docked-input-form { flex:1 1 0; min-width:0; }
+.command-dock-input-main .docked-input-wrap { min-width:0; }
+.command-dock-controls {
+    grid-area:2 / 1;
+    position:relative;
+    z-index:12;
+    display:flex;
+    min-width:0;
+    padding-inline:4px;
+    box-sizing:border-box;
+}
+.command-tree-dock-controls-inner { display:flex; align-items:stretch; gap:4px; width:100%; min-width:0; }
+.command-tree-dock-controls-inner .command-tree-state-controls { width:auto; flex:1 1 0; min-width:0; margin:0; }
+.command-tree-dock-controls-inner .command-tree-quick-state > button {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    min-height:46px;
+    padding:5px;
+    font-size:11px;
+    line-height:14px;
+    text-transform:uppercase;
+}
+.command-tree-dock-controls-inner .command-tree-quick-state > button small { margin-top:2px; font-size:10px; text-transform:capitalize; }
+.command-tree-dock-controls-inner .command-tree-gear-controls { flex:0 1 136px; width:136px; gap:4px; }
+.command-tree-dock-controls-inner .command-tree-quick-gear > button { min-height:46px; padding:5px; font-size:10px; text-transform:uppercase; }
+.command-dock-actions { grid-area:2 / 3; display:flex; min-width:0; }
+.command-tree-dock-action-bar { display:flex; align-items:stretch; width:100%; min-width:0; }
+.command-tree-root-actions { display:flex; flex:1 1 auto; align-items:stretch; min-width:0; overflow-x:auto; background:var(--command-tree-surface); }
+.command-tree-v2 .command-tree-root-actions > .command-tree-row { flex:1 1 0; min-width:0; min-height:58px; padding:8px 4px; font-size:11px; text-transform:uppercase; letter-spacing:0; }
+/* --- Upward Menus --- */
+.command-tree-v2 .command-tree-gear-quick-menu { align-items:flex-end; overflow:visible; background:transparent; }
+.command-dock-menu { display:contents; }
+.command-dock-shell .command-tree-dock-popup {
+    position:fixed;
+    right:8px;
+    bottom:58px;
+    z-index:65002;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    width:max-content;
+    max-width:calc(100vw - 16px);
+    pointer-events:auto;
+}
+.command-tree-dock-popup > .command-tree-header { align-self:flex-end; box-sizing:border-box; width:220px; max-width:calc(100vw - 16px); min-width:0; min-height:30px; margin:0; padding:2px 8px 4px; background:var(--command-tree-surface); }
+.command-dock-shell .command-tree-dock-popup .command-tree-branch:has(.command-tree-root-header) { padding-top:0; }
+.command-dock-shell .command-tree-dock-popup .command-tree-root-header {
+    position:sticky;
+    top:0;
+    z-index:10;
+    box-sizing:border-box;
+    align-self:stretch;
+    width:calc(100% + 8px);
+    max-width:none;
+    min-width:0;
+    min-height:30px;
+    margin:0 -4px 4px;
+    padding:2px 8px 4px;
+    background:var(--command-tree-surface);
+}
+.command-dock-shell .command-tree-dock-popup .unified-command-workspace {
+    display:flex;
+    flex:0 0 auto;
+    width:max-content;
+    max-width:100%;
+    height:auto;
+    min-width:0;
+    overflow:visible;
+}
+.command-dock-shell .command-tree-dock-popup .command-tree-branches {
+    display:flex;
+    flex:0 0 auto;
+    flex-direction:row-reverse;
+    align-items:flex-end;
+    width:max-content;
+    max-width:100%;
+    height:auto;
+    min-height:0;
+    max-height:min(66dvh, 640px);
+    overflow:visible;
+    padding:0;
+    background:transparent;
+}
+.command-dock-shell .command-tree-dock-popup .command-tree-branch { height:auto; max-height:min(62dvh, 600px); }
+.command-tree-portal-host { display:none; }
+.app-container .command-docked-panel:has(.command-tree-portal-host) { display:none !important; }
+@media (max-width:1100px) {
+    .command-tree-dock-controls-inner .command-tree-gear-controls { flex-basis:110px; width:110px; }
+    .command-tree-v2 .command-tree-root-actions > .command-tree-row { padding-inline:5px; }
+}
+
+/* --- Opaque Bottom Surfaces --- */
+.app-container .command-dock-shell .command-dock-controls,
+.app-container .command-dock-shell .command-dock-input-main,
+.app-container .command-dock-shell .command-dock-actions {
+    background:var(--command-tree-surface) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+}
+
+/* --- Centered Button Headings --- */
+.command-dock-shell .command-tree-root-actions > .command-tree-row {
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+}
+.command-dock-shell .command-tree-root-actions .command-tree-row-label { text-align:center; }
+.command-dock-shell .command-tree-root-actions .command-tree-row-chevron { position:absolute; right:2px; }
+.command-dock-shell .command-tree-quick-state > button,
+.command-dock-shell .command-tree-quick-gear > button { align-items:center; text-align:center; }
+
+/* --- Shared Header Button Surfaces --- */
+.command-dock-shell .command-tree-quick-state > button,
+.command-dock-shell .command-tree-quick-gear > button { background:var(--command-tree-surface); }
+.command-dock-shell .command-tree-quick-state > button:hover,
+.command-dock-shell .command-tree-quick-state > button:focus-visible,
+.command-dock-shell .command-tree-quick-state > button[aria-expanded=true],
+.command-dock-shell .command-tree-quick-gear > button:hover,
+.command-dock-shell .command-tree-quick-gear > button:focus-visible,
+.command-dock-shell .command-tree-quick-gear > button[aria-expanded=true] { background:var(--command-tree-surface-hover); }
+
+/* --- Equal Quick Control Widths --- */
+.command-dock-shell .command-tree-dock-controls-inner { gap:0; }
+.command-dock-shell .command-tree-dock-controls-inner .command-tree-state-controls {
+    flex:4 1 0;
+    display:flex;
+    width:0;
+    gap:0;
+}
+.command-dock-shell .command-tree-dock-controls-inner .command-tree-gear-controls {
+    flex:2 1 0;
+    width:0;
+    gap:0;
+}
+.command-dock-shell .command-tree-quick-state,
+.command-dock-shell .command-tree-quick-gear { flex:1 1 0; min-width:0; }
+.command-dock-shell .command-tree-quick-state > button,
+.command-dock-shell .command-tree-quick-gear > button { width:100%; min-width:0; box-sizing:border-box; }
+
+/* --- Shared Character Summary Surface --- */
+.command-dock-shell .command-tree-you-summary { background:var(--command-tree-surface); }
+.command-dock-shell .command-tree-you-vitals > div,
+.command-dock-shell .command-tree-you-combat-stats > button { background:var(--command-tree-value-surface); }
+
+/* --- Shared Submenu Surfaces --- */
+.command-tree-v2 :is(
+    .command-tree-branch,
+    .command-tree-header,
+    .command-tree-quick-options,
+    .command-tree-gear-quick-list,
+    .command-tree-gear-quick-actions,
+    .command-tree-gear-quick-contents
+) {
+    background:var(--command-tree-surface) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+}
+
+/* --- Current Target in Action Menus --- */
+.command-tree-v2 .command-tree-current-target {
+    position:relative;
+    background:var(--active-target-highlight-background, rgba(127,29,29,.24)) !important;
+}
+.command-tree-current-target > button { padding-right:28px !important; }
+.command-tree-target-crosshair { flex:none; color:#fca5a5; }
+.command-tree-current-target > button + .command-tree-target-crosshair { position:absolute; right:8px; top:50%; transform:translateY(-50%); pointer-events:none; }
+
+/* --- Mobile Command Console: Input / Actions / State / Info --- */
+.app-container .content-layer:has(.command-dock-shell-mobile) { padding-bottom:env(safe-area-inset-bottom, 0px) !important; }
+.command-tree-v2.command-dock-shell.command-dock-shell-mobile {
+    position:relative;
+    inset:auto;
+    flex:0 0 auto;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto auto auto;
+    width:100%;
+    max-width:100%;
+    min-height:0;
+}
+.command-dock-shell-mobile .command-dock-input-main { grid-area:1 / 1; min-height:44px; }
+.command-dock-shell-mobile .command-dock-actions { grid-area:2 / 1; margin-top:4px; }
+.command-dock-shell-mobile .command-dock-controls { grid-area:3 / 1; padding:0; }
+.command-dock-shell-mobile .command-dock-summary { grid-area:4 / 1; padding:4px 0 0; }
+.command-dock-shell-mobile .command-tree-root-actions { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); width:100%; overflow:visible; }
+.command-dock-shell-mobile .command-tree-root-actions > .command-tree-row { min-width:0; min-height:42px; padding:6px 2px; font-size:9px; letter-spacing:0; }
+.command-dock-shell-mobile .command-tree-dock-controls-inner { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0; }
+.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-state-controls,
+.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-gear-controls { display:contents; }
+.command-dock-shell-mobile .command-tree-quick-state,
+.command-dock-shell-mobile .command-tree-quick-gear { width:100%; min-width:0; }
+.command-dock-shell-mobile .command-tree-quick-state > button,
+.command-dock-shell-mobile .command-tree-quick-gear > button { min-height:44px; padding:5px 2px; font-size:9px; line-height:12px; }
+.command-dock-shell-mobile .command-tree-quick-state > button small { font-size:9px; }
+.command-dock-shell-mobile .command-tree-dock-popup { max-width:calc(100vw - 16px); }
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branches { max-width:calc(100vw - 16px); overflow:auto; }
+.command-dock-shell-mobile .command-tree-you-identity { gap:4px 6px; }
+.command-dock-shell-mobile .command-tree-you-progression { font-size:9px; }
+.command-dock-shell-mobile .command-tree-quick-gear,
+.command-dock-shell-mobile .command-tree-quick-state { position:static; }
+.command-dock-shell-mobile .command-tree-gear-quick-menu {
+    top:auto;
+    left:auto;
+    right:8px;
+    display:flex;
+    align-items:stretch;
+    width:max-content;
+    max-width:calc(100vw - 16px);
+}
+.command-dock-shell-mobile .command-tree-gear-quick-details {
+    display:flex;
+    flex:0 0 calc((100vw - 24px) / 2);
+    flex-direction:column;
+    box-sizing:border-box;
+    width:calc((100vw - 24px) / 2);
+    height:min(55dvh,480px);
+    max-height:min(55dvh,480px);
+    overflow:visible;
+}
+.command-dock-shell-mobile .command-tree-gear-quick-list,
+.command-dock-shell-mobile .command-tree-gear-quick-list.is-equipment {
+    flex:0 0 calc((100vw - 24px) / 2);
+    box-sizing:border-box;
+    width:calc((100vw - 24px) / 2);
+    min-width:calc((100vw - 24px) / 2);
+    max-width:calc((100vw - 24px) / 2);
+    max-height:min(55dvh,480px);
+}
+.command-dock-shell-mobile .command-tree-gear-quick-actions,
+.command-dock-shell-mobile .command-tree-gear-quick-contents {
+    flex:1 1 0;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    max-height:none;
+    min-height:0;
+    overflow:auto;
+}
+.command-dock-shell-mobile .command-tree-gear-quick-details:empty { display:none; }
+.command-dock-shell-mobile .command-tree-quick-options { left:0; right:0; width:100%; }
+
+/* --- Mobile Keyboard: Keep Only the Command Input Above the Keyboard --- */
+@media (max-width:1024px) {
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile {
+        grid-template-rows:auto;
+    }
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-actions,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-controls,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-summary,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-menu {
+        display:none !important;
+    }
+}

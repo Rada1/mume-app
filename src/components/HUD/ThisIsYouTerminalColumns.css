@@ -1,0 +1,227 @@
+/**
+ * @file ThisIsYouTerminalColumns.css
+ * @description Aligned terminal columns.
+ */
+
+/* --- Aligned Terminal Columns --- */
+.this-is-you-tier-vitals { display: contents; }
+.this-is-you-vitals-cluster {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    gap: 4px;
+}
+.this-is-you-vitals-group { grid-column: 1; }
+.this-is-you-vitals-group,
+.this-is-you-combat-slot,
+.this-is-you-tier-states,
+.this-is-you-tier-modes { min-width: 0; }
+.this-is-you-vitals-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.this-is-you-combat-slot { grid-column: 2; }
+.this-is-you-tier-states {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-tier-modes {
+    grid-column: 4;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+}
+.this-is-you-vitals-group::before,
+.this-is-you-combat-slot::before,
+.this-is-you-tier-states::before,
+.this-is-you-tier-modes::before {
+    display: block;
+    box-sizing: border-box;
+    height: 12px;
+    line-height: 12px;
+    margin-bottom: 5px;
+    color: #c9a84c;
+    font-size: 0.61rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+.this-is-you-vitals-group::before { content: 'VITALS'; }
+.this-is-you-combat-slot::before { display: none; content: none; }
+.this-is-you-tier-states::before { content: 'STATE'; }
+.this-is-you-tier-modes::before { content: 'MOVEMENT'; }
+.this-is-you-mode-indicator {
+    display: inline-flex;
+    align-items: center;
+    min-height: 22px;
+    color: #9bd2a5;
+    font-size: 0.64rem;
+    font-family: inherit;
+    font-weight: 650;
+    white-space: nowrap;
+}
+.this-is-you-console .this-is-you-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    min-height: 22px;
+    padding: 1px 5px;
+    border: 0;
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.06);
+    color: #c9c1ac;
+    font-family: inherit;
+    font-size: 0.64rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.this-is-you-mode-toggle strong { color: #9a9182; font-weight: 650; }
+.this-is-you-mode-toggle.is-active strong { color: #9bd2a5; }
+.this-is-you-mode-toggle:hover:not(:disabled),
+.this-is-you-mode-toggle:focus-visible {
+    background: rgba(201, 168, 76, 0.14);
+    color: #f1cf6d;
+}
+.this-is-you-mode-toggle:disabled { cursor: default; opacity: 0.6; }
+
+.this-is-you-telemetry-cell {
+    display: grid;
+    grid-template-columns: 70px max-content max-content;
+    justify-content: start;
+    align-items: center;
+    gap: 6px;
+    min-height: 22px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-cell-header { display: contents; }
+.this-is-you-health-cell { grid-template-columns: 70px max-content max-content; }
+.this-is-you-cell-header .label {
+    grid-column: 1;
+    color: #9a9182 !important;
+    font-size: 0.66rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+.this-is-you-health-cell .this-is-you-cell-val {
+    grid-column: 2;
+    grid-row: 1;
+}
+.this-is-you-health-header .regen {
+    grid-column: 3;
+    grid-row: 1;
+}
+.this-is-you-cell-header .regen {
+    grid-column: 3;
+    color: #75bc85;
+    font-size: 0.6rem;
+    opacity: 0.58;
+}
+.this-is-you-cell-val {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    color: #999182;
+    font-size: 0.68rem;
+    white-space: nowrap;
+}
+.this-is-you-cell-val[data-vital-type="health"],
+.this-is-you-cell-val[data-vital-type="mana"],
+.this-is-you-cell-val[data-vital-type="move"] { color: #999182; }
+.this-is-you-vital-status {
+    font-size: 0.74rem;
+    font-weight: 750;
+    text-transform: capitalize;
+}
+.this-is-you-vital-status.is-good { color: #9bd2a5; }
+.this-is-you-vital-status.is-warning { color: #e5c46b; }
+.this-is-you-vital-status.is-critical { color: #f87171; }
+.this-is-you-vital-status.is-neutral { color: #b4a98f; }
+.this-is-you-vital-numbers.is-low-vital,
+.this-is-you-vital-status.is-low-vital {
+    --low-vital-opacity: 1;
+    --low-vital-dim-opacity: .42;
+    animation: low-vital-pulse 1.25s ease-in-out infinite;
+}
+.this-is-you-vital-separator {
+    color: #736856;
+    font-size: 0.62rem;
+}
+.this-is-you-vital-numbers {
+    color: rgba(201, 193, 172, 0.62);
+    font-size: 0.64rem;
+    font-weight: 500;
+}
+.this-is-you-cell-val .this-is-you-delta {
+    margin-left: 0;
+    font-size: 0.57rem;
+    font-weight: 500;
+    opacity: 0.58;
+}
+
+.this-is-you-capabilities-cell {
+    height: auto;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+}
+.this-is-you-capabilities-cell .this-is-you-cell-header { display: none; }
+.this-is-you-capabilities-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(4, minmax(22px, auto));
+    grid-auto-flow: row;
+    gap: 0;
+    margin: 0;
+    color: #9a9182;
+    font-size: 0.73rem;
+}
+.this-is-you-capabilities-row > span {
+    display: grid;
+    grid-template-columns: minmax(0, 58px) max-content minmax(0, 1fr);
+    align-items: center;
+    min-height: 22px;
+    column-gap: 3px;
+    white-space: nowrap;
+}
+.this-is-you-capability-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.this-is-you-capabilities-row strong { margin-left: 0; color: #9bd2a5; white-space: nowrap; }
+.this-is-you-capabilities-row .this-is-you-delta { align-self: baseline; }
+.this-is-you-combat-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    box-sizing: border-box;
+    height: 12px;
+    min-height: 0;
+    line-height: 12px;
+    margin-bottom: 5px;
+    color: #c9a84c;
+    font-size: 0.61rem;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+}
+

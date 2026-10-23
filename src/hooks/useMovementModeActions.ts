@@ -15,8 +15,10 @@ interface MovementState {
 export interface MovementModeAction {
     id: string;
     label: string;
+    isToggle: boolean;
     active: boolean;
     command: string;
+    statusLabel?: string;
 }
 
 export const getMovementModeActions = (state: MovementState): MovementModeAction[] => {
@@ -25,11 +27,11 @@ export const getMovementModeActions = (state: MovementState): MovementModeAction
     const riding = state.isRiding;
 
     return [
-        { id: 'climb', label: 'Climb', active: climbing, command: climbing ? 'climb off' : 'climb safe' },
-        { id: 'swim', label: 'Swim', active: state.isSwimming, command: 'swim' },
-        { id: 'ride', label: 'Ride', active: riding, command: riding ? 'lead' : 'ride' },
-        { id: 'sneak', label: 'Sneak', active: sneaking, command: 'sneak' },
+        { id: 'climb', label: 'Climb', isToggle: true, active: climbing, command: climbing ? 'climb off' : 'climb safe' },
+        { id: 'swim', label: 'Swim', isToggle: true, active: state.isSwimming, command: 'swim' },
+        { id: 'ride', label: 'Ride', isToggle: false, active: riding, command: riding ? 'lead' : 'ride', statusLabel: 'Riding' },
+        { id: 'sneak', label: 'Sneak', isToggle: true, active: sneaking, command: 'sneak' },
         // MUME has no hide-off toggle; an active equipment check breaks hiding.
-        { id: 'hidden', label: 'Hidden', active: state.isHidden, command: state.isHidden ? 'equipment' : 'hide' },
+        { id: 'hidden', label: 'Hidden', isToggle: false, active: state.isHidden, command: state.isHidden ? 'equipment' : 'hide', statusLabel: 'Hidden' },
     ];
 };

@@ -1,5 +1,6 @@
 /** @file objectDragUtils.ts — Drop target and command rules for gear dragging. */
 
+import { getObjectTraits } from '../objects/objectTargetModel';
 import type { ObjectDragItem, ObjectDragSource, ObjectDropTarget } from '../types';
 
 // --- Logic Section ---
@@ -75,7 +76,8 @@ const getSingleObjectDragCommand = (source: ObjectDragItem, target: ObjectDropTa
     if (source.parentContainerNoun) return target.type === 'row' && target.row === 'inventory'
         ? `get ${source.noun} ${source.parentContainerNoun}` : null;
     if (target.type === 'entity') return `give ${source.noun} ${target.noun}`;
-    if (source.row === 'inventory' && target.row === 'worn' && target.slot === 'wielded') {
+    if (source.row === 'inventory' && target.row === 'worn'
+        && (target.slot === 'wielded' || getObjectTraits(source.label).includes('trait-weapon'))) {
         return `wield ${source.noun}`;
     }
     if (source.row === 'inventory' && target.row === 'worn') return `wear ${source.noun}`;

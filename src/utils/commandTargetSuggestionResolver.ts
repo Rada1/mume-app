@@ -32,6 +32,7 @@ import {
     getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions,
     getRoomContainerTargetSuggestions,
+    getRoomInspectionTargetSuggestions,
     getRoomTargetSuggestions,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
@@ -66,6 +67,7 @@ export interface CommandTargetSuggestionContext {
 }
 
 export interface ResolvedCommandTargetSuggestions {
+    isActionDerived?: boolean;
     suggestions: CommandTargetSuggestion[];
     fragment: string;
     argumentIndex: number;
@@ -234,6 +236,17 @@ const getMenuSuggestions = (
     if (kind === 'door-direction') return [{ key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }];
     if (kind === 'room-spell' || kind === 'room-spell-with-extras' || kind === 'bash' || kind === 'room') {
         const verb = command.trim().split(/\s+/, 1)[0].toLowerCase();
+        if (['look', 'examine', 'consider'].includes(verb)) {
+            const inspectionTargets = getRoomInspectionTargetSuggestions(roomOccupants, roomObjects, characterName);
+            if (verb === 'look') return [
+                ...inspectionTargets,
+                getSelfTargetSuggestion(),
+                { key: 'blank-target', label: 'Blank Target', value: BLANK_TARGET_VALUE, meta: 'source' },
+                { key: 'look-in', label: 'In', value: 'in', meta: 'look-in' }
+            ];
+            if (verb === 'examine') return [...inspectionTargets, getSelfTargetSuggestion()];
+            return inspectionTargets;
+        }
         const roomTargets = isOffensiveTargetCommand(command)
             ? getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName)
             : getRoomTargetSuggestions(roomOccupants, roomObjects, 'characters', characterName);
@@ -250,13 +263,6 @@ const getMenuSuggestions = (
         if (kind === 'room-spell-with-extras') return appendNamedTargetSuggestions(prioritizedTargets, [
             { label: 'Web', value: 'web', meta: 'object' }, { label: 'Exit', value: 'exit', meta: 'exit' }
         ]);
-        if (/^look(?:\s|$)/i.test(command.trim())) return [
-            getSelfTargetSuggestion(),
-            { key: 'blank-target', label: 'Blank Target', value: BLANK_TARGET_VALUE, meta: 'source' },
-            { key: 'look-in', label: 'In', value: 'in', meta: 'look-in' },
-            ...eligibleTargets
-        ];
-        if (/^examine(?:\s|$)/i.test(command.trim())) return [getSelfTargetSuggestion(), ...eligibleTargets];
         return prioritizedTargets;
     }
     if (kind === 'mage-spells') return getLearnedMageSpellSuggestions(practiceSkills, abilities);

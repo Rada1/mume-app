@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, TerminalSquare, Shield, UsersRound, BookOpen } from 'lucide-react';
+import { Layers, Settings, MoreVertical, ChevronDown, Check, ChevronLeft, Eye, RefreshCw, X, User, Map as MapIcon, Music, Cog, Activity, HelpCircle, Film, LogOut, Mail, DraftingCompass, MessageSquare, TerminalSquare, UsersRound } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/MapperContext';
 import { useModeStore } from '../../stores/useModeStore';
@@ -12,6 +12,8 @@ import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
 import { canAccessShaper } from '../../shaper/access/shaperAccess';
 import { MobileHeaderTime } from './MobileHeaderTime';
+import { MobileHeaderPanelButtons } from './MobileHeaderPanelButtons';
+import { DetailsPanelToggle } from './DetailsPanelToggle';
 
 interface HeaderProps {
     isLandscape?: boolean;
@@ -179,8 +181,9 @@ const Header: React.FC<HeaderProps> = () => {
     const [isMenuOpen, setIsMenuOpen] = [ui.isMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isMenuOpen: val })) as any];
     const [isSetMenuOpen, setIsSetMenuOpen] = [ui.isSetMenuOpen, (val: boolean) => setUI(prev => ({ ...prev, isSetMenuOpen: val })) as any];
     const [menuView, setMenuView] = [ui.menuView, (val: 'main' | 'availableSets') => setUI(prev => ({ ...prev, menuView: val })) as any];
-    const { isCommandPanelOpen, isSkillsPanelOpen, isGearPanelOpen, showChatWindow, showGroupPanel,
-        isHelpOpen, helpData, toggleHeaderTab } = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
+    const headerTabs = useMobileHeaderTabs(viewport.isMobile, isMenuOpen, setIsMenuOpen);
+    const { isCommandPanelOpen, showChatWindow, showGroupPanel,
+        isHelpOpen, helpData, toggleHeaderTab } = headerTabs;
 
     const menuRef = useRef<HTMLDivElement>(null);
     const setMenuRef = useRef<HTMLDivElement>(null);
@@ -411,33 +414,7 @@ const Header: React.FC<HeaderProps> = () => {
                             <TerminalSquare size={17} />
                         </button>
 
-                        <button
-                            className={`menu-toggle-btn${isSkillsPanelOpen ? ' active' : ''}`}
-                            onClick={() => {
-                                toggleHeaderTab('skills');
-                                triggerHaptic?.(10);
-                            }}
-                            title="Toggle Skills and Practice"
-                            aria-label="Toggle Skills and Practice"
-                            aria-pressed={isSkillsPanelOpen}
-                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-                        >
-                            <BookOpen size={17} />
-                        </button>
-
-                        <button
-                            className={`menu-toggle-btn${isGearPanelOpen ? ' active' : ''}`}
-                            onClick={() => {
-                                toggleHeaderTab('gear');
-                                triggerHaptic?.(10);
-                            }}
-                            title="Toggle Equipment and Inventory"
-                            aria-label="Toggle Equipment and Inventory"
-                            aria-pressed={isGearPanelOpen}
-                            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-                        >
-                            <Shield size={17} />
-                        </button>
+                        {viewport.isMobile && <MobileHeaderPanelButtons tabs={headerTabs} />}
 
                         <button
                             className={`menu-toggle-btn${showChatWindow ? ' active' : ''}`}
@@ -459,13 +436,15 @@ const Header: React.FC<HeaderProps> = () => {
                                 toggleHeaderTab('group');
                                 triggerHaptic?.(10);
                             }}
-                            title="Toggle Group Status"
-                            aria-label="Toggle Group Status"
+                            title="Toggle Room Entities and Group"
+                            aria-label="Toggle Room Entities and Group"
                             aria-pressed={showGroupPanel}
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <UsersRound size={17} />
                         </button>
+
+                        <DetailsPanelToggle />
 
                         <button
                             className={`menu-toggle-btn${isHelpOpen ? ' active' : ''}`}
@@ -593,7 +572,7 @@ const Header: React.FC<HeaderProps> = () => {
                                         [
                                             { tab: 'general',  label: 'General',     icon: <Cog size={16} /> },
                                             { tab: 'sound',    label: 'Sound',       icon: <Music size={16} /> },
-                                            { tab: 'actions',  label: 'Actions',     icon: <Activity size={16} /> },
+                                            { tab: 'actions',  label: 'Actions/Macros', icon: <Activity size={16} /> },
                                             { tab: 'buttons',  label: 'Buttons',     icon: <Settings size={16} /> },
                                             { tab: 'map',      label: 'Map',         icon: <MapIcon size={16} /> },
                                             { tab: 'replays',  label: 'Replays',     icon: <Film size={16} /> },

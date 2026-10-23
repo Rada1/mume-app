@@ -15,6 +15,8 @@ import { foldRoomEntityStatus } from '../utils/roomEntityStatus';
 import { isChatMessage } from '../utils/chatWindowUtils';
 import { useVisibleRoomOrder } from './useVisibleRoomOrder';
 import { LogFlushScheduler } from './logFlushScheduler';
+import { useCommandAliasStore } from '../stores/useCommandAliasStore';
+import { getCommandAliasDisplay } from '../utils/commandAliasDisplay';
 
 // ---------------------------------------------------------------------------
 // Regex constants
@@ -685,11 +687,12 @@ export function useMessageLog(
         let promptManaStatus: string | undefined = undefined;
         let promptMoveStatus: string | undefined = undefined;
         let promptOpponentName: string | null | undefined = undefined;
-        let promptOpponentHealthStatus: any = undefined;
+        let promptOpponentHealthStatus: Message['promptOpponentHealthStatus'] = undefined;
         let promptHPPercent: number | undefined = undefined;
         let promptManaPercent: number | undefined = undefined;
         let promptMovePercent: number | undefined = undefined;
         let promptOpponentHealthPercent: number | null | undefined = undefined;
+        let promptBufferHealthPercent: number | null | undefined = undefined;
 
         if (finalType === 'prompt') {
             try {
@@ -722,7 +725,7 @@ export function useMessageLog(
                     'bad': 33, 'awful': 16, 'dying': 0, 'stunned': 25, 'none': 0
                 };
                 promptHPPercent = vitals.gmcpVitals.maxHp > 0 
-                    ? Math.round((vitals.gmcpVitals.hp / vitals.gmcpVitals.maxHp) * 100)
+                    ? (vitals.gmcpVitals.hp / vitals.gmcpVitals.maxHp) * 100
                     : (hpPercentMap[promptHPStatus.trim().toLowerCase()] ?? 100);
 
                 const manaPercentMap: Record<string, number> = {
@@ -730,7 +733,7 @@ export function useMessageLog(
                     'cold': 33, 'icy': 16, 'frozen': 0
                 };
                 promptManaPercent = maxMana > 0
-                    ? Math.round(getManaPercent(mana, maxMana))
+                    ? getManaPercent(mana, maxMana)
                     : (manaPercentMap[promptManaStatus.trim().toLowerCase()] ?? 100);
 
                 const movePercentMap: Record<string, number> = {
@@ -738,7 +741,7 @@ export function useMessageLog(
                     'slow': 42, 'weak': 28, 'fainting': 14, 'exhausted': 0
                 };
                 promptMovePercent = maxMove > 0
-                    ? Math.round(getMovePercent(move, maxMove))
+                    ? getMovePercent(move, maxMove)
                     : (movePercentMap[promptMoveStatus.trim().toLowerCase()] ?? 100);
 
                 if (vitals.position === 'fighting') {
@@ -746,6 +749,11 @@ export function useMessageLog(
                     promptOpponentHealthStatus = combat.opponentHealthStatus;
                     const oppRawStatus = combat.opponentHealthStatus || 'Healthy';
                     promptOpponentHealthPercent = hpPercentMap[oppRawStatus.trim().toLowerCase()] ?? 50;
+
+                    if (combat.bufferName) {
+                        const bufferRawStatus = combat.bufferHealthStatus || 'Healthy';
+                        promptBufferHealthPercent = hpPercentMap[bufferRawStatus.trim().toLowerCase()] ?? 50;
+                    }
                 }
             } catch (e) {
                 console.error('Failed to get active vitals for prompt log line', e);
@@ -771,6 +779,8 @@ export function useMessageLog(
             html,
             tokens,
             textRaw: processedText,
+            aliasCommandDisplay: finalType === 'user'
+                ? getCommandAliasDisplay(echoedCommand, useCommandAliasStore.getState().aliases) : undefined,
             type: finalType,
             timestamp: receivedAt,
             isCombat,
@@ -822,7 +832,8 @@ export function useMessageLog(
             promptHPPercent,
             promptManaPercent,
             promptMovePercent,
-            promptOpponentHealthPercent
+            promptOpponentHealthPercent,
+            promptBufferHealthPercent
         };
 
         if (isCombat) {

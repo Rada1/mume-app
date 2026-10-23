@@ -25,6 +25,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **User Settings & Persistence:** `src/hooks/useSettings.ts`, `src/context/GameContext/useSettingsState.ts`
 - **Global Types & Interfaces:** `src/types/index.ts`
 - **Inline Category -> Trait -> Button Model:** `src/utils/inlineActionModel.ts`, `src/utils/actionUtils.ts`, `src/components/Popovers/StandardMenuPopover.tsx`
+- **Reverse Command Target Lookup:** `src/hooks/useCommandActionSuggestions.ts`, `src/utils/reverseCommandTargets.ts`, `src/objects/commandActionTargetModel.ts`, `src/objects/doorActionTargets.ts` (shared room, gear, and named door candidates; specialized/staged inputs still use `commandTargetSuggestionResolver.ts`).
 - **Legacy Categorization / Compatibility:** `src/utils/categorizationUtils.ts`, `src/components/Settings/TraitSettings.tsx`
 
 ### 🏗️ UI & Layout
@@ -32,8 +33,9 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Core Layout Layers:** `src/components/Layout/` (Atmospheric, HUDClusters, MainContent, Modals)
 - **HUD Components:** `src/components/HUD/ThisIsYouConsole.tsx` (Unified 'This is You' Console with slide-down minimize via `src/stores/useCharacterPanelStore.ts`, `ThisIsYouVitalsTier.tsx`), `src/components/HUD/MapRoomInfoHeader.tsx` (Unified spacious map telemetry header), `src/components/HUD/LogDockedInput.tsx` (Unified docked command bar), `src/components/Layout/HUD/` (MapperCluster, StatsCluster, LineCluster, GroupDrawer, Interactive Header with manual target input)
 - **Side Drawers (Inventory, Equipment, Stats):** `src/components/Drawers/`
-- **Inline Button Popovers:** `src/components/Popovers/StandardMenuPopover.tsx`
+- **Inline Button Popovers & Command Panel:** `src/components/Popovers/StandardMenuPopover.tsx`, `src/components/HUD/UnifiedCommandPanel.tsx`, `src/components/Popovers/StandardMenu/CommandActionTargetPicker.tsx`, `src/components/Popovers/StandardMenu/CommandMountTarget.tsx`, `src/components/HUD/CommandHelpBanner.tsx`, `src/hooks/useCommandHelpMode.ts`, `src/utils/commandHelpUtils.ts`, `src/utils/logHelpUtils.ts` (horizontal category bar prevents vertical layout shifting; hovering previews categories and mousing away collapses them; clicking pins a category open; mount cargo renders as an elevated floating popover; help mode enables command inspection).
 - **Mapper Component:** `src/components/Mapper/` (and `src/mapper/renderer.ts`)
+- **Map annotation editing:** `docs/map-annotations.md`, `src/hooks/useMapMarkerEditor.ts`, `src/components/Mapper/MapMarkerManager.tsx`, `src/components/Mapper/RoomMapFlagsEditor.tsx`, `src/utils/deletedMapMarkers.ts`, and `src/components/Mapper/performance/localMapEdits.ts`.
 - **Docked Sliding Panels (Chat, Players, Help, Editor, Archive):** `src/utils/dockedPanelUtils.ts`, `src/components/Help/HelpPanel.tsx`, `src/components/Messages/ChatWindow.tsx`, `src/components/Players/PlayersPanel.tsx`, `src/components/Utility/MumeEditor.tsx`, `src/components/Utility/MumeArchive.tsx`
 - **Privileged Shaper Workspace:** `src/shaper/` and `docs/shaper.md` for concept-zone builder UI, validation, future collaboration, and deploy planning. Entry is hidden behind `canAccessShaper()`.
 
@@ -42,6 +44,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **GMCP Data Handlers:** `src/hooks/useGmcpHandlers/` (Vitals, Room, Group, Occupants)
 - **Game Output Parsing (Text):** `src/hooks/GameParser/useGameParser.ts` (Orchestrator)
 - **Parser Sub-Hooks:** `src/hooks/GameParser/` (Combat, Comm, Room, Stat, Atmosphere, Prompt, Account, Time, etc.)
+- **Panel Pagination:** `src/hooks/GameParser/useGameplayPager.ts` handles viewer prompts before capture boundaries; `src/utils/pagerPrompt.ts` shares detection with the telnet buffer. Keep manual paging interactive and preserve the server pager preference.
 - **Action Filtering:** `src/utils/actionUtils.ts` (Capability -> Button Map)
 - **Command Parsing (User Input):** `src/services/parser/services/mudParser.ts`
 - **Message Log & Combat:** `src/hooks/useMessageLog.ts`
@@ -53,6 +56,8 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Advanced Processing:** `useTriggerProcessor.ts`, `useKeywordOverrides.ts`, `useMessageHighlighter.ts`
 - **Tokenization & Highlighting:** `src/services/parser/Tokenizer.ts` (Keyword-focused entity extraction)
 - **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
+- **Sound editors:** `SoundSettings.tsx` contains Zone Music / Sound Effects / UI Sounds tabs, using `useSoundSettingsSections.ts`, `useZoneMusicSettings.ts`, and `useSoundEffectEditor.ts`.
+- **Client macros:** `docs/custom-keybindings.md`, `useClientMacroStore.ts`, `useClientMacroCommands.ts`, `useClientMacroHotkeys.ts`, and `ClientMacroSettings.tsx` (Settings → Actions/Macros).
 
 ## 🛠️ Common Tasks Cheat Sheet
 
@@ -67,11 +72,13 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 | **Add a New Modal/Setting** | `ModalsLayer.tsx`, `useSettings.ts`, `SettingsModal.tsx` |
 | **Update Button Logic** | `useButtons.ts`, `useButtonLogic.ts`, `ButtonUtils.ts` |
 | **Adjust Audio/Atmosphere** | `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts` |
+| **Corner Sky Fades & Cloud Entry** | `src/hooks/useEnvironmentSceneTransition.ts`, `src/hooks/useEnvironmentTransitions.ts`, `src/components/Atmosphere/EnvironmentWeatherLayers.tsx`, `EnvironmentVignetteLayers.tsx`; shared one-second opacity/entry progress, retained scene-local lighting/weather styles, and independent slow cloud drift. `node scripts/verify_vignette_transition.mjs` checks actual browser compositing. |
+| **Complete Dawn/Dusk Sky Blend** | Pass calibrated `gameTime` into `useEnvironmentTransitions`; `src/utils/twilightSceneLayers.ts` blends the real sunlight/night profiles and stars across the one-minute solar window. `src/utils/solarTiming.ts` puts the visual horizon crossing one game hour after the listed phase time. `src/hooks/useEnvironmentSolarTransitions.test.ts`, `src/utils/solarTiming.test.ts`, and `scripts/verify_solar_sky.mjs` cover timing and continuity. |
 | **Modify Drawers/UI Tabs** | `src/components/Drawers/`, `DrawerManager.tsx` |
 | **Fix Broad Highlighting** | `Tokenizer.ts`, `useEntityRegistry.ts` |
 | **Replay a Session** | `useSessionReplayer.ts`, `useSessionManager.ts` |
 | **Manage Custom Traits** | `inlineActionModel.ts`, `TraitSettings.tsx`, `useSettingsStore.ts` |
-| **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/hooks/useZoneThemeSync.ts`, `MessageLog.tsx`, `MessageLog.css` |
+| **Zone Colors & Highlights** | `src/utils/zoneColors.ts`, `src/styles/zoneFrame.css` (client rim and edge glow), `src/styles/immersionDamagePulse.css`, `src/hooks/useZoneThemeSync.ts`, `MessageLog.tsx`, `MessageLog.css` |
 | **Map Telemetry & Overlays** | `MapRoomInfoHeader.tsx`, `MapRoomInfoHeader.css`, `MapSettings.tsx` |
 | **Map Find & Filter Controls** | `MapFilterBar.tsx`, `MapFilterCategories.ts`, `MapFilterBar.css` |
 | **Tactical Mobile Targeting** | `TacticalTargetBar.tsx`, `useTacticalTargeting.ts`, `commandTargetUtils.ts` |
@@ -93,3 +100,27 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **GMCP First**: Prefer GMCP data over text parsing for all game state updates.
 - **Thin Components**: Logic belongs in hooks; components should only handle rendering.
 
+
+
+## Command Panel V2
+The default command workspace is command-first: six root groups (bottom strip on desktop, horizontal bar on mobile) (Abilities, Movement, Vision, Objects, Social, Character) -> one menu with organizational section headers and commands -> valid targets. `CommandPanelV2.tsx` renders the tree; `useCommandTree.ts` owns navigation and trait-based target filtering; `useCommandTreeController.ts` reuses execution, captures, chat, shop and practice. Quick Mood, Cast Speed, Alertness and Stance controls remain visible. Root category hovers switch immediately; nested hover previews wait 180 ms; clicks and keyboard focus open immediately. `UnifiedCommandPanel.tsx` offers a persistent Legacy switch to `UnifiedCommandPanelLegacy.tsx`. Frozen V1 references and restoration notes are in `docs/archive/command-panel-v1/`.
+
+Desktop command docking uses slots in MainContentLayer.tsx and LogDockedInput.tsx. CommandPanelV2.tsx portals the character summary and quick controls into the map region, keeps command input aligned with the log, and fills the remaining right region with category buttons. CommandDockStrip.css owns the full-width bottom grid; category menus anchor above their button and additional columns extend left.
+
+Desktop chat and group are independent floating panels, rendered by ChatTranscriptWindow.tsx and GroupStatusWindow.tsx. useFloatingClientPanel.ts owns saved geometry, header dragging, corner resizing, keyboard movement/resizing, viewport bounds, and snapping to nearby panels/client edges through floatingPanelGeometry.ts. FloatingClientPanel.css owns their opaque surfaces. Desktop chat is excluded from the exclusive dock layout; mobile keeps its existing dock behavior.
+
+CapturedDetailsSidePanel.tsx also uses the shared floating client panel on desktop: Details opens at the top-right with saved geometry, supports snapping with Chat/Group, and stays open when interacting elsewhere. Its report content scrolls within the resized window; ModalsLayer.tsx preserves floating reports during outside clicks.
+
+ParleyChannelChip.tsx and useParleyChannelMenu.ts share the destination cascade between ChatCommunicationBar.tsx and LogDockedInput.tsx: hover the chip for channels, hover Tell/Whisper/Ask for recipients, then select a recipient to commit both. Tell uses online players; Whisper/Ask use shared room-character entries and exclude self. Non-directed channels commit on click. Menus open upward with recipient columns to the left, retain click/focus access, and never send messages during destination selection.
+
+Nested command, inventory/equipment, and parley menus use menuVerticalPlacement.ts to choose upward or downward placement based on available viewport space. Nested columns stay aligned with their parent row; the chosen side also bounds their scroll height. useUpwardCommandBranches.ts retains its existing name but now supports both directions.
+
+The header's former Group panel is now an Entities window. GroupStatusWindow.tsx renders Group Members and Room Entities sections; useRoomEntitiesPanel.ts projects shared room-character entries, keeps listed group members out of the other-entities section, and updates selected-target metadata plus the current target without executing game actions. GroupTableView.tsx supports an optional member-selection callback. Existing floating group geometry/preferences remain compatible.
+
+Action target rows share currentCommandTarget.ts for NPC/enemy current-target matching, red highlighting, and crosshairs. CommandTreeCommandList.tsx uses commandDefaultTarget.ts to execute a clicked command against the current target only if targetsFor(button) includes it; otherwise it opens target selection. Hover/focus still previews alternatives. Observation defaults reuse executeCommandTreeObservation so Look/Examine/Consider retain Details capture, and Help/spectate restrictions remain enforced.
+
+On mobile, an open V2 command guide portals into the command bar slots as an in-flow four-row console: command input, one six-button action row, one six-button state/equipment/inventory row, then character info. CommandDockStrip.css uses explicit six-column grids to prevent wrapping and keeps mobile menu widths inside the viewport. The separate desktop three-region strip and rotated-landscape layout retain their own geometry.
+
+Mobile minimaps render their canvas directly at the preview frame size in KeyboardMapPreview.css, without scaling or cropping a larger map surface. The renderer observes these native bounds; the frame owns the edge fade. useMapperInteractions.ts pans the compact map with one finger instead of invoking movement gestures. The initial mobile camera zoom is DEFAULT_MOBILE_MAP_ZOOM (0.7) in mapperUtils.ts; desktop camera defaults are independent.
+
+Command panel eligibility prepares `getEligibleActionButtonIds` from `src/utils/actionUtils.ts` once per target and passes the resulting set to `isButtonValidForEntity`. Keep these sets scoped to a single rebuild so trait edits, character restrictions, and room changes remain live. `useCommandTree.ts` memoizes catalog normalization separately from target eligibility. Regression coverage lives in `src/utils/actionUtils.performance.test.ts` and `src/hooks/useCommandTree.performance.test.tsx`.

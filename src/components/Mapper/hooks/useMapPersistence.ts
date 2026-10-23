@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
 import { perfMonitor } from '../../../utils/perfMonitor';
+import { withoutDeletedMapMarkers } from '../../../utils/deletedMapMarkers';
 
 interface UseMapPersistenceProps {
     characterName: string | null;
@@ -42,7 +43,7 @@ export const useMapPersistence = ({
         const savedRooms = localStorage.getItem(storageKey);
         if (savedRooms) try { setRooms(JSON.parse(savedRooms)); } catch (e) { }
         const savedMarkers = localStorage.getItem(markerStorageKey);
-        if (savedMarkers) try { setMarkers(JSON.parse(savedMarkers)); } catch (e) { }
+        if (savedMarkers) try { setMarkers(withoutDeletedMapMarkers(JSON.parse(savedMarkers))); } catch (e) { }
         const savedPos = localStorage.getItem(posStorageKey) || localStorage.getItem('mume_mapper_last_pos_global');
         if (savedPos) {
             try {

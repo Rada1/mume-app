@@ -1,0 +1,331 @@
+/**
+ * @file ThisIsYouDesktop.css
+ * @description Clean desktop character-panel rows in the command-panel visual style.
+ */
+
+/* --- Shared Desktop Type And Surface --- */
+.this-is-you-console:not(.is-mobile) {
+    --this-is-you-label-column: 82px;
+    color: #cbbda4;
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-tier-identity {
+    gap: 6px 12px;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-hero-strip {
+    min-width: 0;
+    gap: 4px 8px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-name { font-size: 0.8rem; }
+.this-is-you-console:not(.is-mobile) .this-is-you-level-tag { font-size: 0.68rem; }
+.this-is-you-console:not(.is-mobile) .this-is-you-subtext,
+.this-is-you-console:not(.is-mobile) .this-is-you-bio-item,
+.this-is-you-console:not(.is-mobile) .this-is-you-xp-strip { font-size: 0.7rem; }
+
+/* --- Compact State And Combat Summary --- */
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary {
+    gap: 4px;
+    overflow: visible;
+    padding: 2px 0 6px;
+    color: #cbbda4;
+    font-size: 0.7rem;
+    line-height: 1.35;
+    white-space: normal;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    flex: 0 1 auto;
+    grid-template-columns: var(--this-is-you-label-column) repeat(4, minmax(0, 1fr));
+    align-items: center;
+    gap: 6px 8px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group + .this-is-you-minimized-summary-group {
+    padding-top: 4px;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group > strong {
+    grid-column: 1;
+    white-space: nowrap;
+    color: #dfbf6c;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1.25;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="State"] {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="State"]::-webkit-scrollbar {
+    display: none;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="State"] > strong {
+    flex: 0 0 var(--this-is-you-label-column);
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="State"] > .this-is-you-pill-wrapper {
+    display: inline-flex;
+    width: max-content;
+    min-width: max-content;
+    height: auto;
+    flex: 0 0 auto;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group .this-is-you-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: max-content;
+    min-width: max-content;
+    min-height: 24px;
+    height: 24px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 3px;
+    background: rgba(201, 168, 76, 0.04);
+    color: #cbbda4;
+    font-size: 0.68rem;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group .this-is-you-pill-category {
+    min-width: 0;
+    overflow: visible;
+    text-overflow: clip;
+    color: #9d927f;
+    font-size: 0.62rem;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group .this-is-you-pill-value {
+    min-width: 0;
+    overflow: visible;
+    text-overflow: clip;
+    color: #cbbda4;
+    font-size: 0.68rem;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group .this-is-you-pill-arrow {
+    margin: 0;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group > span {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 4px;
+    color: #9d927f;
+    font-size: 0.68rem;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group > span b {
+    color: #9bd2a5;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="Combat stats"] > span {
+    box-sizing: border-box;
+    width: 100%;
+    gap: 3px;
+    overflow: hidden;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-combat-label {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary-group[aria-label="Combat stats"] > span b {
+    flex: 0 0 auto;
+}
+
+/* --- Expanded Vitals And Movement Rows --- */
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-body-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vitals-group,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-modes {
+    display: flex;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px 8px;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vitals-group::before,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-modes::before {
+    box-sizing: border-box;
+    flex: 0 0 var(--this-is-you-label-column);
+    height: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    color: #dfbf6c;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1.25;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-telemetry-cell {
+    display: flex;
+    min-width: 0;
+    min-height: 24px;
+    flex: 1 1 0;
+    flex-direction: row;
+    align-items: center;
+    gap: 3px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-health-cell {
+    flex: 1 1 0;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .label,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .regen {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .label {
+    flex: 0 100 auto;
+    min-width: 2ch;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .regen {
+    flex: 0 0 auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-val {
+    order: 1;
+    min-width: 0;
+    flex: 0 1 auto;
+    gap: 4px;
+    overflow: hidden;
+    font-size: 0.7rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vital-status,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vital-numbers {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-val .this-is-you-delta {
+    flex: 0 0 auto;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .regen {
+    order: 2;
+    font-size: 0.62rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-cell-header .label {
+    color: #9d927f;
+    font-size: 0.64rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-vital-status {
+    font-size: 0.72rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-combat-slot,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-tier-states {
+    display: none;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-mode-toggle,
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-mode-indicator {
+    box-sizing: border-box;
+    min-height: 25px;
+    align-items: center;
+    font-size: 0.68rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-mode-toggle {
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(201, 168, 76, 0.04);
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-buffs-row {
+    position: relative;
+    min-height: 20px;
+    margin-top: 2px;
+    padding-left: calc(var(--this-is-you-label-column) + 8px);
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 0.68rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-buffs-row::before {
+    content: 'CONDITIONS';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    box-sizing: border-box;
+    width: var(--this-is-you-label-column);
+    margin: 0;
+    color: #dfbf6c;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    line-height: 1.25;
+    white-space: nowrap;
+    transform: translateY(-50%);
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-no-buffs {
+    color: #cbbda4;
+    font-size: 0.7rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-buff-badge {
+    font-size: 0.7rem;
+}
+
+.this-is-you-console:not(.is-mobile):not(.is-minimized) .this-is-you-buff-time {
+    font-size: 0.7rem;
+    line-height: 1.35;
+}
+

@@ -84,6 +84,7 @@ export interface PopoverState {
     displayName?: string; // Exact visible entity/object label from the log
     keyword?: string; // Resolved command keyword shown separately from displayName
     entityId?: string; // Unique registry ID
+    hasDoor?: boolean; // Door metadata for a selected room exit
     parentNoun?: string; // For things like "Orc corpse"
     accentColor?: string;
     executeAndAssign?: boolean;
@@ -106,11 +107,23 @@ export interface PopoverState {
     capturedConsiderLines?: string[];
     isCapturingExamine?: boolean;
     isCapturingConsider?: boolean;
+    capturedHelpLines?: string[];
+    isCapturingHelp?: boolean;
+    helpTopic?: string;
     capturedWhoisLines?: string[];
     isCapturingWhois?: boolean;
     whoisTarget?: string;
-    // Keep the inspect-card layout visible before the player explicitly gathers
-    // look/consider data.
+    capturedWhoLines?: string[];
+    isCapturingWho?: boolean;
+    capturedWhereLines?: string[];
+    isCapturingWhere?: boolean;
+    capturedRoomActionLines?: string[];
+    roomActionKind?: 'exits' | 'map' | 'weather global' | 'weather fog' | 'weather local';
+    isCapturingRoomAction?: boolean;
+    capturedPersonalActionLines?: string[];
+    personalActionKind?: 'info' | 'stat' | 'score';
+    isCapturingPersonalAction?: boolean;
+    // Keep the details surface open while an information command is active.
     hasInspectionCard?: boolean;
     openedByHover?: boolean;
     isRoomDescription?: boolean;
@@ -202,6 +215,7 @@ export interface CustomButton {
     longSwipeActionTypes?: Partial<Record<SwipeDirection, ActionType>>;
     rebindCenterSetId?: string;
     rebindSets?: Partial<Record<SwipeDirection, string>>;
+    inlineSubgroup?: string;
 
     // Dynamic triggers
     trigger?: {

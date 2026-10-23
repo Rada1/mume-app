@@ -1,0 +1,279 @@
+/** @file UnifiedCommandPanel.css — Independent, content-sized command workspace surfaces. */
+
+/* --- The shared dock must not paint or blur behind the independent columns --- */
+.app-container .content-layer.has-docked-panel-surface .docked-panel.command-docked-panel:has(.unified-command-panel) {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* --- Transparent dock and independent surfaces --- */
+.app-container .command-docked-panel:has(.unified-command-panel),
+.app-container .command-docked-panel .unified-command-panel,
+.unified-command-panel .unified-command-columns {
+    pointer-events: none;
+}
+.unified-command-panel .unified-command-column { pointer-events: auto; }
+.app-container .command-docked-panel .unified-command-panel {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+}
+.unified-command-columns {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(160px, 0.75fr);
+    align-items: start;
+    gap: 8px;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+.unified-command-panel.commands-column-closed .unified-command-columns,
+.unified-command-panel.target-column-closed .unified-command-columns {
+    grid-template-columns: minmax(0, 1fr);
+}
+.unified-command-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+    max-height: 100%;
+    box-sizing: border-box;
+    padding: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    background: rgba(30, 25, 21, 0.98);
+    color: #d9cfb7;
+    box-shadow: none;
+}
+
+/* --- Independent widths use the shared persisted drawer resize handles --- */
+@media (min-width: 1025px) {
+    :root:has(.unified-command-panel) {
+        --command-actions-width: max(180px, var(--command-actions-size, 34vw));
+        --command-targets-width: max(180px, var(--command-targets-size, 26vw));
+        --desktop-command-panel-width: calc(var(--command-actions-width) + var(--command-targets-width) + 16px);
+    }
+    :root:has(.unified-command-panel.commands-column-closed) {
+        --desktop-command-panel-width: calc(var(--command-targets-width) + 8px);
+    }
+    :root:has(.unified-command-panel.target-column-closed) {
+        --desktop-command-panel-width: calc(var(--command-actions-width) + 8px);
+    }
+    /* Match the inter-column gap without reducing either persisted column width. */
+    .app-container .command-docked-panel:has(.unified-command-panel) {
+        padding-right: 8px;
+        /* The existing log geometry tracks the command bar as it grows or moves. */
+        bottom: max(0px, calc(100dvh - var(--message-log-top, 0px) - var(--message-log-action-area-height, 100dvh) + 4px)) !important;
+    }
+    .unified-command-columns {
+        grid-template-columns: var(--command-actions-width) var(--command-targets-width);
+    }
+    .unified-command-panel.commands-column-closed .unified-command-columns {
+        grid-template-columns: var(--command-targets-width);
+    }
+    .unified-command-panel.target-column-closed .unified-command-columns {
+        grid-template-columns: var(--command-actions-width);
+    }
+    body.has-unified-command-details aside.popover-inspection-panel {
+        width: min(var(--command-details-size, 420px), calc(100vw - var(--unified-command-panel-width) - 24px));
+    }
+    :is(.unified-command-column, .popover-inspection-panel) > .drawer-resize-handle--left {
+        position: absolute;
+        top: 0 !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        width: 8px !important;
+        height: 100%;
+        cursor: ew-resize;
+        touch-action: none;
+        z-index: 200;
+    }
+    :is(.unified-command-column, .popover-inspection-panel) > .drawer-resize-handle--left:hover,
+    :is(.unified-command-column, .popover-inspection-panel) > .drawer-resize-handle--left.is-active {
+        background: rgba(201, 168, 76, 0.18);
+    }
+}
+@media (max-width: 1024px) {
+    .popover-inspection-panel > .drawer-resize-handle { display: none; }
+}
+.unified-command-panel .command-guide-panel-heading-cell {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    min-height: 28px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+    color: #c9a84c;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+.unified-command-panel .command-guide-context-heading {
+    min-width: 0;
+    margin: 0 0 2px;
+    overflow: hidden;
+    color: inherit;
+    text-align: center;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.unified-command-panel .command-guide-close {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    margin-left: auto;
+    border: 1px solid rgba(201, 168, 76, 0.24);
+    border-radius: 4px;
+}
+.unified-command-panel .command-guide-traits {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+    min-height: 26px;
+    margin-left: 6px;
+    padding: 3px 6px;
+    border: 0;
+    background: transparent;
+    color: #a89b83;
+    font: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    cursor: pointer;
+}
+.unified-command-panel .command-guide-traits:hover,
+.unified-command-panel .command-guide-traits:focus-visible {
+    background: rgba(201, 168, 76, 0.1);
+    color: #dfbf6c;
+    outline: none;
+}
+.unified-command-panel .command-guide-commands-heading .command-guide-close {
+    margin-left: 8px;
+}
+
+/* --- Natural content height, with shrinking scroll areas for long lists --- */
+.unified-command-column > .unified-command-workspace,
+.unified-command-column .command-workspace-actions,
+.unified-command-column .command-workspace-chat,
+.unified-command-column .unified-command-actions,
+.unified-command-panel .unified-command-scopes .command-action-target-picker,
+.unified-command-scopes .command-action-target-menu,
+.unified-command-scopes .command-action-target-options {
+    flex: 0 1 auto;
+    min-height: 0;
+}
+.unified-command-panel .unified-command-actions { padding: 0; }
+.unified-command-scopes .command-action-target-options { overflow: auto; }
+.unified-command-panel .command-panel-selection-actions { flex: 0 0 auto; margin: 2px 0 4px; padding: 0 0 7px; border: 0; border-bottom: 1px solid rgba(201, 168, 76, 0.16); }
+.unified-command-panel .command-panel-selection-actions .gear-actions-label { margin: 0; color: #a89b83; font-size: .59rem; }
+.unified-command-panel .command-panel-selection-actions .gear-selection-clear { padding: 2px 0; color: #8f8374; font-size: .62rem; }
+.unified-command-panel .command-panel-selection-actions .gear-action-buttons { display: grid; gap: 0; margin-top: 3px; }
+.unified-command-panel .command-panel-selection-actions .gear-action-buttons button,
+.unified-command-panel .command-panel-selection-actions .gear-recipient-list button { display: grid; grid-template-columns: 94px minmax(0, 1fr); gap: 12px; width: 100%; min-height: 28px; align-items: center; padding: 6px 0; border: 0; border-radius: 0; background: transparent; color: #dfbf6c; font: inherit; font-size: .72rem; text-align: left; }
+.unified-command-panel .command-panel-selection-actions .gear-action-buttons button:hover,
+.unified-command-panel .command-panel-selection-actions .gear-recipient-list button:hover { background: rgba(201, 168, 76, 0.08); color: #fff1bd; }
+.unified-command-panel .command-panel-selection-actions .gear-recipient-list { gap: 2px 10px; }
+.unified-command-panel .command-panel-selection-actions .gear-selection-command-syntax { min-width: 0; overflow: hidden; color: #8f8374; font-size: .72rem; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.unified-command-panel .command-panel-selection-actions .gear-action-buttons button > span { flex: 0 0 94px; }
+.unified-command-panel .command-panel-selection-actions .gear-give-heading { margin: 4px 0; font-size: .62rem; }
+.unified-command-panel .command-panel-selection-actions .gear-give-back { min-height: 26px; padding: 3px 0; border: 0; color: #a89b83; font-size: .62rem; }
+
+/* --- Inspection outputs share the same independent surface geometry --- */
+@media (min-width: 769px) {
+    body.has-unified-command-details .popover-inspection-panel,
+    body.has-unified-command-shop .command-shop-output-panel,
+    body.has-unified-command-practice .command-practice-output-panel,
+    body.has-unified-command-chat-history .command-chat-history-side-panel {
+        bottom: auto;
+        height: auto;
+        max-height: calc(100dvh - env(safe-area-inset-top, 0px) - 60px);
+    }
+    body.has-unified-command-details .popover-inspection-panel > .captured-details-card {
+        flex: 0 1 auto;
+        min-height: 0;
+        overflow: auto;
+    }
+    body.has-unified-command-details .popover-inspection-panel .captured-detail-panel {
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+/* --- Compact portrait dock --- */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile .command-docked-panel:has(.unified-command-panel) {
+        bottom: auto !important;
+        top: calc(env(safe-area-inset-top, 0px) + 48px) !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100vw !important;
+        height: calc(50dvh - env(safe-area-inset-top, 0px) - 48px) !important;
+        box-sizing: border-box !important;
+        background: transparent !important;
+    }
+    .app-container.is-mobile .unified-command-columns {
+        grid-template-columns: minmax(0, 1fr) minmax(112px, 0.9fr);
+    }
+    .app-container.is-mobile .unified-command-column { padding: 8px; }
+    .app-container.is-mobile .unified-command-panel .terminal-action-command,
+    .app-container.is-mobile .unified-command-panel .action-btn-syntax { display: none !important; }
+}
+
+/* Immersion keeps these panels open to the scene without outlined frames. */
+.app-container.immersion-mode .command-docked-panel {
+    border: 0 !important;
+    box-shadow: none !important;
+}
+.app-container.immersion-mode .command-docked-panel .unified-command-column {
+    border: 0 !important;
+    background: #000 !important;
+    box-shadow: none !important;
+}
+.app-container.performance-mode.immersion-mode .command-docked-panel .unified-command-column {
+    background: #171717 !important;
+}
+body:has(.app-container.immersion-mode).has-unified-command-details .popover-inspection-panel,
+body:has(.app-container.immersion-mode).has-unified-command-shop .command-shop-output-panel,
+body:has(.app-container.immersion-mode).has-unified-command-practice .command-practice-output-panel,
+body:has(.app-container.immersion-mode).has-unified-command-chat-history .command-chat-history-side-panel,
+.app-container.immersion-mode .command-chat-history-panel {
+    border: 0 !important;
+    background: #000 !important;
+    box-shadow: none !important;
+}
+body:has(.app-container.immersion-mode).has-unified-command-details .popover-inspection-panel .captured-detail-panel {
+    border: 0 !important;
+    background: #000 !important;
+}
+body:has(.app-container.performance-mode.immersion-mode).has-unified-command-details .popover-inspection-panel,
+body:has(.app-container.performance-mode.immersion-mode).has-unified-command-shop .command-shop-output-panel,
+body:has(.app-container.performance-mode.immersion-mode).has-unified-command-practice .command-practice-output-panel,
+body:has(.app-container.performance-mode.immersion-mode).has-unified-command-chat-history .command-chat-history-side-panel,
+.app-container.performance-mode.immersion-mode .command-chat-history-panel,
+body:has(.app-container.performance-mode.immersion-mode).has-unified-command-details .popover-inspection-panel .captured-detail-panel {
+    background: #171717 !important;
+}
+
+body.has-unified-command-details .popover-inspection-panel,
+body.has-unified-command-details .popover-inspection-panel .captured-detail-panel,
+body.has-unified-command-shop .command-shop-output-panel,
+body.has-unified-command-practice .command-practice-output-panel,
+body.has-unified-command-chat-history .command-chat-history-side-panel,
+.command-chat-history-panel,
+.app-container .command-docked-panel .unified-command-column {
+    box-shadow: none !important;
+}
+

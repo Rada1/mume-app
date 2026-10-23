@@ -11,7 +11,6 @@ import { useMapper } from '../../../context/useMapper';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 import { MapActionButtons } from './MapActionButtons';
 import { CounterRotatedContent } from '../CounterRotatedContent';
-import { useKeyboardMapPreviewScale } from '../../Mapper/hooks/useKeyboardMapPreviewScale';
 
 import InputArea from '../../Controls/InputArea';
 import OpponentRechargeTimer from '../../Combat/OpponentRechargeTimer';
@@ -63,10 +62,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         handleTabClick, toggleMap
     } = useUI() as UIContextType;
     const isExpanded = ui.mapExpanded;
-    const mapPanelRef = useRef<HTMLDivElement>(null);
-    const mapSurfaceRef = useRef<HTMLDivElement>(null);
-    const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
-    useKeyboardMapPreviewScale(viewport.isKeyboardOpen || (viewport.isMobile && isReadabilityMode), mapPanelRef, mapSurfaceRef);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const { viewZ, currentRoomId, rooms, activeMapFilter, mapSearchQuery, setActiveMapFilter, setMapSearchQuery } = useMapper();
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
@@ -271,7 +266,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
     
     return (
         <div
-            ref={mapPanelRef}
             className={`mobile-map-panel ${isShown ? 'map-expanded' : ''}`}
             style={{
                 padding: '0',
@@ -284,7 +278,6 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             {/* The map lives below the log in the app's normal flex flow. */}
             <div
                 className="mobile-mapper-touch-surface gutter-panel-card"
-                ref={mapSurfaceRef}
                 style={{
                     width: '100%',
                     height: '100%',

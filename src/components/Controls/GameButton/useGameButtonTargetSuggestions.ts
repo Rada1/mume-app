@@ -408,7 +408,7 @@ export const useGameButtonTargetSuggestions = (
         kind: resolvedKind,
         defaultTarget,
         suggestions,
-        title: targetKindOverride === 'status-panel' ? 'THIS IS YOU'
+        title: targetKindOverride === 'status-panel' ? 'PRACTICE'
             : targetKindOverride === 'group' ? 'GROUP'
             : targetKindOverride === 'shop' ? 'SHOP'
             : targetKindOverride === 'inventory-weapons' ? 'INVENTORY WEAPONS'

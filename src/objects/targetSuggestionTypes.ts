@@ -12,6 +12,8 @@ export interface CommandTargetSuggestion {
     label: string;
     value: string;
     meta: string;
+    category?: string;
+    isCurrentTarget?: boolean;
     customLabel?: string;
     details?: Array<{ label: string; value: string }>;
     wornLocation?: string;

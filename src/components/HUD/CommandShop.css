@@ -1,0 +1,40 @@
+/** @file CommandShop.css — Compact shared stock, commands, and shop output styling. */
+/* --- Shop targets in the existing selection column --- */
+.command-shop-stock { --shop-rule: rgba(201,168,76,.2); }
+.command-shop-stock-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 5px; color: var(--text-dim); font-size: 10px; }
+.command-shop-stock-tools span { flex: 1; }
+.command-shop-stock button { cursor: pointer; font: inherit; }
+.command-shop-stock-tools button { padding: 6px; border: 1px solid rgba(201,168,76,.3); background: transparent; color: var(--accent); border-radius: 3px; }
+.command-shop-stock button:disabled, .command-shop-actions button:disabled { opacity: .45; cursor: default; }
+.command-shop-stock > input { box-sizing: border-box; width: 100%; min-width: 0; padding: 6px; background: transparent; border: 1px solid rgba(201,168,76,.2); color: var(--text-primary); font: inherit; font-size: 11px; }
+.command-shop-stock .shop-item-row, .command-shop-stock .shop-variant-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; min-width: 0; gap: 3px 8px; padding: 8px 6px; font-size: 11px; cursor: pointer; border-bottom-color: rgba(201,168,76,.08); }
+.command-shop-stock .shop-item-name, .command-shop-stock .shop-variant-condition { grid-column: 2; grid-row: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; line-height: 1.5; font-weight: 500; color: var(--text-primary); }
+.command-shop-stock .shop-item-price { grid-column: 2 / -1; grid-row: 2; width: auto; white-space: normal; text-align: left; font-size: 10px; line-height: 1.4; font-weight: 400; color: color-mix(in srgb, var(--accent, #c9a84c) 85%, var(--text-dim)); }
+.command-shop-stock .shop-item-num { grid-column: 1; grid-row: 1; min-width: 0; padding-top: 2px; font-size: 9px; font-weight: 400; color: var(--text-dim); opacity: .55; }
+.command-shop-stock .shop-item-vnum { display: none; }
+.command-shop-stock .shop-stock-inline { grid-column: 3; grid-row: 1; display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0; padding: 2px 0 2px 6px; border: 0; border-radius: 2px; background: transparent; color: var(--text-dim); box-shadow: none; font-size: 10px; line-height: 1.4; white-space: nowrap; }
+.command-shop-stock .shop-stock-inline-count { font-variant-numeric: tabular-nums; }
+.command-shop-stock .shop-stock-inline svg { flex: none; opacity: .65; transition: transform .15s ease; }
+.command-shop-stock .shop-stock-inline[aria-expanded="true"] svg { transform: rotate(90deg); }
+.command-shop-stock .shop-stock-inline:hover, .command-shop-stock .shop-stock-inline[aria-expanded="true"] { color: var(--accent); }
+.command-shop-stock .shop-stock-inline:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+.command-shop-stock .shop-variant-list { margin: 0 0 0 26px; padding: 0 0 0 8px; border-left: 1px solid var(--shop-rule); }
+.command-shop-stock .shop-variant-inspect { grid-column: 3; grid-row: 1; padding: 2px 0 2px 6px; border: 0; background: transparent; font-size: 10px; color: var(--text-dim); }
+.command-shop-stock .shop-variant-row:nth-child(even) { background: transparent; }
+.command-shop-stock .shop-variant-empty { padding: 8px 6px; font-size: 10px; }
+.command-shop-stock .shop-product-group.expanded > .shop-item-row { border-left: 0; background: rgba(201,168,76,.04); }
+.command-shop-stock .shop-item-row.selected, .command-shop-stock .shop-variant-row.selected { outline: 1px solid var(--accent); outline-offset: -1px; background: rgba(201,168,76,.1); }
+/* --- Commands and response --- */
+.command-shop-actions { margin: 0; padding: 0; }
+.command-shop-actions .terminal-inspect-row span:last-child { white-space: nowrap; }
+.command-shop-buy-row { display: flex; align-items: center; gap: 8px; }
+.command-shop-buy-row > .terminal-inspect-row { flex: 1; min-width: 0; }
+.command-shop-quantity { display: inline-flex; align-items: center; gap: 5px; flex: none; color: var(--text-dim); font: 11px var(--font-mono, monospace); }
+.command-shop-quantity button { border: 0; background: transparent; padding: 3px 5px; color: var(--text-dim); font: inherit; cursor: pointer; }
+.command-shop-quantity button:hover:not(:disabled) { color: var(--accent); }
+.command-shop-quantity button:focus-visible { outline: 1px solid var(--accent); outline-offset: 1px; }
+.command-shop-quantity output { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+.command-shop-buy-total { margin: 0 0 6px; color: var(--text-dim); font-size: 10px; line-height: 1.5; }
+.command-shop-buy-total span { color: var(--accent); }
+.command-shop-comparison-prompt { color: var(--text-dim); font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; margin: 4px 8px 12px; }
+.command-shop-output-lines { min-height: 0; overflow: auto; font-size: 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }

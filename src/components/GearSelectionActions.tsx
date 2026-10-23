@@ -2,44 +2,56 @@
 
 import React, { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
-import type { GearSelectionActionsProps } from '../types';
-import { getGearSelectionLabel } from '../utils/gearSelectionUtils';
+import type { GearSelectionAction, GearSelectionActionsProps } from '../types';
+import { getGearSelectionCommands, getGearSelectionLabel } from '../utils/gearSelectionUtils';
 
 // --- Render Section ---
-export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ selection, containers, recipients, onRun, onClear }) => {
+export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ selection, containers, recipients, onRun, onClear, className, showCommandSyntax = false }) => {
     const [showContainers, setShowContainers] = useState(false);
     const [showRecipients, setShowRecipients] = useState(false);
     const canGet = Boolean(selection.parentNoun) || selection.section === 'room';
     const canCarry = selection.section === 'carried' && !selection.parentNoun;
-    return <div className="gear-actions gear-selection-actions" aria-label="Selected item actions">
+    const syntaxFor = (action: GearSelectionAction, destination?: string) => {
+        if (!showCommandSyntax) return null;
+        const commands = getGearSelectionCommands(selection, action, destination);
+        if (!commands.length) return null;
+        const summary = commands.length > 1 ? ` + ${commands.length - 1}` : '';
+        return <small className="gear-selection-command-syntax">&lt;{commands[0]}{summary}&gt;</small>;
+    };
+    const actionButton = (label: string, action: GearSelectionAction) => <button type="button" onClick={() => onRun(action)}>
+        <span>{label}</span>{syntaxFor(action)}
+    </button>;
+    return <div className={`gear-actions gear-selection-actions${className ? ` ${className}` : ''}`} aria-label="Selected item actions">
         <div className="gear-actions-label-row">
             <span className="gear-actions-label">{selection.items.length} selected · {getGearSelectionLabel(selection)}</span>
             <button className="gear-selection-clear" type="button" onClick={onClear}>Clear</button>
         </div>
         <div className="gear-action-buttons">
-            {canGet && <button type="button" onClick={() => onRun('get')}>Get</button>}
+            {canGet && actionButton('Get', 'get')}
             {canCarry && <>
-                <button type="button" onClick={() => onRun('wear')}>Wear</button>
-                <button type="button" onClick={() => onRun('drop')}>Drop</button>
+                {actionButton('Wear', 'wear')}
+                {actionButton('Drop', 'drop')}
                 {recipients.length > 0 && <button type="button" onClick={() => {
                     setShowContainers(false);
                     setShowRecipients(value => !value);
                 }}>
-                    {showRecipients ? 'Cancel give' : 'Give…'}
+                    <span>{showRecipients ? 'Cancel give' : 'Give…'}</span>
+                    {syntaxFor('give', '<recipient>')}
                 </button>}
                 {containers.length > 0 && <button type="button" onClick={() => {
                     setShowRecipients(false);
                     setShowContainers(value => !value);
                 }}>
-                    {showContainers ? 'Cancel put' : 'Put in…'}
+                    <span>{showContainers ? 'Cancel put' : 'Put in…'}</span>
+                    {syntaxFor('put', '<container>')}
                 </button>}
             </>}
-            {selection.section === 'worn' && <button type="button" onClick={() => onRun('remove')}>Remove</button>}
+            {selection.section === 'worn' && actionButton('Remove', 'remove')}
         </div>
         {showContainers && <div className="gear-action-buttons gear-selection-destinations" aria-label="Choose destination container">
             {containers.map(container => <button key={container.line.id} type="button"
                 onClick={() => { onRun('put', container.noun); setShowContainers(false); }}>
-                {container.name}
+                <span>{container.name}</span>{syntaxFor('put', container.noun)}
             </button>)}
         </div>}
         {showRecipients && <>
@@ -52,7 +64,7 @@ export const GearSelectionActions: React.FC<GearSelectionActionsProps> = ({ sele
             <div className="gear-recipient-list" aria-label="Choose recipient">
                 {recipients.map(recipient => <button key={recipient.id} type="button" onClick={() => onRun('give', recipient.noun)}>
                     <span>{recipient.label}</span>
-                    <small>{recipient.kind}</small>
+                    {showCommandSyntax ? syntaxFor('give', recipient.noun) : <small>{recipient.kind}</small>}
                 </button>)}
             </div>
         </>}

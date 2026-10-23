@@ -9,9 +9,13 @@ import { getMumeCommandMatch, replaceMumeCommandToken, MumeCommandEntry, MumeCom
 import { getCastSpellFragment, getCastSpellSuggestions, replaceCastSpellArgument, SpellSuggestion } from '../utils/spellSuggestionUtils';
 import { useRoomStore } from '../stores/useRoomStore';
 import { useRoomDrinkWater } from './useRoomDrinkWater';
+import { useCommandActionSuggestions } from './useCommandActionSuggestions';
+import { getCommandTextColor } from '../utils/swipeCommandColors';
 import { useInputStore } from '../stores/useInputStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useUIStore } from '../stores/useUIStore';
+import { useCommandAliasStore } from '../stores/useCommandAliasStore';
+import { resolveAliasSuggestionCommand } from './aliasSuggestionCommand';
 import { useVitals } from '../context/GameContext';
 import { DrawerLine, GameState } from '../types/game';
 import type { PracticeSkill } from '../types';
@@ -19,7 +23,10 @@ import {
     CommandTargetSuggestion,
     CommandTextParts,
     getMagicKeyTargetSuggestions,
-    getRescueTargetSuggestions
+    getRescueTargetSuggestions,
+    isTargetSuggestionMatch,
+    makeCommandTargetSuggestion,
+    prioritizeTargetSuggestion
 } from '../utils/commandSuggestionUtils';
 import { BLANK_TARGET_VALUE, getCommandTargetMenuKind } from '../utils/commandTargetUtils';
 import { getMagicKeyId, parseKeyedSpellCommand } from '../utils/magicKeyUtils';
@@ -40,10 +47,11 @@ export interface UseCommandSuggestionsOptions {
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
     positionOverMap?: boolean;
     inventoryLines?: DrawerLine[]; wornLines?: DrawerLine[];
-    characterName?: string; practiceSkills?: PracticeSkill[];
+    characterName?: string; practiceSkills?: PracticeSkill[]; preferredTarget?: string | null;
 }
 
 export interface UseCommandSuggestionsReturn {
+    commandTextColor?: string;
     commandTextParts: CommandTextParts | null; mumeCommandMatch: MumeCommandMatch;
     showCompletionPopup: boolean; showCommandPopup: boolean; showTargetPopup: boolean; showSpellPopup: boolean;
     visibleCommandSuggestions: MumeCommandEntry[]; targetSuggestions: CommandTargetSuggestion[];
@@ -79,9 +87,11 @@ export const useCommandSuggestions = ({
     inventoryLines = [],
     wornLines = [],
     characterName = '',
-    practiceSkills = []
+    practiceSkills = [],
+    preferredTarget = null
 }: UseCommandSuggestionsOptions): UseCommandSuggestionsReturn => {
     const effectivePlacement: 'top' | 'bottom' = propPlacement ?? (isMobile ? 'top' : 'bottom');
+    const reverseCommandTargets = useCommandActionSuggestions(abilities, inventoryLines, wornLines, characterName);
     const [isFocused, setIsFocused] = useState(false);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
     const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
@@ -102,11 +112,13 @@ export const useCommandSuggestions = ({
     const targetPickerRequestId = propTargetPickerRequestId ?? storeTargetPickerRequestId;
 
     const shouldSuggest = showCommandSuggestions && !disabled && gameState === 'playing' && currentMode === 'command' && !isPasswordMode;
+    const aliases = useCommandAliasStore(state => state.aliases);
 
     const mumeCommandMatch = useMemo(
-        () => shouldSuggest ? getMumeCommandMatch(input, 8) : getMumeCommandMatch(''),
-        [input, shouldSuggest]
+        () => shouldSuggest ? getMumeCommandMatch(input, 8, aliases) : getMumeCommandMatch(''),
+        [aliases, input, shouldSuggest]
     );
+    const isAliasInput = Boolean(mumeCommandMatch.entry?.aliasExpansion);
 
     const commandTextParts = useMemo<CommandTextParts | null>(() => {
         if (!shouldSuggest || !input) return null;
@@ -126,9 +138,16 @@ export const useCommandSuggestions = ({
     }, [input, mumeCommandMatch.entry, mumeCommandMatch.isValid, shouldSuggest]);
 
     const hasCommandArgumentSpace = !!commandTextParts?.isValid && /^\s/.test(commandTextParts.suffix);
-    const keyedSpellInput = useMemo(() => parseKeyedSpellCommand(input), [input]);
-    const commandToken = mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
+    const hasExplicitCommandArgument = Boolean(commandTextParts?.suffix.trim());
+    const aliasCommand = useMemo(() => resolveAliasSuggestionCommand(
+        mumeCommandMatch.entry?.aliasExpansion, commandTextParts?.suffix || ''
+    ), [mumeCommandMatch.entry, commandTextParts?.suffix]);
+    const suggestionInput = aliasCommand?.command || input;
+    const keyedSpellInput = useMemo(() => parseKeyedSpellCommand(suggestionInput), [suggestionInput]);
+    const commandToken = aliasCommand?.token || mumeCommandMatch.entry?.full || commandTextParts?.token.toLowerCase() || '';
     const commandTokenKey = commandToken.toLowerCase();
+    const commandTextColor = getCommandTextColor(aliasCommand?.command || `${commandToken}${commandTextParts?.suffix || ''}`);
+    const targetMenuKind = getCommandTargetMenuKind(aliasCommand?.command || `${commandToken}${commandTextParts?.suffix || ''}`);
 
     const commandArgumentChips = useMemo(() => {
         if (!input || !commandTokenKey) return [];
@@ -165,6 +184,15 @@ export const useCommandSuggestions = ({
     }, [commandArgumentChips]);
 
     const targetSuggestionResolution = useMemo<ResolvedCommandTargetSuggestions>(() => {
+        const suggestionCommand = aliasCommand?.command || `${commandToken}${commandTextParts?.suffix || ''}`;
+        const isRoomInspectionCommand = /^(?:look|examine|consider)(?:\s|$)/i.test(suggestionCommand.trim());
+        if (!keyedSpellInput && !isRoomInspectionCommand && commandTextParts && (!isAliasInput || aliasCommand)) {
+            const reversed = reverseCommandTargets((aliasCommand?.command || `${commandToken}${commandTextParts.suffix}`).trim());
+            if (reversed) return reversed;
+        }
+        if (isAliasInput && (!aliasCommand || !getCommandTargetMenuKind(aliasCommand.command))) {
+            return { suggestions: [], fragment: '', argumentIndex: 0 };
+        }
         if (keyedSpellInput) {
             const fragment = keyedSpellInput.target.toLowerCase();
             const suggestions = getMagicKeyTargetSuggestions(teleportTargets)
@@ -175,7 +203,7 @@ export const useCommandSuggestions = ({
         }
         if (!hasCommandArgumentSpace || !commandTextParts) return { suggestions: [], fragment: '', argumentIndex: 0 };
 
-        const command = `${commandToken}${commandTextParts?.suffix || ''}`.trim();
+        const command = (aliasCommand?.command || `${commandToken}${commandTextParts?.suffix || ''}`).trim();
         if (/^rescue(?:\s|$)/i.test(command)) {
             return {
                 suggestions: getRescueTargetSuggestions(Object.values(chars || {}), characterName, groupMembers),
@@ -185,7 +213,7 @@ export const useCommandSuggestions = ({
         }
         return resolveCommandTargetSuggestions({
             command,
-            argumentText: commandTextParts?.suffix || '',
+            argumentText: aliasCommand?.argumentText || commandTextParts?.suffix || '',
             menuKind: getCommandTargetMenuKind(command),
             roomOccupants: Object.values(chars || {}),
             roomObjects: Object.values(roomItems || {}),
@@ -200,7 +228,12 @@ export const useCommandSuggestions = ({
             roomWaterAvailable,
             groupMembers
         });
-    }, [abilities, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, keyedSpellInput, practiceSkills, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
+    }, [abilities, aliasCommand, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, isAliasInput, keyedSpellInput, practiceSkills, reverseCommandTargets, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
+
+    const canSuggestLockedTarget = Boolean(preferredTarget?.trim()) && !keyedSpellInput && (
+        Boolean(targetSuggestionResolution.isActionDerived)
+        || (hasCommandArgumentSpace && ['room', 'bash', 'room-spell', 'room-spell-with-extras'].includes(targetMenuKind || ''))
+    );
 
     const targetSuggestions = useMemo<CommandTargetSuggestion[]>(() => {
         const isStagedCommand = /^(give|put|get)$/.test(commandTokenKey)
@@ -209,26 +242,38 @@ export const useCommandSuggestions = ({
         if (commandArgumentChips.length >= maxSelectedArguments) return [];
 
         const fragment = targetSuggestionResolution.fragment.toLowerCase();
-        return targetSuggestionResolution.suggestions
-            .filter(entry => {
-                if (!entry.value) return false;
-                if (!fragment) return true;
-                if (commandTokenKey === 'buy' && entry.meta === 'shop-item') {
-                    const productName = stripShopProductQuantity(entry.label)
-                        .replace(/^(?:a|an|the)\s+/i, '')
-                        .toLowerCase();
-                    return productName.startsWith(fragment) || entry.value.toLowerCase().startsWith(fragment);
-                }
-                const cleanValue = entry.value.replace(/^[*-]+|[*-]+$/g, '').toLowerCase();
-                const valueLower = entry.value.toLowerCase();
-                const labelLower = entry.label.toLowerCase();
-                return cleanValue.startsWith(fragment) ||
-                    valueLower.startsWith(fragment) ||
-                    labelLower.startsWith(fragment) ||
-                    labelLower.split(/\s+/).some(w => w.startsWith(fragment));
-            })
-            .slice(0, 8);
-    }, [commandArgumentChips, commandTokenKey, targetSuggestionResolution]);
+        const matchingSuggestions = targetSuggestionResolution.suggestions.filter(entry => {
+            if (!entry.value) return false;
+            if (!fragment) return true;
+            if (commandTokenKey === 'buy' && entry.meta === 'shop-item') {
+                const productName = stripShopProductQuantity(entry.label)
+                    .replace(/^(?:a|an|the)\s+/i, '')
+                    .toLowerCase();
+                return productName.startsWith(fragment) || entry.value.toLowerCase().startsWith(fragment);
+            }
+            const cleanValue = entry.value.replace(/^[*-]+|[*-]+$/g, '').toLowerCase();
+            const valueLower = entry.value.toLowerCase();
+            const labelLower = entry.label.toLowerCase();
+            return cleanValue.startsWith(fragment) ||
+                valueLower.startsWith(fragment) ||
+                labelLower.startsWith(fragment) ||
+                labelLower.split(/\s+/).some(w => w.startsWith(fragment));
+        });
+        const targetToPrioritize = canSuggestLockedTarget ? preferredTarget : null;
+        const lockedTargetSuggestion = targetToPrioritize
+            ? targetSuggestionResolution.suggestions.find(entry => isTargetSuggestionMatch(entry, targetToPrioritize))
+                || makeCommandTargetSuggestion(targetToPrioritize.trim(), targetToPrioritize.trim(), 'selected-target')
+            : null;
+        if (lockedTargetSuggestion) {
+            const otherSuggestions = matchingSuggestions.filter(entry => !isTargetSuggestionMatch(entry, targetToPrioritize));
+            return [{ ...lockedTargetSuggestion, isCurrentTarget: true }, ...otherSuggestions].slice(0, 8);
+        }
+
+        const prioritizedSuggestions = prioritizeTargetSuggestion(matchingSuggestions, targetToPrioritize);
+        return prioritizedSuggestions.slice(0, 8)
+            .map((entry, index) => index === 0 && isTargetSuggestionMatch(entry, targetToPrioritize)
+                ? { ...entry, isCurrentTarget: true } : entry);
+    }, [canSuggestLockedTarget, commandArgumentChips, commandTokenKey, preferredTarget, targetSuggestionResolution]);
 
     const selectedTargetSuggestion = targetSuggestions[0] ?? null;
 
@@ -241,16 +286,19 @@ export const useCommandSuggestions = ({
     }, [hasCommandArgumentSpace]);
 
     const spellSuggestions = useMemo(() => {
-        if (!shouldSuggest) return [];
-        return getCastSpellSuggestions(input, abilities, characterClass);
-    }, [abilities, characterClass, input, shouldSuggest]);
+        if (!shouldSuggest || (isAliasInput && !aliasCommand)) return [];
+        return getCastSpellSuggestions(suggestionInput, abilities, characterClass);
+    }, [abilities, aliasCommand, characterClass, isAliasInput, shouldSuggest, suggestionInput]);
 
-    const isSpellCastInput = getCastSpellFragment(input) !== null;
+    const isSpellCastInput = (!isAliasInput || Boolean(aliasCommand)) && getCastSpellFragment(suggestionInput) !== null;
 
     const chooseSpellSuggestion = useCallback((spell: string) => {
-        setInput(replaceCastSpellArgument(input, spell));
+        const completed = replaceCastSpellArgument(suggestionInput, spell);
+        setInput(aliasCommand
+            ? `${input.match(/^\s*\S+/)?.[0] || ''} ${completed.slice(aliasCommand.prefix.length).trimStart()}`
+            : completed);
         requestAnimationFrame(() => inputRef?.current?.focus());
-    }, [input, inputRef, setInput]);
+    }, [aliasCommand, input, inputRef, setInput, suggestionInput]);
 
     const chooseCommandSuggestion = useCallback((entry: MumeCommandEntry) => {
         setInput(replaceMumeCommandToken(input, entry));
@@ -280,6 +328,11 @@ export const useCommandSuggestions = ({
                 nextInput = replaceFirstCommandArgument(input, value);
                 const commandTokenMatch = /^\s*\S+/.exec(nextInput);
                 chipStart = (commandTokenMatch?.[0].length ?? 0) + 1;
+            } else if (!hasExplicitCommandArgument) {
+                const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
+                const commandToken = input.slice(leadingWhitespace.length).match(/^\S+/)?.[0] ?? '';
+                nextInput = commandToken ? `${leadingWhitespace}${commandToken} ${value}` : `${input}${value}`;
+                chipStart = commandToken ? leadingWhitespace.length + commandToken.length + 1 : input.length;
             } else {
                 const activeToken = /\S+$/.exec(input);
                 chipStart = /\s$/.test(input) || !activeToken ? input.length : activeToken.index ?? input.length;
@@ -297,7 +350,7 @@ export const useCommandSuggestions = ({
                 value,
                 start: chipStart,
                 end: chipStart + value.length,
-                suggestions: targetSuggestionResolution.suggestions,
+                suggestions: [chosenSuggestion, ...targetSuggestionResolution.suggestions.filter(entry => entry.value !== chosenSuggestion.value)],
                 commandToken: commandTokenKey,
                 isVirtual: isVirtualChip,
                 snapshot: isVirtualChip ? nextInput : undefined
@@ -313,7 +366,7 @@ export const useCommandSuggestions = ({
             inputElement?.focus();
             inputElement?.setSelectionRange(caretPosition, caretPosition);
         });
-    }, [commandTokenKey, input, inputRef, setInput, targetSuggestionResolution, targetSuggestions]);
+    }, [commandTextParts, commandTokenKey, input, inputRef, setInput, targetSuggestionResolution, targetSuggestions]);
 
     const chooseCommandArgumentSuggestion = useCallback((key: string, value: string) => {
         const chip = commandArgumentChips.find(candidate => candidate.key === key);
@@ -421,9 +474,12 @@ export const useCommandSuggestions = ({
         mumeCommandMatch.suggestions.length > 0 &&
         input.trim().length > 0;
 
-    const showTargetPopup = shouldSuggest &&
-        (keyedSpellInput ? suggestionInputActive : hasCommandArgumentSpace && !isSpellCastInput && (suggestionInputActive || isTargetPickerForced)) &&
-        targetSuggestions.length > 0;
+    const showTargetPopup = Boolean(shouldSuggest &&
+        (keyedSpellInput
+            ? suggestionInputActive
+            : (hasCommandArgumentSpace && !isSpellCastInput && (suggestionInputActive || isTargetPickerForced))
+                || (Boolean(targetSuggestionResolution.isActionDerived) && suggestionInputActive)) &&
+        targetSuggestions.length > 0);
 
     const showSpellPopup = shouldSuggest &&
         hasCommandArgumentSpace &&
@@ -472,8 +528,10 @@ export const useCommandSuggestions = ({
                     const availableWidth = mapRight - mapLeft;
                     if (availableWidth >= 140) {
                         const width = Math.min(desiredWidth, availableWidth);
-                        const commandLineBottom = wrapRef.current?.closest('.message-log-docked-input')
-                            ?.getBoundingClientRect().bottom ?? rect.bottom;
+                        const commandLineRect = wrapRef.current?.closest('.command-dock-input-main, .message-log-docked-input')
+                            ?.getBoundingClientRect();
+                        const commandLineBottom = commandLineRect && commandLineRect.height > 0
+                            ? commandLineRect.bottom : rect.bottom;
                         const spaceAbove = commandLineBottom - viewportPadding;
                         setPopupStyle({
                             left: Math.round(mapRight - width),
@@ -528,7 +586,7 @@ export const useCommandSuggestions = ({
             if (showSpellPopup && spellSuggestions[0]) {
                 chooseSpellSuggestion(spellSuggestions[0].value);
                 return true;
-            } else if (showTargetPopup && selectedTargetSuggestion) {
+            } else if (showTargetPopup && selectedTargetSuggestion && (hasCommandArgumentSpace || isTargetPickerForced)) {
                 chooseTargetSuggestion(selectedTargetSuggestion.value);
                 return true;
             } else if (mumeCommandMatch.entry) {
@@ -538,9 +596,10 @@ export const useCommandSuggestions = ({
         }
 
         return false;
-    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, disabled, isMobile, mumeCommandMatch.entry, selectedTargetSuggestion, showSpellPopup, showTargetPopup]);
+    }, [chooseCommandSuggestion, chooseSpellSuggestion, chooseTargetSuggestion, disabled, hasCommandArgumentSpace, isMobile, isTargetPickerForced, mumeCommandMatch.entry, selectedTargetSuggestion, showSpellPopup, showTargetPopup]);
 
     return {
+        commandTextColor,
         commandTextParts,
         mumeCommandMatch,
         showCompletionPopup,

@@ -9,10 +9,13 @@ import { extractMumeKeyword } from '../../utils/keywordUtils';
 import { isItemContainer } from '../../utils/gameUtils';
 import { findObjectOccurrence, getDrawerObjectKeyword, getRoomObjectKeyword, hasObjectTrait } from '../../objects/objectTargetModel';
 import { findDrawerItemOccurrence, usePendingObjectCommand } from './usePendingObjectCommand';
+import { trackSaddleAction } from './objectSaddleTracker';
+import { addEquipmentLine, createItemLine, inferWearSlot, isMoney } from './objectActionUtils';
 import { stripResultTail, trackRemoveAction } from './objectRemoveTracker';
 
 export interface ObjectActionTrackerDeps {
     capture: import('../../types/capture').CaptureController;
+    roomNum?: number;
     setInventoryLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     setEqLines: React.Dispatch<React.SetStateAction<DrawerLine[]>>;
     inventoryLines?: DrawerLine[];
@@ -28,46 +31,9 @@ export interface ObjectActionTrackerDeps {
     onRemove?: () => void;
     onGet?: () => void;
     onDrop?: () => void;
+    onSaddle?: () => void;
+    onUnsaddle?: (mount: string) => void;
 }
-
-const inferWearSlot = (itemText: string): string => {
-    const lower = itemText.toLowerCase();
-    if (/\b(shield|buckler)\b/.test(lower)) return '<worn as shield>';
-    if (/\b(helmet|helm|hat|cap|crown|hood|circlet|coif)\b/.test(lower)) return '<worn on head>';
-    if (/\b(glove|gloves|gauntlet|gauntlets)\b/.test(lower)) return '<worn on hands>';
-    if (/\b(boot|boots|shoe|shoes|sandal|sandals)\b/.test(lower)) return '<worn on feet>';
-    if (/\b(trouser|trousers|pants|leggings|greaves|hose)\b/.test(lower)) return '<worn on legs>';
-    if (/\b(sleeve|sleeves|bracer|bracers|vambrace|vambraces)\b/.test(lower)) return '<worn on arms>';
-    if (/\b(belt|sash|girdle|scabbard|knife|flask|lantern|pan|stone)\b/.test(lower)) return '<worn on belt>';
-    if (/\b(quiver|pack|backpack|satchel|cloak|cape)\b/.test(lower)) return '<worn across back>';
-    if (/\b(ring|band)\b/.test(lower)) return '<worn on finger>';
-    if (/\b(necklace|amulet|pendant|collar|torc)\b/.test(lower)) return '<worn around neck>';
-    return '<worn on body>';
-};
-
-const addEquipmentLine = (item: DrawerLine, slotPrefix: string, setEqLines: ObjectActionTrackerDeps['setEqLines']) => {
-    setEqLines(previous => {
-        const objectId = item.stableId || item.entityId || item.id;
-        if (previous.some(line => (line.stableId || line.entityId || line.id) === objectId)) return previous;
-        return [...previous, { ...item, id: item.id, stableId: objectId, cmd: 'equipmentlist', prefix: slotPrefix, isItem: true }];
-    });
-};
-
-const createItemLine = (
-    itemText: string,
-    slotPrefix: string,
-    extractNoun: ObjectActionTrackerDeps['extractNoun'],
-    ansiConvert: ObjectActionTrackerDeps['ansiConvert']
-): DrawerLine => {
-    const id = Math.random().toString(36).substring(7);
-    return {
-        id, stableId: id, text: itemText, html: ansiConvert.toHtml(itemText), rawText: `${slotPrefix} ${itemText}`,
-        isItem: true, cmd: 'equipmentlist', context: extractNoun(itemText), prefix: slotPrefix
-    };
-};
-
-const isMoney = (text: string): boolean =>
-    /\d+\s*(?:gold coins?|silver coins?|copper coins?|lauren|celeb|busc|penn(?:y|ies))/i.test(text);
 
 export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
     const { getArguments, clear } = usePendingObjectCommand();
@@ -91,6 +57,7 @@ export const useObjectActionTracker = (deps: ObjectActionTrackerDeps) => {
 
     const trackAction = useCallback((cleanLine: string, textOnly: string): boolean => {
         if (deps.capture.hasSession()) return false;
+        if (trackSaddleAction(textOnly, getArguments, clear, deps)) return true;
 
         const moveToEquipment = (itemText: string, slotPrefix: string, verbs: string[]) => {
             const normalizedItem = stripResultTail(itemText);

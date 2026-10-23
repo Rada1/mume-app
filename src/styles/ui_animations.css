@@ -1,5 +1,14 @@
 /* UI and Interaction Keyframes */
 
+@keyframes low-vital-pulse {
+    0%, 100% { opacity: var(--low-vital-opacity, 1); }
+    50% { opacity: var(--low-vital-dim-opacity, .42); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .is-low-vital { animation: none !important; }
+}
+
 @keyframes ring-spin {
     from { transform: translate(-50%, -50%) rotate(0deg); }
     to   { transform: translate(-50%, -50%) rotate(360deg); }

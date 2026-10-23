@@ -1,0 +1,15 @@
+/** @file AliasSuggestions.css — Keeps long alias expansions readable within command suggestions. */
+
+/* --- Alias Rows --- */
+.command-suggestion-option.is-alias .command-suggestion-name {
+    flex: 0 0 auto;
+    max-width: 30%;
+}
+
+.command-suggestion-option.is-alias .command-suggestion-full {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

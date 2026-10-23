@@ -1,0 +1,239 @@
+/**
+ * @file ThisIsYouTerminalSurface.css
+ * @description Terminal surface and minimized summary styles.
+ */
+
+/* --- Terminal Surface --- */
+.this-is-you-console {
+    --this-is-you-action-hitbox: 24px;
+    display: flex;
+    flex-direction: column;
+    padding: 7px 4px 6px;
+    background: rgba(10, 15, 21, 0.2);
+    backdrop-filter: blur(18px) saturate(1.05);
+    -webkit-backdrop-filter: blur(18px) saturate(1.05);
+    border: 0;
+    border-top: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #d4cdb8;
+    user-select: text;
+    line-height: 1.45;
+    transition: padding 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    container-name: this-is-you;
+    container-type: inline-size;
+}
+
+.this-is-you-console.is-minimized {
+    padding: 4px 4px 3px;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Keep the compact desktop identity strip aligned with neighboring HUD rules. */
+.this-is-you-console:not(.is-mobile).is-minimized {
+    top: 3px;
+    padding-top: 3px;
+    padding-bottom: 2px;
+}
+
+.this-is-you-tier-identity {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0;
+    margin-bottom: 10px;
+    border: 0;
+    gap: 5px 14px;
+    font-size: 0.7rem;
+    transition: margin-bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+}
+
+.this-is-you-console.is-minimized .this-is-you-tier-identity {
+    margin-bottom: 0;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 4px;
+    padding: 2px 4px;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.this-is-you-console:not(.is-mobile).is-minimized .this-is-you-tier-identity {
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.this-is-you-minimized-summary {
+    display: none;
+}
+
+.this-is-you-console:not(.is-mobile) .this-is-you-minimized-summary,
+.this-is-you-console.is-mobile.is-minimized .this-is-you-minimized-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 0;
+    overflow-x: auto;
+    padding: 2px 4px 4px;
+    color: #a89f8c;
+    font-size: 0.6rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+
+.this-is-you-console.is-minimized .this-is-you-minimized-summary::-webkit-scrollbar {
+    display: none;
+}
+
+.this-is-you-minimized-summary-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+}
+
+.this-is-you-minimized-summary-group + .this-is-you-minimized-summary-group {
+    padding-top: 4px;
+    border: 0;
+}
+
+.this-is-you-minimized-summary-group > strong {
+    color: #c9a84c;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+}
+
+.this-is-you-console.is-minimized .this-is-you-minimized-summary .this-is-you-pill-wrapper {
+    width: auto;
+    height: auto;
+    flex: 0 0 auto;
+}
+
+.this-is-you-console.is-minimized .this-is-you-minimized-summary .this-is-you-pill {
+    display: inline-flex;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    padding: 2px 5px;
+    border: 0;
+    border-radius: 3px;
+    font-size: 0.58rem;
+}
+
+.this-is-you-console.is-minimized .this-is-you-minimized-summary .this-is-you-pill-category {
+    width: auto;
+    color: #9a9182;
+    font-size: 0.56rem;
+}
+
+.this-is-you-console.is-minimized .this-is-you-minimized-summary .this-is-you-pill-value {
+    overflow: visible;
+    text-overflow: clip;
+}
+
+.this-is-you-minimized-summary-group b {
+    color: #9bd2a5;
+    font-weight: 700;
+}
+
+.this-is-you-tier-identity:hover {
+    background: rgba(201, 168, 76, 0.08);
+}
+
+.this-is-you-identity-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.this-is-you-expand-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--this-is-you-action-hitbox);
+    height: var(--this-is-you-action-hitbox);
+    color: #c9a84c;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* Collapsible Body Wrapper */
+.this-is-you-body-wrapper {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.22s ease;
+    opacity: 1;
+}
+
+.this-is-you-console.is-minimized .this-is-you-body-wrapper {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    pointer-events: none;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1), ease-in-out;
+}
+
+.this-is-you-body-inner {
+    min-height: 0;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.18fr) minmax(0, 0.75fr);
+    gap: 0 20px;
+    transform: translateY(0);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.this-is-you-console.is-minimized .this-is-you-body-inner {
+    transform: translateY(10px);
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.this-is-you-hero-strip { gap: 5px 9px; }
+.this-is-you-name {
+    order: -2;
+    color: #f0cb67;
+    font-size: 0.78rem;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+}
+.this-is-you-level-tag {
+    order: -1;
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    color: #c9b88f;
+    font-size: 0.67rem;
+}
+.this-is-you-subtext,
+.this-is-you-bio-item,
+.this-is-you-stat-lbl,
+.this-is-you-stat-sub { color: #9a9182; }
+.this-is-you-bio-item strong,
+.this-is-you-bio-item strong.gold,
+.this-is-you-bio-item strong.cyan,
+.this-is-you-stat-val.xp,
+.this-is-you-stat-val.tp { color: #9bd2a5; }
+.this-is-you-xp-strip { gap: 12px; }
+.this-is-you-xp-box { gap: 4px; }
+.this-is-you-stat-lbl { font-size: 0.64rem; }
+
+.this-is-you-console .this-is-you-delta {
+    display: inline-block;
+    margin-left: 5px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    white-space: nowrap;
+    animation: stat-delta-arrive 180ms ease-out;
+}
+.this-is-you-console .this-is-you-delta.is-gain { color: #86efac; }
+.this-is-you-console .this-is-you-delta.is-loss { color: #f87171; }
+@keyframes stat-delta-arrive {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+

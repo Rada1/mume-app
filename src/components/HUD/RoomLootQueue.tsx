@@ -1,19 +1,21 @@
 /** @file RoomLootQueue.tsx — Persistent room loot entry point. */
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { BedDouble, Coins, Compass, GraduationCap, Store, X } from 'lucide-react';
+import { BedDouble, Compass, GraduationCap, Store } from 'lucide-react';
 import { useKillPromptStore } from '../../stores/useKillPromptStore';
 import { useActiveRoom } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
+import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { useMapper } from '../../context/MapperContext';
 import { getShopRoomLabel } from '../../utils/shopRoomUtils';
 import { getGuildClassFromFlags } from '../../utils/practiceClassCatalog';
 import { getRoomCorpseTargetSuggestions } from '../../objects/roomTargetSuggestions';
 import { getCorpseCommandKeyword } from '../../objects/objectTargetModel';
 import { getMountTargetSuggestions } from '../../utils/commandSuggestionUtils';
-import { RoomLootCorpseContents } from './RoomLootCorpseContents';
+import { RoomLootPanel } from './RoomLootPanel';
+import { useCorpseLootActions } from '../../hooks/useCorpseLootActions';
 import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { useMountCargoActions } from '../../hooks/useMountCargoActions';
 import { useRoomLootCandidates } from '../../hooks/useRoomLootCandidates';
@@ -23,9 +25,7 @@ import { useCombatStore } from '../../stores/useCombatStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import type { CommandTargetSuggestion } from '../../objects/targetSuggestionTypes';
 import type { GmcpOccupant } from '../../types';
-import { RoomLootGroundItems } from './RoomLootGroundItems';
 import './RoomLootQueue.css';
-
 interface RoomLootQueueProps {
     isMobile: boolean;
     executeCommand: (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
@@ -35,7 +35,6 @@ interface RoomLootQueueProps {
         setPendingFlags: (silent: boolean, fromDrawer: boolean, command?: string) => void;
     };
 }
-
 interface LootTarget {
     id: string;
     label: string;
@@ -43,26 +42,19 @@ interface LootTarget {
     containerId: string;
     queuedCorpseId?: string;
 }
-
 const SEEK_RIVENDELL_ROOM_IDS = new Set(['7492', '7491', '7136', '7488', '6978', '6977', '6972', '7711490', '10085070', '5590844', '11348499', '7571803']);
-
 // --- Logic Section ---
 export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     isMobile, executeCommand, roomNpcs, parser, triggerHaptic
 }) => {
     const mapper = useMapper();
     const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
-    const setShopkeeperName = useUIStore(state => state.setShopkeeperName);
-    const requestCommandTab = useCommandPanelStore(state => state.requestTab);
-    const setSkillsOpen = useCommandPanelStore(state => state.setIsSkillsOpen);
-    const setMobileCommandsOpen = useCommandPanelStore(state => state.setIsMobileOpen);
     const activeRoom = useActiveRoom();
     const roomNum = activeRoom.roomNum;
     const roomMapId = activeRoom.mapId;
     const roomItems = activeRoom.items;
     const isTargetSpectateView = useModeStore(state => state.isSpectating && state.activeView === 'target');
     const corpses = useKillPromptStore(state => state.corpses);
-    const removeCorpse = useKillPromptStore(state => state.removeCorpse);
     const retainRoom = useKillPromptStore(state => state.retainRoom);
     const corpseContents = useCorpseContentsStore(state => state.contents);
     const autoLootValuables = useSettingsStore(state => state.autoLootValuables);
@@ -104,30 +96,27 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const [isOpen, setIsOpen] = React.useState(false);
     const lootTriggerRef = React.useRef<HTMLButtonElement | null>(null);
     const [mobilePanelPosition, setMobilePanelPosition] = React.useState({ top: 0, right: 8 });
-    const [handledRoomItems, setHandledRoomItems] = React.useState<Set<string>>(() => new Set());
-    const [dismissedGroundLootIds, setDismissedGroundLootIds] = React.useState<Set<string>>(() => new Set());
+    const dismissedGroundLootIds = React.useMemo<ReadonlySet<string>>(() => new Set(), []);
     const [recipientTarget, setRecipientTarget] = React.useState('mount');
+    const [giveLootToMount, setGiveLootToMount] = React.useState(false);
     const detectedMountSuggestions = React.useMemo(
         () => getMountTargetSuggestions(roomNpcs).filter(suggestion => suggestion.value !== 'mount'),
         [roomNpcs]
     );
-    const mountSuggestions = detectedMountSuggestions.length ? detectedMountSuggestions : [
-        { key: 'fallback-mount', label: 'My mount', value: 'mount', meta: 'mount' }
+    const mountSuggestions = [
+        { key: 'fallback-mount', label: 'My mount', value: 'mount', meta: 'mount' },
+        ...detectedMountSuggestions
     ];
     const selectedRecipientTarget = mountSuggestions.some(suggestion => suggestion.value === recipientTarget)
         ? recipientTarget
         : mountSuggestions[0]?.value || recipientTarget;
-    const recipientLabel = mountSuggestions.find(suggestion => suggestion.value === selectedRecipientTarget)?.label || 'my mount';
-
     const detectedRoomCorpses = React.useMemo(() => getRoomCorpseTargetSuggestions(roomItems)
-        .filter(corpse => !handledRoomItems.has(corpse.objectId || corpse.key))
         .map((corpse: CommandTargetSuggestion): LootTarget => ({
             id: `room:${corpse.objectId || corpse.key}`,
             label: corpse.label,
             commandTarget: corpse.value,
             containerId: corpse.objectId || corpse.key
-        })), [handledRoomItems, roomItems]);
-
+        })), [roomItems]);
     const roomCorpses = React.useMemo(() => {
         const unmatchedRoomCorpses = [...detectedRoomCorpses];
         const matchedQueueIds = new Set<string>();
@@ -163,16 +152,13 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     }, [corpses, detectedRoomCorpses, isTargetSpectateView, roomNum]);
     const groundLootItems = useRoomLootCandidates(roomItems, dismissedGroundLootIds);
     const lootSourceCount = roomCorpses.length + groundLootItems.length;
-    const lootSummary = [
-        roomCorpses.length > 0 ? `${roomCorpses.length} ${roomCorpses.length === 1 ? 'corpse' : 'corpses'}` : '',
-        groundLootItems.length > 0 ? `${groundLootItems.length} ${groundLootItems.length === 1 ? 'ground item' : 'ground items'}` : ''
-    ].filter(Boolean).join(' · ');
+    const lootSummary = roomCorpses.length > 0
+        ? `${roomCorpses.length} ${roomCorpses.length === 1 ? 'corpse' : 'corpses'}`
+        : '';
 
     React.useEffect(() => {
         if (!isTargetSpectateView) retainRoom(roomNum);
         setIsOpen(false);
-        setHandledRoomItems(new Set());
-        setDismissedGroundLootIds(new Set());
         clearContents();
     }, [clearContents, isTargetSpectateView, roomNum, retainRoom]);
 
@@ -196,23 +182,15 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         return () => window.removeEventListener('resize', updateMobilePanelPosition);
     }, [isMobile, isOpen]);
 
-    const lootCorpse = (corpse: LootTarget) => {
-        const target = corpse.commandTarget.trim();
-        if (!target) return;
-        executeCommand(`get all ${target}`);
-        if (corpse.queuedCorpseId) removeCorpse(corpse.queuedCorpseId);
-        if (corpse.id.startsWith('room:')) {
-            const itemId = corpse.id.slice('room:'.length);
-            setHandledRoomItems(current => new Set(current).add(itemId));
-        }
-    };
-
     const examineCorpse = (corpse: LootTarget) => {
         const command = `examine ${corpse.commandTarget}`;
         requestContents(corpse.containerId, corpse.commandTarget);
         parser.setPendingFlags(true, true, command);
         executeCommand(command, true, true, false, true);
     };
+
+    const corpseLoot = useCorpseLootActions({ executeCommand, examineCorpse, roomNum });
+    const lootCorpse = (corpse: LootTarget) => corpseLoot.execute(corpse, `get all ${corpse.commandTarget}`);
 
     useAutoLootValuables({ enabled: autoLootValuables, roomId: roomNum,
         combatIsActive: engagedOpponents.length > 0 || opponentId !== null || opponentName !== null,
@@ -222,67 +200,31 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     if (!lootSourceCount && !shopLabel && !hasRentService && !hasGuildService && !shouldShowSeekRivendell) return null;
 
     const openShop = () => {
-        setShopkeeperName(null);
         setIsShopOpen(true);
-        executeCommand('list');
+        const commandPanel = useCommandPanelStore.getState();
+        useGearPanelStore.getState().setIsOpen(false);
+        if (isMobile) commandPanel.setIsMobileGuideOpen(true);
+        else commandPanel.setIsOpen(true);
+        commandPanel.requestShopOpen();
+        commandPanel.requestTargetSection('shop');
         triggerHaptic?.(10);
     };
     const openSkillsPanel = () => {
-        requestCommandTab('skills');
-        if (isMobile) setMobileCommandsOpen(true);
-        else setSkillsOpen(true);
+        const commandPanel = useCommandPanelStore.getState();
+        useGearPanelStore.getState().setIsOpen(false);
+        if (isMobile) commandPanel.setIsMobileGuideOpen(true);
+        else commandPanel.setIsOpen(true);
+        commandPanel.requestPracticeOpen();
+        commandPanel.requestTargetSection('practice');
         triggerHaptic?.(10);
     };
-    const lootPanel = <section className="room-loot-panel" role="dialog" aria-modal={isMobile || undefined} aria-label="Loot in this room">
-        <header className="room-loot-panel-header">
-            <div>
-                <strong>Loot in this room</strong>
-                <span>{lootSummary}</span>
-            </div>
-            <button type="button" onClick={() => setIsOpen(false)} aria-label="Close loot list"><X size={17} /></button>
-        </header>
-        <label className="room-loot-recipient">
-            <span>Give selected to</span>
-            <select value={selectedRecipientTarget} onChange={event => setRecipientTarget(event.target.value)}>
-                {!detectedMountSuggestions.length && <option value="mount">My mount</option>}
-                {detectedMountSuggestions.map(mount => <option key={mount.key} value={mount.value}>{mount.label}</option>)}
-            </select>
-        </label>
-        <div className="room-loot-list">
-            {roomCorpses.map(corpse => (
-                <div className="room-loot-row" key={corpse.id}>
-                    <div className="room-loot-row-heading">
-                        <span title={corpse.label}>{corpse.label}</span>
-                        <div className="room-loot-row-actions">
-                            <button type="button" onClick={() => lootCorpse(corpse)}>Get all</button>
-                            {mountSuggestions.length > 0 && <button type="button" disabled={cargoBusy}
-                                onClick={() => lootValuables(corpse.containerId, corpse.commandTarget, selectedRecipientTarget)}>
-                                <Coins size={12} /><span>Valuables → {recipientLabel}</span>
-                            </button>}
-                        </div>
-                    </div>
-                    <RoomLootCorpseContents
-                        corpseId={corpse.containerId}
-                        corpseLabel={corpse.label}
-                        corpseTarget={corpse.commandTarget}
-                        contents={corpseContents[corpse.containerId]}
-                        recipientTarget={selectedRecipientTarget}
-                        recipientLabel={recipientLabel}
-                        onLookInside={() => examineCorpse(corpse)}
-                        executeCommand={command => executeCommand(command)}
-                    />
-                </div>
-            ))}
-            <RoomLootGroundItems
-                items={groundLootItems}
-                recipientTarget={selectedRecipientTarget}
-                recipientLabel={recipientLabel}
-                executeCommand={command => executeCommand(command)}
-                onDismiss={id => setDismissedGroundLootIds(current => new Set(current).add(id))}
-            />
-        </div>
-        <p className="room-loot-help">Actions use creature-specific corpse keywords; duplicate bodies use ordinals.</p>
-    </section>;
+    const lootPanel = <RoomLootPanel isMobile={isMobile} lootSourceCount={lootSourceCount} lootSummary={lootSummary}
+        selectedRecipientTarget={selectedRecipientTarget} setRecipientTarget={setRecipientTarget}
+        giveLootToMount={giveLootToMount} setGiveLootToMount={setGiveLootToMount}
+        detectedMountSuggestions={detectedMountSuggestions} roomCorpses={roomCorpses} cargoBusy={cargoBusy || corpseLoot.isBusy}
+        lootCorpse={lootCorpse} lootValuables={lootValuables} corpseContents={corpseContents}
+        examineCorpse={examineCorpse} executeCommand={command => executeCommand(command)} groundLootItems={groundLootItems}
+        executeCorpseCommand={corpseLoot.execute} onClose={() => setIsOpen(false)} />;
 
     return (
         <div className={`room-loot-root${isMobile ? ' is-mobile' : ''}`}>
@@ -294,10 +236,10 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
                 <Store size={14} /><span>{shopLabel}</span>
             </button>}
             {shopLabel && <button className="room-shop-trigger" type="button" disabled={cargoBusy}
-                onClick={() => sellMountLoot(mountSuggestions)} aria-label="Sell mount loot">
+                onClick={() => sellMountLoot()} aria-label="Sell mount loot">
                 <Store size={14} /><span>{cargoBusy ? 'Selling…' : 'Sell mount loot'}</span>
             </button>}
-            {cargoStatus && <span className="room-loot-status" role="status">{cargoStatus}</span>}
+            {(cargoStatus || corpseLoot.status) && <span className="room-loot-status" role="status">{cargoStatus || corpseLoot.status}</span>}
             {shouldShowSeekRivendell && <button className="room-context-trigger is-seek" type="button" onClick={() => {
                 executeCommand('seek rivendell');
                 triggerHaptic?.(10);

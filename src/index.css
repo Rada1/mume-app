@@ -7,8 +7,10 @@
 @import './styles/base.css';
 @import './styles/animations.css';
 @import './styles/environment.css';
+@import './styles/nightClouds.css';
 @import './styles/layout.css';
 @import './styles/ui.css';
+@import './styles/accountModeTheme.css';
 
 @font-face {
     font-family: 'Kelt';
@@ -20,6 +22,14 @@
 
 /* Core Styles */
 :root {
+    --active-target-highlight-color: #f87171;
+    --active-target-highlight-foreground: #fca5a5;
+    --active-target-highlight-background: rgba(127, 29, 29, 0.24);
+    --active-target-highlight-hover-background: rgba(127, 29, 29, 0.34);
+    --active-target-highlight-border: rgba(248, 113, 113, 0.82);
+    --active-target-highlight-hover-border: rgba(248, 113, 113, 0.95);
+    --active-target-highlight-shadow: 0 0 8px rgba(239, 68, 68, 0.44), inset 0 0 6px rgba(248, 113, 113, 0.16);
+
     /* Z-Index Hierarchy */
     --z-base: 0;
     --z-content: 5000;

@@ -1,6 +1,6 @@
 /**
  * @file CapturedDetailsCard.tsx
- * @description Presents captured look and consider output as structured popover details.
+ * @description Presents captured inspection and room-report output as structured details.
  */
 
 import React from 'react';
@@ -15,11 +15,21 @@ interface CapturedDetailsCardProps {
     considerLines?: string[];
     isCapturingExamine?: boolean;
     isCapturingConsider?: boolean;
+    helpLines?: string[];
+    helpTopic?: string;
+    isCapturingHelp?: boolean;
     whoisLines?: string[];
     isCapturingWhois?: boolean;
-    onRequestLook?: () => void;
-    onRequestExamine?: () => void;
-    onRequestConsider?: () => void;
+    whoLines?: string[];
+    isCapturingWho?: boolean;
+    whereLines?: string[];
+    isCapturingWhere?: boolean;
+    roomActionLines?: string[];
+    roomActionKind?: 'exits' | 'map' | 'weather global' | 'weather fog' | 'weather local';
+    isCapturingRoomAction?: boolean;
+    personalActionLines?: string[];
+    personalActionKind?: 'info' | 'stat' | 'score';
+    isCapturingPersonalAction?: boolean;
 }
 
 interface AssessmentLine {
@@ -67,6 +77,29 @@ const toAssessmentLine = (html: string): AssessmentLine => {
     };
 };
 
+const renderCapturedReport = (title: string, lines: string[] | undefined, isCapturing: boolean, loadingLabel: string, emptyLabel: string) => {
+    const safeLines = sanitizeLines(lines);
+    return (
+        <section className={`captured-details-card${title === 'Map' ? ' captured-map-report' : ''}${title.startsWith('Help') ? ' captured-help-report' : ''}`} onPointerDown={(e) => e.stopPropagation()}>
+            <div className="captured-details-grid captured-details-grid-single">
+                <div className="captured-detail-panel whois-panel">
+                    <div className="captured-detail-kicker">{title}</div>
+                    {isCapturing && safeLines.length === 0 ? (
+                        <div className="captured-detail-loading">
+                            <span className="captured-spinner" />
+                            <span>{loadingLabel}</span>
+                        </div>
+                    ) : safeLines.length > 0 ? (
+                        <pre className="captured-report-copy" dangerouslySetInnerHTML={{ __html: safeLines.map(line => line || '&nbsp;').join('\n') }} />
+                    ) : (
+                        <div className="captured-detail-empty">{emptyLabel}</div>
+                    )}
+                </div>
+            </div>
+        </section>
+    );
+};
+
 // --- Component Section ---
 
 export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
@@ -75,60 +108,59 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     considerLines,
     isCapturingExamine,
     isCapturingConsider,
+    helpLines,
+    helpTopic,
+    isCapturingHelp,
     whoisLines,
     isCapturingWhois,
-    onRequestLook,
-    onRequestExamine,
-    onRequestConsider
+    whoLines,
+    isCapturingWho,
+    whereLines,
+    isCapturingWhere,
+    roomActionLines,
+    roomActionKind,
+    isCapturingRoomAction,
+    personalActionLines,
+    personalActionKind,
+    isCapturingPersonalAction
 }) => {
+    if (isCapturingHelp || helpLines !== undefined) {
+        return renderCapturedReport(helpTopic ? `Help · ${helpTopic}` : 'Help', helpLines, !!isCapturingHelp, 'Loading help...', 'No help information returned.');
+    }
+    if (isCapturingWho || whoLines !== undefined) {
+        return renderCapturedReport('Who', whoLines, !!isCapturingWho, 'Loading players...', 'No players found.');
+    }
+    if (isCapturingWhere || whereLines !== undefined) {
+        return renderCapturedReport('Where', whereLines, !!isCapturingWhere, 'Finding nearby players...', 'No nearby players found.');
+    }
     // Remote allies aren't in the room, so they get identified via "whois"
     // instead of the look/consider grid.
     if (isCapturingWhois || whoisLines !== undefined) {
-        const lines = sanitizeLines(whoisLines);
-        return (
-            <section className="captured-details-card" onPointerDown={(e) => e.stopPropagation()}>
-                <div className="captured-details-grid captured-details-grid-single">
-                    <div className="captured-detail-panel whois-panel">
-                        <div className="captured-detail-kicker">Identify</div>
-                        {isCapturingWhois && lines.length === 0 ? (
-                            <div className="captured-detail-loading">
-                                <span className="captured-spinner" />
-                                <span>Identifying...</span>
-                            </div>
-                        ) : lines.length > 0 ? (
-                            <div className="captured-look-copy">
-                                {lines.map((line, idx) => (
-                                    <p key={`whois-${idx}`} dangerouslySetInnerHTML={{ __html: line }} />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="captured-detail-empty">No info found.</div>
-                        )}
-                    </div>
-                </div>
-            </section>
-        );
+        return renderCapturedReport('Identify', whoisLines, !!isCapturingWhois, 'Identifying...', 'No info found.');
+    }
+    if (isCapturingRoomAction || roomActionLines !== undefined) {
+        const title = roomActionKind === 'map' ? 'Map' : roomActionKind?.startsWith('weather ')
+            ? `Weather · ${roomActionKind.endsWith('fog') ? 'Fog' : roomActionKind.endsWith('local') ? 'Local' : 'Global'}`
+            : 'Exits';
+        return renderCapturedReport(title, roomActionLines, !!isCapturingRoomAction, `Loading ${title.toLowerCase()}...`, `No ${title.toLowerCase()} information returned.`);
+    }
+    if (isCapturingPersonalAction || personalActionLines !== undefined) {
+        const title = (personalActionKind || 'info').replace(/^./, letter => letter.toUpperCase());
+        return renderCapturedReport(title, personalActionLines, !!isCapturingPersonalAction, `Loading ${title.toLowerCase()}...`, `No ${title.toLowerCase()} information returned.`);
     }
 
     const look = splitLookLines(examineLines);
     const conditionLines = look.condition.map(toAssessmentLine);
     const assessmentLines = (considerLines || []).map(toAssessmentLine);
-    const isLoading = !!(isCapturingExamine || isCapturingConsider);
+    const showLook = !!isCapturingExamine || examineLines !== undefined;
+    const showConsider = !!isCapturingConsider || considerLines !== undefined;
+
+    if (!showLook && !showConsider) return null;
 
     return (
         <section className="captured-details-card" onPointerDown={(e) => e.stopPropagation()}>
-            {conditionLines.length > 0 && (
-                <div className="captured-condition-strip">
-                    {conditionLines.map((line, idx) => (
-                        <div className={`captured-condition-pill tone-${line.tone}`} key={`condition-${idx}`}>
-                            <span className="captured-condition-label">Condition</span>
-                            <span className="captured-condition-text" dangerouslySetInnerHTML={{ __html: line.html }} />
-                        </div>
-                    ))}
-                </div>
-            )}
-            <div className="captured-details-grid">
-                <div className="captured-detail-panel look-panel">
+            <div className={`captured-details-grid${showLook && showConsider ? '' : ' captured-details-grid-single'}`}>
+                {showLook && <div className="captured-detail-panel look-panel">
                     <div className="captured-detail-kicker">{examineMode === 'examine' ? 'Examine' : 'Look'}</div>
                     {isCapturingExamine && look.description.length === 0 ? (
                         <div className="captured-detail-loading">
@@ -138,15 +170,21 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                     ) : look.description.length > 0 ? (
                         <div className="captured-look-copy">
                             {look.description.map((line, idx) => (
-                                <p key={`look-${idx}`} dangerouslySetInnerHTML={{ __html: line }} />
+                                <p key={`look-${idx}`} dangerouslySetInnerHTML={{ __html: line || '&nbsp;' }} />
                             ))}
                         </div>
                     ) : (
-                        <div className="captured-detail-empty">
-                            <span>{examineMode === 'examine' ? 'No examine details yet.' : 'No look details yet.'}</span>
-                            {examineMode === 'examine' && onRequestExamine
-                                ? <button type="button" className="captured-detail-request" onClick={onRequestExamine}>Examine</button>
-                                : onRequestLook && <button type="button" className="captured-detail-request" onClick={onRequestLook}>Look</button>}
+                        <div className="captured-detail-empty"><span>{examineMode === 'examine' ? 'No examine details yet.' : 'No look details yet.'}</span></div>
+                    )}
+
+                    {conditionLines.length > 0 && (
+                        <div className="captured-look-condition">
+                            <div className="captured-equipment-kicker">Condition</div>
+                            <div className="captured-look-copy">
+                                {conditionLines.map((line, idx) => (
+                                    <p key={`condition-${idx}`} dangerouslySetInnerHTML={{ __html: line.html || '&nbsp;' }} />
+                                ))}
+                            </div>
                         </div>
                     )}
 
@@ -155,14 +193,14 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                             <div className="captured-equipment-kicker">Equipment</div>
                             <ul className="captured-equipment-list">
                                 {look.equipment.map((line, idx) => (
-                                    <li key={`eq-${idx}`} dangerouslySetInnerHTML={{ __html: line }} />
+                                    <li key={`eq-${idx}`} dangerouslySetInnerHTML={{ __html: line || '&nbsp;' }} />
                                 ))}
                             </ul>
                         </div>
                     )}
-                </div>
+                </div>}
 
-                <div className="captured-detail-panel con-panel">
+                {showConsider && <div className="captured-detail-panel con-panel">
                     <div className="captured-detail-kicker">Consider</div>
                     {isCapturingConsider && assessmentLines.length === 0 ? (
                         <div className="captured-detail-loading">
@@ -178,12 +216,9 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
                             ))}
                         </div>
                     ) : (
-                        <div className="captured-detail-empty">
-                            <span>No assessment yet.</span>
-                            {onRequestConsider && <button type="button" className="captured-detail-request" onClick={onRequestConsider}>Consider</button>}
-                        </div>
+                        <div className="captured-detail-empty"><span>No assessment yet.</span></div>
                     )}
-                </div>
+                </div>}
             </div>
         </section>
     );

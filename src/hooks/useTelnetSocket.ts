@@ -3,6 +3,7 @@
  * @description Low-level WebSocket hook for telnet binary transport.
  */
 
+import { perfMonitor } from '../utils/perfMonitor';
 import { useState, useCallback, useRef, useEffect } from 'react';
 
 const RECONNECT_DELAY_MS = 800;
@@ -104,6 +105,7 @@ export function useTelnetSocket() {
         if (socketRef.current?.readyState === WebSocket.OPEN) {
             const data = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
             socketRef.current.send(data);
+            perfMonitor.recordSocketSend(socketRef.current.bufferedAmount);
         }
     }, []);
 

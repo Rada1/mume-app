@@ -89,7 +89,7 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             });
         }
 
-        const scrollElement = pointerElement?.closest<HTMLElement>('.gear-section-body');
+        const scrollElement = pointerElement?.closest<HTMLElement>('.gear-section-body, .command-action-target-options');
         const bounds = scrollElement?.getBoundingClientRect();
         const maxScroll = scrollElement ? scrollElement.scrollHeight - scrollElement.clientHeight : 0;
         if (scrollElement && bounds && maxScroll > 1) {
@@ -241,7 +241,7 @@ export const useObjectDragCommands = ({ executeCommand, triggerHaptic, mouseDrag
             timer,
             active: false,
             scrolling: false,
-            scrollElement: event.currentTarget.closest<HTMLElement>('.gear-section-body'),
+            scrollElement: event.currentTarget.closest<HTMLElement>('.gear-section-body, .command-action-target-options'),
             lastX: startX,
             lastY: startY,
             frame: null,

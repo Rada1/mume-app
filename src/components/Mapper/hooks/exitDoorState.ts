@@ -24,12 +24,15 @@ export function mergeExitDoorState(
 ): MergedExitDoorState {
   const payload = typeof update === 'object' ? update : null;
   const hasFlags = payload !== null && Array.isArray(payload.flags);
-  const flags = hasFlags ? [...payload.flags!] : [...(existing?.flags ?? [])];
+  const incomingFlags = hasFlags ? [...payload.flags!] : [...(existing?.flags ?? [])];
+  const isLiveStateFlag = (flag: string) => /^(?:closed|locked)$/i.test(flag);
+  const flags = existing?.mapFlagsEdited
+    ? [...(existing.flags ?? []).filter(flag => !isLiveStateFlag(flag)), ...incomingFlags.filter(isLiveStateFlag)] : incomingFlags;
   const doorReported = !!existing?.hasDoor || !!existing?.doorName || !!existing?.name
     || !!payload?.door || !!payload?.name
     || flags.some(flag => /door|gate|portcullis|secret/i.test(flag));
   const closed = hasFlags
-    ? flags.some(flag => /^(?:closed|locked)$/i.test(flag))
+    ? incomingFlags.some(flag => /^(?:closed|locked)$/i.test(flag))
     : isExitStateUpdate && doorReported
       ? false
       : existing?.closed ?? false;

@@ -45,6 +45,32 @@ class PerfMonitor {
     private frameStamps: number[] = [];    // timestamps of rendered frames (for FPS)
     private rebuildStamps: number[] = [];  // timestamps of static-cache rebuilds
     private rebuildReasons: { at: number; reason: string }[] = []; // why each rebuild fired
+    private commandSendTimes: number[] = [];
+    private submissionStartedAt: number | null = null;
+    socketBufferedBytes = 0;
+    measureCommandSubmission(action: () => void) {
+        if (!this.enabled) { action(); return; }
+        const previous = this.submissionStartedAt;
+        this.submissionStartedAt = performance.now();
+        try { action(); } finally { this.submissionStartedAt = previous; }
+    }
+    recordSocketSend(bufferedBytes: number) {
+        if (!this.enabled) return;
+        this.socketBufferedBytes = bufferedBytes;
+        if (this.submissionStartedAt === null) return;
+        this.commandSendTimes.push(performance.now() - this.submissionStartedAt);
+        this.submissionStartedAt = null;
+        if (this.commandSendTimes.length > MAX_SAMPLES) this.commandSendTimes.shift();
+    }
+    private textQueueTimes: number[] = [];
+    private textProcessingTimes: number[] = [];
+    recordTextTiming(queueMs: number, processingMs: number) {
+        if (!this.enabled) return;
+        this.textQueueTimes.push(queueMs);
+        this.textProcessingTimes.push(processingMs);
+        if (this.textQueueTimes.length > MAX_SAMPLES) this.textQueueTimes.shift();
+        if (this.textProcessingTimes.length > MAX_SAMPLES) this.textProcessingTimes.shift();
+    }
     private parserWorkerTimes: number[] = [];
     private parserSyncTimes: number[] = [];
 
@@ -184,6 +210,12 @@ class PerfMonitor {
             drawP95Ms: p95(this.drawTimes),
             drawMaxMs: max(this.drawTimes),
             peakDrawMs: this.peakDrawMs,
+            commandSendP95Ms: p95(this.commandSendTimes),
+            socketBufferedBytes: this.socketBufferedBytes,
+            textQueueP95Ms: p95(this.textQueueTimes),
+            textQueueMaxMs: max(this.textQueueTimes),
+            textProcessingP95Ms: p95(this.textProcessingTimes),
+            textProcessingMaxMs: max(this.textProcessingTimes),
             parserWorkerAvgMs: avg(this.parserWorkerTimes),
             parserWorkerMaxMs: max(this.parserWorkerTimes),
             parserSyncAvgMs: avg(this.parserSyncTimes),

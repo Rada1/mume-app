@@ -38,7 +38,7 @@
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* When slotted into desktop ActionBox grid cell */
+/* When slotted into the desktop HUD grid cell */
 .action-box-prompt-cell .custom-prompt-bar {
     background: transparent !important;
     backdrop-filter: none !important;

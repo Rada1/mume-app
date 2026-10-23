@@ -1,0 +1,174 @@
+/** @file CommandHelp.css — Styles for command panel help mode, toggle button, and inspection banners. */
+
+.unified-command-panel .command-guide-help-toggle {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 5px;
+    min-height: 26px;
+    margin-left: auto;
+    padding: 3px 6px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    background: transparent;
+    color: #a89b83;
+    font: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.unified-command-panel .command-guide-chat-toggle {
+    margin-left: 6px;
+}
+
+.unified-command-panel .command-guide-help-toggle:hover,
+.unified-command-panel .command-guide-help-toggle:focus-visible {
+    background: rgba(201, 168, 76, 0.1);
+    color: #dfbf6c;
+    outline: none;
+}
+
+.unified-command-panel .command-guide-help-toggle.is-active {
+    background: rgba(201, 168, 76, 0.22);
+    color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.45);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.18);
+}
+
+.unified-command-panel .command-guide-help-banner {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px 10px;
+    margin: 4px 0 8px;
+    background: rgba(201, 168, 76, 0.12);
+    border: 1px dashed rgba(255, 215, 0, 0.35);
+    border-radius: 4px;
+    color: #ffd700;
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.unified-command-panel .command-guide-help-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.unified-command-panel .command-guide-help-banner-header svg {
+    flex-shrink: 0;
+}
+
+.unified-command-panel .command-guide-help-banner-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    padding: 2px;
+    border: none;
+    background: transparent;
+    color: #a89b83;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.unified-command-panel .command-guide-help-banner-close:hover {
+    color: #ffd700;
+    background: rgba(255, 215, 0, 0.15);
+}
+
+.unified-command-panel .command-guide-help-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.unified-command-panel .command-guide-help-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 24px;
+    padding: 2px 8px;
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 3px;
+    color: #f3ece0;
+    font-family: inherit;
+    font-size: 0.72rem;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.unified-command-panel .command-guide-help-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.25);
+}
+
+.unified-command-panel .command-guide-help-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    height: 24px;
+    padding: 2px 10px;
+    background: rgba(255, 215, 0, 0.2);
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    border-radius: 3px;
+    color: #ffd700;
+    font-family: inherit;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.unified-command-panel .command-guide-help-submit:hover:not(:disabled) {
+    background: rgba(255, 215, 0, 0.35);
+    border-color: #ffd700;
+}
+
+.unified-command-panel .command-guide-help-submit:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.unified-command-panel .unified-command-actions.is-help-mode .terminal-action-row,
+.unified-command-panel .unified-command-actions.is-help-mode .terminal-inspect-row,
+.unified-command-panel .unified-command-actions.is-help-mode .gear-action-buttons button,
+.unified-command-panel .unified-command-actions.is-help-mode .popover-action-chip {
+    cursor: help;
+}
+
+.unified-command-panel .unified-command-actions.is-help-mode .terminal-action-row:hover,
+.unified-command-panel .unified-command-actions.is-help-mode .terminal-inspect-row:hover,
+.unified-command-panel .unified-command-actions.is-help-mode .gear-action-buttons button:hover,
+.unified-command-panel .unified-command-actions.is-help-mode .popover-action-chip:hover {
+    outline: 1px dashed rgba(255, 215, 0, 0.5);
+    background: rgba(255, 215, 0, 0.12);
+}
+
+/* Cursor and hover highlighting in message log during command help mode */
+body.is-command-help-mode .message-log,
+body.is-command-help-mode .message-log * {
+    cursor: help !important;
+}
+
+body.is-command-help-mode .message-log .inline-btn:hover,
+body.is-command-help-mode .message-log .log-text-word:hover {
+    outline: 1px dashed rgba(255, 215, 0, 0.5);
+    background: rgba(255, 215, 0, 0.15);
+    border-radius: 2px;
+}
+
+/* Preformatted styling for help pages in details card */
+.captured-help-report .captured-look-copy p {
+    white-space: pre-wrap;
+    min-height: 1.2em;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.72rem;
+}

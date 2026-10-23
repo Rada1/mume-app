@@ -1,6 +1,6 @@
 /**
  * @file useCharacterPanelVitalsRefresh.ts
- * @description Refreshes combat ratings on panel transitions and vitals when expanded.
+ * @description Refreshes character information when the panel changes state.
  */
 
 // --- Logic Section ---
@@ -21,12 +21,5 @@ export const useCharacterPanelVitalsRefresh = (
         if (!panelStateChanged || !isPlaying || isSpectateMode) return;
 
         executeCommand('info %O %D %k %A', true, true, true, true);
-
-        if (wasCollapsed && !isMinimized) {
-            const scoreRefreshTimeout = window.setTimeout(() => {
-                executeCommand('score', true, true, true, true);
-            }, 100);
-            return () => window.clearTimeout(scoreRefreshTimeout);
-        }
     }, [executeCommand, isMinimized, isPlaying, isSpectateMode]);
 };

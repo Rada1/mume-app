@@ -8,6 +8,7 @@ import { occupantAnims, getOccupantKey } from '../../components/Mapper/occupantA
 import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { initFollowerSync, cancelArrival, cancelDeparture } from '../../utils/followerSync';
 import { getRoomCharKey, parseOccupants, rememberOccupant } from './roomOccupantParser';
+import { hasSameRoomOccupantName, reconcileSyntheticRoomOccupants } from '../../utils/roomOccupantReconciliation';
 
 interface UseGmcpOccupantsProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -57,7 +58,7 @@ export const useGmcpOccupants = ({
                 });
             }
             setRoomChars?.(prev => {
-                if (Object.values(prev).some(o => (o.name || '').toLowerCase() === name.toLowerCase())) return prev;
+                if (Object.values(prev).some(existing => hasSameRoomOccupantName(existing, occ))) return reconcileSyntheticRoomOccupants(prev);
                 return { ...prev, [key]: occ };
             });
             if (registerEntity) registerEntity(`roomchars:${synId}`, name, 'room', occ.type);
@@ -143,7 +144,7 @@ export const useGmcpOccupants = ({
                 }
             });
 
-            return newChars;
+            return reconcileSyntheticRoomOccupants(newChars);
         };
 
         // console.log('parsed:', Object.values(parsedChars));
@@ -192,7 +193,7 @@ export const useGmcpOccupants = ({
                 rememberOccupant(merged);
                 next[id] = merged;
             });
-            return next;
+            return reconcileSyntheticRoomOccupants(next);
         });
         mapperRef.current?.triggerRender?.();
 
@@ -217,7 +218,7 @@ export const useGmcpOccupants = ({
                 rememberOccupant(merged);
                 next[id] = merged;
             });
-            return next;
+            return reconcileSyntheticRoomOccupants(next);
         });
         mapperRef.current?.triggerRender?.();
 

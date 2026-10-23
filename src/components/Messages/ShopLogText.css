@@ -1,0 +1,27 @@
+/** @file ShopLogText.css — Overrides narrative dimming for structured shop stock text. */
+
+/* --- Shop Row Emphasis --- */
+.message-content .shop-log-row,
+.message-content .shop-log-row span {
+    opacity: 1 !important;
+}
+
+.message-content .shop-log-row .shop-log-name {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.message-content .shop-log-row .shop-log-price {
+    color: #f0cb67;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.message-content .shop-log-row .shop-log-muted {
+    opacity: var(--message-dim-opacity, 0.50) !important;
+    font-weight: 400;
+}
+
+.light-mode .message-content .shop-log-row .shop-log-price {
+    color: #87540b;
+}

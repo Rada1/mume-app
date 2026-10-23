@@ -54,8 +54,8 @@ export function sendFastMapFrame(
   const liveRoom = rawRoom
     ? adaptLiveRoom({
       x: rawRoom.x, y: rawRoom.y, z: rawRoom.z, terrain: rawRoom.terrain, exits: mergeRoomExits(rawRoom.exits, bundledTuple?.[4]),
-      mobFlags: preferLiveFlags(rawRoom.mobFlags, bundledTuple?.[7]),
-      loadFlags: preferLiveFlags(rawRoom.loadFlags, bundledTuple?.[8]),
+      mobFlags: rawRoom.mapFlagsEdited ? rawRoom.mobFlags ?? [] : preferLiveFlags(rawRoom.mobFlags, bundledTuple?.[7]),
+      loadFlags: rawRoom.mapFlagsEdited ? rawRoom.loadFlags ?? [] : preferLiveFlags(rawRoom.loadFlags, bundledTuple?.[8]),
       light: rawRoom.light ?? bundledRoomFields?.[10] as number | string | null | undefined,
       sundeath: rawRoom.sundeath ?? bundledRoomFields?.[11] as number | string | null | undefined,
       align: rawRoom.align ?? bundledRoomFields?.[12] as number | string | null | undefined,

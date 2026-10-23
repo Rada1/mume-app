@@ -1,0 +1,190 @@
+/** @file Account-mode surfaces for Performance and Immersion themes. */
+
+/* --- Account mode palette --- */
+.app-container.state-account:is(.performance-mode, .immersion-mode) {
+    --account-mode-border: rgba(195, 165, 87, 0.2);
+    --account-mode-border-strong: rgba(195, 165, 87, 0.62);
+    --account-mode-text: #d0c4a8;
+    --account-mode-muted: #a99b80;
+    --account-mode-accent: #c2a44f;
+    --account-mode-accent-bright: #d2b75f;
+    --account-mode-accent-wash: rgba(194, 164, 79, 0.13);
+}
+
+.app-container.state-account.immersion-mode {
+    --account-mode-panel: #000;
+    --account-mode-surface: #101010;
+    --account-mode-surface-raised: #191919;
+    --account-mode-surface-deep: #080808;
+}
+
+.app-container.state-account.performance-mode {
+    --account-mode-panel: #171717;
+    --account-mode-surface: #202020;
+    --account-mode-surface-raised: #292929;
+    --account-mode-surface-deep: #111;
+}
+
+/* --- Desktop and legacy account panels --- */
+.app-container.state-account:is(.performance-mode, .immersion-mode) .action-box.account-mode,
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck,
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-gutter,
+.app-container.state-account:is(.performance-mode, .immersion-mode) :is(.cmd-action-panel, .char-detail-panel, .char-select-panel) {
+    background: var(--account-mode-panel) !important;
+    color: var(--account-mode-text) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) :is(
+    .action-box.account-mode,
+    .account-deck,
+    .account-gutter,
+    .cmd-action-panel,
+    .char-detail-panel,
+    .char-select-panel,
+    .mobile-account-login-card,
+    .mobile-account-character-list,
+    .mobile-account-character-data,
+    .mobile-account-data,
+    .mobile-account-more-menu
+) {
+    border: 0 !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck {
+    border-color: var(--account-mode-border) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-terminal-heading,
+    .account-status,
+    .account-detail,
+    .account-tab-rail,
+    .account-command-guide span,
+    .account-char-chip,
+    .account-tool-row,
+    .account-deck-wide .cmd-action-header
+) {
+    border-color: var(--account-mode-border) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-terminal-heading,
+    .account-status-meta,
+    .account-char-meta,
+    .account-char-detail,
+    .account-command-guide span,
+    .account-tool-row code,
+    .account-empty,
+    .account-col-label,
+    .account-section-heading span:last-child,
+    .account-deck-wide .account-stat-label
+) {
+    color: var(--account-mode-muted) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-terminal-heading strong,
+    .account-status-name,
+    .account-command-guide code,
+    .account-section-heading,
+    .account-tab.is-active,
+    .account-mini-tab.is-active,
+    .account-char-chip.is-active,
+    .account-stat-value,
+    .account-deck-wide .cmd-action-title,
+    .account-deck-wide .creation-points-header
+) {
+    color: var(--account-mode-accent-bright) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-tab,
+    .account-mini-tab,
+    .account-char-chip,
+    .account-btn,
+    .account-input,
+    .account-tool-row,
+    .account-deck-wide .account-menu-btn,
+    .account-deck-wide .creation-option-btn,
+    .account-deck-wide .stat-editor-row,
+    .account-deck-wide .account-stat-step
+) {
+    border-color: var(--account-mode-border) !important;
+    background-color: var(--account-mode-surface) !important;
+    color: var(--account-mode-text) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-tab.is-active,
+    .account-mini-tab.is-active,
+    .account-char-chip.is-active,
+    .account-btn-primary
+) {
+    border-color: var(--account-mode-border-strong) !important;
+    background-color: var(--account-mode-accent-wash) !important;
+    color: var(--account-mode-accent-bright) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-deck :is(
+    .account-tab:hover,
+    .account-mini-tab:hover,
+    .account-char-chip:hover,
+    .account-btn:hover:not(:disabled),
+    .account-tool-row:hover,
+    .account-deck-wide .account-menu-btn:hover:not(:disabled),
+    .account-deck-wide .creation-option-btn:hover:not(:disabled),
+    .account-deck-wide .account-stat-step:hover:not(:disabled)
+) {
+    background-color: var(--account-mode-surface-raised) !important;
+    color: var(--account-mode-accent-bright) !important;
+}
+
+/* --- Mobile account experience --- */
+.app-container.state-account:is(.performance-mode, .immersion-mode) .mobile-account-experience {
+    --account-bg: var(--account-mode-panel);
+    --account-surface: var(--account-mode-surface);
+    --account-surface-raised: var(--account-mode-surface-raised);
+    --account-surface-deep: var(--account-mode-surface-deep);
+    --account-border: var(--account-mode-border);
+    --account-border-strong: var(--account-mode-border-strong);
+    --account-gold: var(--account-mode-accent);
+    --account-gold-bright: var(--account-mode-accent-bright);
+    --account-gold-wash: var(--account-mode-accent-wash);
+    --account-text: var(--account-mode-text);
+    --account-text-muted: var(--account-mode-muted);
+    color-scheme: dark;
+    background: var(--account-mode-panel) !important;
+    color: var(--account-mode-text) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .mobile-account-gutter,
+.app-container.state-account:is(.performance-mode, .immersion-mode) .mobile-bottom-gutter.account-gutter {
+    background: var(--account-mode-panel) !important;
+    background-image: none !important;
+    border: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .account-login-glow::before {
+    display: none !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .mobile-account-create :is(
+    .creation-option-btn,
+    .account-menu-btn,
+    .stat-editor-row,
+    .account-stat-step,
+    .account-creation-input-row .account-input
+) {
+    border-color: var(--account-mode-border) !important;
+    background: var(--account-mode-surface) !important;
+    color: var(--account-mode-text) !important;
+}
+
+.app-container.state-account:is(.performance-mode, .immersion-mode) .mobile-account-create :is(
+    .account-creation-input-row .account-btn,
+    .creation-option-btn span:first-child
+) {
+    color: var(--account-mode-accent-bright) !important;
+}

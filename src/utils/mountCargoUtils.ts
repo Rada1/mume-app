@@ -19,7 +19,7 @@ const hasObjectToken = (tokens: Token[] | undefined): boolean => (tokens || []).
     token.type === 'entity' && (token.metadata?.kind === 'object' || token.metadata?.category?.includes('object'))
 );
 
-const isLikelyCargoLine = (line: DrawerLine): boolean => {
+export const isLikelyCargoLine = (line: DrawerLine): boolean => {
     const text = line.text.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
     if (!text || /^(?:nothing\.?|it is empty\.?|you see|you notice)\b/i.test(text)) return false;
     if (/\b(?:is|are|was|were|carrying|holding|looks|seems|says|tells)\b/i.test(text)) return false;

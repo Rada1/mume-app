@@ -14,6 +14,7 @@ import type { MapBackgroundVisualAdjustments, MapTileVisualAdjustments } from '.
 import { ZONE_FILTERS } from '../components/Mapper/zoneFilters';
 import type { ZoneFilterConfig, ZoneVisualConfig } from '../components/Mapper/zoneFilters';
 import { DEFAULT_TERRAIN_COLORS, ROAD_COLOR_LIGHT, PATH_COLOR_LIGHT } from '../components/Mapper/mapperUtils';
+import type { ZoneBackgroundPosition } from '../types';
 
 // Immersion mode defaults on for desktop-sized viewports. Mirrors the helper in
 // useUIStore (kept local to avoid a store-to-store import cycle).
@@ -124,6 +125,7 @@ interface SettingsState {
     zoneMusic: ZoneMusicMapping[];
     masterVolume: number;
     sfxVolume: number;
+    uiVolume: number;
     musicVolume: number;
     drumVolume: number;
     allowMapPersistence: boolean;
@@ -143,6 +145,7 @@ interface SettingsState {
     mapTileVisuals: MapTileVisualAdjustments;
     mapBackgroundVisuals: MapBackgroundVisualAdjustments;
     zoneFilters: Record<string, ZoneFilterConfig>;
+    zoneBackgroundPositions: Record<string, ZoneBackgroundPosition>;
     customSoundEffects: Record<string, string>;
     setCustomSoundEffect: (key: string, url: string) => void;
     removeCustomSoundEffect: (key: string) => void;
@@ -208,6 +211,7 @@ interface SettingsState {
     setZoneMusic: (val: ZoneMusicMapping[]) => void;
     setMasterVolume: (val: number) => void;
     setSfxVolume: (val: number) => void;
+    setUiVolume: (val: number) => void;
     setMusicVolume: (val: number) => void;
     setDrumVolume: (val: number) => void;
     setAllowMapPersistence: (val: boolean) => void;
@@ -225,6 +229,7 @@ interface SettingsState {
     setMapTileVisuals: (val: Partial<MapTileVisualAdjustments>) => void;
     setMapBackgroundVisuals: (val: Partial<MapBackgroundVisualAdjustments>) => void;
     resetMapVisuals: () => void;
+    setZoneBackgroundPosition: (zone: string, position: ZoneBackgroundPosition) => void;
     setZoneFilter: (zone: string, isDarkMode: boolean, theme: Partial<ZoneVisualConfig>) => void;
     resetZoneFilters: () => void;
 }
@@ -364,6 +369,7 @@ export const useSettingsStore = create<SettingsState>()(
             zoneMusic: [],
             masterVolume: 1.0,
             sfxVolume: 0.5,
+            uiVolume: 0.5,
             musicVolume: 0.1,
             drumVolume: 0.65,
             customSoundEffects: {},
@@ -385,6 +391,7 @@ export const useSettingsStore = create<SettingsState>()(
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
             mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
             zoneFilters: ZONE_FILTERS,
+            zoneBackgroundPositions: {},
 
             // Setters
             setCustomSoundEffect: (key, url) => set((state) => ({
@@ -494,6 +501,7 @@ export const useSettingsStore = create<SettingsState>()(
             setZoneMusic: (zoneMusic) => set({ zoneMusic }),
             setMasterVolume: (masterVolume) => set({ masterVolume }),
             setSfxVolume: (sfxVolume) => set({ sfxVolume }),
+            setUiVolume: (uiVolume) => set({ uiVolume }),
             setMusicVolume: (musicVolume) => set({ musicVolume }),
             setDrumVolume: (drumVolume) => set({ drumVolume: Math.max(0, Math.min(0.65, drumVolume)) }),
             setAllowMapPersistence: (allowMapPersistence) => set({ allowMapPersistence }),
@@ -525,8 +533,18 @@ export const useSettingsStore = create<SettingsState>()(
             })),
             resetMapVisuals: () => set({
                 mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
-                mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS
+                mapBackgroundVisuals: DEFAULT_MAP_BACKGROUND_VISUALS,
+                zoneBackgroundPositions: {}
             }),
+            setZoneBackgroundPosition: (zone, position) => set((state) => ({
+                zoneBackgroundPositions: {
+                    ...state.zoneBackgroundPositions,
+                    [zone]: {
+                        x: Number.isFinite(position.x) ? Math.max(-300, Math.min(300, position.x)) : 0,
+                        y: Number.isFinite(position.y) ? Math.max(-300, Math.min(300, position.y)) : 0
+                    }
+                }
+            })),
             setZoneFilter: (zone, isDarkMode, theme) => set((state) => {
                 const nextFilters = { ...state.zoneFilters };
                 if (!nextFilters[zone]) {
@@ -552,8 +570,14 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 40,
+            version: 41,
             migrate: (persistedState: any, version: number) => {
+                if (version < 41 && typeof persistedState.uiVolume !== 'number') {
+                    persistedState.uiVolume = typeof persistedState.sfxVolume === 'number'
+                        ? persistedState.sfxVolume
+                        : 0.5;
+                }
+
                 if (version < 40) {
                     persistedState.isReadabilityMode = false;
                 }
@@ -836,6 +860,11 @@ export const useSettingsStore = create<SettingsState>()(
             },
             merge: (persistedState: any, currentState) => {
                 const merged = { ...currentState, ...(persistedState || {}) } as SettingsState;
+                if (typeof persistedState?.uiVolume !== 'number') {
+                    merged.uiVolume = typeof persistedState?.sfxVolume === 'number'
+                        ? persistedState.sfxVolume
+                        : currentState.uiVolume;
+                }
                 const persistedBlurChoice = persistedState?.hasCustomTacticalPanelBlur === true ||
                     (persistedState?.hasCustomTacticalPanelBlur === undefined && persistedState?.useTacticalPanelBlur === true);
                 merged.hasCustomTacticalPanelBlur = persistedBlurChoice;

@@ -4,6 +4,8 @@
  */
 
 // --- Catalog Section ---
+import type { CommandAlias, MumeCommandEntry, MumeCommandMatch } from '../types';
+export type { MumeCommandEntry, MumeCommandMatch } from '../types';
 
 const COMMAND_ROWS = `
 ! ' , - ? a(ssist) ab(andon) ac(count) accu(se) ach(ievements) act(s) ad(monish) ado(re) ag(ree) al(ias) ap(ologise) app(laud) appr(eciate) ask
@@ -31,22 +33,6 @@ v(alue) vi(ew)
 w(est) wa(ke) wat(ch) wav(e) wea(r) weat(her) wh(o) whe(re) whet whi(sper) whin(e) whist(le) whoi(s) wi(eld) wig(gle) win(k) wo(rship) wr(ite)
 y(awn) ye(ll) yo(del)
 `;
-
-// --- Type Section ---
-
-export interface MumeCommandEntry {
-    display: string;
-    minimum: string;
-    full: string;
-}
-
-export interface MumeCommandMatch {
-    entry: MumeCommandEntry | null;
-    suggestions: MumeCommandEntry[];
-    token: string;
-    suffix: string;
-    isValid: boolean;
-}
 
 // --- Logic Section ---
 
@@ -79,7 +65,8 @@ const tokenExecutesEntry = (token: string, entry: MumeCommandEntry): boolean => 
 
 export const getMumeCommandMatch = (
     input: string,
-    limit = 8
+    limit = 8,
+    aliases: CommandAlias[] = []
 ): MumeCommandMatch => {
     const leadingTrimmed = input.trimStart();
     const tokenMatch = /^(\S+)([\s\S]*)$/.exec(leadingTrimmed);
@@ -90,10 +77,19 @@ export const getMumeCommandMatch = (
         return { entry: null, suggestions: [], token: '', suffix: '', isValid: false };
     }
 
-    const suggestions = MUME_COMMANDS
-        .filter(entry => tokenCanLeadToEntry(token, entry))
-        .slice(0, limit);
-    const entry = suggestions.find(candidate => tokenExecutesEntry(token, candidate)) ?? null;
+    const aliasEntries = aliases.map(alias => ({
+        display: alias.name, minimum: alias.name, full: alias.name, aliasExpansion: alias.expansion
+    }));
+    const exactAlias = aliasEntries.find(entry => entry.full === token);
+    const names = new Set(aliasEntries.map(entry => entry.full));
+    const candidates = [
+        ...(exactAlias ? [exactAlias] : []),
+        ...aliasEntries.filter(entry => entry !== exactAlias && tokenCanLeadToEntry(token, entry)),
+        ...MUME_COMMANDS.filter(entry => !names.has(entry.full) && tokenCanLeadToEntry(token, entry))
+    ];
+    const suggestions = candidates.slice(0, limit);
+    // User aliases execute only on an exact name, and shadow built-in abbreviations.
+    const entry = exactAlias ?? suggestions.find(candidate => !candidate.aliasExpansion && tokenExecutesEntry(token, candidate)) ?? null;
 
     return {
         entry,

@@ -6,6 +6,7 @@ import { sanitizeTextDerivedDoorExits } from '../mapperExitSanitizer';
 import { findRoomByExitSignature } from '../mapperExitSignature';
 import { recordLearnedServerId } from '../learnedServerIds';
 import { mergeExitDoorState } from './exitDoorState';
+import { normalizeMapRoomFlag } from '../../../utils/mapRoomFlags';
 
 interface RoomInfoProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -608,8 +609,10 @@ export const useRoomInfoHandler = ({
             }
         } else {
             const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
-            const newMobFlags = ghostData ? ghostData[7] : existingRoom.mobFlags || [];
-            const newLoadFlags = ghostData ? ghostData[8] : existingRoom.loadFlags || [];
+            const sourceMobFlags: string[] = existingRoom.mapFlagsEdited ? existingRoom.mobFlags || [] : ghostData ? ghostData[7] : existingRoom.mobFlags || [];
+            const newMobFlags = existingRoom.mapAttributesEdited?.includes('light')
+                ? sourceMobFlags.filter(flag => !['DARK', 'NOLIGHT'].includes(normalizeMapRoomFlag(flag))) : sourceMobFlags;
+            const newLoadFlags = existingRoom.mapFlagsEdited ? existingRoom.loadFlags || [] : ghostData ? ghostData[8] : existingRoom.loadFlags || [];
             const newRoomQuestFlags = questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || [];
             const newDetails = details.length > 0 ? details : existingRoom.details;
 
@@ -650,9 +653,9 @@ export const useRoomInfoHandler = ({
                     roomQuestFlags: newRoomQuestFlags,
                     details: newDetails,
                     // light 1 is Dark, 0 is Lit
-                    light: data.light !== undefined ? data.light : (mLight !== undefined ? mLight : (existingRoom.light ?? 0)),
+                    light: existingRoom.mapAttributesEdited?.includes('light') ? existingRoom.light : data.light !== undefined ? data.light : (mLight !== undefined ? mLight : (existingRoom.light ?? 0)),
                     // sundeath 0 is Death, 1 is Safe
-                    sundeath: data.sundeath !== undefined ? data.sundeath : (mSundeath !== undefined ? mSundeath : (existingRoom.sundeath ?? 1))
+                    sundeath: existingRoom.mapAttributesEdited?.includes('sundeath') ? existingRoom.sundeath : data.sundeath !== undefined ? data.sundeath : (mSundeath !== undefined ? mSundeath : (existingRoom.sundeath ?? 1))
                 };
                 if (ghostData) {
                     const [nx, ny, nz] = ghostData;

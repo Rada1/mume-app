@@ -5,25 +5,30 @@
 .mapper-room-info-panel {
     --room-info-accent: #dfbf6c;
     --room-info-muted: #8f8374;
-    --room-info-border: rgba(201, 168, 76, 0.28);
+    --room-info-border: rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
     padding: 12px 14px !important;
     gap: 8px !important;
     color: #d4cdb8 !important;
     background: rgba(33, 27, 22, 0.97) !important;
-    border: 1px solid var(--room-info-border) !important;
-    border-radius: 6px !important;
-    box-shadow: 8px 12px 20px rgba(0, 0, 0, 0.38) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    font-family: var(--font-mono, monospace) !important;
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace !important;
     scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
 }
 
-.mapper-room-info-panel,
 .mapper-room-info-panel * {
     box-sizing: border-box;
+    font-family: inherit !important;
+    border-radius: 0 !important;
 }
+
+.app-container.immersion-mode .mapper-room-info-panel { background: #000 !important; }
+.app-container.performance-mode .mapper-room-info-panel { background: #171717 !important; }
+.mapper-room-info-panel button { border-color: transparent !important; }
 
 .room-info-card-header {
     min-height: 32px;
@@ -46,7 +51,7 @@
 
 .room-info-card-header button {
     min-height: 28px;
-    border-radius: 4px !important;
+    border-radius: 0 !important;
     font-family: inherit;
     font-size: 0.7rem !important;
     transition: background 120ms ease, color 120ms ease;
@@ -84,7 +89,7 @@
     color: #e4d6b5 !important;
     background: #17120f !important;
     border: 1px solid var(--room-info-border) !important;
-    border-radius: 4px !important;
+    border-radius: 0 !important;
     font-family: inherit;
     outline: none;
 }
@@ -144,7 +149,7 @@
     border: 0 !important;
     border-radius: 0 !important;
     font-family: inherit;
-    font-size: 0.72rem !important;
+    font-size: 13px !important;
     line-height: 1.55 !important;
 }
 
@@ -212,9 +217,31 @@
 .mapper-room-info-panel input:focus,
 .mapper-room-info-panel select:focus,
 .mapper-room-info-panel textarea:focus {
-    border-color: rgba(223, 191, 108, 0.7) !important;
-    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.1);
+    outline: 1px solid #8b929c;
+    outline-offset: 1px;
+    box-shadow: none;
 }
+
+/* --- Notes are available on every room, including in play mode --- */
+.mapper-room-info-panel .room-info-card-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-shrink: 0;
+}
+.room-info-card-notes label { font-size: 12px; color: #d4cdb8; }
+.mapper-room-info-panel .room-info-card-notes textarea {
+    width: 100%;
+    min-height: 84px;
+    padding: 8px;
+    resize: vertical;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #d4cdb8 !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+.room-info-card-notes small { color: #8f939b; font-size: 11px; }
 
 @media (max-width: 600px) {
     .mapper-room-info-panel {

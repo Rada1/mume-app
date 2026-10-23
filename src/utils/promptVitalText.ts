@@ -9,8 +9,11 @@ export interface PromptTextRange {
     start: number;
     end: number;
     percent?: number;
-    vitalType?: 'health' | 'mana' | 'move';
+    vitalType?: PromptVitalKind;
 }
+
+export type PromptVitalKind = 'health' | 'opponentHealth' | 'bufferHealth' | 'mana' | 'move';
+export type PromptVitalPercentages = Partial<Record<PromptVitalKind, number>>;
 
 export const PROMPT_HEALTH_STATUS_PERCENT: Record<string, number> = {
     healthy: 100, fine: 83, hurt: 66, wounded: 50,
@@ -27,27 +30,31 @@ export const PROMPT_MOVE_STATUS_PERCENT: Record<string, number> = {
     slow: 42, weak: 28, fainting: 14, exhausted: 0
 };
 
-const VITAL_FIELD_PATTERN = /\b(HP|MA|MV|SP|Mana|Move|Health|Hit(?:points?)?|Position|Pos|Alert(?:ness)?|Mood|Speed|Condition)\s*:\s*([A-Za-z\u00C0-\u00FF][\w\u00C0-\u00FF'-]*)/gi;
+const VITAL_FIELD_PATTERN = /\b((?:(?:Opponent|Buffer)(?:'s)?\s*)?(?:HP|MA|MV|SP|Mana|Move|Health|Hit(?:points?)?|Position|Pos|Alert(?:ness)?|Mood|Speed|Condition))\s*:\s*([A-Za-z\u00C0-\u00FF][\w\u00C0-\u00FF'-]*)/gi;
 
-const getVitalType = (field: string): PromptTextRange['vitalType'] => {
+const getVitalType = (field: string): PromptVitalKind | undefined => {
     const normalizedField = field.toLowerCase();
-    if (/^(?:hp|health|hit|hitpoint|hitpoints)$/.test(normalizedField)) return 'health';
-    if (/^(?:ma|mana)$/.test(normalizedField)) return 'mana';
-    if (/^(?:mv|move)$/.test(normalizedField)) return 'move';
+    const owner = normalizedField.match(/^(opponent|buffer)(?:'s)?\s*/)?.[1];
+    const vitalField = normalizedField.replace(/^(?:opponent|buffer)(?:'s)?\s*/, '');
+    if (/^(?:hp|health|hit|hitpoint|hitpoints)$/.test(vitalField)) {
+        return owner === 'opponent' ? 'opponentHealth' : owner === 'buffer' ? 'bufferHealth' : 'health';
+    }
+    if (/^(?:ma|mana)$/.test(vitalField)) return 'mana';
+    if (/^(?:mv|move)$/.test(vitalField)) return 'move';
     return undefined;
 };
 
 const getVitalPercent = (field: string, value: string): number | undefined => {
     const key = value.toLowerCase();
     const vitalType = getVitalType(field);
-    const statuses = vitalType === 'health'
+    const statuses = vitalType === 'health' || vitalType === 'opponentHealth' || vitalType === 'bufferHealth'
         ? PROMPT_HEALTH_STATUS_PERCENT
         : vitalType === 'mana'
             ? PROMPT_MANA_STATUS_PERCENT
             : vitalType === 'move'
                 ? PROMPT_MOVE_STATUS_PERCENT
                 : undefined;
-    if (vitalType === 'health'
+    if ((vitalType === 'health' || vitalType === 'opponentHealth' || vitalType === 'bufferHealth')
         && ['stunned', 'incapacitated', 'unconscious'].includes(key)) return 0;
     return statuses?.[key];
 };

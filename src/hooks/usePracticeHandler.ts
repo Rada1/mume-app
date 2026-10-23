@@ -1,15 +1,18 @@
+/** @file usePracticeHandler.ts — Captures practice lists and learned proficiency updates. */
 import { useState, useRef, useCallback } from 'react';
+import { usePanelDataStore } from '../stores/usePanelDataStore';
 import { DrawerLine, PracticeData, PracticeSkill } from '../types';
 import { getPracticeClassLabel } from '../utils/practiceClassCatalog';
 import { readLastPracticedSkill, rememberLastPracticedSkill } from '../utils/practiceLastSkillMemory';
 
 export function usePracticeHandler(
     setAbilities: (val: Record<string, number> | ((prev: Record<string, number>) => Record<string, number>)) => void,
-    setPracticeLines?: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void
+    setPracticeLines?: (val: DrawerLine[] | ((prev: DrawerLine[]) => DrawerLine[])) => void,
+    tracksPanelSync = true
 ) {
     const isPracticeActiveRef = useRef(false);
     const isAtGuildmasterRef = useRef(false);
-    // Set when a silent/system practice command is issued (e.g. on initial connect).
+    // Set when a silent/system practice command is issued (e.g. explicit panel sync).
     // Survives intermediate prompt-triggered finalizations so the response is always suppressed.
     const silentSyncPendingRef = useRef(false);
     const [isPracticeActive, setIsPracticeActiveState] = useState(false);
@@ -226,6 +229,7 @@ export function usePracticeHandler(
         practiceLogBufferRef.current = [];
 
         if (skillsToSet.length > 0) {
+            if (tracksPanelSync) usePanelDataStore.getState().complete('skills');
             // Real data received — clear the pending silent sync flag
             silentSyncPendingRef.current = false;
 
@@ -250,7 +254,7 @@ export function usePracticeHandler(
             // CRITICAL: Clear the buffer after we've processed it
             parsedSkillsRef.current = [];
         }
-    }, [setAbilities]);
+    }, [setAbilities, tracksPanelSync]);
 
     const addToLogBuffer = (type: 'header' | 'skill', data: any, text: string) => {
         practiceLogBufferRef.current.push({ type, data, text });

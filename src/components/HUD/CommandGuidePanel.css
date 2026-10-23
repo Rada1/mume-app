@@ -103,4 +103,10 @@
 .light-mode .command-guide-start > p, .light-mode .command-guide-count { color: #6d6251; }
 .light-mode .command-guide-class-tab { color: #6d6251; }
 .light-mode .command-guide-class-tab.is-active { color: #8a6811; }
-.light-mode .command-guide-start h2, .light-mode .command-guide-goal strong, .light-mode .command-guide-results-heading strong { color: #403a30; }
+
+/* --- Unified action content --- */
+.unified-command-actions { min-height: 0; overflow: auto; }
+.unified-command-actions .inline-action-desktop-deck { display: block; }
+.unified-command-actions .inline-action-mobile-groups { display: none; }
+.unified-command-actions .inline-action-groups-content { margin-top: 8px; }
+.unified-command-panel .terminal-inline-popover .inline-action-groups .inline-action-group.is-action-family { margin-top: 2px !important; padding-top: 0 !important; border-top: 0 !important; }

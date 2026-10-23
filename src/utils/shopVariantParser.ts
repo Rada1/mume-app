@@ -9,13 +9,13 @@ import type { ShopVariant } from '../types';
 const pricePattern = /(?:for|costs?)\s+(.+?)\s*\.?$/i;
 
 export const parseShopVariant = (line: string): ShopVariant | null => {
-    const match = line.match(/^\s*(\d+)\.\s+(.*?)\s*$/);
+    const match = line.replace(/\s*<[^>]+>\s*\.?\s*$/, '').match(/^\s*(\d+)\.\s+(.*?)\s*$/);
     if (!match) return null;
     const body = match[2];
     const price = body.match(pricePattern);
     if (!price) return null;
     const condition = body.slice(0, price.index).trim().replace(/^\(|\)$/g, '');
-    if (!condition || /^(?:ten|nine|eight|seven|six|five|four|three|two|one)\s/i.test(condition)) return null;
+    if (/^(?:ten|nine|eight|seven|six|five|four|three|two|one)\s/i.test(condition)) return null;
     return { num: Number(match[1]), condition, price: price[1].replace(/\.$/, '').trim() };
 };
 

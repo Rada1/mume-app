@@ -1,0 +1,17 @@
+/** @file TwilightTransition.css -- Smooth clock-driven rose, coral, and violet corner light. */
+
+/* --- A fixed vignette mask; only its tint and intensity change --- */
+.environment-root.front > .environment-twilight-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 26;
+    pointer-events: none;
+    mix-blend-mode: screen;
+    mask-image: radial-gradient(ellipse 92% 68% at 96% 8%, #000 0%, rgba(0, 0, 0, 0.55) 40%, transparent 86%);
+    -webkit-mask-image: radial-gradient(ellipse 92% 68% at 96% 8%, #000 0%, rgba(0, 0, 0, 0.55) 40%, transparent 86%);
+    transition: background-color 1s linear, opacity 1s linear !important;
+}
+
+.performance-mode.immersion-mode .environment-root.front > .environment-twilight-vignette {
+    display: block !important;
+}

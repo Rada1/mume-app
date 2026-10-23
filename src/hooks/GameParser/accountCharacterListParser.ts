@@ -16,6 +16,21 @@ const commandNames = new Set([
     'practice', 'link', 'lag', 'help', 'menu', 'quit', 'where'
 ]);
 
+const parseUnlinkedCharacterRow = (cleanLine: string, trimmedLine: string): CharacterEntry | null => {
+    const match = trimmedLine.match(/^([a-zA-Z\u00C0-\u00FF-]{2,15})\s+.*?\bno\s+link\b\s+\S+(?:\s+.*)?$/i);
+    if (!match || commandNames.has(match[1].toLowerCase())) return null;
+
+    return {
+        name: match[1],
+        race: '',
+        level: '',
+        logon: 'no link',
+        area: '',
+        rent: '',
+        rawLine: cleanLine
+    };
+};
+
 export function parseAccountCharacterRow(line: string): CharacterEntry | null {
     const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '');
     const trimmedLine = cleanLine.trim();
@@ -40,19 +55,36 @@ export function parseAccountCharacterRow(line: string): CharacterEntry | null {
     // Sub can be blank and wizard levels can carry a letter prefix (for
     // example W27). Find Lvl before interpreting the changing Logon text.
     const columns = trimmedLine.match(characterColumns);
-    if (!columns) return null;
+    if (!columns) return parseUnlinkedCharacterRow(cleanLine, trimmedLine);
 
     const [, name, race, rest] = columns;
     const lowerName = name.toLowerCase();
     if (commandNames.has(lowerName)) return null;
 
+    // A character that is already online can have only its wizard level and
+    // "playing" status in the row (for example, "Ellessar Mw playing"). The
+    // compact spacing makes the level look like the race column, so retain the
+    // character instead of rejecting it as a row with no numeric level.
+    if (/^playing\b/i.test(rest)) {
+        return {
+            name,
+            race: '',
+            sublevel: '',
+            level: race,
+            logon: 'playing',
+            area: '',
+            rent: '',
+            rawLine: cleanLine
+        };
+    }
+
     const parts = rest.split(/\s+/);
     const hasSublevel = !levelColumn.test(parts[0]);
     const level = parts[hasSublevel ? 1 : 0];
-    if (!level || !levelColumn.test(level)) return null;
+    if (!level || !levelColumn.test(level)) return parseUnlinkedCharacterRow(cleanLine, trimmedLine);
     const sublevel = hasSublevel ? parts[0] : '';
     const remainder = parts.slice(hasSublevel ? 2 : 1).join(' ');
-    if (!remainder) return null;
+    if (!remainder) return parseUnlinkedCharacterRow(cleanLine, trimmedLine);
 
     const marker = remainder.match(knownLogon);
     const unknownColumns = remainder.split(/\s+/);

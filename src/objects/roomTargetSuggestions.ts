@@ -8,6 +8,7 @@ import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
 import { isItemContainer } from '../utils/gameUtils';
 import { getOccupantCommandKeyword } from '../utils/occupantKeywordUtils';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
+import { classifyOccupant } from '../services/classification/classifyOccupant';
 import { createObjectTargetEntries, getRoomObjectCandidates, hasObjectTrait } from './objectTargetModel';
 import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from './targetSuggestionTypes';
 
@@ -80,7 +81,8 @@ export const getRoomTargetSuggestions = (
         const meta = getAllyPriority(source) !== null
             ? 'ally'
             : normalizeOccupantType(occupant)?.toLowerCase() || type || kind;
-        return [{ key: `${occupant.id ?? index}-${value}`, label, value, meta }];
+        return [{ key: `${occupant.id ?? index}-${value}`, label, value, meta,
+            category: classifyOccupant(occupant)?.category }];
     });
 
     const totalByKeyword = new Map<string, number>();
@@ -117,6 +119,33 @@ export const getRoomTargetSuggestions = (
             value: `${ordinal}.${suggestion.value}`
         };
     });
+};
+
+export const getRoomInspectionTargetSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    roomObjects: Array<string | GmcpOccupant>,
+    selfName = ''
+): CommandTargetSuggestion[] => {
+    const characterSuggestions = getRoomTargetSuggestions(characters, [], 'characters', selfName);
+    const isEnemy = (suggestion: CommandTargetSuggestion): boolean =>
+        suggestion.meta.toLowerCase() === 'enemy' || suggestion.category === 'cat-enemy';
+    const isAlly = (suggestion: CommandTargetSuggestion): boolean =>
+        suggestion.meta.toLowerCase() === 'ally' || suggestion.category === 'cat-ally';
+    const isNpc = (suggestion: CommandTargetSuggestion): boolean => !isEnemy(suggestion) && !isAlly(suggestion)
+        && (suggestion.meta.toLowerCase() === 'npc' || suggestion.category === 'cat-npc');
+    const enemies = characterSuggestions.filter(isEnemy);
+    const npcs = characterSuggestions.filter(isNpc);
+    const allies = characterSuggestions.filter(isAlly);
+    const otherCharacters = characterSuggestions.filter(suggestion =>
+        !isEnemy(suggestion) && !isNpc(suggestion) && !isAlly(suggestion));
+
+    return [
+        ...enemies,
+        ...npcs,
+        ...allies,
+        ...otherCharacters,
+        ...getRoomTargetSuggestions([], roomObjects, 'objects')
+    ];
 };
 
 export const getGiveRecipientSuggestions = (

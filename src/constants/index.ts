@@ -10,6 +10,7 @@ export const SE = 240;
 export const TELNET_ECHO = 1;
 export const TELNET_TTYPE = 24;
 export const TELNET_NAWS = 31;
+export const TELNET_MSSP = 70;
 export const TELNET_GMCP = 201;
 
 export const TTYPE_IS = 0;

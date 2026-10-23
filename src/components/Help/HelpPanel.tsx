@@ -8,44 +8,31 @@ import { useGame } from '../../context/GameContext';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { parseHelpContent } from '../../utils/helpUtils';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
-import { BookOpen, ChevronLeft, ChevronRight, Columns2, Search, X } from 'lucide-react';
+import { BookOpen, ChevronLeft, ChevronRight, Columns2, X } from 'lucide-react';
+import { useHelpTopicComposer } from '../../hooks/useHelpTopicComposer';
+import { HelpTopicComposer } from './HelpTopicComposer';
 import HelpWikiPane from './HelpWikiPane';
 import './HelpPanel.css';
+import './HelpPanelStack.css';
 
 interface HelpPanelProps {
     style?: React.CSSProperties;
+    stacked?: boolean;
 }
 
 // --- Component Section ---
 
-export const HelpPanel: React.FC<HelpPanelProps> = ({ style }) => {
+export const HelpPanel: React.FC<HelpPanelProps> = ({ style, stacked = false }) => {
     const { isOpen, helpData, currentTopic, history, historyIndex, setIsOpen, goBack, goForward } = useHelpStore();
-    const { executeCommand, triggerHaptic, viewport } = useGame() as {
-        executeCommand?: (cmd: string, silent?: boolean, isSystem?: boolean, skipQueue?: boolean, isUiSync?: boolean) => void;
-        triggerHaptic?: (ms: number) => void;
-        viewport?: { isMobile: boolean };
-    };
-    const [searchInput, setSearchInput] = useState('');
+    const { viewport } = useGame();
+    const composer = useHelpTopicComposer();
+    const { openTopic } = composer;
     const [activeView, setActiveView] = useState<'game' | 'wiki' | 'split'>('game');
     const [splitPercent, setSplitPercent] = useState(46);
 
     const parsed = useMemo(() => parseHelpContent(helpData), [helpData]);
 
     if (!isOpen) return null;
-
-    const openTopic = (topic: string) => {
-        triggerHaptic?.(10);
-        const cleanTopic = topic.trim();
-        if (!cleanTopic) return;
-        executeCommand?.(cleanTopic.toLowerCase() === 'help' ? 'help' : `help ${cleanTopic}`, false, false, false, true);
-    };
-
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!searchInput.trim()) return;
-        openTopic(searchInput);
-        setSearchInput('');
-    };
 
     const handleContentClick = (e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -80,16 +67,6 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ style }) => {
 
     const gameHelp = (
         <section className="help-panel-game-pane" aria-label="In-game help">
-            <form className="help-panel-search-bar" onSubmit={handleSearchSubmit}>
-                <Search size={14} color="var(--text-dim)" />
-                <input
-                    type="text"
-                    className="help-panel-search-input"
-                    placeholder="Search help topic..."
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                />
-            </form>
             <div className="help-panel-content">
                 {parsed.contentHtml ? (
                     <>
@@ -105,18 +82,18 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ style }) => {
                             </div>
                         )}
                     </>
-                ) : <div className="help-panel-empty">Type a topic above or run <code>help &lt;topic&gt;</code> in game.</div>}
+                ) : <div className="help-panel-empty">Enter a topic below or run <code>help &lt;topic&gt;</code> in game.</div>}
             </div>
         </section>
     );
 
     return (
         <aside
-            className={`docked-panel help-panel help-panel-${activeView}`}
+            className={`docked-panel help-panel help-panel-${activeView}${stacked ? ' client-panel-stack-item' : ''}`}
             style={style}
             aria-label="Help Panel"
         >
-            {!viewport?.isMobile && (
+            {!stacked && !viewport?.isMobile && (
                 <DrawerResizeHandle
                     handleType="left"
                     widthVar={activeView === 'split' ? '--desktop-help-split-width' : '--desktop-help-width'}
@@ -126,9 +103,9 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ style }) => {
             )}
 
             {/* Header */}
-            <div className="help-panel-header">
+            <div className={`help-panel-header${stacked ? ' popover-inspection-panel-heading' : ''}`}>
                 <div className="help-panel-title-group">
-                    <span>Help</span>
+                    <span className={stacked ? 'client-panel-heading-label' : undefined}>Help</span>
                     {currentTopic && (
                         <span className="help-panel-topic-badge">: {currentTopic}</span>
                     )}
@@ -191,6 +168,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ style }) => {
                     <HelpWikiPane />
                 </>}
             </div>
+            {activeView !== 'wiki' && <HelpTopicComposer composer={composer} />}
         </aside>
     );
 };

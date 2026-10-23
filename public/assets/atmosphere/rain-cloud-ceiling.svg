@@ -1,0 +1,48 @@
+<!-- @file rain-cloud-ceiling.svg — Dim, turbulent cloud cover for rainy weather. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="veil" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3b4655" stop-opacity=".2"/>
+      <stop offset=".55" stop-color="#66727e" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#283545" stop-opacity=".22"/>
+    </linearGradient>
+    <linearGradient id="cloud-shadow" x1="0" y1="0" x2=".8" y2="1">
+      <stop stop-color="#263240"/>
+      <stop offset=".52" stop-color="#3d4958"/>
+      <stop offset="1" stop-color="#596571"/>
+    </linearGradient>
+    <linearGradient id="cloud-body" x1="0" y1="0" x2=".3" y2="1">
+      <stop stop-color="#7e8994"/>
+      <stop offset=".48" stop-color="#626e7b"/>
+      <stop offset="1" stop-color="#3f4c5b"/>
+    </linearGradient>
+    <linearGradient id="cloud-light" x1="0" y1="0" x2=".6" y2="1">
+      <stop stop-color="#a0aab2"/>
+      <stop offset="1" stop-color="#697582"/>
+    </linearGradient>
+    <filter id="broad-masses" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".005 .013" numOctaves="4" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5 0 0 0 -2.2" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="13 8" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+    <filter id="rolling-texture" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".012 .028" numOctaves="4" seed="31" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5.5 0 0 0 -2.6" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="5 3" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+    <filter id="fine-texture" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".035 .065" numOctaves="3" seed="8" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5 0 0 0 -2.4" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="2 1.5" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+  </defs>
+  <!-- A continuous veil keeps the noisy cloud masses reading as one low ceiling. -->
+  <rect width="960" height="540" fill="url(#veil)"/>
+  <!-- Independent noise scales make soft, overlapping cloud texture without drawn puffs. -->
+  <rect width="960" height="540" fill="url(#cloud-shadow)" filter="url(#broad-masses)" opacity=".68"/>
+  <rect width="960" height="540" fill="url(#cloud-body)" filter="url(#rolling-texture)" opacity=".44"/>
+  <rect width="960" height="540" fill="url(#cloud-light)" filter="url(#fine-texture)" opacity=".15"/>
+</svg>

@@ -87,6 +87,10 @@ export const PerfHUD: React.FC = () => {
             </>}
             <Row label="draw avg/p95" value={`${fmtMs(snap.drawAvgMs)} / ${fmtMs(snap.drawP95Ms)}`} warn={snap.drawP95Ms > 16} />
             <Row label="draw peak" value={fmtMs(snap.peakDrawMs)} warn={snap.peakDrawMs > 33} />
+            <Row label="command dispatch to socket p95" value={fmtMs(snap.commandSendP95Ms)} warn={snap.commandSendP95Ms > 16} />
+            <Row label="socket backlog bytes" value={snap.socketBufferedBytes} />
+            <Row label="text queue wait p95/max" value={`${fmtMs(snap.textQueueP95Ms)} / ${fmtMs(snap.textQueueMaxMs)}`} warn={snap.textQueueP95Ms > 16} />
+            <Row label="text processing p95/max" value={`${fmtMs(snap.textProcessingP95Ms)} / ${fmtMs(snap.textProcessingMaxMs)}`} warn={snap.textProcessingP95Ms > 16} />
             <Row label="parser worker avg/max" value={`${fmtMs(snap.parserWorkerAvgMs)} / ${fmtMs(snap.parserWorkerMaxMs)}`} warn={snap.parserWorkerMaxMs > 50} />
             <Row label="parser sync avg/max" value={`${fmtMs(snap.parserSyncAvgMs)} / ${fmtMs(snap.parserSyncMaxMs)}`} warn={snap.parserSyncMaxMs > 50} />
             <Row label="worst frame gap" value={fmtMs(snap.intervalMaxMs)} warn={snap.intervalMaxMs > 100} />

@@ -203,10 +203,14 @@ export const applyColorTaggedObjects = (
         }
         
         const category = getCategoryIdForKindLocation(kind, location);
-        const { glow, classExtra } = getTargetAwareStyles(displayName, finalContext, groupColor || '', target);
-        
         const buttonId = `auto-obj-${keyword}`;
         const isSelected = isObjectSelected(selectedObjectIds, buttonId, kind);
+        const { glow, classExtra } = getTargetAwareStyles(
+            displayName,
+            finalContext,
+            groupColor || '',
+            isSelected ? null : target
+        );
         
         return renderInlineSpan({
             id: buttonId,

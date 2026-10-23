@@ -12,6 +12,7 @@ import { escapeHtml, sanitizeMumeHtml } from '../../utils/securityUtils';
 import { ansiConvert } from '../../utils/ansi';
 import { appendCreationContextAnsiLine, appendCreationContextLine } from '../../utils/accountCreationContext';
 import { parseAccountCharacterRow } from './accountCharacterListParser';
+import { buildAccountCharacterLineHtml } from './accountCharacterListHtml';
 
 // --- Logic Section: Types ---
 
@@ -262,10 +263,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             if (!hasSentGameEntrySetupRef.current) {
                 hasSentGameEntrySetupRef.current = true;
                 executeCommandRef.current?.('change xml on', true, true, true, false);
-                executeCommandRef.current?.('change page off', true, true, true, false);
-                executeCommandRef.current?.('change width 80', true, true, true, false);
                 executeCommandRef.current?.('change editor external', true, true, true, false);
-                executeCommandRef.current?.('time', true, true, true, false);
             }
 
             return false;
@@ -345,24 +343,26 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             }
         }
 
-        // --- Paginator Auto-Advance (silent AND visible listing) ---
-        // Detects the MUME pager prompt (e.g. "*** Return: continue, b: back... (63%) ***")
-        // and automatically sends an empty return to page through the list.
-        // This runs unconditionally during the account phase so both manual `list`
-        // commands and silent background gathers advance past pagination automatically.
+        // --- Paginator Auto-Advance (silent listing only) ---
+        // Manual `list` commands keep the pager prompt visible so the user can
+        // continue, go back, or quit it from the command input.
         const isPaginator = trimmedLine.includes('Return: continue') ||
                             trimmedLine.includes('*** [Hit Return') ||
                             (trimmedLine.startsWith('***') && trimmedLine.toLowerCase().includes('continue')) ||
                             (trimmedLine.includes('(') && trimmedLine.includes('%)') && trimmedLine.includes('continue'));
 
         if (isPaginator) {
-            // Use queueMicrotask so the current parse cycle and React state updates
-            // fully commit before the server receives our newline and floods us with
-            // the next page. setTimeout(150) caused the response to arrive mid-update
-            // and sit in a buffer until the next user action triggered a render flush.
-            queueMicrotask(() => sendCommand(''));
-            // Suppress the paginator line from the log — it's transient noise.
-            return true;
+            if (isSilentListingRef.current || accountState.isGathering) {
+                // Use queueMicrotask so the current parse cycle and React state updates
+                // fully commit before the server receives our newline and floods us with
+                // the next page.
+                queueMicrotask(() => sendCommand(''));
+                return true;
+            }
+
+            // Keep manual pager prompts in the visible account log. Returning false
+            // lets the normal input send Return, b, or q to the server pager.
+            return false;
         }
 
         // --- Silent Listing Suppression ---
@@ -674,9 +674,20 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
         // "Characters in account "name"" header and "Name  Rce  Sub  Lvl..." column header
         const lowerTrimmed = trimmedLine.toLowerCase();
-        if (lowerTrimmed.startsWith('characters in account') ||
-            (trimmedLine.startsWith('Name') && /\bRce\b/.test(trimmedLine) && /\bLvl\b/.test(trimmedLine))) {
-            return shouldSuppress;
+        const isCharacterListTitle = lowerTrimmed.startsWith('characters in account');
+        const isCharacterListColumnHeader = trimmedLine.startsWith('Name') && /\bRce\b/.test(trimmedLine) && /\bLvl\b/.test(trimmedLine);
+        if (isCharacterListTitle || isCharacterListColumnHeader) {
+            if (!shouldSuppress) {
+                const headerHtml = isCharacterListTitle
+                    ? buildAccountCharacterLineHtml(line)
+                    : buildAccountCharacterLineHtml(line, { name: 'Name', rent: 'Rent' });
+                addMessage?.('account-character-list', cleanLine, false, undefined, false, {
+                    textOnly: cleanLine,
+                    lower: cleanLine.toLowerCase(),
+                    html: sanitizeMumeHtml(headerHtml)
+                });
+            }
+            return true;
         }
 
         // 3. Detect Character Entries
@@ -692,7 +703,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
             if (!shouldSuppress) {
                 const lineHtml = sanitizeMumeHtml(
-                    `<span class="inline-btn account-char-name" data-context="${escapeHtml(character.name)}">${ansiConvert.toHtml(line)}</span>`
+                    `<span class="inline-btn account-char-name" data-context="${escapeHtml(character.name)}">${buildAccountCharacterLineHtml(line, character)}</span>`
                 );
                 addMessage?.('account-character-list', cleanLine, false, undefined, false, { textOnly: cleanLine, lower: cleanLine.toLowerCase(), html: lineHtml });
             }

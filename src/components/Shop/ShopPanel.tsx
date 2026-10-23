@@ -12,6 +12,7 @@ import { ShopInventoryActionButtons } from './ShopInventoryActionButtons';
 import type { ShopInventoryAction } from './ShopInventoryActionButtons';
 import './ShopPanel.css';
 import './ShopPanelTerminal.css';
+import { formatMumePrice } from '../../utils/gameUtils';
 
 type ShopAction = 'buy' | 'show' | 'compare';
 
@@ -99,6 +100,7 @@ export const ShopPanel: React.FC<ShopPanelProps> = ({ hidden = false }) => {
               const q = search.toLowerCase();
               return item.name.toLowerCase().includes(q) ||
                      item.price.toLowerCase().includes(q) ||
+                     formatMumePrice(item.price).includes(q) ||
                      String(item.num) === q.trim();
           })
         : shopItems;

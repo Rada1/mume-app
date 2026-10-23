@@ -46,7 +46,7 @@ export const WORLD_BUTTONS = [
     createButton({ id: 'btn-container-look-in', label: 'Look In', command: 'look in %n', setId: 'inline-containers', color: '#3b82f6' }),
 
     // --- EXITS ---
-    createButton({ id: 'btn-exit-go', label: 'Go', command: '%n', setId: 'inline-exit', color: 'rgba(255, 255, 255, 0.25)' }),
+    createButton({ id: 'btn-exit-go', label: 'Move', command: '%n', setId: 'inline-exit', color: 'rgba(255, 255, 255, 0.25)' }),
     createButton({ id: 'btn-look', label: 'Look', command: 'look %n', setId: 'inline-exit', color: '#3b82f6' }),
 
     // --- ROOM NAMES ---

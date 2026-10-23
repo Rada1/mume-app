@@ -1,0 +1,11 @@
+/** @file Sound editor tabs. */
+
+/* --- Section Navigation --- */
+.sound-settings-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.sound-settings-tabs button {
+    padding: 10px 6px; border: 0; background: #292929; color: var(--text-dim);
+    font: inherit; cursor: pointer;
+}
+.sound-settings-tabs [aria-selected="true"] { background: #3c3526; color: var(--accent); }
+.sound-settings-tabs button:focus-visible { outline: 1px solid var(--accent); }
+.sound-settings-panel { display: flex; flex-direction: column; gap: 20px; min-width: 0; }

@@ -58,12 +58,18 @@ export const TARGETED_SKILLS = new Set([
     'magic missile', 'armour', 'chill touch', 'burning hands', 'locate', 'shocking grasp',
     'teleport', 'lightning bolt', 'colour spray', 'locate life', 'call lightning', 'enchant',
     'scry', 'shield', 'charm', 'sleep', 'fireball', 'magic blast', 'dispel magic', 'silence',
-    'identify', 'portal',
+    'identify', 'portal', 'shroud',
     // cleric
     'cure light', 'smother', 'cure blindness', 'protection from evil', 'bless', 'cure serious',
     'blindness', 'cure disease', 'strength', 'poison', 'summon', 'cure critic', 'cure critical',
     'remove poison', 'curse', 'remove curse', 'black breath', 'dispel evil', 'energy drain',
     'heal', 'transfer', 'fear', 'harm', 'hold', 'raise dead', 'sanctuary'
+]);
+
+/** MUME spells that affect only their caster and must never receive a picked target. */
+export const SELF_ONLY_SPELLS = new Set([
+    'armour', 'armor', 'shield', 'night vision', 'sense life',
+    'detect evil', 'detect magic', 'detect invisibility', 'detect invisible'
 ]);
 
 /** Counts learned class skills/spells from the current proficiency map. */

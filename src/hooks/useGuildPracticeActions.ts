@@ -16,7 +16,9 @@ export const useGuildPracticeActions = (
     roomNum: string | number | null | undefined,
     roomNpcs: GmcpOccupant[],
     practiceData: PracticeData | null | undefined,
-    executeCommand: PracticeCommand
+    executeCommand: PracticeCommand,
+    detectedGuildmaster = false,
+    requestOnOpen = true
 ) => {
     const mapper = useMapper();
     const roomKey = String(roomNum ?? mapper.currentRoomId ?? '');
@@ -29,8 +31,8 @@ export const useGuildPracticeActions = (
         ...(preloadedRoom?.[7] || []), ...(mapRoom?.mobFlags || []),
         ...(preloadedRoom?.[8] || []), ...(mapRoom?.loadFlags || [])
     ]);
-    const hasGuildmaster = Boolean(guildClass) || roomNpcs.some(npc => /guild\s?master/i.test(npc.name || ''));
-    const requestKey = isPlaying && hasGuildmaster ? roomKey : null;
+    const hasGuildmaster = detectedGuildmaster || Boolean(guildClass) || roomNpcs.some(npc => /guild\s?master/i.test(npc.name || ''));
+    const requestKey = isPlaying && hasGuildmaster && requestOnOpen ? roomKey : null;
     const requestedRoomRef = useRef<string | null>(null);
     const previousDataRef = useRef<PracticeData | null | undefined>(null);
     const [syncedRoom, setSyncedRoom] = useState<string | null>(null);

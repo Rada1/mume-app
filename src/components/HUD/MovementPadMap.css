@@ -1,0 +1,364 @@
+/** @file MovementPadMap.css — Large desktop map movement controls. */
+
+/* Large desktop directions sit on the map perimeter and leave the center clear. */
+.movement-pad.movement-pad-map {
+    position: absolute;
+    z-index: 24;
+    inset: 0;
+    /* Reset the compact pad's flex-start alignment, which shrink-wraps this overlay. */
+    align-self: stretch;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    padding: 44px 18px var(--movement-pad-dock-inset, 160px);
+    box-sizing: border-box;
+    margin: 0;
+    pointer-events: none;
+}
+
+.movement-pad-map-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    pointer-events: auto;
+}
+
+.movement-pad-map .movement-pad-cell {
+    position: relative;
+    width: clamp(60px, 4.8vw, 74px);
+    height: clamp(60px, 4.8vw, 74px);
+    min-width: 60px;
+    min-height: 60px;
+    gap: 6px;
+    padding: 6px;
+    border: 1px solid rgba(201, 168, 76, 0.34);
+    border-radius: 12px;
+    background: #000;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.72);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    pointer-events: auto;
+}
+
+.movement-pad-map .movement-pad-map-item > .movement-pad-cell {
+    border: 0;
+}
+
+.movement-pad-map .movement-pad-map-item > .movement-pad-cell svg {
+    width: 24px;
+    height: 24px;
+}
+
+.movement-pad-door-actions {
+    position: absolute;
+    z-index: 30;
+    display: flex;
+    gap: 3px;
+    pointer-events: auto;
+}
+
+.movement-pad-door-actions button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    border: 1px solid rgba(201, 168, 76, 0.35);
+    border-radius: 5px;
+    background: rgba(18, 17, 15, 0.96);
+    color: #e5c368;
+    font: 600 0.55rem/1 var(--font-mono, monospace);
+    text-transform: capitalize;
+    cursor: pointer;
+}
+
+.movement-pad-map-item.pad-u .movement-pad-door-actions { top: calc(100% + 5px); left: 0; }
+.movement-pad-map-item.pad-n .movement-pad-door-actions { top: calc(100% + 5px); left: 50%; transform: translateX(-50%); }
+.movement-pad-map-item.pad-w .movement-pad-door-actions { top: 50%; left: calc(100% + 5px); transform: translateY(-50%); }
+.movement-pad-map-item.pad-e .movement-pad-door-actions { top: 50%; right: calc(100% + 5px); transform: translateY(-50%); }
+.movement-pad-map-item.pad-s .movement-pad-door-actions { bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); }
+.movement-pad-map-item.pad-d .movement-pad-door-actions { right: calc(100% + 5px); bottom: calc(100% + 5px); }
+
+.movement-pad-door-actions button:not(:disabled):hover {
+    border-color: rgba(229, 195, 104, 0.85);
+    background: rgba(54, 43, 24, 0.98);
+}
+
+.movement-pad-door-actions button:disabled {
+    border-color: rgba(148, 163, 184, 0.14);
+    background: rgba(24, 28, 33, 0.58);
+    color: #64748b;
+    cursor: default;
+    opacity: 0.48;
+}
+
+.movement-pad-map .movement-pad-cell:hover {
+    background: rgba(39, 33, 24, 0.95);
+}
+
+.movement-pad-map .movement-pad-flee-group {
+    grid-area: 3 / 1;
+    justify-self: start;
+    align-self: end;
+    position: relative;
+    width: clamp(60px, 4.8vw, 74px);
+    height: clamp(60px, 4.8vw, 74px);
+    pointer-events: auto;
+}
+
+.movement-pad-map .movement-pad-flee {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #000;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.72);
+    color: #ef7777;
+}
+
+.movement-pad-map .movement-pad-wimpy {
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    right: 5px;
+    min-width: 0;
+    min-height: 0;
+    padding: 3px 5px;
+    border: 1px solid rgba(239, 119, 119, 0.55);
+    border-radius: 5px;
+    background: rgba(30, 13, 13, 0.96);
+    color: #ffc5c5;
+    font: 700 0.52rem/1 var(--font-mono, monospace);
+    cursor: pointer;
+}
+
+.movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
+    border-color: rgba(254, 202, 202, 0.9);
+    background: rgba(127, 29, 29, 0.96);
+}
+
+.movement-pad-map .movement-pad-wimpy:disabled {
+    cursor: default;
+    opacity: 0.55;
+}
+
+.movement-pad-map .movement-pad-flee .movement-pad-label {
+    color: #ef7777;
+}
+
+.movement-pad-map .movement-pad-flee:hover,
+.movement-pad-map .movement-pad-flee.is-key-pressed {
+    border-color: rgba(239, 68, 68, 0.86);
+    background: rgba(127, 29, 29, 0.94);
+    color: #fecaca;
+}
+
+.movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+.movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
+    color: #fecaca;
+}
+
+.movement-pad-map .movement-pad-cell.is-open-door {
+    border-color: rgba(217, 119, 6, 0.72);
+    background: rgba(217, 119, 6, 0.12);
+}
+
+.movement-pad-map .movement-pad-cell.is-open-door .movement-pad-label {
+    color: #d97706;
+}
+
+.movement-pad-map .movement-pad-cell.is-key-pressed {
+    z-index: 1;
+    border-color: rgba(255, 224, 138, 0.98);
+    background: rgba(201, 168, 76, 0.38);
+    color: #fff2c2;
+    box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.2), 0 0 24px rgba(201, 168, 76, 0.48);
+    animation: movement-pad-map-command-press 140ms ease-out;
+}
+
+.movement-pad-map .movement-pad-cell.is-key-pressed .movement-pad-label {
+    color: #fff2c2;
+}
+
+@keyframes movement-pad-map-command-press {
+    0% { transform: scale(1); }
+    28% { transform: scale(0.93); }
+    68% { transform: scale(1.035); }
+    100% { transform: scale(1); }
+}
+
+.movement-pad-map .movement-pad-label {
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+}
+
+.movement-pad-map-item.pad-u { grid-area: 1 / 1; justify-self: start; align-self: start; }
+.movement-pad-map-item.pad-n { grid-area: 1 / 2; justify-self: center; align-self: start; }
+.movement-pad-map-item.pad-w { grid-area: 2 / 1; justify-self: start; align-self: center; }
+.movement-pad-map-item.pad-e { grid-area: 2 / 3; justify-self: end; align-self: center; }
+.movement-pad-map-item.pad-s { grid-area: 3 / 2; justify-self: center; align-self: end; }
+.movement-pad-map-item.pad-d { grid-area: 3 / 3; justify-self: end; align-self: end; }
+
+.light-mode .movement-pad-map .movement-pad-cell {
+    background: rgba(248, 245, 236, 0.9);
+    border-color: rgba(138, 102, 32, 0.42);
+}
+
+.light-mode .movement-pad-map .movement-pad-cell:hover {
+    background: rgba(255, 252, 244, 0.98);
+}
+
+.light-mode .movement-pad-map .movement-pad-flee {
+    border-color: rgba(185, 28, 28, 0.5);
+    background: rgba(254, 226, 226, 0.94);
+    color: #b91c1c;
+}
+
+.light-mode .movement-pad-map .movement-pad-wimpy {
+    border-color: rgba(185, 28, 28, 0.45);
+    background: rgba(255, 245, 245, 0.98);
+    color: #991b1b;
+}
+
+.light-mode .movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
+    border-color: rgba(153, 27, 27, 0.8);
+    background: rgba(254, 202, 202, 0.98);
+}
+
+.light-mode .movement-pad-map .movement-pad-flee .movement-pad-label {
+    color: #b91c1c;
+}
+
+.light-mode .movement-pad-map .movement-pad-flee:hover,
+.light-mode .movement-pad-map .movement-pad-flee.is-key-pressed {
+    background: rgba(254, 202, 202, 0.98);
+    color: #991b1b;
+}
+
+.light-mode .movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+.light-mode .movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
+    color: #991b1b;
+}
+
+/* Match the solid, square terminal controls used by This Is You in standard mode. */
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell {
+    border: 0;
+    border-radius: 0;
+    background: #000;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.72);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    color: #cbbda4;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-n,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-s,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-e,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-w,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-u,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.pad-d {
+    color: #c9c1ac;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-label {
+    color: #cbbda4;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.is-valid-exit .movement-pad-label {
+    color: #dfbf6c;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed),
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:focus-visible {
+    background: rgba(201, 168, 76, 0.14);
+    color: #f1cf6d;
+    outline: none;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed) .movement-pad-label,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:focus-visible .movement-pad-label {
+    color: #f1cf6d;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.is-key-pressed {
+    border: 0;
+    background: rgba(201, 168, 76, 0.18);
+    box-shadow: none;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.is-open-door {
+    border: 0;
+    background: rgba(217, 119, 6, 0.12);
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-door-actions button,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-wimpy {
+    border: 0;
+    border-radius: 0;
+    background: rgba(30, 25, 21, 0.98);
+    box-shadow: none;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-door-actions button:not(:disabled):hover,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
+    border: 0;
+    background: rgba(201, 168, 76, 0.14);
+    color: #f1cf6d;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-door-actions button:disabled {
+    color: #817766;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee {
+    border: 0;
+    border-radius: 0;
+    background: #000;
+    box-shadow: 0 0 14px rgba(0, 0, 0, 0.72);
+    color: #ef7777;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee .movement-pad-label {
+    color: #ef7777;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee.is-key-pressed {
+    border: 0;
+    background: rgba(127, 29, 29, 0.2);
+    color: #fecaca;
+}
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
+    color: #fecaca;
+}
+
+@media (min-width: 1025px) {
+    .movement-pad {
+        grid-template-columns: repeat(3, 54px);
+        grid-template-rows: repeat(3, 54px);
+        gap: 0;
+        padding: 0;
+        background: transparent;
+    }
+}
+
+@media (max-height: 640px) {
+    .movement-pad-map .movement-pad-map-item > .movement-pad-cell {
+        width: 56px;
+        height: 56px;
+        min-width: 56px;
+        min-height: 56px;
+    }
+
+    .movement-pad-map .movement-pad-flee-group {
+        width: 56px;
+        height: 56px;
+    }
+}
+

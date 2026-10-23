@@ -1,3 +1,4 @@
+/** @file dockedPanelUtils.test.ts — Shared panel widths, offsets, and mobile geometry. */
 import { describe, it, expect } from 'vitest';
 import { computeDockedRight, computeDockedTop, getMobilePanelHeight, computeDockedPanelStyle, getDockedWidth, DockedPanelId } from './dockedPanelUtils';
 
@@ -65,5 +66,14 @@ describe('mobile docking and stacking', () => {
         expect(style.left).toBeUndefined();
         expect(style.top).toBe('calc(env(safe-area-inset-top, 0px) + 52px)');
         expect(style.bottom).toBe('calc(env(safe-area-inset-bottom, 0px) + 10px)');
+    });
+});
+
+// --- Command Workspace Regression ---
+describe('command workspace width', () => {
+    it('reserves the full two-column panel width beside the log', () => {
+        expect(getDockedWidth('commands')).toBe('var(--desktop-command-panel-width, 460px)');
+        expect(computeDockedRight('chat', ['commands', 'chat']))
+            .toBe('calc(var(--desktop-command-panel-width, 460px))');
     });
 });

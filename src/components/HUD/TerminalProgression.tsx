@@ -13,12 +13,13 @@ type TerminalProgressionProps = {
     tp: number | null | undefined;
     tnl: number | null | undefined;
     tpnl: number | null | undefined;
+    sessionKey?: string;
 };
 
 // --- Render Section ---
 export const TerminalProgression: FC<TerminalProgressionProps> = props => {
     const { sessionXp, sessionTp, floatingGains } = useCharacterSessionProgress(
-        props.characterName, props.xp, props.tp, props.tnl, props.tpnl
+        props.characterName, props.xp, props.tp, props.tnl, props.tpnl, props.sessionKey
     );
     const xpGain = floatingGains.filter(gain => gain.type === 'xp').at(-1);
     const tpGain = floatingGains.filter(gain => gain.type === 'tp').at(-1);

@@ -101,6 +101,7 @@ export interface InteractionDeps {
     selectedRoomIds: Set<string>;
     selectedMarkerId: string | null;
     setSelectedMarkerId: (id: string | null) => void;
+    onEditMarker?: (id: string) => void;
     triggerHaptic: (ms: number) => void;
     joystick: any;
     btn?: any;
@@ -526,11 +527,25 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     return;
                 }
 
+                // Compact map drags pan the camera instead of issuing movement commands.
+                const app = currentCanvas().closest('.app-container');
+                const isMinimap = app?.classList.contains('is-mobile') === true
+                    && (app.classList.contains('kb-open') || app.classList.contains('readability-mode'));
+
                 const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
                 const world = screenToWorld(e.clientX, e.clientY);
 
                 const roomId = getRoomAt(world.x, world.y);
                 const markerId = getMarkerAt(world.x, world.y);
+                if (markerId && mode === 'play') {
+                    dragTypeRef.current = 'marker';
+                    draggedMarkerRef.current = { id: markerId, offsetX: 0, offsetY: 0 };
+                    return;
+                }
+                if (isMinimap && mode === 'play') {
+                    dragTypeRef.current = 'pan';
+                    return;
+                }
 
                 if (mode === 'edit') {
                     if (markerId) {
@@ -640,6 +655,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                 if (hasDraggedRef.current) {
                     if (dragTypeRef.current === 'marker' && draggedMarkerRef.current) {
+                        if (depsRef.current.mode !== 'edit') return;
                         const { screenToWorld } = hitTestRef.current;
                         const world = screenToWorld(p.x, p.y);
                         const tileX = world.x / GRID_SIZE;
@@ -831,6 +847,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             
             const remPointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = remPointers;
+            if (activePointersRef.current.size === 0 && dragTypeRef.current === 'marker') {
+                const markerId = draggedMarkerRef.current?.id;
+                if (!hasDraggedRef.current && markerId) depsRef.current.onEditMarker?.(markerId);
+                draggedMarkerRef.current = null;
+                dragTypeRef.current = null;
+                isDraggingInternalRef.current = false;
+                setIsDragging(false);
+                return;
+            }
 
             const activeHeldForFastRelease = depsRef.current.heldButtonRef?.current || depsRef.current.heldButton;
             const canFastReleaseJoystick = activePointersRef.current.size === 0
@@ -1319,15 +1344,16 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         const onContextMenu = (e: MouseEvent) => {
             e.preventDefault();
             if (mapLookActivatedRef.current || lastMapPointerTypeRef.current === 'touch') return;
-            const { screenToWorld, getRoomAt } = hitTestRef.current;
+            const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
             const world = screenToWorld(e.clientX, e.clientY);
             const clickedRoomId = getRoomAt(world.x, world.y);
+            const clickedMarkerId = getMarkerAt(world.x, world.y);
+            if (clickedMarkerId) { depsRef.current.onEditMarker?.(clickedMarkerId); return; }
+            if (!clickedRoomId && depsRef.current.mode !== 'edit') return;
 
             // Right-click should offer a choice (Walk Here / Room Info / ...) via
             // the context menu rather than jumping straight into the info card.
-            // In play mode an empty-space right-click has no actions, so skip it
-            // (edit mode still offers Add Room / Add Marker on empty space).
-            if (!clickedRoomId && depsRef.current.mode !== 'edit') return;
+            // Empty-space menus also expose the saved marker manager in play mode.
 
             const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
             const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
@@ -1342,7 +1368,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 y: Math.min(Math.max(localY, 8), maxY),
                 wx: Math.round(world.x / GRID_SIZE),
                 wy: Math.round(world.y / GRID_SIZE),
-                roomId: clickedRoomId
+                roomId: clickedRoomId,
+                markerId: clickedMarkerId
             });
             depsRef.current.playClickSound?.();
         };

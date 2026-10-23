@@ -127,8 +127,8 @@ describe('ThisIsYouConsole Component', () => {
         // Tier 1: Identity & Bio
         expect(screen.getByText('Ellessar')).toBeDefined();
         expect(screen.getByText('Lv.104')).toBeDefined();
-        expect(screen.getByText(/6' 2"/)).toBeDefined();
         expect(screen.getByText('1,500')).toBeDefined();
+        expect(screen.queryByText(/Height:|Age:|War Fame:/i)).toBeNull();
 
         // Tier 2: Numerical Vitals & Capabilities
         expect(screen.getByText('437 / 437')).toBeDefined();
@@ -200,13 +200,8 @@ describe('ThisIsYouConsole Component', () => {
         const expandBtn = screen.getByRole('button', { name: /Expand character panel/i });
         expect(expandBtn).toBeDefined();
 
-        // Exactly the top row items are displayed (War Fame, Height, Age, Gold, Progression)
-        expect(screen.getByText(/War Fame:/i)).toBeDefined();
-        expect(screen.getByText('12')).toBeDefined();
-        expect(screen.getByText(/Height:/i)).toBeDefined();
-        expect(screen.getByText('6\' 2"')).toBeDefined();
-        expect(screen.getByText(/Age:/i)).toBeDefined();
-        expect(screen.getByText('500')).toBeDefined();
+        // The compact header keeps gold and progression without extra profile fields.
+        expect(screen.queryByText(/War Fame:|Height:|Age:/i)).toBeNull();
         expect(screen.getByText(/XP:/i)).toBeDefined();
         expect(screen.getByText(/TP:/i)).toBeDefined();
 

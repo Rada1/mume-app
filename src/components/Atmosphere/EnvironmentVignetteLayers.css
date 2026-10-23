@@ -1,0 +1,69 @@
+/** @file EnvironmentVignetteLayers.css -- One opacity blend for complete corner vignettes. */
+
+/* --- Isolated, premultiplied cross-fade --- */
+.environment-root.front > .environment-vignette-layers {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+    isolation: isolate;
+    transition: none !important;
+}
+
+.environment-vignette-layers > .environment-vignette-transition-layer {
+    position: absolute;
+    inset: 0;
+    mix-blend-mode: plus-lighter;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* The frame clock owns the entire fade; child CSS must not continue fading afterward. */
+.environment-vignette-scene .client-vignette-overlay,
+.environment-vignette-scene .client-corner-light-overlay,
+.environment-vignette-scene .client-corner-light-overlay::before,
+.environment-vignette-scene .client-corner-light-overlay::after {
+    transition: none !important;
+}
+
+/* --- Static palettes --- */
+.environment-root.front .environment-vignette-transition-layer.vignette-state-sun .client-vignette-overlay,
+.environment-root.front .environment-vignette-transition-layer.vignette-state-moon .client-vignette-overlay,
+.environment-root.front .environment-vignette-transition-layer.vignette-state-none .client-vignette-overlay,
+.environment-root.front .environment-vignette-transition-layer.vignette-state-normal .client-vignette-overlay {
+    background: radial-gradient(ellipse at center,
+        transparent 26%,
+        rgba(0, 0, 0, 0.24) 52%,
+        rgba(0, 0, 0, 0.62) 100%
+    ) !important;
+}
+
+.environment-root.front .environment-vignette-transition-layer.vignette-state-dark .client-vignette-overlay {
+    background: radial-gradient(ellipse 56% 58% at 100% 0%,
+        rgba(30, 39, 58, 0.68) 0%,
+        rgba(24, 32, 48, 0.32) 44%,
+        transparent 94%
+    ) !important;
+}
+
+.environment-root.front .environment-vignette-transition-layer.vignette-state-dark.is-indoor .client-vignette-overlay {
+    background: radial-gradient(ellipse 56% 58% at 100% 0%,
+        rgba(0, 0, 0, 0.68) 0%,
+        rgba(0, 0, 0, 0.32) 44%,
+        transparent 94%
+    ) !important;
+}
+
+.environment-root.front .environment-vignette-transition-layer.vignette-state-artificial .client-vignette-overlay {
+    background: radial-gradient(ellipse 56% 58% at 100% 100%,
+        rgba(104, 48, 5, 0.62) 0%,
+        rgba(82, 38, 8, 0.28) 42%,
+        transparent 94%
+    ) !important;
+}
+
+.environment-root.front .environment-vignette-transition-layer.vignette-state-artificial.has-night-sky .client-vignette-overlay {
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 0%, rgba(30, 39, 58, 0.68) 0%, rgba(24, 32, 48, 0.32) 44%, transparent 94%),
+        radial-gradient(ellipse 56% 58% at 100% 100%, rgba(104, 48, 5, 0.62) 0%, rgba(82, 38, 8, 0.28) 42%, transparent 94%) !important;
+}

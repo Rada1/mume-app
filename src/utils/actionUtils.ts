@@ -17,6 +17,15 @@ export interface ActionFilterDeps {
     currentTerrain?: string;
 }
 
+// --- Trait Eligibility Section ---
+// Prepare once per target/rebuild; never retain this across changes to the input data.
+export const getEligibleActionButtonIds = (categoryId: string, name: string | null, deps: ActionFilterDeps): ReadonlySet<string> => {
+    const sections = getResolvedTraitSections(categoryId, name, deps.inlineCategories || []);
+    return new Set(getButtonIdsForTraits(sections
+        .filter(section => isButtonEligibleForCharacter(section.trait.requirement, deps.characterInfo))
+        .map(section => section.trait)));
+};
+
 /**
  * Checks if a specific button is valid for a given entity based on MUME rules.
  * Category is authoritative; location is derived from category.
@@ -27,23 +36,16 @@ export function isButtonValidForEntity(
     categoryId: string,
     deps: ActionFilterDeps,
     legacySetId?: string,
-    context?: string
+    context?: string,
+    preparedTraitButtons?: ReadonlySet<string>
 ): boolean {
-    const { inlineCategories, roomNpcs, entities } = deps;
+    const { roomNpcs, entities } = deps;
     const entity = entities[entityId];
     const resolvedCategoryId = normalizeInlineCategoryId(categoryId || legacySetId || entity?.category);
     const axes = getInlineCategoryAxes(resolvedCategoryId, entity?.location);
 
     // --- STEP 1: Determine Relevant Traits ---
-    const resolvedTraitSections = getResolvedTraitSections(
-        resolvedCategoryId,
-        entity?.name || context || null,
-        inlineCategories || []
-    );
-    const eligibleTraitSections = resolvedTraitSections.filter(section =>
-        isButtonEligibleForCharacter(section.trait.requirement, deps.characterInfo)
-    );
-    const traitButtons = new Set(getButtonIdsForTraits(eligibleTraitSections.map(section => section.trait)));
+    const traitButtons = preparedTraitButtons ?? getEligibleActionButtonIds(resolvedCategoryId, entity?.name || context || null, deps);
 
     // --- STEP 2: Main Set Validation ---
     // Resolved traits are authoritative for inline actions.
@@ -51,6 +53,8 @@ export function isButtonValidForEntity(
     if (!isButtonEligibleForCharacter(button.requirement, deps.characterInfo)) return false;
 
     // --- STEP 3: MUME Specific Rule Overrides ---
+    if (button.id === 'btn-saddle-mount' && resolvedCategoryId !== 'cat-inventory-object') return false;
+    if (button.id === 'btn-saddle-unsaddle' && resolvedCategoryId !== 'cat-mount-object') return false;
     // These rules prune buttons that are physically impossible in the current context
     
     const location = axes.location;
@@ -172,7 +176,8 @@ export function getCommonActions(
         const categoryId = providedCategory || entity?.category || baseSetId;
         const axes = getInlineCategoryAxes(categoryId, providedLocation || entity?.location);
         
-        return deps.buttons.filter(b => isButtonValidForEntity(b, id, axes.categoryId, deps, baseSetId));
+        const traitButtons = getEligibleActionButtonIds(axes.categoryId, entity?.name || null, deps);
+        return deps.buttons.filter(b => isButtonValidForEntity(b, id, axes.categoryId, deps, baseSetId, undefined, traitButtons));
     });
 
     // Find the intersection of button commands

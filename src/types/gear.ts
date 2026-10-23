@@ -57,6 +57,8 @@ export interface GearSelectionActionsProps {
     recipients: GearRecipient[];
     onRun: (action: GearSelectionAction, destinationNoun?: string) => void;
     onClear: () => void;
+    className?: string;
+    showCommandSyntax?: boolean;
 }
 
 export interface GearContainerContentsProps {
@@ -69,4 +71,11 @@ export interface GearContainerContentsProps {
     getScopeCount: (items: GearSelectionItem[]) => number;
     onSelectAll: (items: GearSelectionItem[]) => void;
     renderChild: (item: GearSelectionItem, levelItems: GearSelectionItem[]) => ReactNode;
+}
+
+// --- Shared Item Presentation ---
+export interface GearItemLabelProps {
+    row: GearRow;
+    category: string;
+    showSlot?: boolean;
 }

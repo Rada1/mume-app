@@ -12,7 +12,6 @@ import { CircularVitals } from './CircularVitals';
 import { useTacticalTargeting } from './useTacticalTargeting';
 import { TacticalCommandPanel } from './TacticalCommandPanel';
 import { useSwipeWheelCellDialogStore } from '../../../stores/useSwipeWheelCellDialogStore';
-import { ThisIsYouConsole } from '../../HUD/ThisIsYouConsole';
 import { ShopTargetMenu } from '../../Shop/ShopTargetMenu';
 import { RightActionPanel } from '../../HUD/RightActionPanel';
 import { useGameButtonTargetSuggestions } from './useGameButtonTargetSuggestions';
@@ -1378,10 +1377,10 @@ export const GameButton: React.FC<GameButtonProps> = ({
                 activeTarget={/^assist(?:\s|$)/i.test(targetCommand.trim()) ? null : target} targetChipTarget={wheelTargetChipTarget} selectedTarget={displayedSelectedTarget}
                 selectedDirection={tacticalTargeting.pendingDirection}
                 directionPadMode={directionPadMode} suggestions={targetSuggestions}
-                title={targetMenu.showsStatusPanel || targetMenu.kind || targetMenu.title !== 'TARGETS' ? targetMenu.title : 'NO TARGET REQUIRED'} characterName={characterName || ''}
+                title={targetMenu.kind || targetMenu.title !== 'TARGETS' ? targetMenu.title : 'NO TARGET REQUIRED'} characterName={characterName || ''}
                 customContent={targetMenu.showsPracticePanel
                     ? <RightActionPanel skillsOnly embedded />
-                    : targetMenu.showsStatusPanel ? <ThisIsYouConsole alwaysExpanded />
+                    : targetMenu.showsStatusPanel ? undefined
                     : targetMenu.showsShopPanel ? <ShopTargetMenu
                         executeCommand={runButtonCommand}
                         selectedTarget={displayedSelectedTarget}

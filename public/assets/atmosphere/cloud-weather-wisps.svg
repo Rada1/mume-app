@@ -1,0 +1,73 @@
+<!-- @file cloud-weather-wisps.svg — Broken cloud banks using the rain ceiling texture with lighter detail. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="veil" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#3b4655" stop-opacity=".2"/>
+      <stop offset=".55" stop-color="#66727e" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#283545" stop-opacity=".22"/>
+    </linearGradient>
+    <linearGradient id="cloud-shadow" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#263240"/>
+      <stop offset=".52" stop-color="#3d4958"/>
+      <stop offset="1" stop-color="#596571"/>
+    </linearGradient>
+    <linearGradient id="cloud-body" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#7e8994"/>
+      <stop offset=".48" stop-color="#626e7b"/>
+      <stop offset="1" stop-color="#3f4c5b"/>
+    </linearGradient>
+    <linearGradient id="cloud-light" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#a0aab2"/>
+      <stop offset="1" stop-color="#697582"/>
+    </linearGradient>
+    <filter id="broad-masses" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".003 .02" numOctaves="4" seed="17" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5 0 0 0 -2.2" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="13 8" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+    <filter id="rolling-texture" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".007 .04" numOctaves="4" seed="31" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5.5 0 0 0 -2.6" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="5 3" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+    <filter id="fine-texture" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".02 .075" numOctaves="3" seed="8" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  5 0 0 0 -2.4" result="mask"/>
+      <feGaussianBlur in="mask" stdDeviation="2 1.5" result="soft-mask"/>
+      <feComposite in="SourceGraphic" in2="soft-mask" operator="in"/>
+    </filter>
+    <!-- Broad noise islands create open sky between banks, with dense cores and misty margins. -->
+    <filter id="bank-breaks" x="-8%" y="-12%" width="116%" height="124%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency=".002 .016" numOctaves="2" seed="43" result="bank-noise"/>
+      <feColorMatrix in="bank-noise" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  12 0 0 0 -5.8"/>
+      <feGaussianBlur stdDeviation="9 7"/>
+    </filter>
+    <mask id="broken-banks" maskUnits="userSpaceOnUse" x="0" y="0" width="960" height="540">
+      <rect width="960" height="540" fill="white" filter="url(#bank-breaks)"/>
+    </mask>
+    <!-- Fade both ends to open sky so adjacent drifting tiles cannot form a hard seam. -->
+    <linearGradient id="tile-feather" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="white" stop-opacity="0"/>
+      <stop offset=".09" stop-color="white"/>
+      <stop offset=".91" stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="soft-tile-edges" maskUnits="userSpaceOnUse" x="0" y="0" width="960" height="540">
+      <rect width="960" height="540" fill="url(#tile-feather)"/>
+    </mask>
+  </defs>
+  <!-- Rain textures sit inside separate banks rather than a continuous ceiling. -->
+  <g mask="url(#soft-tile-edges)">
+  <g mask="url(#broken-banks)">
+  <rect width="960" height="540" fill="url(#cloud-body)" opacity=".94"/>
+  <!-- Independent noise scales make soft, overlapping cloud texture without drawn puffs. -->
+  <rect width="960" height="540" fill="url(#cloud-shadow)" filter="url(#broad-masses)" opacity=".5"/>
+  <rect width="960" height="540" fill="url(#cloud-body)" filter="url(#rolling-texture)" opacity=".3"/>
+  <rect width="960" height="540" fill="url(#cloud-light)" filter="url(#fine-texture)" opacity=".1"/>
+  </g>
+  </g>
+</svg>
+
+

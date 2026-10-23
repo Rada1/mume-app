@@ -17,22 +17,22 @@ import { useStatDeltas } from '../../hooks/useStatDeltas';
 import { useCharacterConditions } from '../../hooks/useCharacterConditions';
 import { useCharacterInfoRefresh } from '../../hooks/useCharacterInfoRefresh';
 import { useCharacterPanelVitalsRefresh } from '../../hooks/useCharacterPanelVitalsRefresh';
+import { useVitalsScoreSnapshot } from '../../hooks/useVitalsScoreSnapshot';
 import { useSwipeDownToMinimize } from '../../hooks/useSwipeDownToMinimize';
 import { useSwipeUpToExpand } from '../../hooks/useSwipeUpToExpand';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
-import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useCharacterPanelStore } from '../../stores/useCharacterPanelStore';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { getVitalPercent } from '../../utils/vitalStatus';
 import { applyTacticalCommandPrefix, useTacticalCommandPrefixStore } from '../../stores/useTacticalCommandPrefixStore';
 import { ThisIsYouVitalsTier } from './ThisIsYouVitalsTier';
 import { StatDelta } from './StatDelta';
 import { TerminalProgression } from './TerminalProgression';
 import { ThisIsYouStatePill, StateOption } from './ThisIsYouStatePill';
 import {
-    formatHeight,
     formatNumber,
-    getNextWimpyPreset,
     POSITION_OPTIONS,
     ALERTNESS_OPTIONS,
     MOOD_OPTIONS,
@@ -42,6 +42,7 @@ import './ThisIsYouConsole.css';
 import './ThisIsYouTerminal.css';
 import './ThisIsYouMobile.css';
 import './ThisIsYouMinimizedMobile.css';
+import './ThisIsYouDesktop.css';
 
 interface ThisIsYouConsoleProps {
     alwaysExpanded?: boolean;
@@ -130,14 +131,16 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     }, [alwaysExpanded, panelIsMinimized, viewport?.isMobile]);
 
     const vitals = useActiveVitals();
-    const { displayEqLines, spectateBuffer } = useUI();
+    const { displayEqLines, scoreLines, spectateBuffer } = useUI();
+    const scoreSnapshotScope = isSpectateMode
+        ? `spectate:${viewingSpectateTarget ? spectateTarget || '' : 'self'}`
+        : characterInfo?.name || characterName || '';
+    const { snapshot: scoreSnapshot, isRequesting: isRequestingVitalsScore, requestScore } =
+        useVitalsScoreSnapshot(scoreLines, executeCommand, scoreSnapshotScope);
+    const [isVitalsRefreshHeld, setIsVitalsRefreshHeld] = useState(false);
+    useEffect(() => setIsVitalsRefreshHeld(false), [scoreSnapshotScope]);
     const activeTimers = useActiveEffectTimers();
-    const [displayWimpy, setDisplayWimpy] = useState<number | null>(vitals.wimpy ?? null);
     const [conditionNow, setConditionNow] = useState(Date.now());
-
-    useEffect(() => {
-        setDisplayWimpy(vitals.wimpy ?? null);
-    }, [vitals.wimpy]);
 
     useEffect(() => {
         const interval = window.setInterval(() => setConditionNow(Date.now()), 1000);
@@ -150,8 +153,8 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
     const displayedMood = viewingSpectateTarget ? vitals.mood : mood;
     const displayedSpellSpeed = viewingSpectateTarget ? vitals.spellEffort : spellSpeed;
 
-    const refreshCharacterInfo = useCharacterInfoRefresh(
-        characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand, !alwaysExpanded
+    useCharacterInfoRefresh(
+        characterInfo?.name || characterName || '', gameState === 'playing' && !isSpectateMode, executeCommand, false
     );
     useCharacterPanelVitalsRefresh(
         panelIsMinimized,
@@ -246,26 +249,27 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
         gold: characterInfo?.gold ?? null, xp: characterInfo?.xp ?? null, tp: characterInfo?.tp ?? null,
         hp: vitals.hp ?? null, mana: vitals.mana ?? null, move: vitals.move ?? null,
         ob: vitals.ob ?? null, pb: vitals.pb ?? null, db: vitals.db ?? null,
-        armour: vitals.armour ?? null, wimpy: vitals.wimpy ?? null
+        armour: vitals.armour ?? null
     }), [characterInfo?.gold, characterInfo?.xp, characterInfo?.tp, vitals.hp, vitals.mana,
-        vitals.move, vitals.ob, vitals.pb, vitals.db, vitals.armour, vitals.wimpy]);
+        vitals.move, vitals.ob, vitals.pb, vitals.db, vitals.armour]);
+    const gmcpVitals = vitals.gmcpVitals;
+    const vitalPercentages = {
+        health: getVitalPercent('health', gmcpVitals.maxHp > 0 ? gmcpVitals.hp : vitals.hp, gmcpVitals.maxHp > 0 ? gmcpVitals.maxHp : vitals.maxHp, vitals.hpStatus),
+        mana: getVitalPercent('mana', gmcpVitals.maxMana > 0 ? gmcpVitals.mana : vitals.mana, gmcpVitals.maxMana > 0 ? gmcpVitals.maxMana : vitals.maxMana, vitals.manaStatus),
+        move: getVitalPercent('move', gmcpVitals.maxMove > 0 ? gmcpVitals.move : vitals.move, gmcpVitals.maxMove > 0 ? gmcpVitals.maxMove : vitals.maxMove, vitals.moveStatus)
+    };
     const deltas = useStatDeltas(characterInfo?.name || characterName || '', statValues);
     const movementModes = getMovementModeActions(vitals);
-    const handleWimpyChange = () => {
-        const nextPreset = getNextWimpyPreset(displayWimpy ?? 0, vitals.maxHp ?? 0);
-        if (!nextPreset || isSpectateMode) return;
-        setDisplayWimpy(nextPreset.value);
-        triggerHaptic(15);
-        executeCommand(nextPreset.value === 0
-            ? 'cha wimpy 0'
-            : `change wimpy ${nextPreset.value}`);
-    };
-    const handleVitalsRefresh = () => {
+    const movementToggles = movementModes.filter(mode => mode.isToggle);
+    const activeMovementStatuses = movementModes.filter(mode => !mode.isToggle && mode.active);
+    const beginVitalsRefresh = () => {
         if (gameState !== 'playing' || isSpectateMode) return;
+        setIsVitalsRefreshHeld(true);
+        if (isRequestingVitalsScore) return;
         triggerHaptic(10);
-        executeCommand('score', true, true, true, true);
-        window.setTimeout(refreshCharacterInfo, 3000);
+        requestScore();
     };
+    const endVitalsRefresh = () => setIsVitalsRefreshHeld(false);
 
     const handleHeaderClick = () => {
         if (alwaysExpanded) return;
@@ -305,49 +309,34 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 <span className="this-is-you-level-tag">Lv.{level}</span>
                 <strong className="this-is-you-name">{name}</strong>
                 <span className="this-is-you-subtext">{ancestry}{subclass}</span>
-                <span className="this-is-you-bio-item this-is-you-desktop-detail">Height: <strong>{formatHeight(characterInfo?.height)}</strong></span>
-                <span className="this-is-you-bio-item this-is-you-desktop-detail">Age: <strong>{characterInfo?.age || '—'}</strong></span>
                 <span className="this-is-you-bio-item">Gold: <strong className="gold">{formatNumber(characterInfo?.gold)}</strong><StatDelta delta={deltas.gold} /></span>
-                <span className="this-is-you-bio-item this-is-you-desktop-detail">War Fame: <strong className="cyan" title="War fame from info %K">{formatNumber(characterInfo?.warPoints ?? characterInfo?.warFame)}</strong></span>
               </div>
 
               <div className="this-is-you-identity-actions">
                 <TerminalProgression characterName={name}
                   xp={characterInfo?.xp} tp={characterInfo?.tp}
-                  tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl} />
-                {!panelIsMinimized && <button
-                  type="button"
-                  className="this-is-you-refresh-button"
-                  aria-label="Refresh score"
-                  title="Refresh score"
-                  disabled={gameState !== 'playing' || isSpectateMode}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleVitalsRefresh();
-                  }}
-                >
-                  <RefreshCw size={16} aria-hidden="true" />
-                </button>}
+                  tnl={characterInfo?.tnl} tpnl={characterInfo?.tpnl}
+                  sessionKey={isSpectateMode ? scoreSnapshotScope : `player:${scoreSnapshotScope}`} />
                 {!alwaysExpanded && <span className="this-is-you-expand-indicator" aria-hidden="true">
                   {panelIsMinimized ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </span>}
               </div>
             </div>
 
-            <div className="this-is-you-minimized-summary" aria-label="Combat and state summary">
-              <div className="this-is-you-minimized-summary-group" aria-label="Combat">
-                <strong>COMBAT</strong>
-                <span>Off <b>{vitals.ob ?? '—'}</b></span>
-                <span>Parry <b>{vitals.pb ?? '—'}</b></span>
-                <span>Dodge <b>{vitals.db ?? '—'}</b></span>
-                <span>Armor <b>{vitals.armour ?? '—'}</b></span>
-              </div>
+            <div className="this-is-you-minimized-summary" aria-label="State and combat summary">
               <div className="this-is-you-minimized-summary-group" aria-label="State">
                 <strong>STATE</strong>
                 <ThisIsYouStatePill category="Position" accentColor="blue" value={currentPosition} options={POSITION_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} isCommandPrefixPending={Boolean(pendingCommandPrefix)} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('pos', opt)} />
                 <ThisIsYouStatePill category="Mood" accentColor="red" value={currentMood} options={MOOD_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} confirmOptionValue="berserk" confirmMessage="Berserk prevents fleeing. Tap Berserk again within 4 seconds to confirm." disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('mood', opt)} />
-                <ThisIsYouStatePill category="Cast" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
-                <ThisIsYouStatePill category="Alert" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
+                <ThisIsYouStatePill category="Cast Speed" accentColor="purple" value={currentSpellSpeed} options={SPELL_SPEED_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('speed', opt)} />
+                <ThisIsYouStatePill category="Alertness" accentColor="gold" value={currentAlertness} options={ALERTNESS_OPTIONS} isMobile={Boolean(viewport?.isMobile)} isCompact={panelIsMinimized && !viewport?.isMobile} disabled={isSpectateMode} onInteract={() => triggerHaptic(15)} onSelect={opt => handleStateSelect('alert', opt)} />
+              </div>
+              <div className="this-is-you-minimized-summary-group" aria-label="Combat stats">
+                <strong>COMBAT STATS</strong>
+                <span><span className="this-is-you-combat-label" title="Offense">Offense:</span><b>{vitals.ob ?? '—'}</b></span>
+                <span><span className="this-is-you-combat-label" title="Parry">Parry:</span><b>{vitals.pb ?? '—'}</b></span>
+                <span><span className="this-is-you-combat-label" title="Dodge">Dodge:</span><b>{vitals.db ?? '—'}</b></span>
+                <span><span className="this-is-you-combat-label" title="Armor">Armor:</span><b>{vitals.armour ?? '—'}</b></span>
               </div>
             </div>
 
@@ -356,21 +345,22 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
 
             {/* TIER 2: Vitals & Combat Capabilities (Attack, Dodge, Parry, Armor) */}
             <ThisIsYouVitalsTier
-                hp={vitals.hp}
-                maxHp={vitals.maxHp}
-                mana={vitals.mana}
-                maxMana={vitals.maxMana}
-                move={vitals.move}
-                maxMove={vitals.maxMove}
+                hpStatus={vitals.hpStatus}
+                manaStatus={vitals.manaStatus}
+                moveStatus={vitals.moveStatus}
                 ob={vitals.ob}
                 pb={vitals.pb}
                 db={vitals.db}
                 armour={vitals.armour}
-                wimpy={displayWimpy}
-                onWimpyChange={handleWimpyChange}
-                canAdjustWimpy={!isSpectateMode && (vitals.maxHp ?? 0) > 0}
                 regen={regen}
                 deltas={deltas}
+                vitalPercentages={vitalPercentages}
+                scoreSnapshot={isVitalsRefreshHeld ? scoreSnapshot : null}
+                isVitalsRefreshHeld={isVitalsRefreshHeld}
+                isVitalsRefreshDisabled={panelIsMinimized || gameState !== 'playing' || isSpectateMode}
+                isRequestingVitalsScore={isRequestingVitalsScore}
+                onVitalsRefreshStart={beginVitalsRefresh}
+                onVitalsRefreshEnd={endVitalsRefresh}
             />
 
             {/* TIER 3: Category-Explicit State Pills + Self-Describing Buffs */}
@@ -423,20 +413,25 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 />
               </div>
             </div>
-            <div className="this-is-you-tier-modes" role="group" aria-label="Movement and stealth">
-              {movementModes.map(mode => (
+            <div className="this-is-you-tier-modes" role="group" aria-label="Movement modes">
+              {movementToggles.map(mode => (
                 <button
                   key={mode.id}
                   type="button"
-                  className="this-is-you-mode-row"
-                  aria-label={`${mode.label} ${mode.active ? 'on' : 'off'}. Click to toggle.`}
+                  className={`this-is-you-mode-toggle${mode.active ? ' is-active' : ''}`}
+                  aria-label={`${mode.label} toggle is ${mode.active ? 'on' : 'off'}. Click to toggle.`}
                   aria-pressed={mode.active}
-                  title={`Send: ${mode.command}`}
+                  title={`Turn ${mode.label.toLowerCase()} ${mode.active ? 'off' : 'on'}`}
                   disabled={isSpectateMode}
                   onClick={() => { triggerHaptic(15); executeCommand(mode.command); }}
                 >
                   <span>{mode.label}</span><strong>{mode.active ? 'On' : 'Off'}</strong>
                 </button>
+              ))}
+              {activeMovementStatuses.map(mode => (
+                <span key={mode.id} className="this-is-you-mode-indicator">
+                  {mode.statusLabel}
+                </span>
               ))}
             </div>
             <div className="this-is-you-buffs-row" aria-label="Active buffs and affects">
@@ -467,11 +462,8 @@ export const ThisIsYouConsole: FC<ThisIsYouConsoleProps> = ({ alwaysExpanded = f
                 aria-hidden="true"
                 style={{ height: `${mobileSheetPlaceholderHeightRef.current}px` }}
             />
-            {createPortal(
-                consolePanel,
-                mobileSheetPortalHost
-            )}
-        </>
+            {createPortal(consolePanel, mobileSheetPortalHost)}
+          </>
         : consolePanel;
 };
 

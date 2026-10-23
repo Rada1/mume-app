@@ -10,6 +10,8 @@ const HEALTH_MIX_RAMP_SECONDS = 0.28;
 const HEALTH_MUSIC_AT_WOUNDED = 0.28;
 const HEALTH_MUSIC_AT_BAD = 0.2;
 const HEALTH_MUSIC_AT_AWFUL = 0.1;
+const WATER_TERRAIN_ECHO_DELAY_SECONDS = 0.24;
+const WATER_TERRAIN_ECHO_GAIN = 0.14;
 const MOVEMENT_EFFECT_KEYS = new Set(['move', 'watermove', 'event-move', 'ride', 'stopriding']);
 const MAX_EFFECT_CACHE_BYTES = 16 * 1024 * 1024;
 const MAX_AMBIENT_CACHE_BYTES = 64 * 1024 * 1024;
@@ -33,13 +35,14 @@ export interface AmbientOptions {
     loop?: boolean;
 }
 
-type AmbientType = 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath';
+export type AmbientType = 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation' | 'heartbeat' | 'breath';
 
-interface ActiveAmbient {
+export interface ActiveAmbient {
     type: AmbientType;
     source: AudioBufferSourceNode;
     gain: GainNode;
     filter?: BiquadFilterNode;
+    extraNodes?: AudioNode[];
     url: string;
     key: string;
     pauseOffset: number;
@@ -133,6 +136,10 @@ export class AudioManager {
         this.zoneEndedListeners.delete(listener);
     }
 
+    public getActiveAmbient(type: AmbientType): ActiveAmbient | undefined {
+        return this.activeAmbients.get(type);
+    }
+
     public init() {
         if (!this.audioCtx) {
             const audioWindow = window as Window & { webkitAudioContext?: typeof AudioContext };
@@ -211,12 +218,19 @@ export class AudioManager {
         baseVolume: number,
         isMusic: boolean = false,
         isDrum: boolean = false,
-        volumeOverride?: number
+        volumeOverride?: number,
+        effectChannel: 'game' | 'ui' = 'game'
     ): number {
         const settings = useSettingsStore.getState();
         // Map linear slider values [0, 1] to exponential curve for natural volume perception
         const master = Math.pow(settings.masterVolume, 2);
-        const channelVolume = volumeOverride ?? (isDrum ? settings.drumVolume : isMusic ? settings.musicVolume : settings.sfxVolume);
+        const channelVolume = volumeOverride ?? (isDrum
+            ? settings.drumVolume
+            : isMusic
+                ? settings.musicVolume
+                : effectChannel === 'ui'
+                    ? settings.uiVolume
+                    : settings.sfxVolume);
         const subVolume = Math.pow(channelVolume, 2);
         return baseVolume * master * subVolume * SHARED_AUDIO_OUTPUT_GAIN;
     }
@@ -258,6 +272,10 @@ export class AudioManager {
         if (normalized === 'WATER' || normalized === 'RIVER') return 'WATER';
         if (normalized === 'ROAD' || normalized === 'BRUSH') return 'FIELD';
         return normalized;
+    }
+
+    private isWaterTerrain(key: string): boolean {
+        return this.normalizeTerrainKey(key) === 'WATER';
     }
 
     private updateActiveVolumes(rampSeconds: number = 0.08) {
@@ -365,7 +383,7 @@ export class AudioManager {
             source.playbackRate.value = basePitch + jitter;
 
             const gainNode = ctx.createGain();
-            gainNode.gain.value = this.getEffectiveVolume(baseVol, false);
+            gainNode.gain.value = this.getEffectiveVolume(baseVol, false, false, undefined, config.channel);
             if (options?.filterFrequency) {
                 const filter = ctx.createBiquadFilter();
                 filter.type = 'lowpass';
@@ -454,21 +472,20 @@ export class AudioManager {
 
         const active = this.activeAmbients.get(type);
         if (active && active.url === urlToPlay) {
-            // Already playing this, just update volume/filter if zone
-            if (type === 'zone') {
-                 active.baseVolume = targetVolume;
-                 if (active.filter) {
-                     const f = active.filter.frequency;
-                     f.cancelScheduledValues(this.audioCtx.currentTime);
-                     f.setValueAtTime(f.value, this.audioCtx.currentTime);
-                     f.exponentialRampToValueAtTime(inCombat ? 500 : 20000, this.audioCtx.currentTime + 1.5);
-                 }
-                 const g = active.gain.gain;
-                 g.cancelScheduledValues(this.audioCtx.currentTime);
-                 g.setValueAtTime(g.value, this.audioCtx.currentTime);
-                 const updatedActive = { ...active, baseVolume: targetVolume };
-                 g.linearRampToValueAtTime(this.getActiveAmbientVolume(updatedActive), this.audioCtx.currentTime + HEALTH_MIX_RAMP_SECONDS);
+            // Already playing this, just update volume/filter where state can change.
+            active.baseVolume = targetVolume;
+            if (type === 'zone' && active.filter) {
+                const f = active.filter.frequency;
+                f.cancelScheduledValues(this.audioCtx.currentTime);
+                f.setValueAtTime(f.value, this.audioCtx.currentTime);
+                const targetFrequency = inCombat ? 500 : 20000;
+                f.exponentialRampToValueAtTime(targetFrequency, this.audioCtx.currentTime + 1.5);
             }
+            const g = active.gain.gain;
+            g.cancelScheduledValues(this.audioCtx.currentTime);
+            g.setValueAtTime(g.value, this.audioCtx.currentTime);
+            const updatedActive = { ...active, baseVolume: targetVolume };
+            g.linearRampToValueAtTime(this.getActiveAmbientVolume(updatedActive), this.audioCtx.currentTime + HEALTH_MIX_RAMP_SECONDS);
             return;
         }
 
@@ -477,7 +494,8 @@ export class AudioManager {
         if (this.ambientRequestTokens.get(type) !== myToken) return;
 
         // Crossfade logic
-        this.crossFadeAmbient(type, urlToPlay, key, buffer, targetVolume, isLoop, inCombat ? 500 : 20000);
+        const filterFrequency = type === 'zone' ? (inCombat ? 500 : 20000) : undefined;
+        this.crossFadeAmbient(type, urlToPlay, key, buffer, targetVolume, isLoop, filterFrequency);
     }
 
     public stopAccountMusic(): void {
@@ -500,7 +518,7 @@ export class AudioManager {
 
         const oldActive = this.activeAmbients.get(type);
         if (oldActive) {
-            this.fadeOutAndStop(oldActive.source, oldActive.gain, oldActive.filter, fadeTime);
+            this.fadeOutAndStop(oldActive.source, oldActive.gain, oldActive.filter, fadeTime, oldActive.extraNodes);
         }
 
         const source = ctx.createBufferSource();
@@ -510,6 +528,7 @@ export class AudioManager {
         let lastNode: AudioNode = source;
 
         let filter: BiquadFilterNode | undefined;
+        const isWaterTerrain = type === 'terrain' && this.isWaterTerrain(key);
         if (type === 'zone' && filterFreq) {
             filter = ctx.createBiquadFilter();
             filter.type = 'lowpass';
@@ -529,6 +548,18 @@ export class AudioManager {
         const targetGain = this.getEffectiveVolume(targetVolume, isMusic)
             * (type === 'zone' ? this.getHealthMusicVolumeMultiplier() : 1);
         gain.gain.linearRampToValueAtTime(targetGain, ctx.currentTime + fadeTime);
+
+        const extraNodes: AudioNode[] = [];
+        if (isWaterTerrain) {
+            const echoDelay = ctx.createDelay();
+            echoDelay.delayTime.value = WATER_TERRAIN_ECHO_DELAY_SECONDS;
+            const echoGain = ctx.createGain();
+            echoGain.gain.value = WATER_TERRAIN_ECHO_GAIN;
+            lastNode.connect(echoDelay);
+            echoDelay.connect(echoGain);
+            echoGain.connect(gain);
+            extraNodes.push(echoDelay, echoGain);
+        }
 
         lastNode.connect(gain);
         gain.connect(ctx.destination);
@@ -556,6 +587,7 @@ export class AudioManager {
             source,
             gain,
             filter,
+            extraNodes,
             url: urlToPlay,
             key,
             pauseOffset: startOffset % buffer.duration,
@@ -568,7 +600,7 @@ export class AudioManager {
     private stopAmbient(type: 'terrain' | 'weather' | 'zone' | 'drum' | 'incantation', fadeDuration?: number) {
         const active = this.activeAmbients.get(type);
         if (active) {
-            this.fadeOutAndStop(active.source, active.gain, active.filter, fadeDuration ?? (type === 'drum' ? HEALTH_MIX_RAMP_SECONDS : 2.0));
+            this.fadeOutAndStop(active.source, active.gain, active.filter, fadeDuration ?? (type === 'drum' ? HEALTH_MIX_RAMP_SECONDS : 2.0), active.extraNodes);
             this.activeAmbients.delete(type);
         }
     }
@@ -581,7 +613,7 @@ export class AudioManager {
         this.stopAmbient('incantation');
     }
 
-    private fadeOutAndStop(source: AudioBufferSourceNode, gain: GainNode, filter?: BiquadFilterNode, fadeDuration: number = 2.0) {
+    private fadeOutAndStop(source: AudioBufferSourceNode, gain: GainNode, filter?: BiquadFilterNode, fadeDuration: number = 2.0, extraNodes: AudioNode[] = []) {
         if (!this.audioCtx) return;
         const ctx = this.audioCtx;
         try {
@@ -595,6 +627,7 @@ export class AudioManager {
                 source.stop();
                 source.disconnect();
                 if (filter) filter.disconnect();
+                extraNodes.forEach(node => node.disconnect());
                 gain.disconnect();
             } catch (e) { }
         }, fadeDuration * 1000 + 100);

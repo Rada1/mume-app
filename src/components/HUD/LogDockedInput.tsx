@@ -5,7 +5,7 @@
 
 // --- Logic Section ---
 import React, { FC, useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { Repeat, Target } from 'lucide-react';
+import { Crosshair, Repeat, Send, X } from 'lucide-react';
 import { useGame, useUI, useVitals } from '../../context/GameContext';
 import { useMapper } from '../../context/useMapper';
 import { useActiveVitals } from '../../stores/useActiveGameState';
@@ -17,9 +17,6 @@ import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
 import { getAutoRoomTarget } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
 import { getNonGroupmateRoomTargetSuggestions } from '../../utils/groupTargetSuggestions';
-import { CHAT_PARLEY_CHANNELS, getChatChannelSuggestions, getChatChannelColor, getChatTargetSuggestions } from '../../utils/chatWindowUtils';
-import { getTargetClassificationColor } from '../../utils/targetClassificationColor';
-import type { EntityColorMap } from '../../utils/inlineActionModel';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
@@ -27,16 +24,19 @@ import { CommandArgumentText } from '../Controls/CommandArgumentText';
 import { useRotatingCommandSuggestion } from '../../hooks/useRotatingCommandSuggestion';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { useAutoGrowTextarea } from '../../hooks/useAutoGrowTextarea';
+import { useDesktopCommandInputFocus } from '../../hooks/useDesktopCommandInputFocus';
 import { CommandSuggestionPopup } from '../Controls/CommandSuggestionPopup';
 import { TargetChipPicker } from './TargetChipPicker';
 import { TacticalArgumentChips } from './TacticalArgumentChips';
 import { useTacticalArgumentChipStore } from '../../stores/useTacticalArgumentChipStore';
 import './LogDockedInput.css';
+import { ParleyChannelChip } from '../Messages/ParleyChannelChip';
 
 interface LogDockedInputProps {
     handleSend: (e?: React.FormEvent) => void;
     handleInputSwipe?: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
     commandPreview?: string | null;
+    commandDockActive?: boolean;
 }
 
 const splitCommandTarget = (command: string, target: string) => {
@@ -59,7 +59,8 @@ const splitCommandTarget = (command: string, target: string) => {
 
 export const LogDockedInput: FC<LogDockedInputProps> = ({
     handleSend,
-    commandPreview
+    commandPreview,
+    commandDockActive = false
 }) => {
     const {
         viewport,
@@ -125,18 +126,14 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const tacticalArgumentChips = useTacticalArgumentChipStore(state => state.chips);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
-    const inlineCategories = useSettingsStore(s => s.inlineCategories);
-    const playerColor = useSettingsStore(s => s.playerColor);
-    const npcColor = useSettingsStore(s => s.npcColor);
-    const enemyColor = useSettingsStore(s => s.enemyColor);
-    const neutralColor = useSettingsStore(s => s.neutralColor);
-    const theme = useSettingsStore(s => s.theme);
     const loginName = useSettingsStore(s => s.loginName);
     const loginPassword = useSettingsStore(s => s.loginPassword);
     const setLoginName = useSettingsStore(s => s.setLoginName);
     const setLoginPassword = useSettingsStore(s => s.setLoginPassword);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
     const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+    useDesktopCommandInputFocus(!viewport?.isMobile, inputRef, setInput);
+    const commandInputHighlightRef = useRef<HTMLDivElement>(null);
     const { textareaRef, resizeTextarea } = useAutoGrowTextarea(
         input,
         Boolean(viewport?.isMobile) && !isPasswordMode,
@@ -145,17 +142,12 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         inputRef.current = element;
         textareaRef.current = element instanceof HTMLTextAreaElement ? element : null;
     }, [textareaRef]);
-    const parleyCommandRef = useRef<HTMLButtonElement>(null);
-    const parleyTargetRef = useRef<HTMLButtonElement>(null);
     const targetInputRef = useRef<HTMLInputElement>(null);
     const targetBadgeRef = useRef<HTMLDivElement>(null);
     const cancelTargetEditRef = useRef(false);
     const [isEditingTarget, setIsEditingTarget] = useState(false);
     const [targetDraft, setTargetDraft] = useState('');
     const [isTargetPickerOpen, setIsTargetPickerOpen] = useState(false);
-    const [openParleyPicker, setOpenParleyPicker] = useState<'channel' | 'target' | null>(null);
-    const parleyChannelSuggestions = useMemo(() => getChatChannelSuggestions(), []);
-    const parleyTargetSuggestions = useMemo(() => getChatTargetSuggestions(whoList), [whoList]);
     const commandInputWrapRef = useRef<HTMLDivElement>(null);
     const blurTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -218,6 +210,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const {
         commandTextParts,
+        commandTextColor,
         mumeCommandMatch,
         showCompletionPopup,
         showCommandPopup,
@@ -258,7 +251,8 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         inventoryLines: displayInventoryLines,
         wornLines: displayEqLines,
         characterName: characterName || '',
-        practiceSkills: practice?.practiceData?.skills || []
+        practiceSkills: practice?.practiceData?.skills || [],
+        preferredTarget: target
     });
 
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
@@ -285,49 +279,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const rotatingCommand = useRotatingCommandSuggestion(showRotatingSuggestion);
 
     const isParleyActive = Boolean(parley?.active && parley?.command);
-    const parleyChannelColor = getChatChannelColor(parley.command);
-    const parleyTargetColor = getTargetClassificationColor(
-        'who',
-        inlineCategories,
-        { player: playerColor, ally: playerColor, npc: npcColor, enemy: enemyColor, neutral: neutralColor } as EntityColorMap,
-        theme
-    ) || '#61c290';
-
-    const handleParleyCommandClick = useCallback(() => {
-        triggerHaptic?.(20);
-        setOpenParleyPicker(current => current === 'channel' ? null : 'channel');
-    }, [triggerHaptic]);
-
-    const handleParleyTargetClick = useCallback(() => {
-        triggerHaptic?.(20);
-        const isOpening = openParleyPicker !== 'target';
-        if (isOpening) requestWhoList();
-        setOpenParleyPicker(isOpening ? 'target' : null);
-    }, [openParleyPicker, requestWhoList, triggerHaptic]);
-
-    const chooseParleyChannel = useCallback((value: string) => {
-        const command = CHAT_PARLEY_CHANNELS.find(channel => channel === value);
-        if (!command) return;
-        setParley(current => ({ ...current, command }));
-        setOpenParleyPicker(null);
-    }, [setParley]);
-
-    const chooseParleyTarget = useCallback((value: string) => {
-        if ((parley.target || '') !== value) triggerHaptic?.(15);
-        setParley(current => ({ ...current, target: value || null }));
-        setOpenParleyPicker(null);
-    }, [parley.target, setParley, triggerHaptic]);
-
     const handleParleyClear = useCallback(() => {
         setParley(prev => ({ ...prev, active: false, mode: 'command', command: 'none', target: null, message: '' }));
         if (viewport?.isMobile) inputRef.current?.blur();
     }, [setParley, viewport?.isMobile]);
-
-    const handleParleyTargetClear = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-        event.stopPropagation();
-        setParley(prev => ({ ...prev, target: null }));
-    }, [setParley]);
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -406,6 +361,12 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         if (event.currentTarget instanceof HTMLTextAreaElement) resizeTextarea(event.currentTarget);
     }, [resizeTextarea, setInput]);
 
+    const syncCommandHighlightScroll = useCallback((event: React.UIEvent<HTMLTextAreaElement>) => {
+        if (commandInputHighlightRef.current) {
+            commandInputHighlightRef.current.scrollLeft = event.currentTarget.scrollLeft;
+        }
+    }, []);
+
     const handleInputPointerDown = useCallback(() => {
         // Clear inline argument caret state while leaving native text caret placement intact.
         clearCommandArgumentCaret();
@@ -435,15 +396,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const inlineTargetParts = gameState === 'playing' && commandPreview && !input && displayedTarget && !isEditingTarget
         ? splitCommandTarget(commandPreview, displayedTarget)
         : null;
-    const isTargetInline = Boolean(inlineTargetParts);
-    const showLeadingTargetBadge = !isTargetInline && (!commandPreview || Boolean(input) || isEditingTarget);
+    const displayedCommandPreview = inlineTargetParts
+        ? [inlineTargetParts.before.trimEnd(), inlineTargetParts.after.trimStart()].filter(Boolean).join(' ')
+        : commandPreview;
     const targetBadge = gameState === 'playing' && !isParleyActive && (
         <div
             ref={targetBadgeRef}
-            className={`docked-target-badge${displayedTarget ? ' has-target' : ''}${autoTargetEnabled && !target ? ' is-auto-target' : ''}${isTargetInline ? ' docked-command-target-chip' : ''}`}
-            onClick={event => {
-                if (isTargetInline) event.stopPropagation();
-            }}
+            className={`docked-target-badge${displayedTarget ? ' has-target' : ''}${autoTargetEnabled && !target ? ' is-auto-target' : ''}`}
         >
             <button
                 type="button"
@@ -454,7 +413,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 title="Choose a room target"
                 aria-label="Choose a room target"
             >
-                <Target size={12} strokeWidth={2.4} />
+                <Crosshair size={16} strokeWidth={1.75} aria-hidden="true" />
             </button>
             {isEditingTarget ? (
                 <input
@@ -507,82 +466,15 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     );
 
     return (
-        <div className="message-log-docked-input">
+        <div className={`message-log-docked-input${commandDockActive ? ' command-dock-row' : ''}`}>
+            {commandDockActive && <div id="command-dock-controls" className="command-dock-controls" />}
+            <div className={commandDockActive ? 'command-dock-input-main' : 'command-dock-input-main is-inline'}>
             <span className="docked-prompt-symbol">&gt;</span>
 
-            {isParleyActive && (
-                <>
-                    <div
-                        className="docked-parley-chip"
-                        role="group"
-                        aria-label="Communication channel"
-                        style={{ borderColor: parleyChannelColor }}
-                    >
-                        <button
-                            type="button"
-                            ref={parleyCommandRef}
-                            className="parley-action"
-                            onPointerDown={event => {
-                                event.preventDefault();
-                                handleParleyCommandClick();
-                            }}
-                            onClick={event => {
-                                if (event.detail === 0) handleParleyCommandClick();
-                            }}
-                            title="Choose another communication command"
-                            aria-label={`Choose another communication command; current command ${parley.command}`}
-                        >
-                            <span className="parley-cmd" style={{ color: parleyChannelColor }}>{parley.command}</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="parley-x"
-                            onMouseDown={event => event.preventDefault()}
-                            onClick={event => { event.preventDefault(); event.stopPropagation(); handleParleyClear(); }}
-                            title="Clear communication command"
-                            aria-label="Clear communication command"
-                        >&times;</button>
-                    </div>
-                    {['tell', 'whisper', 'ask'].includes(parley.command) && (
-                        <div
-                            className="docked-parley-chip docked-parley-target-chip"
-                            role="group"
-                            aria-label="Communication target"
-                            style={{ borderColor: parleyTargetColor }}
-                        >
-                            <button
-                                type="button"
-                                ref={parleyTargetRef}
-                                className="parley-action parley-target-action"
-                                onPointerDown={event => {
-                                    event.preventDefault();
-                                    handleParleyTargetClick();
-                                }}
-                                onClick={event => {
-                                    if (event.detail === 0) handleParleyTargetClick();
-                                }}
-                                title="Choose a communication target"
-                                aria-label={parley.target ? `Change target ${parley.target}` : 'Choose a communication target'}
-                            >
-                                <span className="parley-tgt" style={{ color: parleyTargetColor }}>{parley.target || 'Select target'}</span>
-                            </button>
-                            {parley.target && (
-                                <button
-                                    type="button"
-                                    className="parley-x"
-                                    onMouseDown={event => event.preventDefault()}
-                                    onClick={handleParleyTargetClear}
-                                    title="Clear communication target"
-                                    aria-label="Clear communication target"
-                                >&times;</button>
-                            )}
-                        </div>
-                    )}
-                </>
-            )}
-
+            {isParleyActive && <ParleyChannelChip command={parley.command} target={parley.target} whoList={whoList}
+                requestWhoList={requestWhoList} onClear={handleParleyClear}
+                onChoose={(command,target) => { setParley(current => ({...current,command,target})); triggerHaptic?.(15); }} />}
             <form className="docked-input-form" onSubmit={handleSubmit}>
-                {showLeadingTargetBadge && targetBadge}
                 <div
                     ref={commandInputWrapRef}
                     className="docked-input-wrap"
@@ -592,34 +484,29 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     }}
                 >
                     {(commandTextParts || (commandPreview && !input) || showTacticalArgumentChips) && (
-                        <div className="docked-input-highlight" aria-hidden={!(commandPreview && !input) && !showTacticalArgumentChips && commandArgumentChips.length === 0}>
+                        <div ref={commandInputHighlightRef} className="docked-input-highlight" aria-hidden={!(commandPreview && !input) && !showTacticalArgumentChips && commandArgumentChips.length === 0}>
                             {showTacticalArgumentChips ? (
                                 <TacticalArgumentChips />
-                            ) : inlineTargetParts ? (
-                                <>
-                                    <span className="docked-command-preview">{inlineTargetParts.before}</span>
-                                    {targetBadge}
-                                    <span className="docked-command-preview">{inlineTargetParts.after}</span>
-                                </>
-                            ) : commandPreview && !input ? (
-                                <span className="docked-command-preview">{commandPreview}</span>
+                            ) : displayedCommandPreview && !input ? (
+                                <span className="docked-command-preview">{displayedCommandPreview}</span>
                             ) : commandTextParts && (
                                 <>
                                     <span>{commandTextParts.leading}</span>
-                                    <span className={commandTextParts.isValid ? 'command-input-token-valid' : 'command-input-token-plain'}>
+                                    <span className={commandTextParts.isValid ? 'command-input-token-valid' : 'command-input-token-plain'}
+                                        style={{ color: commandTextColor, textShadow: commandTextColor ? 'none' : undefined }}>
                                         {commandTextParts.token}
                                     </span>
                                     {!commandTextParts.suffix && commandTextParts.autocomplete && (
-                                        <span className="docked-input-autocomplete command-input-autocomplete">
+                                        <span className="docked-input-autocomplete command-input-autocomplete" style={{ color: commandTextColor, opacity: commandTextColor ? 0.4 : undefined }}>
                                             {commandTextParts.autocomplete}
                                         </span>
                                     )}
                                     <CommandArgumentText
-                                    text={commandTextParts.suffix}
-                                    offset={commandTextParts.leading.length + commandTextParts.token.length}
-                                    chips={commandArgumentChips}
-                                    caretKey={commandArgumentCaretKey}
-                                    onChooseChip={chooseCommandArgumentSuggestion}
+                                        text={commandTextParts.suffix}
+                                        offset={commandTextParts.leading.length + commandTextParts.token.length}
+                                        chips={commandArgumentChips}
+                                        caretKey={commandArgumentCaretKey}
+                                        onChooseChip={chooseCommandArgumentSuggestion}
                                     />
                                 </>
                             )}
@@ -652,7 +539,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
                             value={input}
                             rows={1}
+                            wrap={viewport?.isMobile ? 'soft' : 'off'}
                             onChange={handleInputChange}
+                            onScroll={syncCommandHighlightScroll}
                             onKeyDown={handleKeyDown}
                             onPointerDown={handleInputPointerDown}
                             onFocus={handleInputFocus}
@@ -663,6 +552,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                         />
                     )}
                 </div>
+                {targetBadge}
             </form>
 
             <TargetChipPicker
@@ -677,27 +567,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 onChoose={chooseGlobalTarget}
                 onManualEntry={openManualTargetEntry}
                 onDismiss={() => setIsTargetPickerOpen(false)}
-            />
-            <TargetChipPicker
-                isOpen={openParleyPicker === 'channel'}
-                anchorRef={parleyCommandRef}
-                suggestions={parleyChannelSuggestions}
-                currentTarget={parley.command}
-                title="Communication channel"
-                showMeta={false}
-                largeOnMobile
-                onChoose={chooseParleyChannel}
-                onDismiss={() => setOpenParleyPicker(null)}
-            />
-            <TargetChipPicker
-                isOpen={openParleyPicker === 'target'}
-                anchorRef={parleyTargetRef}
-                suggestions={parleyTargetSuggestions}
-                currentTarget={parley.target}
-                title="Communication target"
-                largeOnMobile
-                onChoose={chooseParleyTarget}
-                onDismiss={() => setOpenParleyPicker(null)}
             />
 
             <CommandSuggestionPopup
@@ -737,7 +606,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     title="Cancel current action (send newline)"
                     aria-label="Cancel current action"
                 >
-                    CANCEL
+                    <X size={15} strokeWidth={2.4} aria-hidden="true" />
                 </button>
             )}
 
@@ -766,11 +635,16 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
             <button
                 type="button"
-                className="docked-send-btn"
+                className={`docked-send-btn${isLoginStage ? '' : ' is-send-icon'}`}
                 onClick={() => handleSubmit()}
+                aria-label={isLoginStage ? 'Login' : 'Send command'}
+                title={isLoginStage ? 'Login' : 'Send command'}
             >
-                {isLoginStage ? 'LOGIN' : 'SEND'}
+                {isLoginStage ? 'LOGIN' : <Send size={15} strokeWidth={2.4} aria-hidden="true" />}
             </button>
+            </div>
+            {commandDockActive && <div id="command-dock-actions" className="command-dock-actions" />}
+            {commandDockActive && <div id="command-dock-menu" className="command-dock-menu" />}
         </div>
     );
 };

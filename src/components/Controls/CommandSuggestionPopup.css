@@ -62,7 +62,7 @@
     justify-content: flex-start;
     gap: 7px;
     width: 100%;
-    padding: 3px 6px !important;
+    padding: 7px !important;
     border: 0 !important;
     border-radius: 2px !important;
     background: transparent !important;
@@ -84,7 +84,7 @@
 
 .command-suggestion-option.is-selected {
     background: rgba(201, 168, 76, 0.18) !important;
-    box-shadow: inset 2px 0 0 #f0cb67 !important;
+    box-shadow: none !important;
     color: #ffffff !important;
 }
 
@@ -188,7 +188,7 @@
 
 .light-mode .command-suggestion-option.is-selected {
     background: rgba(180, 130, 40, 0.15) !important;
-    box-shadow: inset 2px 0 0 #8a6515 !important;
+    box-shadow: none !important;
 }
 
 .light-mode .command-suggestion-portkey-favorite,
@@ -214,4 +214,58 @@
 
 .light-mode .command-suggestion-full {
     color: #9c8e77 !important;
+}
+
+/* --- Target rows share the target panel's name, keyword, and category colors --- */
+.command-suggestion-option.is-target-row { gap: 8px; }
+.command-suggestion-popup .is-target-row .command-suggestion-name {
+    color: var(--suggestion-target-color, var(--text-primary, #f8fafc)) !important;
+    font-weight: 500 !important;
+}
+.command-suggestion-keyword {
+    flex: 0 1 auto;
+    max-width: 30%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #8f8374;
+    font-weight: 400;
+    white-space: nowrap;
+}
+.command-suggestion-current-target {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    color: var(--active-target-highlight-foreground, #fca5a5);
+}
+.light-mode .command-suggestion-current-target { color: var(--active-target-highlight-color, #f87171); }
+body:has(.app-container.performance-mode.immersion-mode) .command-suggestion-popup {
+    background: #171717 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* --- Shared command semantics and target highlight kinds --- */
+.command-suggestion-popup .is-command-row > .command-suggestion-name {
+    color: var(--suggestion-command-color, #ffd700) !important;
+}
+.light-mode .command-suggestion-popup .is-command-row > .command-suggestion-name {
+    color: var(--suggestion-command-color, #ffd700) !important;
+}
+.command-suggestion-option.is-target-row { --suggestion-highlight-color: #dfbf6c; }
+.command-suggestion-option[data-target-kind="enemy"] { --suggestion-highlight-color: var(--active-target-highlight-color, #f87171); }
+.command-suggestion-option[data-target-kind="ally"] { --suggestion-highlight-color: #61c290; }
+.command-suggestion-option[data-target-kind="room"] { --suggestion-highlight-color: #f8fafc; }
+.command-suggestion-popup .is-target-row:is(:hover, :focus-visible, .is-selected) {
+    background: color-mix(in srgb, var(--suggestion-highlight-color) 12%, transparent) !important;
+    box-shadow: none !important;
+}
+.command-suggestion-popup .is-target-row[data-target-kind="enemy"]:is(:hover, :focus-visible, .is-selected) {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24)) !important;
+}
+.command-suggestion-popup.immersion-glass .is-target-row:is(:hover, :focus-visible, .is-selected) {
+    background: color-mix(in srgb, var(--suggestion-highlight-color) 22%, transparent) !important;
+}
+.command-suggestion-popup.immersion-glass .is-target-row[data-target-kind="enemy"]:is(:hover, :focus-visible, .is-selected) {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24)) !important;
 }

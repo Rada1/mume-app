@@ -6,7 +6,7 @@
     --map-accent: #fcd34d;
     --font-main: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     --font-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
-    --font-title: 'Kelt', 'Cinzel', 'Aniron', 'Times New Roman', serif;
+    --font-title: var(--font-mono);
     --font-serif: 'Merriweather', 'Times New Roman', serif;
     --radius-card: 12px;
 

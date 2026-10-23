@@ -9,6 +9,7 @@ import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
 import DataManagement from '../Settings/DataManagement';
 import SoundSettings from '../Settings/SoundSettings';
+import { ClientMacroSettings } from '../Settings/ClientMacroSettings';
 import ActionSettings from '../Settings/ActionSettings';
 import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
@@ -107,7 +108,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                         <Music size={16} /> <span>Sound</span>
                     </div>
                     <div className={`modal-tab ${settingsTab === 'actions' ? 'active' : ''}`} onClick={() => setSettingsTab('actions')}>
-                        <Activity size={16} /> <span>Actions</span>
+                        <Activity size={16} /> <span>Actions/Macros</span>
                     </div>
                     <div className={`modal-tab ${settingsTab === 'buttons' ? 'active' : ''}`} onClick={() => setSettingsTab('buttons')}>
                         <Activity size={16} /> <span>Buttons</span>
@@ -173,10 +174,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     )}
 
                     {settingsTab === 'actions' && (
+                        <div style={{ display: 'grid', gap: '24px' }}>
                         <ActionSettings
                             actions={actions}
                             setActions={setActions}
                         />
+                        <ClientMacroSettings />
+                        </div>
                     )}
 
                     {settingsTab === 'buttons' && (

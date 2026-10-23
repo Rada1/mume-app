@@ -1,81 +1,61 @@
 /** @file RoomLootGroundItems.tsx — Selection and transfer controls for likely ground loot. */
 import React from 'react';
-import { X } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { GearSelectionCheckbox } from '../GearSelectionCheckbox';
 import type { GroundLootCandidate } from '../../hooks/useRoomLootCandidates';
+import { useLootSelection } from '../../hooks/useLootSelection';
 import './RoomLootGroundItems.css';
 
 interface RoomLootGroundItemsProps {
     items: GroundLootCandidate[];
+    corpses?: GroundLootCandidate[];
+    children?: (selection: { selectedIds: ReadonlySet<string>; toggleSelected: (id: string) => void }) => React.ReactNode;
     recipientTarget: string;
+    giveToMount: boolean;
     recipientLabel: string;
     executeCommand: (command: string) => void;
-    onDismiss: (id: string) => void;
 }
 
 // --- Logic Section ---
 export const RoomLootGroundItems: React.FC<RoomLootGroundItemsProps> = ({
-    items, recipientTarget, recipientLabel, executeCommand, onDismiss
+    items, corpses = [], children, recipientTarget, giveToMount, recipientLabel, executeCommand
 }) => {
-    const [selectedIds, setSelectedIds] = React.useState<Set<string>>(() => new Set());
-    React.useEffect(() => {
-        const visibleIds = new Set(items.map(item => item.id));
-        setSelectedIds(current => new Set([...current].filter(id => visibleIds.has(id))));
-    }, [items]);
+    const rows = React.useMemo(() => [...corpses, ...items], [corpses, items]);
+    const { selectedIds, selected: selectedItems, toggle: toggleSelected, transfer: transferSelected, getRowCommand } = useLootSelection(rows, recipientTarget, executeCommand);
+    const selectedItemCount = selectedItems.filter(item => item.kind !== 'corpse').length;
+    const selectedCorpseCount = selectedItems.length - selectedItemCount;
+    const selectedActionLabel = giveToMount && selectedCorpseCount > 0
+        ? selectedItemCount > 0 ? 'get selected & give items' : 'get selected'
+        : giveToMount ? 'get & give selected' : 'get selected';
+    const selectedActionHint = selectedItems.length === 1
+        ? `<${getRowCommand(selectedItems[0])}>`
+        : giveToMount && selectedItemCount > 0
+            ? `${selectedItemCount} ${selectedItemCount === 1 ? 'item' : 'items'} → ${recipientLabel}`
+            : `${selectedItems.length} ${selectedCorpseCount === selectedItems.length ? 'corpses' : 'items'}`;
 
-    const selectedItems = items.filter(item => selectedIds.has(item.id));
-    const toggleSelected = (id: string) => setSelectedIds(current => {
-        const next = new Set(current);
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        return next;
-    });
-    const transferSelected = (giveToRecipient: boolean) => {
-        if (selectedItems.length === 0) return;
-        const getOrdinal = (target: string) => Number(target.match(/^(\d+)\./)?.[1] || 1);
-        const getKeyword = (target: string) => target.replace(/^\d+\./, '');
-        const orderedItems = [...selectedItems].sort((left, right) => {
-            const keywordOrder = getKeyword(left.commandTarget).localeCompare(getKeyword(right.commandTarget));
-            return keywordOrder || getOrdinal(right.commandTarget) - getOrdinal(left.commandTarget);
-        });
-        const commands = orderedItems.flatMap(item => {
-            const keyword = getKeyword(item.commandTarget);
-            return giveToRecipient
-                ? [`get ${item.commandTarget}`, `give ${keyword} ${recipientTarget}`]
-                : [`get ${item.commandTarget}`];
-        });
-        executeCommand(commands.join('; '));
-        setSelectedIds(new Set());
-    };
-
-    if (items.length === 0) return null;
+    if (rows.length === 0) return null;
     return (
-        <section className="room-loot-ground" aria-label="Likely items on the ground">
-            <header>
-                <strong>On the ground</strong><span>{items.length}</span>
-                <button type="button" onClick={() => executeCommand('get all')}>Get all</button>
-            </header>
+        <details className="room-loot-ground" aria-label="On the ground" open>
+            <summary className="room-loot-section-heading"><span>On the ground</span><small>{rows.length}</small><ChevronDown size={12} /></summary>
+            <button type="button" className="room-loot-command" onClick={() => executeCommand('get all')}><span>get all</span><small>&lt;get all&gt;</small></button>
             <div className="room-loot-ground-list">
+                {children?.({ selectedIds, toggleSelected })}
                 {items.map(item => (
-                    <div className="room-loot-ground-row" key={item.id}>
-                        <div className="room-loot-ground-item">
-                            <GearSelectionCheckbox checked={selectedIds.has(item.id)} label={`Select ${item.label}`}
-                                onChange={() => toggleSelected(item.id)} />
-                            <span title={item.label}>{item.label}</span>
-                        </div>
-                        <button type="button" onClick={() => executeCommand(`get ${item.commandTarget}`)}>Get</button>
-                        <button className="room-loot-ground-dismiss" type="button" aria-label={`Hide ${item.label}`}
-                            onClick={() => onDismiss(item.id)}><X size={14} /></button>
+                    <div className="room-loot-ground-row" key={item.id} data-selected={selectedIds.has(item.id) || undefined}>
+                        <button type="button" className="room-loot-ground-item" onClick={() => toggleSelected(item.id)} aria-pressed={selectedIds.has(item.id)}>
+                            <span title={item.label}>{item.label}</span><small>&lt;{item.commandTarget}&gt;</small>
+                        </button>
+                        <GearSelectionCheckbox checked={selectedIds.has(item.id)} label={`Select ${item.label}`} onChange={() => toggleSelected(item.id)} />
+
                     </div>
                 ))}
             </div>
-            {selectedItems.length > 0 && (
-                <footer className="room-loot-ground-selection">
-                    <span>{selectedItems.length} selected</span>
-                    <button type="button" onClick={() => transferSelected(false)}>Take selected</button>
-                    <button type="button" onClick={() => transferSelected(true)}>Give to {recipientLabel}</button>
-                </footer>
-            )}
-        </section>
+            {selectedItems.length > 0 && <div className="room-loot-actions">
+                    <button type="button" className="room-loot-command" onClick={() => transferSelected(giveToMount)}>
+                        <span>{selectedActionLabel}</span>
+                        <small>{selectedActionHint}</small>
+                    </button>
+            </div>}
+        </details>
     );
 };

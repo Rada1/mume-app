@@ -6,13 +6,10 @@
 // --- Logic Section ---
 import React, { FC, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import type { StateOption } from '../../utils/playerStateOptions';
 import './ThisIsYouStatePill.css';
 
-export interface StateOption {
-    label: string;
-    value: string;
-    command?: string;
-}
+export type { StateOption } from '../../utils/playerStateOptions';
 
 export interface ThisIsYouStatePillProps {
     category: string;

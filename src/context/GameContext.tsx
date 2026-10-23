@@ -18,6 +18,7 @@ import { UseGameParserDeps } from '../hooks/GameParser/types';
 import { useCommandController } from '../hooks/useCommandController';
 import { useSpatButtons } from '../hooks/useSpatButtons';
 import { usePracticeHandler } from '../hooks/usePracticeHandler';
+import { usePanelDataStore } from '../stores/usePanelDataStore';
 import { useQuestsHandler } from '../hooks/useQuestsHandler';
 import { useHelpHandler } from '../hooks/useHelpHandler';
 import { useKeywordOverrides } from '../hooks/useKeywordOverrides';
@@ -647,7 +648,20 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // 6. Final Controller & Parser
     const { spatButtons, setSpatButtons, triggerSpitManual } = useSpatButtons(useRef<HTMLDivElement>(null), triggerHaptic);
     const practice = usePracticeHandler(s.userSession.game.setAbilities, s.userSession.game.setPracticeLines);
-    const spectatePractice = usePracticeHandler(s.spectateSession.game.setAbilities, s.spectateSession.game.setPracticeLines);
+    const spectatePractice = usePracticeHandler(s.spectateSession.game.setAbilities, s.spectateSession.game.setPracticeLines, false);
+    React.useEffect(() => {
+        const nextSession = s.gameState === 'playing' && s.characterName ? s.characterName : null;
+        const reset = () => {
+            usePanelDataStore.getState().setSession(null);
+            usePanelDataStore.getState().setSession(nextSession);
+            practice.setPracticeData(null);
+            s.userSession.game.setAbilities({});
+            s.userSession.game.setInventoryLines([]);
+            s.userSession.game.setEqLines([]);
+        };
+        if (usePanelDataStore.getState().session !== nextSession) reset();
+        return gmcpBus.on('Session.Start', reset);
+    }, [s.gameState, s.characterName]);
     const activePractice = mode.isSpectating && mode.activeView === 'target' ? spectatePractice : practice;
     const previousSpectatePanelTargetRef = useRef(mode.spectateTarget);
     useEffect(() => {

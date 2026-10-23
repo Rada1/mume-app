@@ -1,0 +1,6 @@
+/* @file nightClouds.css */
+/* --- Logic Section --- */
+.environment-root.front:not(.lighting-state-sun):not(.lighting-state-moon) .weather-layer.weather-cloud::before,
+.environment-root.front:not(.lighting-state-sun):not(.lighting-state-moon) .weather-layer.weather-cloud::after {
+    filter: grayscale(1) brightness(0);
+}

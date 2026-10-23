@@ -2,7 +2,7 @@
  * @file CommandDeck.tsx
  * @description Desktop tactical action deck — a WoW/LoL-style ability bar in the
  * action box below the log. Loadout tabs page a uniform grid of action slots
- * (combat, social, utility). Movement lives on the MovementPad (under the map)
+ * (combat, social, utility). Movement lives on the MovementPad (overlaying the map)
  * and class skills live on the SkillsDeck (under the character drawer). Mobile
  * can reuse this deck in the map gutter for the center action buttons.
  */
@@ -19,7 +19,6 @@ import { useDeckTargeting, DeckItem } from './useDeckTargeting';
 import { TacticalTargetBar } from '../Controls/GameButton/TacticalTargetBar';
 import { RightPanelTargetBar } from './RightPanelTargetBar';
 import { DeckCategoryWheel } from './DeckCategoryWheel';
-import { ThisIsYouConsole } from './ThisIsYouConsole';
 import { RightActionPanel } from './RightActionPanel';
 import { ShopTargetMenu } from '../Shop/ShopTargetMenu';
 import type { GameButtonProps } from '../Controls/GameButton/GameButton';
@@ -718,7 +717,7 @@ export const CommandDeck: FC<CommandDeckProps> = ({ tactical }) => {
                 customContent={deckTargeting.activeItem?.targetKind === 'status-panel'
                     ? deckTargeting.activeItem.cmd.trim().toLowerCase() === 'practice'
                         ? <RightActionPanel skillsOnly embedded />
-                        : <ThisIsYouConsole alwaysExpanded />
+                        : undefined
                     : deckTargeting.activeItem?.targetKind === 'shop' ? <ShopTargetMenu
                         executeCommand={game.executeCommand}
                         selectedTarget={deckTargeting.pendingTarget}

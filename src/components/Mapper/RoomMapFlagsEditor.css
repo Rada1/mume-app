@@ -1,0 +1,15 @@
+/** @file Compact inline map flag controls. */
+
+/* --- Attribute Summary --- */
+.room-info-attributes-summary { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.room-info-edit-flags { display: grid; place-items: center; width: 25px; height: 25px; padding: 0; border: 0; background: transparent; color: var(--accent, #c9a84c); cursor: pointer; }
+
+/* --- Inline Editor --- */
+.room-map-flags { display: grid; gap: 7px; padding: 8px; background: #242424; font: 11px var(--font-mono, monospace); }
+.room-map-flags label { display: flex; align-items: center; gap: 8px; color: #aaa; }
+.room-map-flags select { min-width: 0; padding: 6px 8px; border: 0; background: #333; color: #ddd; font: inherit; }
+.room-map-exit-controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.room-map-flag-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.room-map-flag-chips:empty { display: none; }
+.room-map-flag-chips button { display: inline-flex; align-items: center; gap: 6px; padding: 4px 7px; border: 0; background: #354438; color: #c0d8c5; font: inherit; text-transform: capitalize; cursor: pointer; }
+.room-map-flags :is(button, select):focus-visible, .room-info-edit-flags:focus-visible { outline: 1px solid #c9a84c; }

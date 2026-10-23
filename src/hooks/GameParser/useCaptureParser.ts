@@ -13,12 +13,37 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
+import { useCommandShopStore } from '../../stores/useCommandShopStore';
+import { useCommandPracticeStore } from '../../stores/useCommandPracticeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
 import { reconcileObjectSnapshot } from '../../objects/objectTargetModel';
+import { usePanelDataStore } from '../../stores/usePanelDataStore';
+
+// --- Personal Report Capture ---
+const publishPersonalReport = (kind: 'info' | 'stat' | 'score', lines: DrawerLine[], entityId?: string) => {
+    const store = useUIStore.getState();
+    const currentPopover = store.popoverState;
+    if (
+        !currentPopover?.isCapturingPersonalAction ||
+        currentPopover.personalActionKind !== kind ||
+        (entityId && currentPopover.entityId !== entityId)
+    ) return;
+    store.setPopoverState({
+        ...currentPopover,
+        capturedPersonalActionLines: lines.map(line => line.html || line.text),
+        isCapturingPersonalAction: false
+    });
+};
+
+const getPersonalReportKind = (session: CaptureSession, fallback: 'info' | 'stat' | 'score') => {
+    const command = session.metadata?.command?.trim().toLowerCase().split(/\s+/)[0];
+    return command === 'info' || command === 'stat' || command === 'score' ? command : fallback;
+};
 
 export interface CaptureParserDeps {
+    tracksPanelSync?: boolean;
     captureSession: CaptureSession | null;
     setCaptureSession: (val: CaptureSession | null) => void;
     // Drawer setters
@@ -66,6 +91,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
     }, []);
 
     const checkTriggers = useCallback((line: string, attachedText?: string): CaptureType | null => {
+        if (captureStage.current === 'help_action' || sessionRef.current?.type === 'help_action') {
+            return 'help_action';
+        }
         // Prompt parsing can split content from a prompt line into attachedText.
         // Keep the current line in the trigger input so unrelated attached text
         // cannot hide a capture header that is present in the line itself.
@@ -116,7 +144,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         }
 
         return type;
-    }, []);
+    }, [captureStage]);
 
     const startSession = useCallback((type: CaptureType) => {
         // console.log(`[Capture] Starting ${type} session`);
@@ -131,12 +159,27 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             startTime: Date.now(),
             isSilent: pendingFlagsRef.current.isSilent,
             fromDrawer: pendingFlagsRef.current.fromDrawer,
-            metadata: type === 'container'
+            metadata: type === 'help_action'
+                ? {
+                    command: pendingFlagsRef.current.command,
+                    entityId: useUIStore.getState().popoverState?.entityId,
+                    helpTopic: useUIStore.getState().popoverState?.helpTopic
+                }
+                : type === 'practice_action'
+                ? { command: pendingFlagsRef.current.command, practiceRequestId: useCommandPracticeStore.getState().requestId }
+                : type === 'shop_action'
+                ? { command: pendingFlagsRef.current.command, shopRequestId: useCommandShopStore.getState().requestId }
+                : type === 'container'
                 ? {
                     containerId: lastRequestedContainerIdRef.current,
                     command: pendingFlagsRef.current.command
                 }
-                : ['whois', 'examine', 'consider'].includes(type)
+                : ['stats', 'score', 'info'].includes(type)
+                    ? {
+                        command: pendingFlagsRef.current.command,
+                        entityId: useUIStore.getState().popoverState?.entityId
+                    }
+                : ['whois', 'examine', 'consider', 'room_action'].includes(type)
                     ? { command: pendingFlagsRef.current.command }
                 : ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'].includes(type)
                     ? { archiveView }
@@ -161,6 +204,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'who': 'who',
             'stats': 'stat',
             'practice': 'practice',
+            'help_action': 'help_action',
             'info': 'info',
             'score': 'score',
             'achievement': 'achievement',
@@ -309,9 +353,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             switch (session.type) {
                 case 'inventory':
                     setInventoryLines(previous => reconcileObjectSnapshot(previous, lines));
+                    if (deps.tracksPanelSync) usePanelDataStore.getState().complete('inventory');
                     break;
                 case 'equipment':
                     setEqLines(previous => reconcileObjectSnapshot(previous, lines));
+                    if (deps.tracksPanelSync) usePanelDataStore.getState().complete('equipment');
                     break;
                 case 'stats':
                     {
@@ -322,6 +368,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                         }
                     }
                     setStatsLines(lines);
+                    publishPersonalReport(getPersonalReportKind(session, 'stat'), lines, session.metadata?.entityId);
                     break;
                 case 'who':
                     setWhoLines(lines);
@@ -331,9 +378,21 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             .map(l => extractPlayerName(l.text))
                             .filter((name): name is string => name !== null)
                     );
+                    {
+                        const store = useUIStore.getState();
+                        const currentPopover = store.popoverState;
+                        if (currentPopover?.isCapturingWho) {
+                            store.setPopoverState({
+                                ...currentPopover,
+                                capturedWhoLines: lines.map(line => line.html || line.text),
+                                isCapturingWho: false
+                            });
+                        }
+                    }
                     break;
                 case 'score':
                     setScoreLines(lines);
+                    publishPersonalReport(getPersonalReportKind(session, 'score'), lines, session.metadata?.entityId);
                     break;
                 case 'info':
                     {
@@ -341,6 +400,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                         if (affectedBy !== null) setCharacterInfo?.({ affectedBy });
                     }
                     setInfoLines(lines);
+                    publishPersonalReport(getPersonalReportKind(session, 'info'), lines, session.metadata?.entityId);
                     break;
                 case 'practice':
                     lines.forEach(line => practiceHandler?.parsePracticeLine(line.text));
@@ -378,6 +438,20 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     }
                     break;
                 }
+                case 'help_action': {
+                    const store = useUIStore.getState();
+                    const currentPopover = store.popoverState;
+                    const sameRequest = currentPopover?.entityId === session.metadata?.entityId &&
+                        currentPopover.helpTopic?.toLowerCase() === String(session.metadata?.helpTopic || '').toLowerCase();
+                    if (currentPopover?.isCapturingHelp && sameRequest) {
+                        store.setPopoverState({
+                            ...currentPopover,
+                            capturedHelpLines: lines.map(line => line.html || line.text),
+                            isCapturingHelp: false
+                        });
+                    }
+                    break;
+                }
                 case 'whois': {
                     const store = useUIStore.getState();
                     const currentPopover = store.popoverState;
@@ -389,6 +463,31 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             ...currentPopover,
                             capturedWhoisLines: lines.map(l => l.html || l.text),
                             isCapturingWhois: false
+                        });
+                    }
+                    break;
+                }
+                case 'shop_action': {
+                    useCommandShopStore.getState().receiveOutput(session.metadata?.shopRequestId, lines);
+                    break;
+                }
+                case 'practice_action': {
+                    const practice = useCommandPracticeStore.getState();
+                    if (practice.requestId === session.metadata?.practiceRequestId && practice.pendingCommand) {
+                        lines.forEach(line => practiceHandler?.parsePracticeLine(line.text));
+                        practice.complete(session.metadata?.practiceRequestId, lines);
+                    }
+                    break;
+                }
+                case 'room_action': {
+                    const store = useUIStore.getState();
+                    const currentPopover = store.popoverState;
+                    const command = session.metadata?.command?.trim().toLowerCase();
+                    if (currentPopover?.isCapturingRoomAction && currentPopover.roomActionKind === command) {
+                        store.setPopoverState({
+                            ...currentPopover,
+                            capturedRoomActionLines: lines.map(line => line.html || line.text),
+                            isCapturingRoomAction: false
                         });
                     }
                     break;
@@ -708,7 +807,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
 
         captureStage.current = 'none';
         pendingFlagsRef.current = { isSilent: false, fromDrawer: false, command: undefined, timestamp: undefined };
-    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, pendingFlagsRef, practiceHandler, setContainerContents, setCharacterInfo]);
+    }, [setInventoryLines, setEqLines, setStatsLines, setWhoLines, setWhoList, setScoreLines, setInfoLines, setPracticeLines, setQuestLines, setAchievementLines, setCaptureSession, captureStage, pendingFlagsRef, practiceHandler, setContainerContents, setCharacterInfo, deps.tracksPanelSync]);
 
     const hasSession = useCallback(() => sessionRef.current !== null, [sessionRef]);
     const isSilent = useCallback(() => sessionRef.current?.isSilent || false, [sessionRef]);

@@ -1,4 +1,4 @@
-/** @file RoomLootQueue.css — Kill feedback and persistent room loot controls. */
+/** @file RoomLootQueue.css â€” Kill feedback and persistent room loot controls. */
 /* --- Component Styles --- */
 @import './RoomLootPanel.css';
 
@@ -173,5 +173,11 @@
 .room-loot-root .room-loot-trigger[aria-expanded="true"] {
     border-color: rgba(237, 184, 79, 0.95);
     background: rgba(104, 73, 19, 0.46);
-    box-shadow: 0 0 12px rgba(237, 184, 79, 0.24), inset 0 0 0 1px rgba(245, 217, 158, 0.18);
+    box-shadow: none;
 }
+
+/* --- Loot entry matches command section badges --- */
+.room-loot-root .room-loot-trigger { min-height: 36px; padding: 7px 11px; gap: 8px; border: 0; border-radius: 0; background: rgba(23,23,23,.94); box-shadow: none; backdrop-filter: none; font-size: .72rem; font-weight: 600; color: #dfbf6c; }
+.room-loot-root .room-loot-trigger[aria-expanded="true"] { background: rgba(201,168,76,.12); border-color: rgba(201,168,76,.5); box-shadow: none; }
+.room-loot-count, .room-loot-root.is-mobile .room-loot-count { display: inline-grid; place-items: center; min-width: 18px; height: 17px; padding: 0 4px; box-sizing: border-box; border: 1px solid rgba(201,168,76,.3); border-radius: 9px; background: transparent; color: #dfbf6c; font-size: .56rem; }
+.room-loot-root.is-mobile .room-loot-trigger { min-height: 44px; border: 0; border-radius: 0; }

@@ -23,6 +23,7 @@ export interface CategoryConfig {
 
 /** Maps a canonical category id to its actual EntityKind. Replaces CategoryConfig.kind. */
 export const CATEGORY_KIND_MAP: Readonly<Record<string, EntityKind>> = {
+    'cat-mount-object':      'object',
     'cat-ally':             'ally',
     'cat-enemy':            'enemy',
     'cat-neutral':          'neutral',
@@ -72,6 +73,8 @@ DEFAULT_TRAIT_CONFIGS.forEach(trait => {
     traitAliasMap.set(trait.id, trait.id);
     trait.legacySetIds?.forEach(id => traitAliasMap.set(id, trait.id));
 });
+const PRIORITY_ACTION_TRAIT_IDS = ['trait-examine', 'trait-consider'] as const;
+const PRIORITY_ACTION_TRAIT_ID_SET = new Set<string>(PRIORITY_ACTION_TRAIT_IDS);
 
 export const toCategoryId = (id: string | null | undefined): string | null => (
     id ? categoryAliasMap.get(id) || null : null
@@ -156,9 +159,19 @@ export const getResolvedTraitSections = (
     customTraits: InlineActionConfigRecord[] = []
 ): ResolvedTraitSection[] => {
     const categoryTraits = getTraitsForCategoryWithOverrides(categoryId, customTraits);
+    const isMountObject = toCategoryId(categoryId) === 'cat-mount-object';
     const keywordTraits = (name ? getTraitsForName(name, customTraits) : [])
-        .filter(trait => !trait.categoryIds || (categoryId != null && trait.categoryIds.includes(categoryId)));
-    return dedupeTraits([...categoryTraits, ...keywordTraits]).map(trait => ({
+        .filter(trait => !trait.categoryIds || (categoryId != null && trait.categoryIds.includes(categoryId)))
+        .filter(trait => !isMountObject || trait.id === 'trait-saddle');
+    const isMountedSaddle = isMountObject && keywordTraits.some(trait => trait.id === 'trait-saddle');
+    const resolvedTraits = dedupeTraits([...categoryTraits, ...keywordTraits])
+        .filter(trait => !isMountedSaddle || trait.id !== 'trait-mount-object');
+    // Keep the most common inspection actions first, including for custom category orders.
+    const orderedTraits = [
+        ...PRIORITY_ACTION_TRAIT_IDS.flatMap(id => resolvedTraits.filter(trait => trait.id === id)),
+        ...resolvedTraits.filter(trait => !PRIORITY_ACTION_TRAIT_ID_SET.has(trait.id))
+    ];
+    return orderedTraits.map(trait => ({
         trait,
         buttonIds: trait.buttonIds
     }));

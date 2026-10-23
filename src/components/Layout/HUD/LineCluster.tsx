@@ -7,6 +7,8 @@ import React from 'react';
 import { Trees, Sparkles, VenetianMask, Swords, Wand, DoorOpen, Eye } from 'lucide-react';
 import { useGame } from '../../../context/GameContext';
 import { useCurrentRoomHasDoor } from '../../../hooks/useCurrentRoomHasDoor';
+import { SkillsSyncPrompt } from '../../HUD/SkillsSyncPrompt';
+import { usePanelDataStore } from '../../../stores/usePanelDataStore';
 import { useUIStore } from '../../../stores/useUIStore';
 import { getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
 import './LineCluster.css';
@@ -61,12 +63,14 @@ export const LineCluster: React.FC<LineClusterProps> = ({
     isCheatSheetExpanded = false, setIsCheatSheetExpanded
 }) => {
     const { viewport } = useGame();
+    const skillsReady = usePanelDataStore(state => state.status.skills === 'ready');
     const selectedTarget = useUIStore(state => state.selectedTarget);
     const { isLandscape } = viewport;
     const hasRoomDoor = useCurrentRoomHasDoor();
 
     // Pull the 6 tactical buttons by their setId
-    const tacticalButtons = buttons.filter(b => b.setId === 'Tactical');
+    const tacticalButtons = buttons.filter(b => b.setId === 'Tactical' && (skillsReady || isEditMode
+        || !/^tactical-(mage|cleric|warrior|ranger|thief)$/.test(b.id)));
 
     const charmieButton = tacticalButtons.find(button => button.id === 'tactical-charmie');
     const sortedButtons = tacticalButtons.filter(button => button.id !== 'tactical-charmie').sort((a, b) => {
@@ -133,6 +137,7 @@ export const LineCluster: React.FC<LineClusterProps> = ({
 
     return (
         <div className={`tactical-line-wrapper${selectedTarget ? ' is-targeting' : ''}`}>
+            {!isEditMode && <SkillsSyncPrompt hideWhenReady={isMobile} />}
             {charmieButton && (
                 <div className="line-cluster-aux">
                     {renderButton(charmieButton, 'default', 'line-btn tactical-charmie auxiliary-charmie')}

@@ -4,7 +4,7 @@
  */
 
 // --- Logic Section ---
-import { TARGETED_SKILLS } from './practiceClassCatalog';
+import { SELF_ONLY_SPELLS, TARGETED_SKILLS } from './practiceClassCatalog';
 import { getSpellSyntax } from './spellSyntaxUtils';
 import { sanitizeGameTarget } from './gameUtils';
 
@@ -26,13 +26,8 @@ const SELF_TARGETED_SPELLS = new Set([
 ]);
 
 const NO_ARGUMENT_SPELLS = new Set([
-    'armour', 'shield', 'create food', 'sense life', 'detect magic', 'detect evil',
-    'detect invisible', 'detect invisibility', 'word of recall', 'call familiar',
+    ...SELF_ONLY_SPELLS, 'create food', 'word of recall', 'call familiar',
     'locate', 'magic blast', 'protection from evil', 'fear', 'breath of briskness', 'earthquake'
-]);
-
-const SELF_ONLY_SPELLS = new Set([
-    'night vision'
 ]);
 
 const ROOM_TARGETED_SPELLS = new Set([
@@ -99,6 +94,11 @@ export type CommandTargetMenuKind =
 const getSpellName = (command: string): string | null => {
     const match = command.trim().match(/^(?:cast|c|commune)\s+['"]([^'"]+)['"]/i);
     return match?.[1]?.trim().toLowerCase() || null;
+};
+
+export const isSelfOnlySpellCommand = (command: string): boolean => {
+    const spell = getSpellName(command);
+    return Boolean(spell && SELF_ONLY_SPELLS.has(spell));
 };
 
 /** Spells that prioritize the locked target, then auto target, then room order. */

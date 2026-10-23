@@ -1,9 +1,9 @@
 /** @file RoomLootCorpseContents.tsx — Selectable contents and transfer actions for one corpse. */
 import React from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 import { GearSelectionCheckbox } from '../GearSelectionCheckbox';
 import type { DrawerLine } from '../../types';
 import { getDrawerObjectKeyword } from '../../objects/objectTargetModel';
+import { useLootSelection } from '../../hooks/useLootSelection';
 import './RoomLootCorpseContents.css';
 
 interface LootItemRow {
@@ -13,23 +13,21 @@ interface LootItemRow {
 }
 
 interface RoomLootCorpseContentsProps {
+    isBusy?: boolean;
     corpseId: string;
     corpseLabel: string;
     corpseTarget: string;
     contents?: DrawerLine[];
     recipientTarget: string;
+    giveToMount: boolean;
     recipientLabel: string;
-    onLookInside: () => void;
     executeCommand: (command: string) => void;
 }
 
 // --- Logic Section ---
 export const RoomLootCorpseContents: React.FC<RoomLootCorpseContentsProps> = ({
-    corpseId, corpseLabel, corpseTarget, contents, recipientTarget, recipientLabel, onLookInside, executeCommand
+    isBusy, corpseId, corpseLabel, corpseTarget, contents, recipientTarget, giveToMount, recipientLabel, executeCommand
 }) => {
-    const [isExpanded, setIsExpanded] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(false);
-    const [selectedIds, setSelectedIds] = React.useState<Set<string>>(() => new Set());
 
     const rows = React.useMemo(() => {
         const itemLines = (contents || []).filter(line => line.isItem && !line.isHeader);
@@ -53,79 +51,31 @@ export const RoomLootCorpseContents: React.FC<RoomLootCorpseContentsProps> = ({
         });
     }, [contents]);
 
-    React.useEffect(() => {
-        if (contents !== undefined) setIsLoading(false);
-    }, [contents]);
-
-    const toggleExpanded = () => {
-        if (!isExpanded && contents === undefined) {
-            setIsLoading(true);
-            onLookInside();
-        }
-        setIsExpanded(current => !current);
-    };
-
-    const toggleSelected = (id: string) => {
-        setSelectedIds(current => {
-            const next = new Set(current);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    };
-
-    const selectedRows = rows.filter(row => selectedIds.has(row.id));
-    const runTransfer = (giveToRecipient: boolean) => {
-        if (!selectedRows.length) return;
-        const commands = selectedRows.flatMap(row => {
-            const getCommand = `get ${row.commandTarget} ${corpseTarget}`;
-            return giveToRecipient
-                ? [getCommand, `give ${row.commandTarget} ${recipientTarget}`]
-                : [getCommand];
-        });
-        executeCommand(commands.join('; '));
-        setSelectedIds(new Set());
-    };
-
-    const takeOne = (row: LootItemRow) => {
-        executeCommand(`get ${row.commandTarget} ${corpseTarget}`);
-        setSelectedIds(current => {
-            const next = new Set(current);
-            next.delete(row.id);
-            return next;
-        });
-    };
+    const { selectedIds, selected: selectedRows, toggle: toggleSelected, transfer: runTransfer, getCommand } = useLootSelection(rows, recipientTarget, executeCommand, corpseTarget);
 
     return (
         <section className="room-loot-corpse" aria-label={`Contents of ${corpseLabel}`}>
-            <button className="room-loot-corpse-toggle" type="button" onClick={toggleExpanded} aria-expanded={isExpanded}>
-                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-                <span>{isExpanded ? 'Hide contents' : contents === undefined ? 'Examine contents' : 'Show contents'}</span>
-                {isLoading && <span className="room-loot-loading">loading</span>}
-            </button>
-            {isExpanded && (
                 <div className="room-loot-corpse-body">
                     {contents === undefined ? <span className="room-loot-empty">Waiting for corpse contents…</span>
                         : rows.length === 0 ? <span className="room-loot-empty">Nothing visible inside.</span>
                             : rows.map(row => (
-                                <div className="room-loot-item-row" key={`${corpseId}:${row.id}`}>
-                                    <div className="room-loot-item-label">
-                                        <GearSelectionCheckbox checked={selectedIds.has(row.id)} label={`Select ${row.label}`}
-                                            onChange={() => toggleSelected(row.id)} />
-                                        <span title={row.label}>{row.label}</span>
-                                    </div>
-                                    <button type="button" onClick={() => takeOne(row)}>Take</button>
+                                <div className="room-loot-item-row" key={`${corpseId}:${row.id}`} data-selected={selectedIds.has(row.id) || undefined}>
+                                    <button type="button" className="room-loot-item-label" onClick={() => toggleSelected(row.id)} aria-pressed={selectedIds.has(row.id)}>
+                                        <span title={row.label}>{row.label}</span><small>&lt;{row.commandTarget}&gt;</small>
+                                    </button>
+                                    <GearSelectionCheckbox checked={selectedIds.has(row.id)} label={`Select ${row.label}`} onChange={() => toggleSelected(row.id)} />
                                 </div>
                             ))}
                     {selectedRows.length > 0 && (
-                        <div className="room-loot-selection-bar">
-                            <span>{selectedRows.length} selected</span>
-                            <button type="button" onClick={() => runTransfer(false)}>Take selected</button>
-                            <button type="button" onClick={() => runTransfer(true)}>Give to {recipientLabel}</button>
+                        <div className="room-loot-actions">
+                            <div className="room-loot-section-heading"><span>Actions</span></div>
+                            <button type="button" className="room-loot-command" disabled={isBusy} onClick={() => runTransfer(giveToMount)}>
+                                <span>{giveToMount ? 'get & give selected' : 'get selected'}</span>
+                                <small>{giveToMount ? `→ ${recipientLabel}` : selectedRows.length === 1 ? `<${getCommand(selectedRows[0].commandTarget)}>` : `${selectedRows.length} items`}</small>
+                            </button>
                         </div>
                     )}
                 </div>
-            )}
         </section>
     );
 };

@@ -8,11 +8,8 @@
 
 @keyframes immersion-edge-damage-pulse {
     0%, 100% {
-        border-color: var(--terrain-glow-color, rgba(255, 255, 255, 0.14));
-        box-shadow:
-            inset 0 0 0 1px rgba(232, 176, 32, 0.24),
-            inset 0 0 16px var(--terrain-glow-color, transparent),
-            inset 0 0 40px var(--terrain-glow-color, transparent);
+        border-color: var(--zone-frame-rim);
+        box-shadow: var(--zone-frame-shadow);
     }
     12%, 30% {
         border-color: #ff3434;
@@ -22,10 +19,9 @@
             inset 0 0 52px rgba(255, 0, 0, 0.48);
     }
     58% {
-        border-color: color-mix(in srgb, #ff3434 38%, var(--terrain-glow-color, rgba(255, 255, 255, 0.14)));
+        border-color: color-mix(in srgb, #ff3434 38%, var(--zone-frame-rim));
         box-shadow:
-            inset 0 0 0 1px rgba(232, 176, 32, 0.24),
-            inset 0 0 17px color-mix(in srgb, rgba(255, 32, 32, 0.3), var(--terrain-glow-color, transparent)),
-            inset 0 0 42px color-mix(in srgb, rgba(255, 0, 0, 0.2), var(--terrain-glow-color, transparent));
+            inset 0 0 12px 2px color-mix(in srgb, rgba(255, 32, 32, 0.7) 38%, var(--zone-frame-glow)),
+            inset 0 0 28px color-mix(in srgb, rgba(255, 0, 0, 0.48) 38%, var(--zone-frame-soft-glow));
     }
 }

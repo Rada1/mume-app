@@ -1,0 +1,28 @@
+/** @file MobileStateControls.css — Compact state buttons matching the command strip. */
+/* --- State Row Section --- */
+.mobile-input-state-controls {
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    flex-shrink:0;
+    gap:0;
+    margin-top:4px;
+    background:#171717;
+    z-index:21;
+}
+.mobile-input-state-controls .this-is-you-pill {
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    width:100%;
+    min-height:44px;
+    padding:5px 2px;
+    border:0;
+    border-radius:0;
+    background:#171717;
+    transform:none;
+}
+.mobile-input-state-controls .this-is-you-pill:is(:hover,.is-active) { background:#303030; }
+.mobile-input-state-controls .this-is-you-pill-category { font-size:9px; color:#c9c5b8; }
+.mobile-input-state-controls .this-is-you-pill-value { font-size:9px; font-weight:400; color:#b7a77e; text-transform:capitalize; }
+.mobile-input-state-controls .this-is-you-pill-arrow { display:none; }
+.app-container.kb-open .mobile-input-state-controls { display:none; }

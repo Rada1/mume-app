@@ -7,6 +7,7 @@
 import React, { createContext, useState, useRef, useEffect, useCallback, useMemo, useContext } from 'react';
 import { useGame, useLog, useUI, useVitals } from './GameContext';
 import { useMapData } from '../components/Mapper/hooks/useMapData';
+import { getDeletedMapMarkerIds } from '../utils/deletedMapMarkers';
 import { useMapPersistence } from '../components/Mapper/hooks/useMapPersistence';
 import { useMapperRoomCoordinates } from '../hooks/useMapperRoomCoordinates';
 import { useMapActions } from '../components/Mapper/hooks/useMapActions';
@@ -551,7 +552,11 @@ export const MapperProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             } catch (markerErr) {
                 console.warn("[Mapper] Could not load bundled map markers:", markerErr);
             }
-            if (Object.keys(bundledMarkers).length > 0) setMarkers(prev => ({ ...bundledMarkers, ...prev }));
+            if (Object.keys(bundledMarkers).length > 0) {
+                const deleted = getDeletedMapMarkerIds();
+                setMarkers(prev => Object.fromEntries(Object.entries({ ...bundledMarkers, ...prev })
+                    .filter(([id]) => !deleted.has(id))));
+            }
 
             if (showDebugEchoesRef.current) {
                 addMessageRef.current?.('system', `[Mapper] Bundled Base Map Loaded: ${Object.keys(data).length} rooms.`);

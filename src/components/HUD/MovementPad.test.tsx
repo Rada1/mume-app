@@ -137,4 +137,16 @@ describe('MovementPad Component', () => {
 
         expect(westBtn.classList.contains('is-key-pressed')).toBe(false);
     });
+    it('does not flash map buttons for typed directions, while clicks still flash them', () => {
+        render(<MovementPad layout="map" />);
+
+        const westBtn = screen.getByRole('button', { name: /West/i });
+        act(() => {
+            window.dispatchEvent(new CustomEvent('mume:movement-command-press', { detail: { cmd: 'w' } }));
+        });
+        expect(westBtn.classList.contains('is-key-pressed')).toBe(false);
+
+        act(() => westBtn.click());
+        expect(westBtn.classList.contains('is-key-pressed')).toBe(true);
+    });
 });

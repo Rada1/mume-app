@@ -628,6 +628,11 @@
     container-type: inline-size;
 }
 
+.message.room-block-end {
+    flex-direction: column;
+    align-items: stretch;
+}
+
 .room-block-header,
 .combat-block-header,
 .comm-block-header,
@@ -931,11 +936,10 @@
     text-shadow: none;
 }
 
-/* Zone name displayed in small, 25% transparent faded text in parentheses after room name */
+/* Zone name follows the room title at the same size, with reduced emphasis. */
 .message.is-room-name .room-zone-name,
-.room-zone-name,
-.regen-slow-note {
-    font-size: 0.78em;
+.room-zone-name {
+    font-size: 1em;
     font-weight: 400 !important;
     letter-spacing: normal !important;
     opacity: 0.50 !important;
@@ -949,6 +953,10 @@
     background: none !important;
     transform: none !important;
     -webkit-text-fill-color: currentColor !important;
+}
+
+.regen-slow-note {
+    font-size: 0.78em;
 }
 
 /* Interactive inline buttons, entity highlights, combat terms, room titles, and user input stay full brightness */
@@ -965,12 +973,16 @@
 .message-content strong,
 .message-content .keyword-highlight,
 .message-content .pc-highlighter,
-.message-content .npc-highlighter,
-.message-content .is-target,
+.message-content .npc-highlighter {
+    opacity: 1 !important;
+    filter: opacity(1) brightness(1.15);
+}
+
 .user-command-bubble,
 .user-command-bubble * {
     opacity: 1 !important;
-    filter: opacity(1) brightness(1.15);
+    filter: none !important;
+    text-shadow: none !important;
 }
 
 /* Info-type messages (Affected by, stat lines, score, affects) stay at full brightness */
@@ -1129,6 +1141,10 @@
     text-shadow: none !important;
 }
 
+.message.account-character-list .message-content .account-char-muted {
+    opacity: 0.5 !important;
+}
+
 .message-content .inline-btn[class*="inline-item-tier-"] {
     color: var(--inline-item-tier-color) !important;
     box-shadow: none;
@@ -1198,72 +1214,9 @@
 .inline-btn[data-category="account"] { --glow-color: var(--color-account); }
 .inline-btn[data-category="quest"] { --glow-color: var(--color-quest); }
 
-/* Dynamic Target Highlighting (Reactive) */
-.target-highlighter.is-target {
-    display: inline-block;
-    vertical-align: baseline;
-    border-radius: 4px;
-    padding: 0 3px;
-    font-weight: bold !important;
-    border: 0;
-    outline: none;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-target), transparent 82%);
-    background: color-mix(in srgb, var(--color-target), transparent 94%);
-    z-index: 1;
-}
-
-/* Pulse only the deliberately-clicked button (bounded count, so it stays cheap).
-   Opacity on a pseudo-element is composited — no per-frame repaint, no will-change. */
-.inline-btn.selected::after {
-    content: none;
-}
-
-/* Force standard color application */
+/* Preserve each inline entity's category color. */
 .inline-btn {
     color: var(--glow-color, inherit) !important;
-}
-
-/* Second-tap affordance shown only once a button is selected, signalling that
-   the selected inline entity now acts as a menu trigger. Skipped for room names. */
-.message-content .inline-btn.selected:not(.room-name-inline)::after {
-    content: '>';
-    display: inline-block;
-    margin-left: 0.25em;
-    padding: 0;
-    border: 0;
-    background: none;
-    font-family: var(--font-mono, monospace);
-    font-size: 0.9em;
-    font-weight: 800;
-    line-height: 1;
-    vertical-align: 0;
-    letter-spacing: 0;
-    opacity: 0.9;
-    color: var(--glow-color, currentColor);
-    pointer-events: none;
-}
-
-/* The selected entity owns the open action menu. Reflect that state in the
-   affordance without changing the compact, text-only selected treatment. */
-.message-content .inline-btn.selected.menu-active:not(.room-name-inline)::after {
-    content: '⌄';
-    margin-left: 0.2em;
-    font-size: 0.75em;
-    font-weight: 500;
-    opacity: 0.62;
-    vertical-align: 0.08em;
-}
-
-@media (max-width: 768px) {
-    .message-content .inline-btn.selected:not(.room-name-inline)::after {
-        content: '>';
-        font-size: 0.9em;
-    }
-
-    .message-content .inline-btn.selected.menu-active:not(.room-name-inline)::after {
-        content: '⌄';
-        font-size: 0.75em;
-    }
 }
 
 /* Pin inline player buttons to the blue used in the who-list
@@ -1634,16 +1587,16 @@
 }
 
 .user-command-bubble {
-    background: var(--command-surface-bg, rgba(255, 255, 255, 0.08));
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 16px;
-    padding: 8px 16px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
     width: fit-content;
     color: rgba(255, 255, 255, 0.95);
     font-weight: 500;
     font-size: 0.95em;
     font-family: var(--font-mono, var(--font-main));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    box-shadow: none;
     display: inline-flex;
     align-items: center;
     line-height: 1.45;
@@ -1661,33 +1614,30 @@
     font-weight: 500;
 }
 
+.sent-command-display * {
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+.sent-command-display {
+    padding: 2px 6px;
+    background: var(--command-panel-surface-raised, #292929);
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+}
+
 .user-command-bubble .user-command-expansion {
     opacity: 0.7;
 }
 
 .user-command-bubble.awaiting-response {
-    border-color: rgba(var(--accent-rgb, 212, 170, 0), 0.28);
-    box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.5),
-        0 0 10px rgba(var(--accent-rgb, 212, 170, 0), 0.12);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 .user-command-bubble.bloom-active::after,
 .user-command-bubble.bloom-exiting::after {
-    content: "";
-    position: absolute;
-    inset: -18px;
-    border-radius: 34px 34px 20px 34px;
-    pointer-events: none;
-    z-index: -1;
-    background:
-        radial-gradient(
-            closest-side,
-            rgba(var(--accent-rgb, 212, 170, 0), 0.44),
-            rgba(var(--accent-rgb, 212, 170, 0), 0.2) 54%,
-            transparent 100%
-        );
-    filter: blur(14px);
+    content: none;
 }
 
 .user-command-bubble.bloom-active::after {
@@ -2276,14 +2226,6 @@ span.inline-btn {
     background-color: transparent !important;
 }
 
-.inline-btn.active-target {
-    color: var(--target-color, #facc15) !important;
-    background: transparent !important;
-    border-radius: 4px;
-    border: 1.5px solid var(--target-color, #facc15);
-    box-shadow: none;
-}
-
 .inline-btn:hover,
 .inline-btn.drop-hover-active {
     background-color: rgba(255, 255, 255, 0.1) !important;
@@ -2310,8 +2252,7 @@ span.inline-btn {
 }
 
 .inline-btn.menu-active {
-    outline: 1px solid color-mix(in srgb, var(--glow-color, var(--accent)) 72%, transparent);
-    outline-offset: 2px;
+    outline: none;
 }
 
 
@@ -2321,59 +2262,12 @@ span.inline-btn {
     outline-offset: 1px;
 }
 
-.inline-btn.selected {
-    border-radius: 4px;
-    position: relative;
-    padding-left: 3px !important;
-    padding-right: 3px !important;
-    border: 0;
-    background: color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 90%) !important;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--glow-color, var(--color-target)), transparent 80%);
-    transform: none !important;
-    z-index: 10;
-}
-
 .inline-btn.is-opponent {
     border: none !important;
     box-shadow: none !important;
     animation: none !important;
     transform: none !important;
     z-index: 10;
-}
-
-/* When the opponent is also the active combat target, restore the full
-   target border (overriding .is-opponent's border:none). No background fill. */
-.inline-btn.is-opponent.target-highlighter.is-target,
-.inline-btn.is-opponent.active-target,
-.inline-btn.is-opponent.selected {
-    border: 0 !important;
-    background: color-mix(in srgb, var(--color-target), transparent 92%) !important;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-target), transparent 82%) !important;
-}
-
-/* A selected inline entity uses the same subdued material as a command bubble.
-   Its backing is a pseudo-element so selection never changes line metrics. */
-.message-content .inline-btn.selected,
-.message-content .inline-btn.menu-active {
-    background: none !important;
-    -webkit-text-fill-color: currentColor !important;
-    border: 0 !important;
-    padding: 0 !important;
-    box-shadow: none !important;
-    isolation: isolate;
-    z-index: 0;
-}
-
-.message-content .inline-btn.selected::before,
-.message-content .inline-btn.menu-active::before {
-    content: '';
-    position: absolute;
-    inset: -0.14em -0.32em;
-    z-index: -1;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 5px;
-    background: var(--command-surface-bg, rgba(255, 255, 255, 0.08));
-    pointer-events: none;
 }
 
 .message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
@@ -2917,6 +2811,25 @@ span.inline-btn {
     width: 100%;
 }
 
+.room-map-note {
+    display: block;
+    margin: 2px 0 2px 6px;
+    color: var(--text-muted, #9a9a9a);
+    font-size: 0.9em;
+    line-height: 1.4;
+    text-align: left;
+    white-space: pre-wrap;
+}
+
+.room-map-note-label {
+    font-style: normal;
+    font-weight: 600;
+}
+
+.room-map-note-text {
+    font-style: italic;
+}
+
 
 /* Light mode: log uses primary text color, not the dark-mode parchment */
 .light-mode .message-log {
@@ -2925,13 +2838,13 @@ span.inline-btn {
 
 /* Light mode: command bubbles */
 .light-mode .user-command-bubble {
-    background: #e9eaec;
-    border: 1px solid rgba(0, 0, 0, 0.14);
-    border-radius: 16px;
-    padding: 8px 16px;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
     color: #1a1a1a;
     text-shadow: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    box-shadow: none;
 }
 
 .light-mode .user-command-bubble .user-command-text {
@@ -3489,11 +3402,18 @@ span.inline-btn {
 
 .message-content .prompt-vital-value {
     -webkit-text-fill-color: currentColor !important;
-    opacity: 1 !important;
     filter: none !important;
 }
 
-.message-content .prompt-vital-value[data-vital-type="health"] {
+.message-content .prompt-vital-value.is-low-vital {
+    --low-vital-opacity: 1;
+    --low-vital-dim-opacity: .42;
+    animation: low-vital-pulse 1.25s ease-in-out infinite;
+}
+
+.message-content .prompt-vital-value[data-vital-type="health"],
+.message-content .prompt-vital-value[data-vital-type="opponentHealth"],
+.message-content .prompt-vital-value[data-vital-type="bufferHealth"] {
     --prompt-vital-full-color: #ff5555;
 }
 
@@ -3510,7 +3430,7 @@ span.inline-btn {
 }
 
 .message.prompt .message-content,
-.message.prompt .message-content span {
+.message.prompt .message-content span:not(.prompt-vital-value) {
     opacity: 1 !important;
     filter: none !important;
 }
@@ -3730,18 +3650,70 @@ span.inline-btn {
     -webkit-text-fill-color: currentColor;
     text-decoration-style: solid;
 }
-.message-content .inline-btn.selected:not(.room-name-inline),
-.message-content .inline-btn.menu-active:not(.room-name-inline) {
-    background: color-mix(in srgb, var(--glow-color, var(--accent)) 18%, transparent) !important;
-    text-decoration: underline !important;
-    text-decoration-style: solid !important;
-    text-decoration-thickness: 2px !important;
+.message-content .inline-btn.selected,
+.message-content .inline-btn.menu-active,
+.message-content .inline-btn.is-target,
+.message-content .inline-btn.target-highlighter,
+.message-content .inline-btn.active-target {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(201, 168, 76, 0.09) !important;
+    text-decoration: none !important;
     box-shadow: none !important;
+    outline: none !important;
 }
-.message-content .inline-btn.selected:not(.room-name-inline)::before,
-.message-content .inline-btn.menu-active:not(.room-name-inline)::before,
-.message-content .inline-btn.selected:not(.room-name-inline)::after,
-.message-content .inline-btn.menu-active:not(.room-name-inline)::after {
-    content: none !important;
+
+.message-content .inline-btn[data-target-kind="room"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(248, 250, 252, 0.1) !important;
+}
+.message-content .inline-btn[data-target-kind="enemy"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24)) !important;
+}
+.message-content .inline-btn[data-target-kind="ally"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(97, 194, 144, 0.12) !important;
+}
+.message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="room"] {
+    border-left: 0;
+    background: rgba(248, 250, 252, 0.1);
+}
+.message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="enemy"] {
+    border-left: 0;
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));
+}
+.message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="ally"] {
+    border-left: 0;
+    background: rgba(97, 194, 144, 0.12);
+}
+
+/* Targetable inline entities need a clearer presence against the dark immersion log. */
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"] {
+    filter: brightness(1.2) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(201, 168, 76, 0.16) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"][data-target-kind="room"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(248, 250, 252, 0.16) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"][data-target-kind="enemy"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24)) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"][data-target-kind="ally"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(97, 194, 144, 0.18) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .inline-btn[data-targetable="true"][data-target-kind="object"]:is(.selected, .menu-active, .is-target, .target-highlighter, .active-target) {
+    background: rgba(201, 168, 76, 0.16) !important;
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="room"] {
+    background: rgba(248, 250, 252, 0.16);
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="enemy"] {
+    background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="ally"] {
+    background: rgba(97, 194, 144, 0.18);
+}
+.app-container.immersion-mode:not(.light-mode) .message-content .target-highlighter.is-target:not(.inline-btn)[data-target-kind="object"] {
+    background: rgba(201, 168, 76, 0.16);
 }
 

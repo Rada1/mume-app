@@ -1,0 +1,29 @@
+/** @file MapPopupSurfaces.css — Shared terminal surfaces for map actions, routes, and search. */
+
+/* --- Floating map cards match the room information card --- */
+.map-popup-surface {
+    background: rgba(33, 27, 22, 0.97) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace !important;
+}
+
+.app-container.immersion-mode .map-popup-surface { background: #000 !important; }
+.app-container.performance-mode .map-popup-surface { background: #171717 !important; }
+
+.map-popup-surface * { font-family: inherit !important; }
+.map-popup-surface :is(button, input, select, textarea) {
+    border-color: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+.map-popup-surface :is(button, input, select, textarea):focus-visible {
+    outline: 1px solid #8b929c;
+    outline-offset: -1px;
+}
+
+/* The old route pointer used the brown surface color, so omit it on flat cards. */
+.map-go-there-popup.map-popup-surface::after { content: none; }

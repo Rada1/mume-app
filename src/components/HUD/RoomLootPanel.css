@@ -1,4 +1,4 @@
-/** @file RoomLootPanel.css — Minimal popover styling for room loot contents. */
+/** @file RoomLootPanel.css â€” Minimal popover styling for room loot contents. */
 /* --- Component Styles --- */
 .room-loot-overlay button { font: inherit; }
 
@@ -89,26 +89,6 @@
 .room-loot-panel-header strong { color: var(--room-loot-accent); font-size: 12px; }
 .room-loot-panel-header span { color: var(--room-loot-muted); font-size: 10px; }
 
-.room-loot-recipient {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 8px 11px;
-    color: var(--room-loot-muted);
-    border-bottom: 0;
-    font-size: 11px;
-}
-.room-loot-recipient select {
-    max-width: 58%;
-    padding: 5px 7px;
-    color: var(--room-loot-text);
-    border: 0;
-    border-radius: 0;
-    background: rgba(255, 255, 255, 0.04);
-    font-size: 11px;
-}
-
 .room-loot-list { display: grid; min-width: 0; gap: 6px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
 .room-loot-row { width: 100%; min-width: 0; box-sizing: border-box; padding: 7px 10px 0; }
 .room-loot-row-heading { width: 100%; min-width: 0; min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
@@ -141,3 +121,104 @@
         scrollbar-width: thin;
     }
 }
+
+/* --- Command workspace layout --- */
+.room-loot-panel { width: min(390px, calc(100vw - 24px)); padding: 16px; gap: 12px; box-sizing: border-box; background: rgba(30,25,21,.98); box-shadow: none; font-family: var(--font-mono, monospace); font-size: .72rem; --room-loot-text: #d9cfb7; --room-loot-muted: #8f8374; }
+.room-loot-panel-header { padding: 0 0 12px; border-bottom: 1px solid rgba(201,168,76,.2); }
+.room-loot-panel-header strong { display: flex; align-items: center; gap: 8px; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; }
+.room-loot-panel-header > button { border: 1px solid rgba(201,168,76,.24); border-radius: 3px; }
+.room-loot-list { display: flex; flex-direction: column; gap: 12px; }
+.room-loot-row { padding: 0; }
+.room-loot-section-heading { display: flex; align-items: center; gap: 8px; min-height: 28px; color: var(--room-loot-accent); font-size: .58rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; list-style: none; }
+summary.room-loot-section-heading { cursor: pointer; }
+.room-loot-section-heading::-webkit-details-marker { display: none; }
+.room-loot-section-heading::before { content: ''; flex: 0 0 10px; height: 1px; background: rgba(201,168,76,.2); }
+.room-loot-section-heading > span:first-child { display: flex; flex: 1; align-items: center; gap: 8px; min-width: 0; }
+.room-loot-section-heading > span:first-child::after { content: ''; flex: 1; height: 1px; background: rgba(201,168,76,.2); }
+.room-loot-section-heading small { padding: 0 4px; border: 1px solid rgba(201,168,76,.3); border-radius: 8px; font-size: .52rem; }
+details:not([open]) > .room-loot-section-heading > svg { transform: rotate(-90deg); }
+.room-loot-command { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 30px; padding: 7px; border: 0; background: transparent; color: var(--room-loot-accent); font: inherit; text-align: left; cursor: pointer; }
+.room-loot-command small, .room-loot-command-syntax { color: var(--room-loot-muted); font-size: inherit; font-weight: 400; }
+.room-loot-command:hover { background: var(--room-loot-hover); }
+.room-loot-give-action { display: flex; align-items: center; gap: 7px; }
+.room-loot-give-action > .room-loot-command { flex: 1; width: auto; }
+.room-loot-row-heading { flex-wrap: wrap; padding: 0 7px; }
+.room-loot-row-heading > .room-loot-command-syntax { color: var(--room-loot-muted); font-size: .65rem; }
+.room-loot-row-actions > button { border: 0; font-size: .65rem; }
+.room-loot-panel button:focus-visible, .room-loot-panel summary:focus-visible { outline: 1px solid #dfbf6c; outline-offset: -1px; }
+body:has(.app-container.immersion-mode) .room-loot-panel { border: 0; background: #000; }
+body:has(.app-container.performance-mode.immersion-mode) .room-loot-panel { background: #171717; }
+@media(max-width: 768px) { .room-loot-panel button, .room-loot-panel summary { min-height: 44px; } }
+
+/* --- Soft selection markers shared with the Target panel --- */
+.room-loot-panel .gear-selection-control {
+    flex-basis: 36px;
+    width: 36px;
+    min-height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #cbbda4;
+    transition: color 120ms ease;
+}
+.room-loot-panel .gear-selection-control:hover {
+    border: 0;
+    background: transparent;
+    color: #f0cb67;
+}
+.room-loot-panel .gear-selection-control:focus-visible {
+    outline: 2px solid rgba(201, 168, 76, 0.62);
+    outline-offset: 1px;
+}
+.room-loot-panel .gear-selection-box {
+    position: relative;
+    flex-basis: 18px;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 3px;
+    background: rgba(201, 168, 76, 0.055);
+    box-shadow: none;
+    color: transparent;
+    font-size: 0;
+}
+.room-loot-panel .gear-selection-control:hover .gear-selection-box {
+    background: rgba(40, 32, 23, 0.98);
+}
+.room-loot-panel .gear-selection-box::before { content: none; }
+.room-loot-panel .gear-selection-box::after { display: none; content: none; }
+.room-loot-panel .gear-selection-control.is-checked .gear-selection-box,
+.room-loot-panel .gear-selection-control.is-mixed .gear-selection-box {
+    border: 0;
+    background: rgba(201, 168, 76, 0.16);
+    box-shadow: none;
+    color: #f0cb67;
+}
+.room-loot-panel .gear-selection-control.is-checked .gear-selection-box::after,
+.room-loot-panel .gear-selection-control.is-mixed .gear-selection-box::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: auto;
+    height: auto;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 700 12px/1 var(--font-mono, monospace);
+    transform: translate(-50%, -55%);
+}
+.room-loot-panel .gear-selection-control.is-checked .gear-selection-box::after { content: '✓'; }
+.room-loot-panel .gear-selection-control.is-mixed .gear-selection-box::after { content: '−'; }
+
+/* --- Shared give-to-mount mode --- */
+.room-loot-transfer-mode { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; padding: 0 7px; }
+.room-loot-mount-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 30px; padding: 0; border: 0; background: transparent; color: var(--room-loot-muted); font: inherit; font-size: .62rem; text-align: left; cursor: pointer; }
+.room-loot-mount-toggle:hover, .room-loot-mount-toggle.is-enabled { color: var(--room-loot-accent); }
+.room-loot-toggle-track { position: relative; flex: none; width: 27px; height: 15px; border-radius: 8px; background: rgba(143,131,116,.38); transition: background-color 120ms ease; }
+.room-loot-toggle-track > span { position: absolute; top: 2px; left: 2px; width: 11px; height: 11px; border-radius: 50%; background: #c6bba6; transition: transform 120ms ease, background-color 120ms ease; }
+.room-loot-mount-toggle.is-enabled .room-loot-toggle-track { background: rgba(201,168,76,.55); }
+.room-loot-mount-toggle.is-enabled .room-loot-toggle-track > span { background: #f0cb67; transform: translateX(12px); }
+.room-loot-transfer-mode > select { max-width: 52%; min-width: 0; padding: 5px 7px; border: 1px solid rgba(201,168,76,.2); border-radius: 2px; color: var(--room-loot-text); background: #171717; font: inherit; font-size: .62rem; }

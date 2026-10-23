@@ -9,6 +9,7 @@ export interface GroundLootCandidate {
     id: string;
     label: string;
     commandTarget: string;
+    kind?: 'item' | 'corpse';
 }
 
 export const useRoomLootCandidates = (

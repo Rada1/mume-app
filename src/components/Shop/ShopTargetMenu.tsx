@@ -9,6 +9,7 @@ import { SHOP_BROWSE_CATEGORIES } from './shopBrowseCategories';
 import './ShopPanel.css';
 import './ShopPanelTerminal.css';
 import './ShopTargetMenu.css';
+import { formatMumePrice } from '../../utils/gameUtils';
 
 interface Props {
     executeCommand: ExecuteCommand;
@@ -50,6 +51,7 @@ export const ShopTargetMenu: React.FC<Props> = ({ executeCommand, onSelectTarget
         if (!query) return shopItems;
         return shopItems.filter(item => item.name.toLowerCase().includes(query)
             || item.price.toLowerCase().includes(query)
+            || formatMumePrice(item.price).includes(query)
             || String(item.num) === query);
     }, [search, shopItems]);
 

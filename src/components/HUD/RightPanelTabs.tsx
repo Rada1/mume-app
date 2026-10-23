@@ -3,7 +3,7 @@
  * @description Terminal heading and category tabs for the command panel.
  */
 
-import React, { FC } from 'react';
+import React, { FC, ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import type { MainTab } from './rightActionData';
@@ -14,6 +14,7 @@ interface RightPanelTabsProps {
     onSelect: (tab: MainTab) => void;
     skillsOnly?: boolean;
     onClose?: () => void;
+    aboveTabs?: ReactNode;
 }
 
 const TABS: { id: MainTab; label: string }[] = [
@@ -22,7 +23,7 @@ const TABS: { id: MainTab; label: string }[] = [
     { id: 'utility', label: 'Util' },
 ];
 
-export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect, skillsOnly = false, onClose }) => {
+export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSelect, skillsOnly = false, onClose, aboveTabs }) => {
     const closePanel = useCommandPanelStore(state => state.setIsOpen);
     const closeMobileSkills = useCommandPanelStore(state => state.setIsMobileOpen);
     return (
@@ -35,6 +36,7 @@ export const RightPanelTabs: FC<RightPanelTabsProps> = ({ activeTab, count, onSe
                 <X size={16} />
             </button>
         </div>
+        {aboveTabs}
         {!skillsOnly && <div className="right-panel-tabs" role="tablist" aria-label="Command categories">
             {TABS.map(tab => (
                 <button

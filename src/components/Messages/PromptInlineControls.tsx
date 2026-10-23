@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { PromptModeIndicators } from './PromptModeIndicators';
-import { getPromptVitalValueRanges } from '../../utils/promptVitalText';
+import { getPromptVitalValueRanges, type PromptVitalPercentages } from '../../utils/promptVitalText';
+import { isVitalLow } from '../../utils/vitalStatus';
 import type { Token } from '../../types';
 import { TokenRenderer } from './TokenRenderer';
 
@@ -77,21 +78,22 @@ const sliceTokens = (tokens: Token[], start: number, end: number): Token[] => {
     return result;
 };
 
-const renderPromptVitalsText = (text: string): React.ReactNode => {
+const renderPromptVitalsText = (text: string, promptVitalPercentages?: PromptVitalPercentages): React.ReactNode => {
     const ranges = getPromptVitalValueRanges(text);
     if (ranges.length === 0) return text;
 
     const parts: React.ReactNode[] = [];
     let cursor = 0;
     ranges.forEach((range, index) => {
+        const percent = range.vitalType ? promptVitalPercentages?.[range.vitalType] ?? range.percent : range.percent;
         if (range.start > cursor) parts.push(text.slice(cursor, range.start));
         parts.push(
             <span
                 key={`vital-${index}`}
-                className="prompt-vital-value"
-                data-vital-percent={range.percent === undefined ? undefined : ''}
+                className={`prompt-vital-value${isVitalLow(percent) ? ' is-low-vital' : ''}`}
+                data-vital-percent={percent === undefined ? undefined : ''}
                 data-vital-type={range.vitalType}
-                style={range.percent === undefined ? undefined : { '--prompt-vital-percent': `${range.percent}%` } as React.CSSProperties}
+                style={percent === undefined ? undefined : { '--prompt-vital-percent': `${percent}%` } as React.CSSProperties}
             >
                 {text.slice(range.start, range.end)}
             </span>
@@ -102,15 +104,15 @@ const renderPromptVitalsText = (text: string): React.ReactNode => {
     return <>{parts}</>;
 };
 
-export const PromptInlineControls: React.FC<{ text: string; tokens?: Token[] }> = ({ text, tokens }) => {
+export const PromptInlineControls: React.FC<{ text: string; tokens?: Token[]; promptVitalPercentages?: PromptVitalPercentages }> = ({ text, tokens, promptVitalPercentages }) => {
     const sourceText = tokens?.length ? tokens.map(token => token.content).join('') : text;
     const { before, after, beforeStart, beforeEnd, afterStart, afterEnd } = splitPromptText(sourceText);
     const beforeTokens = tokens?.length ? sliceTokens(tokens, beforeStart, beforeEnd) : undefined;
     const afterTokens = tokens?.length ? sliceTokens(tokens, afterStart, afterEnd) : undefined;
     const renderSegment = (segmentText: string, segmentTokens?: Token[]) =>
         segmentTokens?.length
-            ? <TokenRenderer tokens={segmentTokens} highlightPromptVitals />
-            : renderPromptVitalsText(segmentText);
+            ? <TokenRenderer tokens={segmentTokens} highlightPromptVitals promptVitalPercentages={promptVitalPercentages} />
+            : renderPromptVitalsText(segmentText, promptVitalPercentages);
 
     return (
         <span className="prompt-inline-controls">

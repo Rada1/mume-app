@@ -14,10 +14,20 @@ interface LayoutIndexedRoom {
     sundeath?: number | string;
     zone?: string;
     isPermanentSnow?: boolean;
+    mapFlagsEdited?: boolean;
+    mapAttributesEdited?: string[];
+    align?: string | number | null;
+    portable?: string | boolean | number | null;
+    ridable?: string | boolean | number | null;
+    mobFlags?: string[];
+    loadFlags?: string[];
     exits?: Record<string, {
         target?: string;
         closed?: boolean;
         hasDoor?: boolean;
+        mapFlagsEdited?: boolean;
+        flags?: string[];
+        doorFlags?: string[];
     }>;
 }
 
@@ -92,6 +102,11 @@ export const didCacheRelevantChange = (
         if (o.terrain !== n.terrain) return true;
         if (o.light !== n.light || o.sundeath !== n.sundeath) return true;
         if (o.zone !== n.zone || o.isPermanentSnow !== n.isPermanentSnow) return true;
+        if (o.mapFlagsEdited !== n.mapFlagsEdited) return true;
+        if (o.align !== n.align || o.portable !== n.portable || o.ridable !== n.ridable) return true;
+        if (o.mapAttributesEdited?.join('|') !== n.mapAttributesEdited?.join('|')) return true;
+        if ((o.mapFlagsEdited || n.mapFlagsEdited)
+            && (o.mobFlags?.join('|') !== n.mobFlags?.join('|') || o.loadFlags?.join('|') !== n.loadFlags?.join('|'))) return true;
 
         const oe = o.exits || {};
         const ne = n.exits || {};
@@ -104,6 +119,7 @@ export const didCacheRelevantChange = (
             const nx = ne[dir];
             if (!ox) return true;
             if (ox.target !== nx.target || ox.closed !== nx.closed || ox.hasDoor !== nx.hasDoor) return true;
+            if (ox.mapFlagsEdited !== nx.mapFlagsEdited || ox.flags?.join('|') !== nx.flags?.join('|') || ox.doorFlags?.join('|') !== nx.doorFlags?.join('|')) return true;
         }
     }
 

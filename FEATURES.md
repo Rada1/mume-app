@@ -2,6 +2,8 @@
 
 This document provides a comprehensive list of user-facing features available in the MUME (Middle-earth DREAMS) client application.
 
+[Client macros and keyboard bindings](docs/custom-keybindings.md) are available in Actions/Macros; dedicated mount/lead and directional action presets remain planned.
+
 ---
 
 ## 🗺️ Advanced Tolkien-esque Mapper
@@ -14,6 +16,7 @@ The client features a high-performance, hand-drawn aesthetic map system designed
 - **Persistence**: Automatically saves map data to local storage, uniquely tracked per character name.
 - **Export/Import**: Save and share your maps via JSON files.
 - **Room Info HUD**: A detailed panel showing room name, terrain, description, zone, and personal notes.
+- **Editable Markers & Room Icons**: Search, edit, and delete map markers with Undo; toggle resource/service flags in Room Info. See [map annotation editing](docs/map-annotations.md).
 
 > **Agent Context:** 
 > - **Logic**: `src/components/Mapper.tsx` (Current refactor target)
@@ -34,6 +37,7 @@ The client translates game text into visual atmospheric effects.
 
 ## 🔊 Proactive Sound System
 - **Custom Sound Triggers**: Upload your own audio files and set them to trigger on specific text patterns or Regular Expressions (Regex).
+- **Sound Editor Sections**: Separate Zone Music, Sound Effects, and UI Sounds tabs, with shared volume controls and channel-specific previews/overrides.
 - **Audio Feedback**: Built-in sound support for various game events to improve situational awareness.
 
 > **Agent Context:** 

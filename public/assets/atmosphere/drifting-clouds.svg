@@ -1,0 +1,57 @@
+<!-- @file drifting-clouds.svg — Softly lit cloud banks drifting behind an atmospheric veil. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 500" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="cloud-volume" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#d8e1e7" stop-opacity=".8"/>
+      <stop offset=".35" stop-color="#c1ced8" stop-opacity=".95"/>
+      <stop offset=".7" stop-color="#91a2b2" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#657a90" stop-opacity=".2"/>
+    </linearGradient>
+    <linearGradient id="cloud-light" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#e3e9ed" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#c4d1db" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="tile-fade">
+      <stop stop-color="white" stop-opacity="0"/>
+      <stop offset=".08" stop-color="white"/>
+      <stop offset=".92" stop-color="white"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+    <mask id="tile-edges" maskUnits="userSpaceOnUse" x="0" y="0" width="1200" height="500">
+      <rect width="1200" height="500" fill="url(#tile-fade)"/>
+    </mask>
+    <!-- Large billows break up the shapes before the veil softens their boundaries. -->
+    <filter id="cloud-veil" x="-20%" y="-35%" width="140%" height="170%">
+      <feTurbulence type="fractalNoise" baseFrequency=".008 .018" numOctaves="3" seed="19" result="billows"/>
+      <feDisplacementMap in="SourceGraphic" in2="billows" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+            <feGaussianBlur stdDeviation="11 9" result="soft-cloud"/>
+      <feTurbulence type="fractalNoise" baseFrequency=".012 .024" numOctaves="3" seed="71" result="density"/>
+      <feColorMatrix in="density" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  .7 0 0 0 .55" result="density-mask"/>
+      <feComposite in="soft-cloud" in2="density-mask" operator="in"/>
+      <feGaussianBlur stdDeviation="4 3"/>
+    </filter>
+    <filter id="distant-veil" x="-25%" y="-65%" width="150%" height="230%">
+      <feGaussianBlur stdDeviation="26 16"/>
+    </filter>
+  </defs>
+  <g mask="url(#tile-edges)">
+    <!-- Faint distant banks give depth between the nearer clouds. -->
+    <g fill="#b9c9d6" opacity=".16" filter="url(#distant-veil)">
+      <ellipse cx="350" cy="110" rx="190" ry="31"/>
+      <ellipse cx="905" cy="87" rx="145" ry="25"/>
+      <ellipse cx="700" cy="341" rx="230" ry="36"/>
+    </g>
+    <g filter="url(#cloud-veil)">
+      <path transform="translate(140 0)" fill="url(#cloud-volume)" d="M-70 175 C-26 133 13 151 43 121 C69 94 112 117 134 96 C165 68 199 106 228 103 C261 99 267 137 298 141 C331 145 348 174 334 200 C321 225 292 214 275 238 C249 270 217 249 185 263 C149 278 119 249 88 263 C51 278 29 246-8 252 C-45 257-78 224-70 175Z"/>
+      <path fill="url(#cloud-volume)" d="M425 130 C441 105 467 113 481 87 C498 57 533 77 551 59 C581 30 612 59 638 56 C670 52 681 86 708 84 C742 81 748 115 776 119 C806 124 819 154 798 177 C781 198 756 188 736 208 C709 235 678 213 650 227 C620 243 591 223 566 234 C535 249 515 219 484 224 C453 230 446 200 423 194 C395 187 401 150 425 130Z"/>
+      <path transform="translate(-170 60)" fill="url(#cloud-volume)" opacity=".87" d="M875 226 C894 199 920 214 941 187 C964 158 991 182 1017 165 C1045 145 1073 171 1096 167 C1126 161 1145 194 1171 193 C1202 191 1228 224 1249 231 L1260 302 C1226 320 1199 299 1175 319 C1146 344 1118 320 1093 333 C1064 347 1038 327 1011 336 C980 348 961 317 934 320 C901 324 900 292 879 285 C854 276 854 246 875 226Z"/>
+      <path fill="url(#cloud-volume)" opacity=".48" d="M200 359 C227 333 252 346 273 325 C296 302 321 325 344 313 C372 299 387 327 413 324 C444 320 462 347 484 351 C512 355 523 382 502 397 C476 417 454 399 432 415 C406 433 382 414 357 425 C329 438 311 414 283 422 C252 430 241 406 216 405 C192 404 175 379 200 359Z"/>
+      <!-- Broad, low contrast highlights suggest volume without a sharp sunlit rim. -->
+      <ellipse cx="277" cy="140" rx="104" ry="38" fill="url(#cloud-light)"/>
+      <ellipse cx="602" cy="107" rx="115" ry="41" fill="url(#cloud-light)"/>
+      <ellipse cx="887" cy="275" rx="107" ry="36" fill="url(#cloud-light)" opacity=".7"/>
+    </g>
+  </g>
+</svg>
+
+

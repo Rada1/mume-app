@@ -1,6 +1,8 @@
+/** @file DrawerResizeHandle.tsx — Shared pointer resizing and persisted drawer widths. */
 import React from 'react';
 
 interface Props {
+    label?: string;
     handleType: 'top' | 'bottom' | 'left' | 'right' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'log-left' | 'log-right';
     widthVar: string;
     leftVar?: string;
@@ -8,12 +10,14 @@ interface Props {
     rightVar?: string;
     bottomVar?: string;
     minWidth?: number;
+    minWidthPx?: number;
     maxWidth?: number;
     minHeight?: number;
     maxHeight?: number;
 }
 
 export const DrawerResizeHandle: React.FC<Props> = ({
+    label,
     handleType,
     widthVar,
     leftVar,
@@ -21,6 +25,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
     rightVar,
     bottomVar,
     minWidth = 10,
+    minWidthPx,
     maxWidth = 42,
     minHeight = 10,
     maxHeight = 90
@@ -34,7 +39,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         setIsDragging(true);
 
         const drawer = (e.currentTarget as HTMLElement).closest(
-            '.map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
+            '.unified-command-column, .popover-inspection-panel, .map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .client-panels-stack, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
         ) as HTMLElement | null;
         if (!drawer) return;
 
@@ -61,6 +66,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         const startRight = rightVar ? getVwVal(rightVar, 1) : 1;
         const startTop = topVar ? getVhVal(topVar, 6) : 6;
         const startBottom = bottomVar ? getVhVal(bottomVar, 6) : 6;
+        const minWidthVw = minWidthPx === undefined ? minWidth : (minWidthPx / window.innerWidth) * 100;
 
         const onMove = (me: PointerEvent) => {
             const dxVw = ((me.clientX - startX) / window.innerWidth) * 100;
@@ -80,23 +86,23 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             else if (handleType.includes('left') || handleType === 'left') {
                 if (leftVar) {
                     const rightEdge = startLeft + startWidth;
-                    const nextWidth = Math.max(minWidth, Math.min(maxWidth, rightEdge - (startLeft + dxVw)));
+                    const nextWidth = Math.max(minWidthVw, Math.min(maxWidth, rightEdge - (startLeft + dxVw)));
                     const actualDelta = nextWidth - startWidth;
                     document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
                     document.documentElement.style.setProperty(leftVar, `${Math.max(0, startLeft - actualDelta)}vw`);
                 } else {
-                    const nextWidth = Math.max(minWidth, Math.min(maxWidth, startWidth - dxVw));
+                    const nextWidth = Math.max(minWidthVw, Math.min(maxWidth, startWidth - dxVw));
                     document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
                 }
             } else if (handleType.includes('right') || handleType === 'right') {
                 if (rightVar) {
                     const leftEdge = startRight + startWidth;
-                    const nextWidth = Math.max(minWidth, Math.min(maxWidth, leftEdge - (startRight - dxVw)));
+                    const nextWidth = Math.max(minWidthVw, Math.min(maxWidth, leftEdge - (startRight - dxVw)));
                     const actualDelta = nextWidth - startWidth;
                     document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
                     document.documentElement.style.setProperty(rightVar, `${Math.max(0, startRight - actualDelta)}vw`);
                 } else {
-                    const nextWidth = Math.max(minWidth, Math.min(maxWidth, startWidth + dxVw));
+                    const nextWidth = Math.max(minWidthVw, Math.min(maxWidth, startWidth + dxVw));
                     document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
                 }
             }
@@ -162,7 +168,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         <div
             role="separator"
             aria-orientation={handleType.includes('left') || handleType.includes('right') ? 'vertical' : 'horizontal'}
-            aria-label={`Resize handle ${handleType}`}
+            aria-label={label || `Resize handle ${handleType}`}
             tabIndex={-1}
             className={`drawer-resize-handle drawer-resize-handle--${handleType}${isHovered ? ' is-hovered' : ''}${isDragging ? ' is-active' : ''}`}
             onPointerDown={handlePointerDown}

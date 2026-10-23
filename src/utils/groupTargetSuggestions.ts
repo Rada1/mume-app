@@ -5,16 +5,28 @@ import type { GroupMember, GmcpOccupant } from '../types';
 import { getRoomTargetSuggestions, isTargetSuggestionMatch, type CommandTargetSuggestion } from './commandSuggestionUtils';
 
 const normalize = (value: string | number | undefined): string => String(value ?? '').trim().toLowerCase();
+const normalizeName = (value: string | number | undefined): string => normalize(value)
+    .replace(/^[*-]+|[*-]+$/g, '')
+    .replace(/^\d+\./, '')
+    .replace(/^(?:a|an|the)\s+/, '')
+    .replace(/\s+/g, ' ');
 
 export const isGroupMemberOccupant = (entity: string | GmcpOccupant, groupMembers: GroupMember[]): boolean => {
-    const groupIds = new Set(groupMembers.map(member => normalize(member.id)));
-    const groupNames = new Set(groupMembers.flatMap(member => [normalize(member.name), normalize(member.label)]).filter(Boolean));
+    const groupNames = new Set(groupMembers.flatMap(member => [normalizeName(member.name), normalizeName(member.label)]).filter(Boolean));
     const id = typeof entity === 'string' ? undefined : entity.id;
     const values = typeof entity === 'string'
         ? [entity]
         : [entity.name, entity.short, entity.shortdesc, entity.keyword];
-    const names = values.map(value => normalize(value || '')).filter(Boolean);
-    return (id !== undefined && groupIds.has(normalize(id))) || names.some(name => groupNames.has(name));
+    const names = values.map(value => normalizeName(value || '')).filter(Boolean);
+    const matchesGroupName = names.some(name => groupNames.has(name));
+    const idMatchesMember = id !== undefined && groupMembers.some(member => {
+        if (normalize(member.id) !== normalize(id)) return false;
+        const memberNames = [normalizeName(member.name), normalizeName(member.label)].filter(Boolean);
+        return names.length === 0 || memberNames.length === 0 || names.some(name => memberNames.includes(name));
+    });
+    // Room character IDs and group IDs can collide across GMCP entity types.
+    // When both records have names, require those names to confirm the ID match.
+    return idMatchesMember || matchesGroupName;
 };
 
 export const getNonGroupmateRoomTargetSuggestions = (

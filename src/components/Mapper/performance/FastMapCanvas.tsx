@@ -3,7 +3,7 @@
  */
 // --- Logic Section ---
 
-import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { MapCanvasProps } from '../MapCanvas';
 import { perfMonitor } from '../../../utils/perfMonitor';
 import { FastMapWorkerClient } from './client';
@@ -17,6 +17,7 @@ import { createDoorStateSnapshot, updateDoorStateSnapshot, type DoorStateSnapsho
 import { buildSearchOverlay } from './searchOverlayAdapter';
 import { FastMapGroupMemberSync } from './FastMapGroupMemberSync';
 import { sendFastMapExploration, sendFastMapFrame } from './sendFastMapFrame';
+import { applyLocalMapFlagEdits, roomFlagEditSignature } from './localMapEdits';
 
 interface FastMapCanvasProps {
   mapProps: MapCanvasProps;
@@ -33,7 +34,8 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
   const canvasRef = (forwardedRef as React.RefObject<HTMLCanvasElement>) || internalRef;
   const clientRef = useRef<FastMapWorkerClient | null>(null);
   const didInitialCenterRef = useRef(false);
-  const sourceRef = useRef<{ tuples: object; canonical: object | null; revision: number } | null>(null);
+  const sourceRef = useRef<{ tuples: object; canonical: object | null; revision: number; flags: string } | null>(null);
+  const flagEdits = useMemo(() => roomFlagEditSignature(props.mapProps.rooms), [props.mapProps.rooms]);
   const doorStateRef = useRef<DoorStateSnapshot | null>(null);
   const labelSourceRef = useRef<{ labels: object; regionLabels: object | null } | null>(null);
   const lastRoomIdRef = useRef<string | null>(null);
@@ -108,13 +110,13 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       const revision = props.mapProps.performanceMapRevision ?? 0;
       const loaded = sourceRef.current;
       const labelsChanged = labelSourceRef.current?.labels !== labels || labelSourceRef.current?.regionLabels !== regionLabels;
-      if (loaded?.tuples === source && loaded.canonical === canonical && loaded.revision === revision) {
+      if (loaded?.tuples === source && loaded.canonical === canonical && loaded.revision === revision && loaded.flags === flagEdits) {
         if (doorStateRef.current) {
           const changes = updateDoorStateSnapshot(doorStateRef.current, props.mapProps.rooms, source, props.mapProps.currentRoomId);
           if (changes.length) clientRef.current?.setDoorStates(changes);
         }
         if (labelsChanged) {
-          clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
+          clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true }), ...labelsFrom(regionLabels)]);
           labelSourceRef.current = { labels, regionLabels };
         }
         sendLatestFrame();
@@ -123,14 +125,17 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       if (!canonical && Object.keys(source).length === 0) return false;
       try {
         const adapted = canonical ? adaptWebCockpitMap(canonical) : adaptMumeMap(source);
+        applyLocalMapFlagEdits(adapted.map, props.mapProps.rooms);
+        // Editable marker state supplies text labels; retain canonical lines/arrows.
+        if (canonical && adapted.map.infomarks) adapted.map.infomarks.text.fill('');
         const doors = createDoorStateSnapshot(adapted.map, props.mapProps.rooms, source);
         adapted.map.doorOpen?.set(doors.open);
         doorStateRef.current = doors;
         setMapLoaded(false);
         clientRef.current?.loadMap(adapted);
         sendFastMapExploration(props.mapProps, clientRef.current);
-        clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true, excludeIdPrefix: canonical ? 'mm2_' : undefined }), ...labelsFrom(regionLabels)]);
-        sourceRef.current = { tuples: source, canonical, revision };
+        clientRef.current?.setLabels([...labelsFrom(labels, { fontSizeScale: 2.2, markerStyle: true }), ...labelsFrom(regionLabels)]);
+        sourceRef.current = { tuples: source, canonical, revision, flags: flagEdits };
         labelSourceRef.current = { labels, regionLabels };
         sendLatestFrame();
         return true;
@@ -146,7 +151,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
       if (tryLoadMap() || attempts >= 40) window.clearInterval(timer);
     }, 250);
     return () => window.clearInterval(timer);
-  }, [props.mapProps.renderVersion, props.mapProps.rooms, props.mapProps.preloadedCoordsRef, props.mapProps.performanceMapRef, props.mapProps.performanceMapRevision, props.mapProps.currentRoomId, sendLatestFrame]);
+  }, [flagEdits, props.mapProps.markers, props.mapProps.regionLabels, props.mapProps.renderVersion, props.mapProps.rooms, props.mapProps.preloadedCoordsRef, props.mapProps.performanceMapRef, props.mapProps.performanceMapRevision, props.mapProps.currentRoomId, sendLatestFrame]);
 
   useEffect(() => sendFastMapExploration(props.mapProps, clientRef.current), [props.mapProps.exploredVnums, props.mapProps.unveilMap, props.mapProps.treatMapAsExplored]);
 

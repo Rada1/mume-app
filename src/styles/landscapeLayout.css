@@ -79,12 +79,6 @@
     flex: 0 0 auto;
 }
 
-.app-container.is-rotated-landscape .rotated-status-panel .action-box {
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    margin: 0 !important;
-}
-
 /* --- Keep the character panel layout and turn each text run upright --- */
 
 .app-container.is-rotated-landscape .this-is-you-console :is(
@@ -105,7 +99,6 @@
     .this-is-you-combat-heading > span,
     .this-is-you-capabilities-row > span,
     .this-is-you-mode-row,
-    .this-is-you-wimpy-badge,
     .this-is-you-no-buffs,
     .this-is-you-buff-badge
 ) {
@@ -131,6 +124,11 @@
     container-type: size;
 }
 
+.app-container.is-rotated-landscape .command-docked-panel {
+    transform: rotate(-90deg);
+    transform-origin: center;
+}
+
 /* --- Counter-rotate the log and map inside their unchanged panel bounds --- */
 
 .app-container.is-rotated-landscape .rotated-log-display,
@@ -154,6 +152,11 @@
 
 .app-container.is-rotated-landscape .mobile-map-command-overlay .custom-btn {
     rotate: -90deg;
+    transform-origin: center;
+}
+
+.app-container.is-rotated-landscape .mobile-map-panel .movement-pad-map {
+    transform: rotate(-90deg);
     transform-origin: center;
 }
 

@@ -5,7 +5,7 @@
 
 /* --- Layout Section --- */
 .group-status-panel {
-    --group-status-surface: rgba(35, 28, 22, 0.98);
+    --group-status-surface: var(--command-panel-surface, #211b16);
     --group-status-text: #d4cdb8;
     --group-status-muted: #a99c86;
     --group-status-accent: #dfbf6c;
@@ -29,6 +29,15 @@
 .app-container .docked-panel.group-status-panel {
     background: var(--group-status-surface) !important;
     color: var(--group-status-text);
+}
+
+.group-status-vital-hits { color: #ff6b6b; font-weight: 800; opacity: .62; }
+.group-status-vital-mana { color: #c084fc; font-weight: 800; opacity: .62; }
+.group-status-vital-moves { color: #86efac; font-weight: 800; opacity: .62; }
+.group-status-vital.is-low-vital {
+    --low-vital-opacity: .62;
+    --low-vital-dim-opacity: .28;
+    animation: low-vital-pulse 1.25s ease-in-out infinite;
 }
 
 .docked-panel.group-status-panel--map-overlay {
@@ -175,3 +184,38 @@
         max-width: none;
     }
 }
+
+/* --- Client Corner Section --- */
+.app-container .docked-panel.group-status-panel.group-status-panel--client-corner {
+    position:fixed !important;
+    top:calc(env(safe-area-inset-top, 0px) + 52px) !important;
+    right:0 !important;
+    bottom:auto !important;
+    left:auto !important;
+    width:min(var(--desktop-group-width, 30vw), 100vw) !important;
+    min-width:min(320px, 100vw);
+    max-width:100vw;
+    height:auto !important;
+    max-height:calc(100dvh - 120px);
+    background:var(--group-status-surface) !important;
+    backdrop-filter:none !important;
+    -webkit-backdrop-filter:none !important;
+    pointer-events:auto;
+}
+
+/* --- Room Entity Sections --- */
+.room-entities-panel-content { flex:1 1 auto; min-height:0; overflow:auto; padding:0 4px 12px; }
+.room-entities-section-heading { display:flex; align-items:center; gap:7px; width:calc(100% - 16px); margin:12px 8px 4px; color:#a39b8b; font:10px Arial,Helvetica,sans-serif; font-weight:500; letter-spacing:.06em; text-transform:uppercase; }
+.room-entities-section-heading::before,.room-entities-section-heading::after { content:""; display:block; height:0; border-top:1px solid rgba(201,168,76,.22); }
+.room-entities-section-heading::before { flex:0 0 10px; }
+.room-entities-section-heading::after { flex:1 1 auto; }
+.room-entities-empty { margin:8px; color:#9b927c; font-size:11px; }
+.room-entity-target { display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; min-height:33px; padding:8px; border:0; border-radius:0; background:transparent; color:#c9c5bc; font:11px var(--font-mono,monospace); text-align:left; cursor:pointer; }
+.room-entity-target > span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.room-entity-target > small { flex:none; color:#9b927c; font-size:9px; }
+.room-entity-target:hover,.room-entity-target:focus-visible,.room-entity-target[aria-pressed=true] { background:#303030; }
+.room-group-member-target { padding:0; border:0; border-radius:0; background:transparent; font:inherit; text-align:left; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.room-group-member-target:hover,.room-group-member-target:focus-visible { background:#303030; }
+.room-entity-target.is-targeted { background:var(--active-target-highlight-background, rgba(127,29,29,.24)); }
+.room-entity-target .room-entity-target-indicator { display:inline-flex; flex:none; align-items:center; gap:5px; color:#fca5a5; }
+.room-entity-target-indicator small { font-size:9px; }

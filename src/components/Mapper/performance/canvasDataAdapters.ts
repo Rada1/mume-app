@@ -67,7 +67,8 @@ export function labelsFrom(
       text,
       anchor: markerStyle ? 'mmapper' : 'center',
       rotation: typeof record.infomarkAngle === 'number' ? record.infomarkAngle : 0,
-      fontSize: fontSize * (options.fontSizeScale ?? 1),
+      fontSize: fontSize * (markerStyle && typeof record.id === 'string' && record.id.startsWith('mm2_')
+        ? 1.8 : options.fontSizeScale ?? 1),
       color: markerAppearance?.color ?? (markerStyle ? 0xffffff : cssHexColor(record.color)),
       backgroundColor: markerAppearance?.backgroundColor,
       backgroundAlpha: markerAppearance?.backgroundAlpha,

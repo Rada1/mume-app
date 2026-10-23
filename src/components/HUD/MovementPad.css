@@ -1,3 +1,5 @@
+/** @file MovementPad.css — Directional controls for the mobile guide and map overlay. */
+
 .movement-pad {
     flex: 0 0 auto;
     display: grid;
@@ -121,6 +123,16 @@
     color: #e5c368;
 }
 
+.movement-pad-cell.is-open-door {
+    color: #d97706;
+    border-color: rgba(217, 119, 6, 0.62);
+    background: rgba(217, 119, 6, 0.1);
+}
+
+.movement-pad-cell.is-open-door .movement-pad-label {
+    color: #d97706;
+}
+
 /* Dimmed/non-valid movement directions */
 .movement-pad-cell.is-dimmed {
     opacity: 0.28;
@@ -228,16 +240,6 @@
 
 .light-mode .movement-pad-label {
     color: #475569;
-}
-
-@media (min-width: 1025px) {
-    .movement-pad {
-        grid-template-columns: repeat(3, 54px);
-        grid-template-rows: repeat(3, 54px);
-        gap: 0;
-        padding: 0;
-        background: transparent;
-    }
 }
 
 @media (max-width: 760px) {

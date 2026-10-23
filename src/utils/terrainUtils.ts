@@ -22,3 +22,23 @@ export const normalizeTerrain = (t: string): string => {
 
     return low.replace(/\s+/g, '-');
 };
+
+// --- Logic Section ---
+const OUTDOOR_STAR_TERRAINS = new Set(['field', 'forest', 'brush', 'water', 'road', 'mountain', 'hills', 'city']);
+const OUTDOOR_STAR_TERRAIN_CODES = new Set(['1', '2', '3', '4', '5', '6', '7', '8', '10', '11', '12']);
+
+/** Returns whether a room has an open enough sky to show faint night stars. */
+export const isOutdoorTerrain = (terrain: string | null | undefined): boolean => {
+    if (!terrain) return false;
+
+    const rawTerrain = terrain.trim().toLowerCase();
+    if (/under\s*water|underwater|indoor|inside|interior|building|tunnel|cave|underground|mine|crypt|cavern|basement|cellar/.test(rawTerrain)) {
+        return false;
+    }
+
+    if (OUTDOOR_STAR_TERRAIN_CODES.has(rawTerrain) || /^(outdoor|outside|open air|wilderness)$/.test(rawTerrain)) {
+        return true;
+    }
+
+    return OUTDOOR_STAR_TERRAINS.has(normalizeTerrain(terrain));
+};

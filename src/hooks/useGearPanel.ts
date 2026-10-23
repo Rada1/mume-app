@@ -1,11 +1,15 @@
 /** @file useGearPanel.ts — Captured gear lists, refresh, and container expansion. */
 import { useMemo } from 'react';
+import { useGearPanelStore } from '../stores/useGearPanelStore';
+import { useGearPanelData } from './useGearPanelData';
 import { useGame, useUI } from '../context/GameContext';
 import type { DrawerLine } from '../types';
 import { getContainerCommand, getGearRecipients, sortWornGearRows, toGearRow, toNearbyGearRows, type GearRow } from '../utils/gearPanelUtils';
 
 // --- Logic Section ---
-export function useGearPanel() {
+export function useGearPanel(loadOnOpen = false, wornOpen = true, inventoryOpen = true) {
+    const isOpen = useGearPanelStore(state => state.isOpen);
+    const panelData = useGearPanelData(loadOnOpen && isOpen && wornOpen, loadOnOpen && isOpen && inventoryOpen);
     const { displayEqLines, displayInventoryLines } = useUI();
     const {
         viewport, triggerHaptic, executeCommand, parser,
@@ -24,11 +28,9 @@ export function useGearPanel() {
         return getGearRecipients(sources, characterName || '');
     }, [characterName, roomChars, roomNpcs, roomPlayers]);
 
-    // Initial snapshots are requested centrally by useGameParser. Avoid a second
-    // startup pair here because each request rewrites the shared capture stage.
     const refresh = (section: 'worn' | 'carried') => {
         triggerHaptic?.(10);
-        executeCommand(section === 'worn' ? 'equipment' : 'inventory', true, true, false, true);
+        panelData.request(section === 'worn' ? 'equipment' : 'inventory', true);
     };
 
     const toggleContainer = (line: DrawerLine, lines: DrawerLine[]) => {
@@ -61,6 +63,6 @@ export function useGearPanel() {
         executeCommand(command, true, true, false, true);
     };
 
-    return { viewport, worn, carried, nearby, roomItemLines, recipients, displayEqLines, displayInventoryLines,
+    return { viewport, worn, carried, nearby, roomItemLines, recipients, displayEqLines, displayInventoryLines, panelData,
         expandedContainers, containerContents, refresh, toggleContainer, refreshContainer, executeCommand, triggerHaptic };
 }

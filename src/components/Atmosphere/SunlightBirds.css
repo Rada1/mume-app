@@ -1,0 +1,58 @@
+/** @file SunlightBirds.css — Occasional distant silhouettes behind the daylight veil. */
+
+/* --- Distant motion inside the sunlight corner --- */
+.client-sunlight-birds {
+    position: absolute;
+    inset: 0;
+    z-index: 22;
+    pointer-events: none;
+    overflow: hidden;
+    mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, var(--sunlight-fade-stops));
+    -webkit-mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, var(--sunlight-fade-stops));
+}
+
+.client-sunlight-birds span {
+    position: absolute;
+    right: 9%;
+    top: 9%;
+    width: 7px;
+    height: 3px;
+    border-radius: 60% 35% 50% 40%;
+    background: #202936;
+    filter: blur(1.2px);
+    opacity: 0;
+    animation: distant-bird-pass 37s linear 7s infinite;
+}
+
+.client-sunlight-birds span:nth-child(2) {
+    top: 16%;
+    width: 5px;
+    height: 2px;
+    animation-duration: 49s;
+    animation-delay: 13s;
+}
+
+.client-sunlight-birds span:nth-child(3) {
+    top: 5%;
+    width: 6px;
+    animation-duration: 61s;
+    animation-delay: 4s;
+}
+
+/* --- Brief glides separated by long empty intervals --- */
+@keyframes distant-bird-pass {
+    0% { opacity: 0; transform: translate(8vw, 4vh) rotate(-8deg); }
+    3% { opacity: 0.32; }
+    10% { opacity: 0.38; transform: translate(-9vw, -1vh) rotate(5deg); }
+    18% { opacity: 0; transform: translate(-25vw, 2vh) rotate(-4deg); }
+    100% { opacity: 0; transform: translate(-25vw, 2vh) rotate(-4deg); }
+}
+
+/* --- Keep animated texture out of performance and reduced-motion modes --- */
+.app-container.performance-mode .environment-root.front > .client-sunlight-birds {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .client-sunlight-birds { display: none; }
+}

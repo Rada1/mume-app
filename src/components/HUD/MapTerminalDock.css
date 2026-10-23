@@ -14,8 +14,8 @@
         border-radius: 0 !important;
         background: transparent !important;
         box-shadow: none !important;
-        backdrop-filter: blur(5px) !important;
-        -webkit-backdrop-filter: blur(5px) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 
     .app-container .left-drawer-stack .drawer-resize-handle--right::after {
@@ -39,8 +39,8 @@
         border: 0 !important;
         background: transparent !important;
         box-shadow: none !important;
-        backdrop-filter: blur(5px) !important;
-        -webkit-backdrop-filter: blur(5px) !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 
 }
@@ -63,4 +63,24 @@
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
+}
+
+/* --- Map Canvas Layout --- */
+@media (min-width: 1025px) {
+    .app-container .left-drawer-stack .map-drawer-desktop .drawer-content {
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+    }
+
+    .app-container .left-drawer-stack .map-canvas-full-viewport {
+        position: relative !important;
+        inset: auto !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: hidden;
+    }
+
 }

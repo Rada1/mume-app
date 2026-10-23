@@ -4,6 +4,7 @@ import { MapperRoom, MapperMarker } from '../mapperTypes';
 import { GRID_SIZE, getGateState } from '../mapperUtils';
 import { getMapOccupantTargets, MapOccupantTarget } from '../occupantTargets';
 import { COLOR_NPC, COLOR_PLAYER } from '../../../utils/categorizationUtils';
+import { hitsMapMarker } from '../../../utils/mapMarkerHit';
 import type { GmcpOccupant, GroupMember, InlineCategoryConfig } from '../../../types';
 
 interface UseMapHitTestProps {
@@ -110,18 +111,16 @@ export const useMapHitTest = ({
     const getMarkerAt = useCallback((wx: number, wy: number) => {
         const markersToSearch = markersRef.current;
         const roomsToSearch = roomsRef.current;
-        const currentZ = currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0;
+        const currentZ = viewZ ?? (currentRoomIdRef.current ? (roomsToSearch[currentRoomIdRef.current]?.z || 0) : 0);
         const z = cameraRef.current.zoom;
         for (const key in markersToSearch) {
             const m = markersToSearch[key];
             if ((m.z || 0) !== currentZ) continue;
-            const dx = m.x * GRID_SIZE - wx;
-            const dy = m.y * GRID_SIZE - wy;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < (20 / z)) return key;
+            const worker = canvasRef.current?.dataset.mapRenderer?.endsWith('-worker') ?? false;
+            if (hitsMapMarker(m, wx, wy, z, worker)) return key;
         }
         return null;
-    }, [cameraRef, currentRoomIdRef, markersRef, roomsRef]);
+    }, [cameraRef, canvasRef, currentRoomIdRef, markersRef, roomsRef, viewZ]);
 
     const getExitAt = useCallback((wx: number, wy: number) => {
         const roomId = getRoomAt(wx, wy);

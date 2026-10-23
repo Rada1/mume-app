@@ -36,7 +36,10 @@ export const isRoomItemPresenceLine = (
     || /^there\s+are\s+.+\s+here\b/i.test(textOnly.trim())
     || parseRoomSurfaceItemList(textOnly) !== null;
 
-export const getPlainRoomObjectDescription = (textOnly: string): string | null => {
+export const getPlainRoomObjectDescription = (textOnly: string, cleanLine = ''): string | null => {
+    // A character's posture is not an untagged object description.
+    const decoded = cleanLine.replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+    if (/<(?:character|player|npc|mount|ally|enemy|neutral)\b/i.test(decoded)) return null;
     const line = textOnly.trim();
     const singleItem = line.match(/^(?:a|an|some)\s+(.+?)\s+(?:(?:is\s+)?(?:lying|lies|lie|resting|rests|rest|sitting|sits|sit|standing|stands|waiting|waits|is))\s+here(?:\s+\([^)]*\))?[.!]?$/i);
     const countedItems = line.match(/^there\s+(?:are|is)\s+(.+?)\s+here(?:\s+\([^)]*\))?[.!]?$/i);
@@ -60,7 +63,7 @@ export const getRoomObjectEntityNames = (tokens: Token[]): string[] => {
     return tokens.flatMap(token => {
         if (token.type !== 'entity') return [];
         const kind = token.metadata?.kind?.toLowerCase();
-        if (['character', 'player', 'npc', 'enemy', 'neutral', 'ally'].includes(kind || '')) {
+        if (['character', 'player', 'npc', 'enemy', 'neutral', 'ally', 'mount'].includes(kind || '')) {
             characterSeen = true;
             return [];
         }

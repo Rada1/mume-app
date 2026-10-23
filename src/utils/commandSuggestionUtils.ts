@@ -13,7 +13,8 @@ import { normalizeOccupantType } from '../services/classification/normalizeOccup
 import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
 import {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomInspectionTargetSuggestions,
+    getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 } from '../objects/roomTargetSuggestions';
 import {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
@@ -25,7 +26,8 @@ export { makeCommandTargetSuggestion };
 export type { CommandTargetSuggestion };
 export {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomInspectionTargetSuggestions,
+    getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 };
 export {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
@@ -218,7 +220,7 @@ export const MUME_SOCIAL_COMMANDS = [
     'laugh', 'lick', 'love', 'moan', 'mumble', 'no', 'nod', 'poke',
     'ponder', 'pout', 'purr', 'ruffle', 'shiver', 'shrug', 'sigh', 'slap',
     'smile', 'smirk', 'snap', 'sneeze', 'snicker', 'sniff', 'snore', 'spit',
-    'stare', 'strut', 'thank', 'think', 'tickle', 'wave', 'wink', 'yawn', 'yes'
+    'stare', 'strut', 'thank', 'think', 'tickle', 'wave', 'wink', 'yawn'
 ];
 
 export const getSocialTargetSuggestions = (): CommandTargetSuggestion[] => (

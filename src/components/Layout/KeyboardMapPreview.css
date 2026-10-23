@@ -1,5 +1,5 @@
 /* @file KeyboardMapPreview.css
- * @description Keeps the existing mobile map visible as a passive keyboard overlay.
+ * @description Renders the mobile minimap at its own size with touch panning.
  */
 
 /* --- Keyboard Map Preview --- */
@@ -16,13 +16,13 @@
         flex: none !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
-        border: 1px solid rgba(201, 168, 76, 0.42) !important;
+        border: 0 !important;
         border-radius: 8px !important;
-        background: rgba(8, 10, 14, 0.94) !important;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+        background: transparent !important;
+        box-shadow: none !important;
         opacity: 1 !important;
         visibility: visible !important;
-        pointer-events: none !important;
+        pointer-events: auto !important;
         z-index: 7900 !important;
     }
 
@@ -40,23 +40,23 @@
 .app-container.is-mobile:is(.kb-open, .readability-mode) .mobile-map-panel .mobile-mapper-touch-surface {
         display: block !important;
         position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        right: auto !important;
-        bottom: auto !important;
-        width: var(--keyboard-map-source-width, 100vw) !important;
-        height: var(--keyboard-map-source-height, 40vh) !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
         max-width: none !important;
         min-height: 0 !important;
         overflow: hidden !important;
-        transform: translate(-50%, -50%) scale(var(--keyboard-map-preview-scale, 0.3)) !important;
+        transform: none !important;
         transform-origin: center center !important;
-        pointer-events: none !important;
+        pointer-events: auto !important;
     }
 
 .app-container.is-mobile:is(.kb-open, .readability-mode) .mobile-map-panel .mapper-container,
 .app-container.is-mobile:is(.kb-open, .readability-mode) .mobile-map-panel .map-canvas {
-        pointer-events: none !important;
+        pointer-events: auto !important;
     }
 
 body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-room-info-panel,
@@ -68,6 +68,59 @@ body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-conte
 .app-container.is-mobile:is(.kb-open, .readability-mode) .mobile-map-panel .map-canvas {
         mask-image: none !important;
         -webkit-mask-image: none !important;
+    }
+
+    /* --- Readability Map Sizing --- */
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop {
+        width: clamp(136px, 38vw, 168px) !important;
+        height: clamp(136px, 38vw, 168px) !important;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map {
+        z-index: 25;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: repeat(3, minmax(0, 1fr));
+        padding: 5px;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map .movement-pad-cell,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map .movement-pad-cell {
+        width: clamp(34px, 10vw, 40px);
+        height: clamp(34px, 10vw, 40px);
+        min-width: 34px;
+        min-height: 34px;
+        gap: 0;
+        padding: 4px;
+        border-radius: 8px;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map .movement-pad-cell svg,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map .movement-pad-cell svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map .movement-pad-label,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map .movement-pad-label,
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-door-actions,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-door-actions {
+        display: none;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map .movement-pad-flee-group,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map .movement-pad-flee-group {
+        width: clamp(34px, 10vw, 40px);
+        height: clamp(34px, 10vw, 40px);
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel .movement-pad-map .movement-pad-wimpy,
+    .app-container.is-mobile.is-landscape.readability-mode:not(.kb-open) .map-drawer-desktop .movement-pad-map .movement-pad-wimpy {
+        top: -2px;
+        right: -4px;
+        padding: 2px 3px;
+        font-size: 0.44rem;
     }
 
     /* Landscape keeps the same map in the left drawer. */
@@ -97,13 +150,13 @@ body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-conte
         flex: none !important;
         transform: none !important;
         overflow: hidden !important;
-        border: 1px solid rgba(201, 168, 76, 0.42) !important;
+        border: 0 !important;
         border-radius: 8px !important;
-        background: rgba(8, 10, 14, 0.94) !important;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+        background: transparent !important;
+        box-shadow: none !important;
         opacity: 1 !important;
         visibility: visible !important;
-        pointer-events: none !important;
+        pointer-events: auto !important;
     }
 
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop > .drawer-header,
@@ -116,20 +169,61 @@ body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-conte
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .map-canvas-full-viewport,
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .mapper-container,
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .map-canvas {
-        pointer-events: none !important;
+        pointer-events: auto !important;
     }
 
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .map-canvas-full-viewport {
-        top: 50% !important;
-        left: 50% !important;
-        width: var(--keyboard-map-source-width, var(--desktop-map-width, 30vw)) !important;
-        height: var(--keyboard-map-source-height, 80vh) !important;
-        transform: translate(-50%, -50%) scale(var(--keyboard-map-preview-scale, 0.3)) !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        transform: none !important;
         transform-origin: center center !important;
     }
 
 .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .map-canvas {
         mask-image: none !important;
         -webkit-mask-image: none !important;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile.readability-mode:not(.kb-open) .mobile-map-panel {
+        top: calc(env(safe-area-inset-top, 0px) + 48px) !important;
+        right: 0 !important;
+        left: auto !important;
+        width: 50vw !important;
+        height: 50vw !important;
+        box-sizing: border-box !important;
+        border-radius: 0 !important;
+    }
+}
+
+/* --- Minimap Frame Edge Fade --- */
+@media (max-width:1024px) {
+    .app-container.is-mobile:is(.kb-open, .readability-mode) .mobile-map-panel,
+    .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop {
+        outline:none !important;
+        border-radius:0 !important;
+        mask-image:
+            linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+            linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+        mask-composite:intersect;
+        -webkit-mask-image:
+            linear-gradient(to right, transparent, black 12%, black 88%, transparent),
+            linear-gradient(to bottom, transparent, black 12%, black 88%, transparent);
+        -webkit-mask-composite:source-in;
+    }
+}
+
+/* --- Native Minimap Render Bounds --- */
+@media (max-width: 1024px) {
+    .app-container.is-mobile.is-landscape:is(.kb-open, .readability-mode) .map-drawer-desktop .drawer-content {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        padding: 0 !important;
+        overflow: hidden !important;
     }
 }

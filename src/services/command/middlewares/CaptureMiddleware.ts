@@ -6,6 +6,9 @@
 
 import { CommandMiddleware } from '../types';
 import { useArchiveStore } from '../../../stores/useArchiveStore';
+import { useCommandShopStore } from '../../../stores/useCommandShopStore';
+import { useCommandPracticeStore } from '../../../stores/useCommandPracticeStore';
+import { useUIStore } from '../../../stores/useUIStore';
 
 const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
     eq: 'equipment',
@@ -56,6 +59,15 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
     if (captureStage) {
         const baseCommand = lowerCmd.split(/\s+/)[0];
         let captureType = COMMAND_CAPTURE_TYPES[baseCommand];
+        if (useCommandShopStore.getState().pendingCommand?.toLowerCase() === lowerCmd) captureType = 'shop_action';
+        if (useCommandPracticeStore.getState().pendingCommand?.toLowerCase() === lowerCmd) captureType = 'practice_action';
+        const pendingHelp = useUIStore.getState().popoverState;
+        if (
+            !captureType &&
+            pendingHelp?.isCapturingHelp &&
+            pendingHelp.helpTopic &&
+            lowerCmd === `help ${pendingHelp.helpTopic.trim().toLowerCase()}`
+        ) captureType = 'help_action';
 
         if (baseCommand === '/num') {
             const arg = lowerCmd.split(/\s+/)[1];
@@ -151,7 +163,12 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
             useArchiveStore.getState().setActiveView(isSentMailListCommand || lowerCmd.startsWith('search sent mail ') ? 'mail-sent' : 'mail-inbox');
             captureType = 'mail_list';
         }
-        if (!captureType && isLook && words.length > 1) {
+        const roomInspection = useUIStore.getState().popoverState;
+        if (!captureType && (/^(?:exits|map)$/i.test(lowerCmd) || /^weather\s+(?:global|fog|local)$/i.test(lowerCmd))
+            && roomInspection?.isCapturingRoomAction) {
+            captureType = 'room_action';
+        }
+        if (!captureType && isLook && (words.length > 1 || (roomInspection?.isRoomDescription && roomInspection.isCapturingExamine))) {
             captureType = 'examine';
         }
         const isMailReadCommand = !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);

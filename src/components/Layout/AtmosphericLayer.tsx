@@ -9,6 +9,11 @@ import { useGame } from '../../context/GameContext';
 import { EnvironmentEffects } from '../Atmosphere/EnvironmentEffects';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useMumeTime } from '../../hooks/useMumeTime';
+import { getMumeTimeOfDayClass } from '../../utils/mumeTimeUtils';
+import { useAudioEffects } from '../../hooks/useAudioSystem';
+import { useSolarTransitionSounds } from '../../hooks/useSolarTransitionSounds';
+import { useRoomNoLight } from '../../hooks/useRoomNoLight';
 
 const MAP_BACKGROUND_IMAGE = '/assets/Pictures/UIPics/darkmap.png';
 
@@ -26,14 +31,23 @@ export const AtmosphericLayer: React.FC = () => {
         spectateTerrain,
         spectateRoomZone,
         accountState,
+        gameState,
         sessionMode,
+        gameTime,
     } = useGame();
+    const currentGameTime = useMumeTime(gameTime);
+    const noLight = useRoomNoLight();
+    const isNight = getMumeTimeOfDayClass(
+        currentGameTime.month,
+        currentGameTime.hour,
+        currentGameTime.minute
+    ) === 'night';
 
     const manualBgImage = useSettingsStore(state => state.bgImage);
     const manualBgImageBottom = useSettingsStore(state => state.bgImageBottom);
 
     // --- Terrain Resolution ---
-    const isAccountMode = accountState.stage !== 'none' && sessionMode !== 'replay';
+    const isAccountMode = (gameState === 'account' || accountState.stage !== 'none') && sessionMode !== 'replay';
     const activeView = useModeStore(state => state.activeView);
     const isSpectating = useModeStore(state => state.isSpectating);
     const isViewingSpectateTarget = isSpectating && activeView === 'target';
@@ -42,13 +56,14 @@ export const AtmosphericLayer: React.FC = () => {
     const effectiveTerrain = isAccountMode ? 'account-blue' : activeTerrain;
     const effectiveZone = isAccountMode ? null : activeZone;
 
-    // Account Mode Overrides: Stage-aware lighting and background
-    const isCreationSequence = ['character-creation', 'stat-editing', 'account-confirmation'].includes(accountState.stage);
-
-    const effectiveLighting = isAccountMode 
-        ? (isCreationSequence ? 'dark' : 'moon') 
-        : lighting;
-    const visualLighting = isImmersionMode ? 'none' : effectiveLighting;
+    // --- Account Screens: No Environmental Lighting or Weather ---
+    const visualLighting = isAccountMode ? 'none' : lighting;
+    const { playEffect } = useAudioEffects();
+    useSolarTransitionSounds(
+        currentGameTime,
+        gameTime !== null && !isAccountMode && (gameState === 'playing' || sessionMode === 'replay'),
+        playEffect
+    );
 
     // Resolved background image: map texture by default. Terrain bitmap backgrounds stay unhooked.
     const resolvedBgImage = manualBgImage || MAP_BACKGROUND_IMAGE;
@@ -57,18 +72,21 @@ export const AtmosphericLayer: React.FC = () => {
 
     return (
         <EnvironmentEffects
+            noLight={noLight}
             lighting={visualLighting}
             weather={weather}
             isFoggy={isFoggy}
             lightning={lightningEnabled}
-            isImmersionMode={isImmersionMode}
+            isImmersionMode={isImmersionMode && !isAccountMode}
             isMobile={viewport.isMobile}
             bgImage={resolvedBgImage}
             bgImageBottom={resolvedBottomBgImage}
             bgImageBottomScale={resolvedBottomBgScale}
             terrain={effectiveTerrain}
             zone={effectiveZone}
-            isSleeping={!isViewingSpectateTarget && playerPosition === 'sleeping'}
+            isNight={isNight}
+            gameTime={currentGameTime}
+            isSleeping={!isAccountMode && !isViewingSpectateTarget && playerPosition === 'sleeping'}
         />
     );
 };

@@ -83,18 +83,27 @@
     display: flex;
     flex-direction: row;
     align-items: flex-start;
+    justify-content: flex-start;
     column-gap: 0.5em;
     margin: 0;
     padding: 4px 0;
+    text-align: left;
 }
 
 .chat-transcript-panel .chat-window-time {
     padding-top: 0;
+    width: auto;
+    min-width: 0;
+    flex: 0 0 auto;
+    text-align: left;
+    margin-right: 0;
     font-size: var(--dynamic-log-size, 16px);
 }
 
 .chat-transcript-panel .comm-content {
     min-width: 0;
+    flex: 1 1 auto;
+    text-align: left;
     font-family: var(--font-mono, var(--font-main));
     font-size: var(--dynamic-log-size, 16px);
 }
@@ -103,6 +112,7 @@
     color: var(--text-primary, #d4cdb8);
     font-size: inherit;
     line-height: inherit;
+    text-align: left;
     text-shadow: none;
 }
 
@@ -164,3 +174,7 @@
 @media (max-width: 1024px) and (orientation: portrait) {
     .chat-transcript-panel { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; height: min(42%, 260px); }
 }
+
+/* --- Shared embedded transcript --- */
+.chat-transcript-content { display: flex; flex: 1; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
+.chat-latest-button { flex: 0 0 auto; align-self: center; margin: 4px; }

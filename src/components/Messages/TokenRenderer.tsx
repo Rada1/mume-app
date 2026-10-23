@@ -7,21 +7,28 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useShallow } from 'zustand/react/shallow';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
-import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
+import { getEntityHighlightKind, getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { extractMumeKeyword } from '../../utils/gameUtils';
 import { classifyItemTier } from '../../utils/itemTier';
 import { isObjectSelected } from '../../utils/selectionUtils';
 import { Box, DoorOpen, UserRound } from 'lucide-react';
 import { NpcEntityIcon } from './EntityTypeIcons';
-import { getPromptVitalValueRanges, PromptTextRange } from '../../utils/promptVitalText';
+import { getPromptVitalValueRanges, PromptTextRange, PromptVitalPercentages } from '../../utils/promptVitalText';
+import { isVitalLow } from '../../utils/vitalStatus';
+import { useLogTargetMatch } from '../../hooks/useLogTargetMatch';
+import { ItemConditionText } from './ItemConditionText';
+import { ShopLogText } from './ShopLogText';
+import { parseShopLogLine } from '../../hooks/shopLogLine';
 
 import { MessageType } from '../../types';
 
 interface TargetHighlightProps {
     className: string;
+    'data-target-kind'?: ReturnType<typeof getEntityHighlightKind>;
 }
 
 const TARGET_WORD_PATTERN = '[^a-zA-Z0-9\\u00C0-\\u00FF]';
+const TARGET_HIGHLIGHT_CLASSES = new Set(['active-target', 'is-target', 'target-highlighter']);
 const escapeRegex = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const buildTargetMatcher = (target: string | null) => {
@@ -31,26 +38,6 @@ const buildTargetMatcher = (target: string | null) => {
         value: normalized,
         regex: new RegExp(`(?:^|${TARGET_WORD_PATTERN})(${escapeRegex(normalized)})(?=${TARGET_WORD_PATTERN}|$)`, 'gi')
     };
-};
-
-const renderItemConditionText = (content: string, state?: string, stateLabel?: string): React.ReactNode => {
-    if (!state || !stateLabel) return content;
-
-    const stateText = `(${stateLabel})`;
-    const index = content.toLowerCase().indexOf(stateText);
-    if (index === -1) return content;
-
-    const before = content.slice(0, index);
-    const match = content.slice(index, index + stateText.length);
-    const after = content.slice(index + stateText.length);
-
-    return (
-        <>
-            {before}
-            <span className={`inline-item-condition item-state-${state}`}>{match}</span>
-            {after}
-        </>
-    );
 };
 
 export const getEntityTypeIcon = (categoryId?: string) => {
@@ -75,6 +62,7 @@ export interface TokenRendererProps {
     isRoomContentsLine?: boolean;
     preferSettingsEntityColor?: boolean;
     highlightPromptVitals?: boolean;
+    promptVitalPercentages?: PromptVitalPercentages;
     metadata?: {
         id?: string;
         context?: string;
@@ -96,6 +84,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
     isRoomContentsLine = false,
     preferSettingsEntityColor = false,
     highlightPromptVitals = false,
+    promptVitalPercentages,
     metadata: propMetadata
 }) => {
     const {
@@ -116,8 +105,13 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         theme: s.theme,
         isTextRevealEnabled: s.isTextRevealEnabled,
         isClassicMode: s.isClassicMode,
+        isPerformanceMode: s.isPerformanceMode,
+        isImmersionMode: s.isImmersionMode,
+        isImmersionTextAnimationsEnabled: s.isImmersionTextAnimationsEnabled,
     })));
     const popoverEntityId = useUIStore(state => state.popoverState?.entityId ?? null);
+    const selectedTargetCategory = useUIStore(state => state.selectedTarget?.category ?? null);
+    const selectedTargetKind = selectedTargetCategory ? getEntityHighlightKind(selectedTargetCategory) : undefined;
     const popoverSelection = useMemo(() => popoverEntityId
         ? new Set([popoverEntityId])
         : null, [popoverEntityId]);
@@ -139,13 +133,14 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             const tokenRanges = ranges.flatMap(range => {
                 const start = Math.max(range.start, tokenStart);
                 const end = Math.min(range.end, tokenEnd);
-                return start < end ? [{ start: start - tokenStart, end: end - tokenStart, percent: range.percent, vitalType: range.vitalType }] : [];
+                const percent = range.vitalType ? promptVitalPercentages?.[range.vitalType] ?? range.percent : range.percent;
+                return start < end ? [{ start: start - tokenStart, end: end - tokenStart, percent, vitalType: range.vitalType }] : [];
             });
             if (tokenRanges.length > 0) byToken.set(tokenIndex, tokenRanges);
             tokenStart = tokenEnd;
         });
         return byToken;
-    }, [highlightPromptVitals, tokens]);
+    }, [highlightPromptVitals, promptVitalPercentages, tokens]);
 
     if (!tokens || tokens.length === 0) {
         if (!fallbackHtml) return null;
@@ -187,20 +182,25 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
     const targetMatcher = useMemo(() => buildTargetMatcher(target), [target]);
     const currentTarget = targetMatcher?.value || null;
+    const matchesTarget = useLogTargetMatch(currentTarget);
 
     if (settings.isClassicMode) {
         return <>{tokens.map(token => token.content).join('')}</>;
     }
 
+    const shopLine = (!type || type === 'game') && tokens.every(token => token.type === 'text' || token.type === 'ansi')
+        ? parseShopLogLine(tokens.map(token => token.content).join('')) : null;
+
     const propCategoryAxes = propMetadata?.category ? getInlineCategoryAxes(propMetadata.category) : null;
     
     const getTargetHighlightProps = (): TargetHighlightProps => ({
         className: 'is-target target-highlighter',
+        'data-target-kind': selectedTargetKind,
     });
 
     const renderTextWithTarget = (text: string, key: string | number) => {
         if (!targetMatcher || !text.toLowerCase().includes(targetMatcher.value)) {
-            return <React.Fragment key={key}>{text}</React.Fragment>;
+            return <ItemConditionText key={key} content={text} />;
         }
 
         const parts = [];
@@ -221,7 +221,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
             // Add the text before the match
             if (matchIndex > lastIndex) {
-                parts.push(text.substring(lastIndex, matchIndex));
+                parts.push(<ItemConditionText key={`condition-${lastIndex}`} content={text.substring(lastIndex, matchIndex)} source={text} offset={lastIndex} />);
             }
 
             parts.push(
@@ -229,7 +229,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     key={`target-${matchIndex}`}
                     {...getTargetHighlightProps()}
                 >
-                    {targetMatch}
+                    <ItemConditionText content={targetMatch} source={text} offset={matchIndex} />
                 </span>
             );
             lastIndex = matchIndex + targetMatch.length;
@@ -238,11 +238,13 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         }
 
         if (lastIndex < text.length) {
-            parts.push(text.substring(lastIndex));
+            parts.push(<ItemConditionText key={`condition-${lastIndex}`} content={text.substring(lastIndex)} source={text} offset={lastIndex} />);
         }
 
         return <React.Fragment key={key}>{parts}</React.Fragment>;
     };
+
+    if (shopLine) return <ShopLogText line={shopLine} itemContent={renderTextWithTarget(shopLine.item, 'shop-item')} />;
 
     const renderPromptVitalText = (text: string, tokenIndex: number, textOffset = 0): React.ReactNode => {
         const ranges = promptVitalRangesByToken.get(tokenIndex) || [];
@@ -258,7 +260,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             parts.push(
                 <span
                     key={`prompt-vital-${tokenIndex}-${rangeIndex}`}
-                    className="prompt-vital-value"
+                    className={`prompt-vital-value${isVitalLow(range.percent) ? ' is-low-vital' : ''}`}
                     data-vital-percent={range.percent === undefined ? undefined : ''}
                     data-vital-type={range.vitalType}
                     style={range.percent === undefined ? undefined : { '--prompt-vital-percent': `${range.percent}%` } as React.CSSProperties}
@@ -274,34 +276,29 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
 
     const renderTokenText = (
         text: string,
-        state: string | undefined,
-        stateLabel: string | undefined,
         tokenIndex: number | string,
-        textOffset = 0
+        textOffset = 0,
+        source = text
     ): React.ReactNode => highlightPromptVitals
         ? renderPromptVitalText(text, Number(tokenIndex), textOffset)
-        : renderItemConditionText(text, state, stateLabel);
+        : <ItemConditionText content={text} source={source} offset={textOffset} />;
 
     const renderToken = (token: Token, idx: number | string, textOverride?: string) => {
         const content = textOverride !== undefined ? textOverride : token.content;
-        const tokenContentLower = content.toLowerCase();
-
-        // 1. Determine if this token EXACTLY matches the target
-        let isTargetMatch = !!currentTarget && (
-            tokenContentLower === currentTarget ||
-            (token.type === 'entity' && token.metadata?.context?.toLowerCase() === currentTarget) ||
-            (token.type === 'entity' && token.metadata?.category !== 'cat-room' && tokenContentLower.includes(currentTarget))
-        );
+        let isTargetMatch = matchesTarget(content, token.type === 'entity'
+            ? { ...token.metadata, ...propMetadata } : undefined);
 
         if (token.type === 'entity') {
             const e = token as EntityToken;
             const isAuto = e.metadata?.extraClasses?.includes('auto-occupant');
-            const extraClasses = [...(e.metadata?.extraClasses || [])];
             const defaultContext = e.metadata?.context || extractMumeKeyword(content);
             const tokenCategoryId = propMetadata?.category || e.metadata?.category;
             const categoryAxes = getInlineCategoryAxes(tokenCategoryId);
             const entityId = propMetadata?.id || e.entityId;
             const isSelectedEntity = !!entityId && isObjectSelected(selectedObjectIds || new Set(), entityId, tokenCategoryId);
+            const extraClasses = [...(e.metadata?.extraClasses || [])].filter(className =>
+                !isSelectedEntity || !TARGET_HIGHLIGHT_CLASSES.has(className)
+            );
             if (!categoryAxes.isTargetable) isTargetMatch = false;
             const isItemEntity = categoryAxes.isObject || tokenCategoryId === 'cat-container-item';
             const itemTier = isItemEntity ? classifyItemTier(content) : undefined;
@@ -347,6 +344,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
             props['data-cmd'] = propMetadata?.cmd || e.metadata?.cmd || propMetadata?.category || e.metadata?.category || (isAuto ? (e.metadata?.kind || content) : content);
             props['data-context'] = propMetadata?.context || defaultContext;
             props['data-category'] = tokenCategoryId;
+            props['data-target-kind'] = getEntityHighlightKind(tokenCategoryId);
             if (isNpc) {
                 props['data-kind'] = 'npc';
             }
@@ -425,7 +423,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                     {...props} 
                     style={Object.keys(style).length > 0 ? style : undefined}
                 >
-                    {renderItemConditionText(content, itemTier?.state, itemTier?.stateLabel)}
+                    <ItemConditionText content={content} />
                 </span>
             );
 
@@ -435,7 +433,6 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
         switch (token.type) {
             case 'ansi':
                 const a = token as AnsiToken;
-                const ansiItemState = classifyItemTier(content);
                 const ansiClasses = [
                     ...(a.classes || []),
                     ...(isTargetMatch && targetMatcher ? ['is-target', 'target-highlighter'] : [])
@@ -446,6 +443,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                             {renderTextWithTarget(content, idx)}
                         </span>
                     );
+                }
+                if (!splitFirstWord && !wordReveal && (settings.isPerformanceMode || !settings.isImmersionMode || !settings.isImmersionTextAnimationsEnabled)) {
+                    return <span key={idx} className={ansiClasses || undefined} style={a.style}>{renderTokenText(content, idx)}</span>;
                 }
                 const ansiWords = content.split(' ');
                 if (ansiWords.length > 1) {
@@ -466,7 +466,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                             className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
                                             style={{ ...a.style, '--word-idx': baseWIdx + wi } as any}
                                         >
-                                            {renderTokenText(w, ansiItemState.state, ansiItemState.stateLabel, idx, currentWordOffset)}
+                                            {renderTokenText(w, idx, currentWordOffset, content)}
                                         </span>
                                         {wi < ansiWords.length - 1 ? ' ' : null}
                                     </React.Fragment>
@@ -481,14 +481,13 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         className={`log-text-word${ansiClasses ? ` ${ansiClasses}` : ''}`}
                         style={{ ...a.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
-                        {renderTokenText(content, ansiItemState.state, ansiItemState.stateLabel, idx)}
+                        {renderTokenText(content, idx)}
                     </span>
                 );
             
             case 'text':
             default:
                 const textToken = token as TextToken;
-                const textItemState = classifyItemTier(content);
                 const textClasses = [
                     ...(textToken.classes || []),
                     ...(isTargetMatch && targetMatcher ? ['is-target', 'target-highlighter'] : [])
@@ -499,6 +498,9 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                             {renderTextWithTarget(content, idx)}
                         </span>
                     );
+                }
+                if (!splitFirstWord && !wordReveal && (settings.isPerformanceMode || !settings.isImmersionMode || !settings.isImmersionTextAnimationsEnabled)) {
+                    return <span key={idx} className={textClasses || undefined} style={textToken.style}>{renderTokenText(content, idx)}</span>;
                 }
                 const textWords = content.split(' ');
                 if (textWords.length > 1) {
@@ -519,7 +521,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                                             className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
                                             style={{ ...textToken.style, '--word-idx': baseWIdx + wi } as any}
                                         >
-                                            {renderTokenText(w, textItemState.state, textItemState.stateLabel, idx, currentWordOffset)}
+                                            {renderTokenText(w, idx, currentWordOffset, content)}
                                         </span>
                                         {wi < textWords.length - 1 ? ' ' : null}
                                     </React.Fragment>
@@ -534,7 +536,7 @@ export const TokenRenderer: React.FC<TokenRendererProps> = ({
                         className={`log-text-word${textClasses ? ` ${textClasses}` : ''}`}
                         style={{ ...textToken.style, '--word-idx': typeof idx === 'number' ? idx : 0 } as any}
                     >
-                        {renderTokenText(content, textItemState.state, textItemState.stateLabel, idx)}
+                        {renderTokenText(content, idx)}
                     </span>
                 );
         }

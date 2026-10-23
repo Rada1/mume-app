@@ -1,0 +1,26 @@
+/** @file CommandPractice.css — Ability browser, contextual training, and captured details. */
+/* --- Selection and Commands --- */
+.command-practice-tools { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; padding: 5px; font-size: 10px; color: var(--text-dim); }
+.command-practice-tools span { flex: 1; }
+.command-practice-tools button { padding: 6px; border: 1px solid rgba(201,168,76,.3); border-radius: 3px; background: transparent; color: var(--accent); font: inherit; cursor: pointer; }
+.command-practice-tools button:disabled, .command-practice-actions .terminal-inspect-row:disabled { opacity: .45; cursor: default; }
+.command-practice-targets > input { box-sizing: border-box; width: 100%; min-width: 0; padding: 6px; background: transparent; border: 1px solid rgba(201,168,76,.2); color: var(--text-primary); font: inherit; font-size: 11px; }
+.command-practice-expanded-group > .command-practice-group-heading { display: flex; min-height: 24px; align-items: center; gap: 8px; padding: 5px 10px 5px 0; }
+.command-practice-group-heading > span { display: flex; flex: 1 1 auto; min-width: 0; align-items: center; gap: 8px; color: #8f8374; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+.command-practice-group-heading > span::before, .command-practice-group-heading > span::after { content: ''; height: 1px; background: rgba(201, 168, 76, 0.2); }
+.command-practice-group-heading > span::before { flex: 0 0 10px; }
+.command-practice-group-heading > span::after { flex: 1 1 auto; }
+.command-practice-group-heading > small { display: inline-flex; flex: 0 0 auto; min-width: 16px; height: 15px; align-items: center; justify-content: center; margin-left: 0; padding: 0 4px; border: 1px solid rgba(201, 168, 76, 0.3); border-radius: 8px; color: #8f8374; font-size: 0.52rem; font-weight: 600; line-height: 1; }
+.light-mode .command-practice-group-heading > span, .light-mode .command-practice-group-heading > small { color: #766a58; }
+.light-mode .command-practice-group-heading > span::before, .light-mode .command-practice-group-heading > span::after { background: rgba(180, 130, 40, 0.22); }
+.light-mode .command-practice-group-heading > small { border-color: rgba(180, 130, 40, 0.3); }
+.command-practice-targets .command-action-target-option { align-items: baseline; }
+.command-practice-targets .command-action-target-option small { white-space: normal; text-align: right; }
+.command-practice-actions { font-size: 12px; line-height: 1.5; }
+.command-practice-actions h3 { margin: 0 0 8px; color: var(--accent); font-size: 12px; }
+/* --- Output --- */
+.command-practice-details { display: grid; grid-template-columns: auto 1fr; gap: 5px 10px; margin: 0 0 10px; font-size: 11px; line-height: 1.45; }
+.command-practice-details dt { color: var(--text-dim); }
+.command-practice-details dd { margin: 0; overflow-wrap: anywhere; }
+.command-practice-response { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.command-practice-response h3 { color: var(--accent); font-size: 12px; }

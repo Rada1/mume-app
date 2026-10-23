@@ -1,0 +1,91 @@
+/** @file SunlightClouds.css — Small, soft cloud textures inside the daylight corner glow. */
+
+/* --- One gradual fade for daylight and everything seen through its sky veil --- */
+.environment-root.front.lighting-state-sun,
+.environment-vignette-scene.lighting-state-sun,
+.environment-weather-scene.lighting-state-sun {
+    --sunlight-fade-stops: #000 0%, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.6) 45%, rgba(0, 0, 0, 0.25) 70%, transparent 94%;
+}
+
+/* --- Sun above the sky mask; weather layers still pass in front of it --- */
+.environment-root.front .environment-vignette-scene > .client-sun-disc {
+    position: absolute;
+    z-index: 22;
+    width: clamp(200px, 24vw, 460px);
+    height: clamp(140px, 34vh, 320px);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: left 1s linear, top 1s linear, opacity 1s linear !important;
+    background:
+    radial-gradient(circle 36px at 50% 50%,
+        rgba(255, 253, 235, 0.88) 0%,
+        rgba(255, 250, 222, 0.62) 22%,
+        rgba(255, 245, 211, 0.18) 55%,
+        transparent 100%
+    ),
+    radial-gradient(circle 96px at 50% 50%,
+        rgba(255, 246, 216, 0.32) 0%,
+        rgba(255, 245, 215, 0.11) 45%,
+        transparent 100%
+    ),
+    radial-gradient(
+        ellipse clamp(100px, 12vw, 230px) clamp(70px, 17vh, 160px) at 52% 40%,
+        rgba(255, 248, 222, 0.36) 0%,
+        rgba(255, 246, 218, 0.20) 24%,
+        rgba(255, 244, 215, 0.07) 55%,
+        transparent 100%
+    );
+    filter: blur(4px);
+}
+
+/* --- Rain hides the sun's core, leaving only diffuse light through cloud cover. --- */
+.environment-root.front .environment-vignette-scene.lighting-state-sun.weather-state-rain > .client-sun-disc {
+    background: radial-gradient(ellipse 95px 70px at 50% 50%, rgba(245, 245, 226, 0.2), transparent 100%);
+    filter: blur(12px);
+}
+
+/* Cloud gaps occasionally reveal a softened sun through the moving veil. */
+.environment-root.front .environment-vignette-scene.lighting-state-sun.weather-state-cloud > .client-sun-disc {
+    background:
+        radial-gradient(circle 36px at 50% 50%, rgba(255, 253, 235, 0.56) 0%, rgba(255, 250, 222, 0.32) 30%, rgba(255, 245, 211, 0.1) 62%, transparent 100%),
+        radial-gradient(circle 112px at 50% 50%, rgba(245, 245, 226, 0.18), transparent 100%);
+    filter: blur(7px);
+}
+
+/* --- Clear skies get only two faint wisps; CornerWeather supplies cloud cover. --- */
+.environment-root.front .environment-vignette-scene.lighting-state-sun .client-corner-light-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 56%;
+    height: 58%;
+    pointer-events: none;
+    background: url('/assets/atmosphere/clear-sky-wisps.svg') center / 100% 100% no-repeat;
+    opacity: 0.16;
+    animation: clear-sky-wisp-drift 90s ease-in-out infinite alternate;
+    /* The parent lighting overlay supplies the shared sky fade exactly once. */
+    mask-image: none;
+    -webkit-mask-image: none;
+}
+
+@keyframes clear-sky-wisp-drift {
+    from { transform: translateX(2%); }
+    to { transform: translateX(-6%); }
+}
+
+/* The clear-sky wisps disappear underneath a continuous rainy overcast. */
+.environment-root.front .environment-vignette-scene.lighting-state-sun.weather-state-rain .client-corner-light-overlay::after {
+    opacity: 0;
+    animation: none;
+}
+
+/* Cloud weather uses its own drifting layer instead of the clear-sky accents. */
+.environment-root.front .environment-vignette-scene.lighting-state-sun.weather-state-cloud .client-corner-light-overlay::after {
+    opacity: 0;
+    animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .environment-root.front .environment-vignette-scene.lighting-state-sun .client-corner-light-overlay::after { animation: none; }
+}

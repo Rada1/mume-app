@@ -6,7 +6,7 @@
 // --- Logic Section ---
 import React, { FC, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { Star, X } from 'lucide-react';
+import { Crosshair, Star, X } from 'lucide-react';
 import { MumeCommandEntry } from '../../utils/mumeCommandCatalog';
 import { SpellSuggestion } from '../../utils/spellSuggestionUtils';
 import { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
@@ -14,7 +14,10 @@ import { formatMagicKeyRemaining } from '../../utils/magicKeyUtils';
 import { getTargetItemTierClassName } from '../../utils/itemTier';
 import { stripShopProductQuantity } from '../../utils/shopVariantParser';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useCommandSuggestionAppearance } from '../../hooks/useCommandSuggestionAppearance';
+import { getCommandTextColor } from '../../utils/swipeCommandColors';
 import './CommandSuggestionPopup.css';
+import './AliasSuggestions.css';
 
 export interface CommandSuggestionPopupProps {
     show: boolean;
@@ -53,6 +56,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
 }) => {
     const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
+    const targetAppearance = useCommandSuggestionAppearance();
     const [now, setNow] = useState(Date.now());
     const hasExpiringPortkeys = show && targetSuggestions.some(entry => entry.meta === 'magic-key' && entry.expiresAt !== undefined);
 
@@ -79,7 +83,8 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                         <button
                             key={entry.key}
                             type="button"
-                            className={`command-suggestion-option target-suggestion-option${index === 0 ? ' is-selected' : ''}`}
+                            className={`command-suggestion-option target-suggestion-option is-command-row${index === 0 ? ' is-selected' : ''}`}
+                            style={{ '--suggestion-command-color': getCommandTextColor(`cast '${entry.value}'`) } as React.CSSProperties}
                             onPointerDown={event => {
                                 event.preventDefault();
                                 onChooseSpell(entry.value);
@@ -95,23 +100,31 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                     const isSelected = selectedTargetKey === entry.key;
                     const isMagicKey = entry.meta === 'magic-key';
                     const isShopItem = entry.meta === 'shop-item';
+                    const appearance = targetAppearance(entry);
                     const option = (
                         <button
                             type="button"
-                            className={`command-suggestion-option target-suggestion-option${isSelected ? ' is-selected' : ''}`}
+                            className={`command-suggestion-option target-suggestion-option is-target-row${isSelected ? ' is-selected' : ''}${entry.isCurrentTarget ? ' is-current-target' : ''}`}
+                            role="option"
+                            aria-selected={isSelected}
+                            aria-label={`${entry.label} ${entry.value}${entry.isCurrentTarget ? ' Current target' : isSelected ? ' Tab' : ''}`}
+                            data-target-kind={appearance.kind}
+                            style={{ '--suggestion-target-color': appearance.color } as React.CSSProperties}
                             onPointerDown={event => {
                                 event.preventDefault();
                                 onChooseTarget(entry.value);
                             }}
                         >
                             <span className={`command-suggestion-name ${getTargetItemTierClassName(entry.label)}`.trim()} title={isMagicKey ? entry.label : undefined}>
-                                {isMagicKey ? entry.customLabel || entry.label : isShopItem ? stripShopProductQuantity(entry.label) : entry.value}
+                                {isMagicKey ? entry.customLabel || entry.label : isShopItem ? stripShopProductQuantity(entry.label) : entry.label}
                             </span>
+                            {entry.isCurrentTarget && <span className="command-suggestion-current-target"><Crosshair size={12} strokeWidth={1.75} aria-hidden="true" /></span>}
+                            {!isMagicKey && !isShopItem && <span className="command-suggestion-keyword">&lt;{entry.value}&gt;</span>}
                             <span className="command-suggestion-full">
                                 {isMagicKey
                                     ? `key ${entry.value} · ${formatMagicKeyRemaining(entry.expiresAt, now)}`
                                     : isShopItem ? `#${entry.value}`
-                                    : isSelected ? 'selected' : entry.meta}
+                                    : entry.isCurrentTarget ? null : isSelected ? 'Tab' : entry.meta}
                             </span>
                         </button>
                     );
@@ -161,15 +174,16 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                         <button
                             key={entry.display}
                             type="button"
-                            className={`command-suggestion-option${isSelected ? ' is-selected' : ''}`}
+                            className={`command-suggestion-option is-command-row${isSelected ? ' is-selected' : ''}${entry.aliasExpansion ? ' is-alias' : ''}`}
+                            style={{ '--suggestion-command-color': getCommandTextColor(entry.aliasExpansion || entry.full) } as React.CSSProperties}
                             onPointerDown={event => {
                                 event.preventDefault();
                                 onChooseCommand(entry);
                             }}
                         >
                             <span className="command-suggestion-name">{entry.display}</span>
-                            <span className="command-suggestion-full">
-                                {isSelected ? 'selected' : entry.full}
+                            <span className="command-suggestion-full" title={entry.aliasExpansion}>
+                                {entry.aliasExpansion ? `→ ${entry.aliasExpansion}` : isSelected ? 'selected' : entry.full}
                             </span>
                         </button>
                     );

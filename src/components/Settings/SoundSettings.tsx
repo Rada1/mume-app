@@ -3,26 +3,16 @@
  * @description Component for customizing audio levels, zone music mappings, and sound triggers, including defaults.
  */
 
-import React, { useState } from 'react';
-import { Upload, Trash2, Volume2, Plus, Music, RotateCcw } from 'lucide-react';
-import { SoundTrigger } from '../../types';
-import { useGame } from '../../context/GameContext';
-import { AUDIO_MANIFEST } from '../../constants/audioManifest';
+import React from 'react';
+import { Upload, Trash2, Volume2 } from 'lucide-react';
+import type { SoundSettingsProps } from '../../types';
+import { useSoundSettingsSections, SOUND_SETTINGS_SECTIONS } from '../../hooks/useSoundSettingsSections';
+import ZoneMusicSettings from './ZoneMusicSettings';
+import './SoundSettingsSections.css';
 import SoundEffectOverrides from './SoundEffectOverrides';
 import SoundVolumeSettings from './SoundVolumeSettings';
 
-interface SoundSettingsProps {
-    isSoundEnabled: boolean;
-    setIsSoundEnabled: (val: boolean) => void;
-    soundTriggers: SoundTrigger[];
-    setSoundTriggers: (val: SoundTrigger[]) => void;
-    newSoundPattern: string;
-    setNewSoundPattern: (val: string) => void;
-    newSoundRegex: boolean;
-    setNewSoundRegex: (val: boolean) => void;
-    handleSoundUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
+// --- Sound Settings View ---
 const SoundSettings: React.FC<SoundSettingsProps> = ({
     isSoundEnabled,
     setIsSoundEnabled,
@@ -34,41 +24,7 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
     setNewSoundRegex,
     handleSoundUpload,
 }) => {
-    const { zoneMusic, setZoneMusic } = useGame();
-
-    const [newZoneName, setNewZoneName] = useState('');
-    const [newZoneUrl, setNewZoneUrl] = useState('');
-
-    const addZoneMusic = () => {
-        if (!newZoneName || !newZoneUrl) return;
-        setZoneMusic(prev => {
-            const existingIdx = prev.findIndex(m => m.zone.toLowerCase() === newZoneName.toLowerCase());
-            if (existingIdx >= 0) {
-                const next = [...prev];
-                const current = next[existingIdx];
-                next[existingIdx] = { ...current, url: newZoneUrl };
-                return next;
-            }
-            return [...prev, { zone: newZoneName, url: newZoneUrl }];
-        });
-        setNewZoneName('');
-        setNewZoneUrl('');
-    };
-
-    const removeZoneMusic = (zone: string) => {
-        setZoneMusic(prev => prev.filter(m => m.zone !== zone));
-    };
-
-    const handleZoneOverrideUpload = (zone: string, e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const url = URL.createObjectURL(file);
-            setZoneMusic(prev => {
-                const filtered = prev.filter(m => m.zone.toLowerCase() !== zone.toLowerCase());
-                return [...filtered, { zone, url }];
-            });
-        }
-    };
+    const { activeSection, setActiveSection, handleTabKeyDown } = useSoundSettingsSections();
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -109,111 +65,17 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
             </div>
 
             <SoundVolumeSettings isSoundEnabled={isSoundEnabled} />
-            <SoundEffectOverrides isSoundEnabled={isSoundEnabled} />
-
-            {/* Zone Music Section */}
-            <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-                <label className="setting-label" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Music size={16} /> Zone Music Mappings
-                </label>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim, #94a3b8)', marginBottom: '12px' }}>
-                    Configure background music for game zones. Show/override default zones or add custom mappings.
-                </div>
-                
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                    <input
-                        className="setting-input"
-                        placeholder="Zone Name (e.g. Bree)"
-                        value={newZoneName}
-                        onChange={(e) => setNewZoneName(e.target.value)}
-                        style={{ flex: 1 }}
-                    />
-                    <input
-                        className="setting-input"
-                        placeholder="Audio URL (e.g. /assets/Music/bree.mp3)"
-                        value={newZoneUrl}
-                        onChange={(e) => setNewZoneUrl(e.target.value)}
-                        style={{ flex: 2 }}
-                    />
-                    <button 
-                        className="btn-primary" 
-                        onClick={addZoneMusic}
-                        disabled={!newZoneName || !newZoneUrl}
-                        style={{ width: 'auto', margin: 0, padding: '0 15px' }}
-                    >
-                        <Plus size={16} />
-                    </button>
-                </div>
-
-                <div className="trigger-list" style={{ maxHeight: '250px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {/* Render active customizations first, followed by default zones */}
-                    {Object.entries(AUDIO_MANIFEST.ambient.zones).map(([zoneName, defaultMapping]) => {
-                        const custom = zoneMusic.find(m => m.zone.toLowerCase() === zoneName.toLowerCase());
-                        const isOverridden = !!custom;
-                        const url = isOverridden ? custom.url : defaultMapping.url;
-
-                        return (
-                            <div key={`default-zone-${zoneName}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.03))', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
-                                <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {zoneName}
-                                        <span style={{ fontSize: '0.7rem', color: isOverridden ? 'var(--accent)' : 'var(--text-dim, #777)', border: `1px solid ${isOverridden ? 'var(--accent)' : '#444'}`, padding: '1px 4px', borderRadius: '3px' }}>
-                                            {isOverridden ? 'Overridden' : 'Default'}
-                                        </span>
-                                    </div>
-                                    <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {url}
-                                    </div>
-                                </div>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                    <input
-                                        type="file"
-                                        id={`zone-override-${zoneName}`}
-                                        hidden
-                                        onChange={(e) => handleZoneOverrideUpload(zoneName, e)}
-                                        accept="audio/*"
-                                    />
-                                    <label htmlFor={`zone-override-${zoneName}`} style={{ cursor: 'pointer', color: 'var(--text-dim, #aaa)', display: 'flex', alignItems: 'center' }} title="Upload custom track">
-                                        <Upload size={14} />
-                                    </label>
-                                    {isOverridden && (
-                                        <button
-                                            onClick={() => removeZoneMusic(custom.zone)}
-                                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                            title="Restore default music"
-                                        >
-                                            <RotateCcw size={14} />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    {/* Custom user zones that do not overlap with defaults */}
-                    {zoneMusic.filter(m => !AUDIO_MANIFEST.ambient.zones[m.zone.toLowerCase()]).map((m, idx) => {
-                        return (
-                            <div key={`custom-zone-${m.zone}-${idx}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-panel, rgba(255,255,255,0.05))', padding: '8px 12px', borderRadius: '6px', border: '1px solid var(--border-color, rgba(255,255,255,0.1))' }}>
-                                <div style={{ overflow: 'hidden' }}>
-                                    <div style={{ color: 'var(--text-primary, #fff)', fontWeight: '500', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        {m.zone}
-                                        <span style={{ fontSize: '0.7rem', color: '#10b981', border: '1px solid #10b981', padding: '1px 4px', borderRadius: '3px' }}>Custom Mapping</span>
-                                    </div>
-                                    <div style={{ color: 'var(--text-dim, #aaa)', fontSize: '0.7rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {m.url}
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={() => removeZoneMusic(m.zone)}
-                                    style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                >
-                                    <Trash2 size={14} />
-                                </button>
-                            </div>
-                        );
-                    })}
-                </div>
+            <div className="sound-settings-tabs" role="tablist" aria-label="Sound editors" onKeyDown={handleTabKeyDown}>
+                {SOUND_SETTINGS_SECTIONS.map(section => <button key={section.id} type="button" role="tab"
+                    id={`sound-tab-${section.id}`} aria-controls={`sound-panel-${section.id}`}
+                    aria-selected={activeSection === section.id} tabIndex={activeSection === section.id ? 0 : -1}
+                    onClick={() => setActiveSection(section.id)}>{section.label}</button>)}
             </div>
+            <div id={`sound-panel-${activeSection}`} role="tabpanel" aria-labelledby={`sound-tab-${activeSection}`} className="sound-settings-panel">
+            {activeSection === 'zone' && <ZoneMusicSettings isSoundEnabled={isSoundEnabled} />}
+            {activeSection === 'ui' && <SoundEffectOverrides isSoundEnabled={isSoundEnabled} channel="ui" />}
+            {activeSection === 'game' && <>
+            <SoundEffectOverrides isSoundEnabled={isSoundEnabled} channel="game" />
 
             {/* Custom Sound Triggers Section */}
             <div className="setting-group" style={{ opacity: isSoundEnabled ? 1 : 0.5, pointerEvents: isSoundEnabled ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
@@ -281,6 +143,8 @@ const SoundSettings: React.FC<SoundSettingsProps> = ({
                         })}
                     </div>
                 </div>
+            </div>
+            </>}
             </div>
         </div>
     );

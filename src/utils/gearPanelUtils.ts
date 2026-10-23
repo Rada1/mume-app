@@ -9,26 +9,26 @@ const ROOM_CHARACTER_TYPES = new Set(['ally', 'enemy', 'neutral', 'npc', 'mount'
 export type { GearRecipient, GearRow } from '../types';
 
 const MUME_DEFAULT_EQUIPMENT_ORDER = 'WSHbcahlfnwF-qB';
-const WORN_PREFIX_ORDER: Readonly<Record<string, string>> = {
-    '<wielded>': 'W',
-    '<held in weapon hand>': 'W',
-    '<held in shield hand>': 'S',
-    '<worn as shield>': 'S',
-    '<worn on head>': 'H',
-    '<worn on body>': 'b',
-    '<worn about body>': 'c',
-    '<worn on arms>': 'a',
-    '<worn on hands>': 'h',
-    '<worn on legs>': 'l',
-    '<worn on feet>': 'f',
-    '<worn around neck>': 'n',
-    '<worn on wrists>': 'w',
-    '<worn on finger>': 'F',
-    '<worn on back>': '-',
-    '<worn across back>': 'q',
-    '<worn as belt>': 'B',
-    '<worn on belt>': 'B',
-};
+export const WORN_EQUIPMENT_SLOTS = [
+    { key: 'wield', order: 'W', label: 'Wield', prefixes: ['<wielded>', '<held in weapon hand>'] },
+    { key: 'shield', order: 'S', label: 'Shield', prefixes: ['<held in shield hand>', '<worn as shield>'] },
+    { key: 'head', order: 'H', label: 'On head', prefixes: ['<worn on head>'] },
+    { key: 'body', order: 'b', label: 'On body', prefixes: ['<worn on body>'] },
+    { key: 'about', order: 'c', label: 'About body', prefixes: ['<worn about body>'] },
+    { key: 'arms', order: 'a', label: 'On arms', prefixes: ['<worn on arms>'] },
+    { key: 'hands', order: 'h', label: 'On hands', prefixes: ['<worn on hands>'] },
+    { key: 'legs', order: 'l', label: 'On legs', prefixes: ['<worn on legs>'] },
+    { key: 'feet', order: 'f', label: 'On feet', prefixes: ['<worn on feet>'] },
+    { key: 'neck', order: 'n', label: 'Around neck', prefixes: ['<worn around neck>'] },
+    { key: 'wrists', order: 'w', label: 'On wrists', prefixes: ['<worn on wrists>'] },
+    { key: 'finger', order: 'F', label: 'On finger', prefixes: ['<worn on finger>'] },
+    { key: 'back', order: '-', label: 'On back', prefixes: ['<worn on back>'] },
+    { key: 'across-back', order: 'q', label: 'Across back', prefixes: ['<worn across back>'] },
+    { key: 'belt', order: 'B', label: 'On belt', prefixes: ['<worn as belt>', '<worn on belt>'] },
+] as const;
+const WORN_PREFIX_ORDER: Readonly<Record<string, string>> = Object.fromEntries(
+    WORN_EQUIPMENT_SLOTS.flatMap(slot => slot.prefixes.map(prefix => [prefix, slot.order]))
+) as Record<string, string>;
 
 // --- Logic Section ---
 export function getWornSlotLabel(prefix?: string): string | undefined {

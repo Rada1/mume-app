@@ -1,0 +1,20 @@
+/** @file ParleyChannelChip.css — Upward channel branches with recipient columns. */
+/* --- Destination Chip Section --- */
+.docked-parley-chip.parley-channel-chip {
+    border:0 !important;
+    border-radius:0 !important;
+    background:#292929 !important;
+    box-shadow:none;
+    height:auto;
+    padding:4px 8px;
+}
+.docked-parley-chip.parley-channel-chip:hover,
+.docked-parley-chip.parley-channel-chip:focus-within { background:#303030 !important; }
+.parley-channel-chip .parley-action { border:0; border-radius:0; }
+/* --- Menu Surfaces Section --- */
+.parley-branch-menu { position:fixed; z-index:66050; width:180px; max-height:calc(100dvh - 70px); overflow:auto; box-sizing:border-box; padding:4px; background:rgba(23,23,23,.88); color:#c9c5bc; font:11px var(--font-mono,monospace); }
+.parley-branch-menu > small { display:block; padding:8px; color:#9b927c; text-transform:uppercase; font-size:9px; }
+.parley-branch-menu > button { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:33px; padding:8px; border:0; border-radius:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.parley-branch-menu > button:hover,.parley-branch-menu > button:focus-visible,.parley-branch-menu > button[aria-expanded=true] { background:#303030; outline:none; }
+.parley-recipient-menu { width:220px; }
+.parley-branch-menu p { padding:8px; color:#9b927c; }

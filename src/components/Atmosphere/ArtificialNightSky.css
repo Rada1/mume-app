@@ -1,0 +1,8 @@
+/** @file ArtificialNightSky.css — Outdoor darkness remains visible above artificial light. */
+
+/* --- Outdoor night sky and local light coexist --- */
+.environment-root.front.lighting-state-artificial.has-night-sky .client-vignette-overlay {
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 0%, rgba(30, 39, 58, 0.68) 0%, rgba(24, 32, 48, 0.32) 44%, transparent 94%),
+        radial-gradient(ellipse 56% 58% at 100% 100%, rgba(104, 48, 5, 0.62) 0%, rgba(82, 38, 8, 0.28) 42%, transparent 94%);
+}

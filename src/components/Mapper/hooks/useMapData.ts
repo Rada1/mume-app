@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { MapperRoom, MapperMarker } from '../mapperTypes';
 import type { MapData } from '../performance/webcockpit/model';
+import { withoutDeletedMapMarkers } from '../../../utils/deletedMapMarkers';
 
 const MARKER_STORAGE_KEY = 'mume_mapper_markers_global';
 
@@ -9,7 +10,7 @@ export const useMapData = () => {
     const [markers, setMarkers] = useState<Record<string, MapperMarker>>(() => {
         try {
             const saved = localStorage.getItem(MARKER_STORAGE_KEY);
-            return saved ? JSON.parse(saved) : {};
+            return saved ? withoutDeletedMapMarkers(JSON.parse(saved)) : {};
         } catch { return {}; }
     });
     const [exploredVnums, setExploredVnums] = useState<Set<string>>(() => {
@@ -37,10 +38,7 @@ export const useMapData = () => {
     useEffect(() => {
         const timer = setTimeout(() => {
             try {
-                const keys = Object.keys(markers);
-                if (keys.length > 0) {
-                    localStorage.setItem(MARKER_STORAGE_KEY, JSON.stringify(markers));
-                }
+                localStorage.setItem(MARKER_STORAGE_KEY, JSON.stringify(markers));
             } catch (e) {
                 console.warn('[MapData] Failed to save markers:', e);
             }

@@ -45,7 +45,17 @@ const formatDuration = (ms?: number) => {
     return `${seconds}s`;
 };
 
-const formatStopwatch = (milliseconds: number) => `${(Math.max(0, milliseconds) / 1000).toFixed(2)}s`;
+const formatStopwatch = (milliseconds: number) => {
+    const totalSeconds = Math.floor(Math.max(0, milliseconds) / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    if (totalMinutes >= 60) {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
+    }
+    return `${totalMinutes}m ${seconds.toString().padStart(2, '0')}s`;
+};
 
 const getTimerBody = (mode: TimerToastMode, timer: EffectTimer, now: number, eventAt = now) => {
     if (mode === 'started') {

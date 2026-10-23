@@ -4,6 +4,7 @@ import { useLogPointerDown } from './useLogPointerDown';
 import { useLogPointerUp } from './useLogPointerUp';
 import { audioManager } from '../../services/audio/AudioManager';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
+import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 
 export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.MutableRefObject<boolean>, longPressJustFiredRef?: React.MutableRefObject<boolean>, heldBtnFiredRef?: React.MutableRefObject<boolean>) => {
     const {
@@ -53,6 +54,7 @@ export const useLogPointer = (deps: InteractionDeps, lookModFiredRef: React.Muta
     }, [internalUp, cleanupDrag, setHeldButton]);
 
     const handleLogPointerDown = useCallback((e: React.PointerEvent) => {
+        if (useCommandPanelStore.getState().isHelpMode) return;
         initAudio();
         const targetEl = (e.target as HTMLElement).closest('.inline-btn') as HTMLElement;
         activeTargetElRef.current = targetEl;

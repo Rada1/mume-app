@@ -17,6 +17,9 @@ import {
     getTerrainColor
 } from '../Mapper/mapperUtils';
 import type { ZoneVisualConfig } from '../Mapper/zoneFilters';
+import type { ZoneBackgroundPosition } from '../../types';
+import { normalizeZoneBackgroundKey } from '../../utils/zoneBackgroundPosition';
+import ZoneBackgroundPositionEditor from './ZoneBackgroundPositionEditor';
 
 interface SliderRowProps {
     label: string;
@@ -201,8 +204,11 @@ const MapVisualSettings: React.FC = () => {
         mapTileVisuals,
         mapBackgroundVisuals,
         zoneFilters,
+        zoneBackgroundPositions,
+        bgImage,
         setMapTileVisuals,
         setMapBackgroundVisuals,
+        setZoneBackgroundPosition,
         setZoneFilter,
         resetZoneFilters,
         resetMapVisuals,
@@ -218,7 +224,7 @@ const MapVisualSettings: React.FC = () => {
     const importRef = React.useRef<HTMLInputElement>(null);
 
     const handleExport = () => {
-        const data = JSON.stringify({ mapTileVisuals, mapBackgroundVisuals, zoneFilters }, null, 2);
+        const data = JSON.stringify({ mapTileVisuals, mapBackgroundVisuals, zoneFilters, zoneBackgroundPositions }, null, 2);
         const blob = new Blob([data], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -236,6 +242,14 @@ const MapVisualSettings: React.FC = () => {
                 const parsed = JSON.parse(ev.target?.result as string);
                 if (parsed.mapTileVisuals) setMapTileVisuals(parsed.mapTileVisuals);
                 if (parsed.mapBackgroundVisuals) setMapBackgroundVisuals(parsed.mapBackgroundVisuals);
+                if (parsed.zoneBackgroundPositions && typeof parsed.zoneBackgroundPositions === 'object') {
+                    Object.entries(parsed.zoneBackgroundPositions as Record<string, Partial<ZoneBackgroundPosition>>).forEach(([zone, position]) => {
+                        if (typeof position.x === 'number' && Number.isFinite(position.x) &&
+                            typeof position.y === 'number' && Number.isFinite(position.y)) {
+                            setZoneBackgroundPosition(normalizeZoneBackgroundKey(zone), position as ZoneBackgroundPosition);
+                        }
+                    });
+                }
                 if (parsed.zoneFilters) {
                     Object.entries(parsed.zoneFilters).forEach(([zone, config]: [string, any]) => {
                         if (config.dark) setZoneFilter(zone, true, config.dark);
@@ -424,6 +438,20 @@ const MapVisualSettings: React.FC = () => {
                             </option>
                         ))}
                     </select>
+                </div>
+
+                <div style={{ padding: '4px 0 10px', borderBottom: '1px solid var(--border-modal)' }}>
+                    <label className="setting-label" style={{ color: 'var(--accent)', fontWeight: 'bold', margin: '4px 0', display: 'block', fontSize: '0.8rem' }}>
+                        Zone Background Position
+                    </label>
+                    <div style={{ color: 'var(--text-dim)', fontSize: '0.72rem', marginBottom: '8px' }}>
+                        Pan the shared background image for {selectedZone}. This position is saved for that zone.
+                    </div>
+                    <ZoneBackgroundPositionEditor
+                        imageUrl={bgImage || '/assets/Pictures/UIPics/darkmap.png'}
+                        position={zoneBackgroundPositions[normalizeZoneBackgroundKey(selectedZone)] || { x: 0, y: 0 }}
+                        onCommit={(position) => setZoneBackgroundPosition(normalizeZoneBackgroundKey(selectedZone), position)}
+                    />
                 </div>
 
                 {/* Zone Visual Overrides */}

@@ -64,6 +64,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         entities,
         registerEntity,
         selectedObjectIds,
+        toggleObjectSelection,
         clearObjectSelection,
         triggerHaptic,
         addMessage,
@@ -88,6 +89,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         whoList,
         refreshLogHighlights,
         practice,
+        abilities,
         openKeywordEdit,
         keywordEditState, setKeywordEditState,
         setKeywordOverride, removeKeywordOverride,
@@ -128,12 +130,15 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
         const handleClickOutside = (event: PointerEvent) => {
             if (!popoverState) return;
             if (popoverState.type === 'help-card') return; // Exclude help card from global click-outside closure
+            // Floating inspection reports stay open while other client panels are used.
+            if (document.querySelector('[data-floating-panel="details"]')) return;
             const target = event.target as Node;
 
             // Don't close if clicking inside the popover
             // Don't close if clicking inside the popover or on an inline button
             if (popoverRef.current && popoverRef.current.contains(target)) return;
-            if (target instanceof HTMLElement && target.closest('.inline-btn')) return;
+            if (target instanceof HTMLElement && target.closest('.unified-command-panel')) return;
+            if (target instanceof HTMLElement && (target.closest('.inline-btn') || target.closest('.popover-inspection-panel'))) return;
 
             // Dial menus use a different overlay logic, but we still need to prevent execution
             if (popoverState.menuDisplay === 'dial') {
@@ -302,11 +307,14 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 entities={entities}
                 registerEntity={registerEntity}
                 selectedObjectIds={selectedObjectIds}
+                toggleObjectSelection={toggleObjectSelection}
                 clearObjectSelection={clearObjectSelection}
                 keywordOverrides={keywordOverrides}
                 accountState={accountState}
                 setAccountState={setAccountState}
                 characterInfo={characterInfo}
+                abilities={abilities || {}}
+                practiceData={practice?.practiceData ?? null}
                 handleTabClick={handleTabClick}
                 setGearTab={setGearTab}
                 setCharTab={setCharTab}
@@ -315,6 +323,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
                 objectColor={objectColor}
                 roomColor={roomColor}
                 currentTerrain={currentTerrain}
+                isMobile={viewport.isMobile}
             />
 
 

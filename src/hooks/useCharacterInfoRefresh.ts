@@ -14,18 +14,11 @@ import {
 type CharacterInfoQuery = { field?: CharacterInfoRefreshField; command: string };
 
 const PROFILE_QUERIES: CharacterInfoQuery[] = [
-    { field: 'age', command: 'info %a' },
-    { field: 'height', command: 'info %h' },
-    { field: 'warFame', command: 'info %K' },
     { field: 'gold', command: 'info %g' },
-    { field: 'burden', command: 'info %C' },
-    { command: 'practice' }
+    { field: 'burden', command: 'info %C' }
 ];
 
 const QUERIES: CharacterInfoQuery[] = [
-    { field: 'age', command: 'info %a' },
-    { field: 'height', command: 'info %h' },
-    { field: 'warFame', command: 'info %K' },
     { field: 'gold', command: 'info %g' },
     { field: 'burden', command: 'info %C' },
     { field: 'wimpy', command: 'info %y' }
@@ -35,7 +28,7 @@ export const useCharacterInfoRefresh = (
     characterName: string,
     isPlaying: boolean,
     executeCommand: (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void,
-    autoStartProfileRefresh = true
+    autoStartProfileRefresh = false
 ): (() => void) => {
     const requestRefreshRef = useRef<(() => void) | null>(null);
 
@@ -64,8 +57,7 @@ export const useCharacterInfoRefresh = (
                 beginCharacterInfoRefresh([query.field], { notifyOnConsume: true });
                 executeCommand(query.command, true, true, true, true);
             } else {
-                // Let the final compact-info prompt clear before opening the
-                // practice capture, then keep the full skill listing silent.
+                // Let the final compact-info prompt clear before another report.
                 beginCharacterInfoRefresh([]);
                 timeout = window.setTimeout(() => {
                     if (!active || !isRunning) return;
@@ -91,8 +83,7 @@ export const useCharacterInfoRefresh = (
         };
         const unsubscribe = subscribeToCharacterInfoRefresh(requestNext);
         requestRefreshRef.current = startRefresh;
-        // These profile values are shown in the character bar but are not part of
-        // the regular vitals stream. Fetch them quietly once after login.
+        // Refresh profile details that are still useful in the character panel.
         if (autoStartProfileRefresh) {
             autoStartTimeout = window.setTimeout(() => startRefresh(PROFILE_QUERIES), 1500);
         }

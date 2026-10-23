@@ -3,6 +3,8 @@
  * @description Zone alignment lookup for map-driven atmosphere effects.
  */
 
+import { normalizeZoneName } from './zoneName';
+
 // --- Type Section ---
 
 export type ZoneAlignment = 'good' | 'semi-good' | 'neutral' | 'semi-evil' | 'evil';
@@ -43,8 +45,8 @@ const ZONE_ALIGNMENT_BY_NAME: Record<string, ZoneAlignment> = {
     'the Gladden Fields': 'semi-good',
     'the Grey Havens': 'good',
     'the Lhun Valley': 'semi-good',
-    'Lorien Surroundings': 'semi-good',
-    'the Lorien Surroundings': 'semi-good',
+    'Lorien Surroundings': 'good',
+    'the Lorien Surroundings': 'good',
     'the Midgewaters': 'semi-good',
     'the Misty Mountains': 'semi-evil',
     'the Northern Anduin Vale': 'neutral',
@@ -70,10 +72,6 @@ export const EMBER_COLOR_BY_ALIGNMENT: Record<ZoneAlignment, EmberColorProfile> 
 };
 
 // --- Logic Section ---
-
-const normalizeZoneName = (zone: string | null | undefined): string => (
-    (zone || '').trim().replace(/\s+/g, ' ').toLowerCase()
-);
 
 const NORMALIZED_ZONE_ALIGNMENT = new Map(
     Object.entries(ZONE_ALIGNMENT_BY_NAME).map(([zone, alignment]) => [normalizeZoneName(zone), alignment])

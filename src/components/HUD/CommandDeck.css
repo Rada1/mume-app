@@ -478,7 +478,7 @@
 }
 
 /* Transparent on mobile (children flow into .skills-deck); becomes an absolute
-   fill on desktop (see ActionBox.css) so the skill grid scrolls internally and
+   fill on desktop so the skill grid scrolls internally and
    never grows the bottom bar. */
 .skills-deck-inner {
     display: contents;

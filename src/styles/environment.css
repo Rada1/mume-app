@@ -110,21 +110,26 @@
 }
 
 .client-dark-overlay {
+    position: absolute;
+    inset: 0;
     z-index: 6;
-    background: radial-gradient(circle at center, transparent 15%, rgba(0, 0, 15, 0.85) 100%);
+    pointer-events: none;
+    background: rgba(0, 0, 12, 0.52);
     mix-blend-mode: multiply;
     opacity: 0;
     transition: opacity 5s ease-in-out;
 }
 
-.lighting-state-sun .client-dark-overlay,
-.lighting-state-moon .client-dark-overlay,
-.lighting-state-artificial .client-dark-overlay {
-    opacity: 0.42;
+.environment-root.front.lighting-state-moon .client-dark-overlay {
+    opacity: 0.75;
 }
 
-.lighting-state-dark .client-dark-overlay {
-    opacity: 0.72;
+.environment-root.front.lighting-state-artificial .client-dark-overlay {
+    opacity: 0.5;
+}
+
+.environment-root.front.lighting-state-dark .client-dark-overlay {
+    opacity: 0.25;
 }
 
 /* Sleep is intentionally darker than an unlit room: the player should feel
@@ -156,13 +161,6 @@
     display: none;
 }
 
-/* The wiki theme uses a flat warm page surface. Do not darken it with the
-   immersion lighting multiply layer in the standard themes. */
-:is(.light-mode, .dark-mode):not(.immersion-mode) .client-dark-overlay {
-    display: none;
-}
-
-
 .environment-root.front {
     /* Full-viewport-width, like .app-terrain-strip at the bottom, so clouds/fog/rain
        stretch across the whole client instead of stopping at the log/map column. */
@@ -188,10 +186,50 @@
     z-index: 20;
     pointer-events: none;
     background: radial-gradient(ellipse at center,
-        transparent 32%,
-        rgba(0, 0, 0, 0.24) 58%,
+        transparent 26%,
+        rgba(0, 0, 0, 0.24) 52%,
         rgba(0, 0, 0, 0.62) 100%
     );
+}
+
+.lighting-state-dark .client-vignette-overlay {
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 0%, rgba(30, 39, 58, 0.68) 0%, rgba(24, 32, 48, 0.32) 44%, transparent 94%);
+}
+
+.environment-root.front.lighting-state-dark.is-indoor .client-vignette-overlay {
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 0%, rgba(0, 0, 0, 0.68) 0%, rgba(0, 0, 0, 0.32) 44%, transparent 94%);
+}
+
+.lighting-state-artificial .client-vignette-overlay {
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 100%, rgba(104, 48, 5, 0.62) 0%, rgba(82, 38, 8, 0.28) 42%, transparent 94%);
+}
+
+.client-corner-light-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 21;
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: screen;
+    transition: opacity 5s ease-in-out, background 5s ease-in-out;
+}
+
+.environment-root.front .environment-vignette-scene.lighting-state-sun .client-corner-light-overlay {
+    opacity: 1;
+    background: rgba(168, 224, 255, 0.56);
+    mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, var(--sunlight-fade-stops));
+    -webkit-mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, var(--sunlight-fade-stops));
+    mix-blend-mode: normal;
+}
+
+.environment-root.front .environment-vignette-scene.lighting-state-moon .client-corner-light-overlay {
+    opacity: 0.9;
+    background:
+        radial-gradient(ellipse 56% 58% at 100% 0%, rgba(22, 43, 125, 0.62) 0%, rgba(28, 52, 145, 0.36) 42%, transparent 94%),
+        linear-gradient(to bottom, rgba(24, 48, 138, 0.26) 0%, rgba(28, 52, 145, 0.14) 9vh, transparent 30vh);
 }
 
 .embers-client-layer {
@@ -202,6 +240,11 @@
     overflow: hidden;
 }
 
+.embers-client-layer.avoids-top-right-vignette {
+    mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, transparent 0%, transparent 94%, #000 100%);
+    -webkit-mask-image: radial-gradient(ellipse 56% 58% at 100% 0%, transparent 0%, transparent 94%, #000 100%);
+}
+
 /* Motion relief: the front atmosphere overlays (clouds, fog, rain) are
    full-screen blend layers sitting above the log/map. While the log is scrolling or a
    directional swipe gesture is active, they must re-composite over the moving content
@@ -209,8 +252,8 @@
    active interaction and back in the moment it stops; the scene is static while reading,
    so full quality is preserved exactly when it's visible. Keep embers visible so they
    can respond to commands and accelerate into a flurry without disappearing/reappearing. */
-body.ui-scrolling .environment-root.front > :not(.embers-container):not(.client-vignette-overlay),
-body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-vignette-overlay) {
+body.ui-scrolling .environment-root.front > :not(.embers-container):not(.environment-vignette-layers):not(.environment-weather-layers):not(.environment-twilight-vignette):not(.client-star-veil),
+body.ui-gesturing .environment-root.front > :not(.embers-container):not(.environment-vignette-layers):not(.environment-weather-layers):not(.environment-twilight-vignette):not(.client-star-veil) {
     opacity: 0;
 }
 
@@ -662,7 +705,7 @@ body.ui-gesturing .environment-root.front > :not(.embers-container):not(.client-
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 6;
+    z-index: 25;
     overflow: hidden;
 }
 

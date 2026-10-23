@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
-import ChatWindow from '../Messages/ChatTranscriptWindow';
 import GearPanel from '../GearPanel';
 import { LogDockedInput } from '../HUD/LogDockedInput';
 import InputArea from '../Controls/InputArea';
@@ -16,8 +15,8 @@ import { useArchiveStore } from '../../stores/useArchiveStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { getDockedWidth } from '../../utils/dockedPanelUtils';
+import { useRetainedLogWidth } from '../../hooks/useRetainedLogWidth';
 import { LineCluster } from './HUD/LineCluster';
-import ActionBox from '../HUD/ActionBox';
 import { RotatedStatusPanel } from './RotatedStatusPanel';
 import { CounterRotatedContent } from './CounterRotatedContent';
 import { CharacterCard } from '../HUD/CharacterCard';
@@ -31,13 +30,17 @@ import { QuickButtonBar } from '../HUD/QuickButtonBar';
 import { AccountTargetBar } from '../HUD/AccountTargetBar';
 import { MobileAccountCommandGrid } from '../HUD/MobileAccountCommandGrid';
 import { MobileAccountExperience } from '../HUD/MobileAccountExperience';
+import { ClientPanelStack } from '../Messages/ClientPanelStack';
+import ChatWindow from '../Messages/ChatTranscriptWindow';
 import GroupStatusWindow from '../Messages/GroupStatusWindow';
 import { ReplayHUD } from './HUD/ReplayHUD';
 import type { MumeEditState } from '../../stores/useUIStore';
+import { MobileStateControls } from '../HUD/MobileStateControls';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { StickyRoomHeader } from './StickyRoomHeader';
 import { MapperRoomInfo } from '../Mapper/MapperRoomInfo';
 import { useActiveVitals } from '../../stores/useActiveGameState';
+import { CharacterSessionProgressTracker } from '../HUD/CharacterSessionProgressTracker';
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
 import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
@@ -54,12 +57,9 @@ interface MainContentLayerProps {
     handleSend: (e?: React.FormEvent) => void;
     handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
     commandPreview: string | null;
-    setCommandPreview: React.Dispatch<React.SetStateAction<string | null>>;
     heldButton: any;
-    setHeldButton: React.Dispatch<React.SetStateAction<any>>;
     mumeEditState: MumeEditState;
     setMumeEditState: React.Dispatch<React.SetStateAction<MumeEditState>>;
-    wasDraggingRef: React.MutableRefObject<boolean>;
 }
 
 export const MainContentLayer: FC<MainContentLayerProps> = ({
@@ -69,12 +69,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleSend,
     handleInputSwipe,
     commandPreview,
-    setCommandPreview,
     heldButton,
-    setHeldButton,
     mumeEditState,
-    setMumeEditState,
-    wasDraggingRef
+    setMumeEditState
 }) => {
     const {
         env,
@@ -108,7 +105,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isReplaying = sessionMode === 'replay';
     const isAccountScreen = gameState === 'account' && !isReplaying;
     const layoutGameState = gameState === 'account' && isReplaying ? 'playing' : gameState;
-    const { lighting, weather } = useActiveVitals();
+    const activeVitals = useActiveVitals();
+    const { lighting, weather } = activeVitals;
 
     const isSpectateMode = useModeStore(s => s.isSpectating);
     const activeView = useModeStore(s => s.activeView);
@@ -116,12 +114,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
     const useTacticalPanelBlur = useSettingsStore(s => s.useTacticalPanelBlur);
 
     const useMobileAccountPanels = useSettingsStore(s => s.useMobileAccountPanels ?? true);
     const manualBgImage = useSettingsStore(s => s.bgImage);
-    const showChatWindow = useSettingsStore(s => s.showChatWindow);
-    const showGroupPanel = useSettingsStore(s => s.showGroupPanel);
     const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileGuideOpen : s.isOpen);
     const isSkillsPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isSkillsOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
@@ -131,6 +128,8 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const gearSwipe = useMobileGearSwipe(viewport.isMobile && !isAccountScreen, triggerHaptic);
     const isHelpOpen = useHelpStore(s => s.isOpen);
     const isArchiveOpen = useArchiveStore(s => s.isOpen);
+    const showChatWindow = useSettingsStore(s => s.showChatWindow);
+    const showGroupPanel = useSettingsStore(s => s.showGroupPanel);
 
     const isEditorOpen = Boolean(
         mumeEditState?.isOpen &&
@@ -185,6 +184,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
     const { setPopoverState } = useUI();
     const logContainerRef = React.useRef<HTMLDivElement>(null);
+    useRetainedLogWidth(logContainerRef, viewport.isMobile, hasDockedPanels);
 
     // --- Terrain Strip Cross-Fade State & Effects ---
     const currentTerrainKey = getRoomTerrainVisualKey(isAccountScreen ? 'forest' : roomCardTerrain);
@@ -280,7 +280,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         const updateCenter = () => {
             if (logContainerRef.current) {
                 const rect = logContainerRef.current.getBoundingClientRect();
-                const commandBar = logContainerRef.current.querySelector<HTMLElement>('.message-log-docked-input');
+                const commandBar = logContainerRef.current.querySelector<HTMLElement>('.command-dock-input-main:not(.is-inline), .message-log-docked-input:not(.command-dock-row)');
                 const commandBarRect = commandBar?.getBoundingClientRect();
                 const mapPanel = [
                     document.querySelector<HTMLElement>('.mobile-map-panel'),
@@ -313,7 +313,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         const observer = new ResizeObserver(updateCenter);
         if (logContainerRef.current) {
             observer.observe(logContainerRef.current);
-            const commandBar = logContainerRef.current.querySelector<HTMLElement>('.message-log-docked-input');
+            const commandBar = logContainerRef.current.querySelector<HTMLElement>('.command-dock-input-main:not(.is-inline), .message-log-docked-input:not(.command-dock-row)');
             if (commandBar) observer.observe(commandBar);
             document.querySelectorAll<HTMLElement>('.mobile-map-panel, .map-drawer-desktop.open')
                 .forEach(mapPanel => observer.observe(mapPanel));
@@ -410,30 +410,33 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         && heldBtnActionType !== 'modifier';
     const isRotatedStatusPanel = viewport.isRotatedLandscape && !isAccountScreen;
     const shouldRenderDockedInput = !(isReplaying && gameState === 'account');
+    const useCommandDockToolbar = !viewport.isRotatedLandscape && !isAccountScreen && (isCommandPanelOpen || (!viewport.isMobile && isSkillsPanelOpen));
     const dockedInput = shouldRenderDockedInput ? (
-        <LogDockedInput
-            handleSend={handleSend}
-            handleInputSwipe={handleInputSwipe}
-            commandPreview={commandPreview}
-        />
+        useCommandDockToolbar ? (
+            <div className={`command-tree-v2 command-dock-shell${viewport.isMobile ? ' command-dock-shell-mobile' : ''}`}>
+                <div id="command-dock-summary" className="command-dock-summary" />
+                <LogDockedInput
+                    handleSend={handleSend}
+                    handleInputSwipe={handleInputSwipe}
+                    commandPreview={commandPreview}
+                    commandDockActive
+                />
+            </div>
+        ) : (<>
+            <LogDockedInput
+                handleSend={handleSend}
+                handleInputSwipe={handleInputSwipe}
+                commandPreview={commandPreview}
+            />
+            {viewport.isMobile && !viewport.isRotatedLandscape && !isAccountScreen && !isReadabilityMode && <MobileStateControls />}
+        </>)
     ) : null;
-    const actionBox = !isAccountScreen ? (
-        <ActionBox
-            mobile={viewport.isMobile}
-            handleSend={handleSend}
-            handleInputSwipe={handleInputSwipe}
-            commandPreview={commandPreview}
-            setCommandPreview={setCommandPreview}
-            heldButton={heldButton}
-            setHeldButton={setHeldButton}
-            wasDraggingRef={wasDraggingRef}
-        />
-    ) : null;
-
     return (
         <div
             className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels has-docked-panel-surface' : ''}${shouldBlurDockedPanels ? ' docked-panels-blurred' : ''}`}
+            data-active-docked-panel={activeDockedPanels[0]}
             style={{
+                '--desktop-command-panel-width': isAccountScreen ? 'var(--desktop-character-width, 260px)' : undefined,
                 '--terminal-pane-width': activeDockedPanels.length
                     ? 'clamp(150px, 15vw, 280px)'
                     : '0px',
@@ -442,6 +445,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     : '0px'
             } as React.CSSProperties}
         >
+            <CharacterSessionProgressTracker />
             {!viewport.isMobile && isImmersionMode && (
                 <div
                     style={{
@@ -523,7 +527,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 isLandscape={isLandscape}
                 getWeatherIcon={getWeatherIcon}
             />
-            {viewport.isMobile && showGroupPanel && !isAccountScreen && <GroupStatusWindow />}
+            {showGroupPanel && !isAccountScreen && viewport.isMobile && <GroupStatusWindow />}
             <ReplayHUD />
 
             <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
@@ -550,10 +554,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             handleSend={handleSend}
                             handleInputSwipe={handleInputSwipe}
                             commandPreview={commandPreview}
-                            setCommandPreview={setCommandPreview}
-                            heldButton={heldButton}
-                            setHeldButton={setHeldButton}
-                            wasDraggingRef={wasDraggingRef}
                         />
                     )}
                     <div
@@ -627,25 +627,23 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     {!isReplaying && <MobileAccountCommandGrid />}
                     </>}
 
-                    {!isRotatedStatusPanel && actionBox}
                 </div>
+                {!viewport.isMobile && !isAccountScreen && <ClientPanelStack />}
                 {(isCommandPanelOpen || isSkillsPanelOpen) && (
-                    <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={isSkillsPanelOpen ? 'Skills and Practice panel' : 'Command Guide panel'}>
-                        {!viewport.isMobile && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
+                    <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={viewport.isMobile ? (isSkillsPanelOpen ? 'Skills and Practice panel' : isReadabilityMode ? 'Command panel' : 'Command Guide panel') : 'Action panel'}>
+                        {!viewport.isMobile && isAccountScreen && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
                         {isAccountScreen ? <MobileAccountExperience /> : isSkillsPanelOpen
-                            ? <RightActionPanel skillsOnly onClose={() => viewport.isMobile ? setIsMobileSkillsPanelOpen(false) : setIsSkillsPanelOpen(false)} />
-                            : <CommandGuidePanel />}
+                            ? viewport.isMobile
+                                ? <RightActionPanel skillsOnly onClose={() => setIsMobileSkillsPanelOpen(false)} />
+                                : <CommandGuidePanel initialScope="self" onClose={() => setIsSkillsPanelOpen(false)} />
+                            : <CommandGuidePanel initialScope="room" onClose={() => setIsCommandPanelOpen(false)} />}
                     </aside>
                 )}
                 {isGearPanelOpen && !isAccountScreen && (
                     <GearPanel style={getPanelStyle('gear')} />
                 )}
-                {showChatWindow && (
-                    <ChatWindow
-                        style={getPanelStyle('chat')}
-                    />
-                )}
-                {isHelpOpen && !isAccountScreen && (
+                {showChatWindow && !isAccountScreen && viewport.isMobile && <ChatWindow style={getPanelStyle('chat')} />}
+                {isHelpOpen && !isAccountScreen && viewport.isMobile && (
                     <React.Suspense fallback={null}>
                         <HelpPanel style={getPanelStyle('help')} />
                     </React.Suspense>

@@ -60,8 +60,7 @@ export const SOCIAL_BUTTONS = [
     createSocialButton('tickle', 'Tickle'),
     createSocialButton('wave', 'Wave'),
     createSocialButton('wink', 'Wink'),
-    createSocialButton('yawn', 'Yawn', false),
-    createSocialButton('yes', 'Yes', false)
+    createSocialButton('yawn', 'Yawn', false)
 ];
 
 

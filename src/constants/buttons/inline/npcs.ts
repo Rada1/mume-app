@@ -6,6 +6,9 @@ import { createButton } from '../../../utils/buttonFactory';
  */
 
 export const NPC_BUTTONS = [
+    createButton({ id: 'btn-saddle-mount', label: 'Saddle', command: 'saddle mount', setId: 'trait-saddle', color: '#ffd700' }),
+    createButton({ id: 'btn-saddle-unsaddle', label: 'Unsaddle', command: 'unsaddle %p', setId: 'trait-saddle', color: '#ffd700' }),
+    createButton({ id: 'btn-mount-object-unsaddle', label: 'Unsaddle', command: 'unsaddle %p %n', setId: 'trait-mount-object', color: '#ffd700' }),
     // --- INNKEEPERS ---
     createButton({ id: 'btn-innkeeper-offer', label: 'Offer', command: 'offer %n', setId: 'inline-innkeeper', color: '#ec4899' }),
     createButton({ id: 'btn-innkeeper-rent', label: 'Rent', command: 'rent', setId: 'inline-innkeeper', color: '#8b5cf6' }),
@@ -13,8 +16,6 @@ export const NPC_BUTTONS = [
     // --- MOUNTS ---
     createButton({ id: 'btn-mount-ride', label: 'Ride', command: 'ride %n', setId: 'inline-mounts', color: '#38bdf8' }),
     createButton({ id: 'btn-mount-lead', label: 'Lead', command: 'lead %n', setId: 'inline-mounts', color: '#38bdf8' }),
-    createButton({ id: 'btn-mount-saddle', label: 'Saddle', command: 'saddle %n', setId: 'inline-mounts', color: '#ffd700' }),
-    createButton({ id: 'btn-mount-unsaddle', label: 'Unsaddle', command: 'unsaddle %n', setId: 'inline-mounts', color: '#ffd700' }),
     createButton({ id: 'btn-mount-abandon', label: 'Abandon', command: 'abandon %n', setId: 'inline-mounts', color: '#38bdf8' }),
     createButton({ id: 'btn-mount-dismount', label: 'Dismount', command: 'dismount %n', setId: 'inline-mounts', color: '#38bdf8' }),
 

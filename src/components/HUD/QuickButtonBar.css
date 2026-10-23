@@ -1,3 +1,6 @@
+/** @file Quick button positioning, appearance, and creation controls. */
+
+/* --- Quick Button Layout --- */
 .quick-button-bar {
     position: absolute;
     bottom: 48px;
@@ -26,7 +29,7 @@
     justify-content: center;
     padding: 6px 12px;
     min-height: 34px;
-    border-radius: 8px;
+    border-radius: 0;
     border: 1px solid rgba(255, 255, 255, 0.18);
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(6px);
@@ -60,7 +63,7 @@
     justify-content: center;
     width: 34px;
     height: 34px;
-    border-radius: 8px;
+    border-radius: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(6px);
@@ -86,7 +89,7 @@
     background: rgba(15, 15, 20, 0.92);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    border-radius: 0;
     min-width: 180px;
     pointer-events: auto;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
@@ -97,7 +100,7 @@
     padding: 5px 8px;
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 5px;
+    border-radius: 0;
     color: rgba(255, 255, 255, 0.9);
     font-size: 0.7rem;
     font-family: var(--font-mono, monospace);
@@ -123,7 +126,7 @@
     padding: 4px 12px;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
+    border-radius: 0;
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.65rem;
     font-weight: 700;
@@ -151,7 +154,7 @@
 
     .quick-chip-row {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-end;
     }
 
     .quick-chip {
@@ -163,6 +166,6 @@
 @media (max-width: 1024px) {
     .quick-chip-row {
         flex-direction: column;
-        align-items: stretch;
+        align-items: flex-end;
     }
 }

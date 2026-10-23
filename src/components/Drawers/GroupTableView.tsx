@@ -5,58 +5,10 @@
 
 // --- Logic Section ---
 import React from 'react';
-import { GroupMember } from '../../types';
+import type { GroupMember } from '../../types';
 import { getMemberColor } from '../../utils/groupUtils';
-
-type VitalValue = string | number | undefined;
-type GroupTableMember = GroupMember & {
-    state?: string;
-    hits?: VitalValue;
-    maxhits?: VitalValue;
-    maxhp?: VitalValue;
-    maxmana?: VitalValue;
-    moves?: VitalValue;
-    maxmoves?: VitalValue;
-    maxmp?: VitalValue;
-};
-
-const valueText = (value: VitalValue): string => {
-    if (value === undefined || value === null) return '';
-    return String(value);
-};
-
-const vitalPair = (current: VitalValue, max: VitalValue): string => {
-    const currentText = valueText(current);
-    const maxText = valueText(max);
-    if (!currentText) return '';
-    if (currentText.includes('/') || currentText.endsWith('%')) return currentText;
-    return maxText ? `${currentText}/${maxText}` : currentText;
-};
-
-const getName = (member: GroupMember) => member.name || member.label || String(member.id || '');
-
-const getHits = (member: GroupTableMember) => vitalPair(
-    member.vits?.hp ?? member.hits ?? member.hp ?? member['hp-string'],
-    member.vits?.maxhp ?? member.maxhits ?? member.maxhp
-);
-
-const getMana = (member: GroupTableMember) => vitalPair(
-    member.vits?.mana ?? member.mana ?? member['mana-string'],
-    member.vits?.maxmana ?? member.maxmana
-);
-
-const getMoves = (member: GroupTableMember) => vitalPair(
-    member.vits?.moves ?? member.moves ?? member.mp ?? member['mp-string'],
-    member.vits?.maxmoves ?? member.maxmoves ?? member.maxmp
-);
-
-const getState = (member: GroupTableMember) => {
-    if (member.state) return member.state;
-    if (member.position) return member.position;
-    if (member.fighting) return 'fight';
-    if (member.waiting) return 'wait';
-    return '';
-};
+import { getGroupMemberHits, getGroupMemberMana, getGroupMemberMoves, getGroupMemberName, getGroupMemberState, getGroupMemberVitalPercent } from '../../utils/groupMemberStatus';
+import { isVitalLow } from '../../utils/vitalStatus';
 
 const EmptyGroup = () => (
     <div style={{ padding: '24px 16px', textAlign: 'center', color: 'var(--group-status-muted, rgba(255,255,255,0.3))', fontStyle: 'italic', fontSize: '0.85rem' }}>
@@ -80,15 +32,14 @@ const HeaderRow = () => (
     </>
 );
 
-export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolean }> = ({ members, compact = false }) => {
+export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolean; onSelectMember?: (member: GroupMember) => void }> = ({ members, compact = false, onSelectMember }) => {
     if (members.length === 0) return compact ? null : <EmptyGroup />;
 
     return (
         <div style={{ flex: compact ? '0 0 auto' : 1, overflow: 'auto', padding: compact ? '2px 10px 5px' : '10px 12px', fontFamily: 'var(--font-mono, monospace)', fontSize: compact ? '11px' : 'var(--dynamic-log-size, 16px)', whiteSpace: 'nowrap', lineHeight: compact ? 1.25 : 1.55, color: 'var(--group-status-text, #fff)' }}>
             <HeaderRow />
             {members.map((member, index) => {
-                const tableMember = member as GroupTableMember;
-                const name = getName(member);
+                const name = getGroupMemberName(member);
                 const memberColor = getMemberColor(index).core;
 
                 return (
@@ -106,14 +57,14 @@ export const GroupTableView: React.FC<{ members: GroupMember[]; compact?: boolea
                             textAlign: 'left'
                         }}
                     >
-                        <span className="inline-btn" data-id={String(member.id || name)}
+                        {onSelectMember ? <button type="button" className="room-group-member-target" onClick={() => onSelectMember(member)} title={`Select ${name}`} style={{color:memberColor}}>{name}</button> : <span className="inline-btn" data-id={String(member.id || name)}
                             data-cmd="inline-player" data-category="cat-ally"
                             data-context={name} data-action="menu"
-                            style={{ overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer', '--glow-color': memberColor } as React.CSSProperties}>{name}</span>
-                        <span style={{ color: 'var(--group-status-value, #44ff70)', fontWeight: 800 }}>{getHits(tableMember)}</span>
-                        <span style={{ color: 'var(--group-status-value, #44ff70)', fontWeight: 800 }}>{getMana(tableMember)}</span>
-                        <span style={{ color: 'var(--group-status-value, #44ff70)', fontWeight: 800 }}>{getMoves(tableMember)}</span>
-                        <span>{getState(tableMember)}</span>
+                            style={{ overflow: 'hidden', textOverflow: 'ellipsis', cursor: 'pointer', '--glow-color': memberColor } as React.CSSProperties}>{name}</span>}
+                        <span className={`group-status-vital group-status-vital-hits${isVitalLow(getGroupMemberVitalPercent(member, 'health')) ? ' is-low-vital' : ''}`}>{getGroupMemberHits(member)}</span>
+                        <span className={`group-status-vital group-status-vital-mana${isVitalLow(getGroupMemberVitalPercent(member, 'mana')) ? ' is-low-vital' : ''}`}>{getGroupMemberMana(member)}</span>
+                        <span className={`group-status-vital group-status-vital-moves${isVitalLow(getGroupMemberVitalPercent(member, 'move')) ? ' is-low-vital' : ''}`}>{getGroupMemberMoves(member)}</span>
+                        <span>{getGroupMemberState(member)}</span>
                         <span>{member.room || ''}</span>
                     </div>
                 );

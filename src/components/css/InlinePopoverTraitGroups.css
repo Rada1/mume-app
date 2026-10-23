@@ -13,22 +13,30 @@
 .terminal-inline-popover .inline-action-group-label {
     display: flex !important;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     width: 100%;
     padding: 5px 0 !important;
-    color: rgba(201, 168, 76, 0.58);
+    color: #8f8374;
     font-size: 0.58rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
     line-height: 1;
-    text-transform: lowercase;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .terminal-inline-popover .inline-action-group-label::before,
 .terminal-inline-popover .inline-action-group-label::after {
     content: '';
-    flex: 1;
     height: 1px;
-    background: rgba(201, 168, 76, 0.16);
+    background: rgba(201, 168, 76, 0.2);
+}
+
+.terminal-inline-popover .inline-action-group-label::before {
+    flex: 0 0 10px;
+}
+
+.terminal-inline-popover .inline-action-group-label::after {
+    flex: 1 1 auto;
 }

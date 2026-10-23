@@ -4,10 +4,10 @@
  */
 
 import React from 'react';
-import { CharacterInfo, CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry, CustomTraitConfig } from '../../types';
+import { CharacterInfo, CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry, CustomTraitConfig, PracticeData } from '../../types';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
 import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
-import { getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
+import { canSetTargetChipFromCategory, getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box, Pencil, Settings } from 'lucide-react';
 
@@ -16,8 +16,16 @@ import { TraitToggleSection } from './StandardMenu/TraitToggleSection';
 import { PopoverActionButton } from './StandardMenu/PopoverActionButton';
 import { ParleySection } from './StandardMenu/ParleySection';
 import { CapturedDetailsCard } from './StandardMenu/CapturedDetailsCard';
+import { CapturedDetailsSidePanel } from './StandardMenu/CapturedDetailsSidePanel';
 import { AccountCharacterCard } from './StandardMenu/AccountCharacterCard';
 import { AccountStatPopover } from './StandardMenu/AccountStatPopover';
+import { InlineActionDeck } from './StandardMenu/InlineActionDeck';
+import { RoomEntityPicker } from './StandardMenu/RoomEntityPicker';
+import { useRoomEntityMenu } from '../../hooks/useRoomEntityMenu';
+import { createLearnedInlineAbilityButtons } from '../../utils/inlineAbilityActions';
+import { SOCIAL_BUTTONS } from '../../constants/buttons/socials';
+import { DOOR_BUTTONS } from '../../constants/buttons/doors';
+import type { SelectedTargetInfo } from '../../stores/useUIStore';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -50,10 +58,11 @@ interface StandardMenuProps {
     openKeywordEdit?: (context: string, displayText: string) => void;
     roomPlayers?: (string | GmcpOccupant)[];
     roomNpcs?: (string | GmcpOccupant)[];
-    roomItems?: any[];
+    roomItems?: (string | GmcpOccupant)[];
     entities: Record<string, GameEntity>;
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     selectedObjectIds: Set<string>;
+    toggleObjectSelection: (info: SelectedTargetInfo) => void;
     clearObjectSelection: () => void;
     accountCharacters?: CharacterEntry[];
     accountState?: import('../../types').AccountState;
@@ -61,6 +70,8 @@ interface StandardMenuProps {
     direction?: string;
     characterInfo?: CharacterInfo;
     currentTerrain?: string;
+    abilities?: Record<string, number>;
+    practiceData?: PracticeData | null;
 }
 
 const formatSetLabel = (id: string): string => {
@@ -113,10 +124,36 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, customTraits, setCustomTraits,
         handleTabClick, setGearTab, setCharTab,
-        refreshLogHighlights, triggerHaptic, openKeywordEdit, roomNpcs,
-        entities, selectedObjectIds, clearObjectSelection, accountCharacters, accountState, setAccountState, direction, characterInfo,
+        refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems,
+        entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection, accountCharacters, accountState, setAccountState, direction, characterInfo,
         themeColor
     } = props;
+    const learnedInlineAbilityButtons = React.useMemo(
+        () => createLearnedInlineAbilityButtons(props.abilities || {}, props.practiceData || null),
+        [props.abilities, props.practiceData]
+    );
+    const inlineMenuButtons = React.useMemo(() => {
+        const availableById = new Map(buttons.map(button => [button.id, button]));
+        const supplementalButtons = [
+            ...SOCIAL_BUTTONS.filter(button => button.command.includes('%n')),
+            ...DOOR_BUTTONS,
+            ...learnedInlineAbilityButtons
+        ];
+        supplementalButtons.forEach(button => {
+            if (!availableById.has(button.id)) availableById.set(button.id, button);
+        });
+        return [...buttons, ...Array.from(availableById.values()).filter(button => !buttons.some(existing => existing.id === button.id))];
+    }, [buttons, learnedInlineAbilityButtons]);
+    const { entries: roomEntityEntries, selectEntity: selectRoomEntity } = useRoomEntityMenu({
+        players: roomPlayers || [],
+        npcs: roomNpcs || [],
+        objects: roomItems || [],
+        selectedObjectIds,
+        toggleObjectSelection,
+        setTarget,
+        setPopoverState,
+        triggerHaptic
+    });
 
     const [isChoosingCategory, setIsChoosingCategory] = React.useState(!!popoverState.isChoosingCategory);
     const menuRootRef = React.useRef<HTMLDivElement>(null);
@@ -173,6 +210,12 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         safeSetId.startsWith('object') ||
         safeSetId.startsWith('npc')
     );
+    const hasCapturedDetails = !!(
+        popoverState.hasInspectionCard || popoverState.isCapturingExamine || popoverState.isCapturingConsider ||
+        popoverState.capturedExamineLines || popoverState.capturedConsiderLines || popoverState.isCapturingWhois ||
+        popoverState.capturedWhoisLines || popoverState.isCapturingWho || popoverState.capturedWhoLines ||
+        popoverState.isCapturingWhere || popoverState.capturedWhereLines || popoverState.isCapturingRoomAction || popoverState.capturedRoomActionLines
+    );
     // Inline entities use a terminal command list, with explicit inspection replies
     // captured into the detail card while remaining visible in the log.
     // The compact chip strip remains available to specialised callers.
@@ -200,7 +243,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             capturedExamineLines: capturesExamine ? undefined : current.capturedExamineLines,
             examineMode: kind === 'look' || kind === 'examine' ? kind : current.examineMode,
             isCapturingConsider: !capturesExamine,
-            capturedConsiderLines: capturesExamine ? current.capturedConsiderLines : undefined
+            capturedConsiderLines: capturesExamine ? current.capturedConsiderLines : undefined,
+            isCapturingWhois: false,
+            capturedWhoisLines: undefined,
+            whoisTarget: undefined,
+            isCapturingWho: false,
+            capturedWhoLines: undefined,
+            isCapturingWhere: false,
+            capturedWhereLines: undefined,
+            isCapturingRoomAction: false,
+            roomActionKind: undefined,
+            capturedRoomActionLines: undefined
         }) : null);
         const command = commandOverride || `${kind === 'look' ? 'look' : kind === 'examine' ? 'examine' : 'con'} ${targetContext}`;
         executeCommand(command, false, false, false, false, { shouldFocus: false, fromUi: true });
@@ -219,38 +272,98 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     const requestWhois = () => {
         if (!targetContext) return;
         setIsChoosingCategory(false);
+        setIsCompactInline(false);
         setPopoverState(current => current ? ({
             ...current,
             isChoosingCategory: false,
             hasInspectionCard: true,
             isCapturingWhois: true,
             capturedWhoisLines: undefined,
-            whoisTarget: targetContext
+            whoisTarget: targetContext,
+            isCapturingExamine: false,
+            isCapturingConsider: false,
+            capturedExamineLines: undefined,
+            capturedConsiderLines: undefined,
+            isCapturingWho: false,
+            capturedWhoLines: undefined,
+            isCapturingWhere: false,
+            capturedWhereLines: undefined,
+            isCapturingRoomAction: false,
+            roomActionKind: undefined,
+            capturedRoomActionLines: undefined
         }) : null);
         executeCommand(`whois ${targetContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
     };
 
+    const requestRoomReport = (kind: 'who' | 'where' | 'exits' | 'map' | 'weather local') => {
+        if (categoryId !== 'cat-room') return;
+        setIsChoosingCategory(false);
+        setIsCompactInline(false);
+        const roomActionKind = kind === 'exits' || kind === 'map' || kind === 'weather local' ? kind : undefined;
+        setPopoverState(current => current ? ({
+            ...current,
+            isChoosingCategory: false,
+            hasInspectionCard: true,
+            isCapturingExamine: false,
+            isCapturingConsider: false,
+            isCapturingWhois: false,
+            isCapturingWho: kind === 'who',
+            isCapturingWhere: kind === 'where',
+            isCapturingRoomAction: roomActionKind !== undefined,
+            roomActionKind,
+            capturedExamineLines: undefined,
+            capturedConsiderLines: undefined,
+            capturedWhoisLines: undefined,
+            capturedWhoLines: undefined,
+            capturedWhereLines: undefined,
+            capturedRoomActionLines: undefined,
+            whoisTarget: undefined
+        }) : null);
+        executeCommand(kind, false, false, false, false, { shouldFocus: false, fromUi: true });
+    };
+
+    const closeCapturedDetails = () => {
+        setPopoverState(current => current ? ({
+            ...current,
+            hasInspectionCard: false,
+            isCapturingExamine: false,
+            isCapturingConsider: false,
+            isCapturingWhois: false,
+            isCapturingWho: false,
+            isCapturingWhere: false,
+            capturedExamineLines: undefined,
+            capturedConsiderLines: undefined,
+            capturedWhoisLines: undefined,
+            capturedWhoLines: undefined,
+            capturedWhereLines: undefined,
+            isCapturingRoomAction: false,
+            roomActionKind: undefined,
+            capturedRoomActionLines: undefined,
+            whoisTarget: undefined
+        }) : null);
+    };
+
     const renderActionButtons = () => {
         const seenCommands = new Set<string>();
-        const filterDeps = { buttons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain: props.currentTerrain };
+        const filterDeps = { buttons: inlineMenuButtons, inlineCategories: inlineCategories || [], roomNpcs, entities, characterInfo, currentTerrain: props.currentTerrain };
 
         if (isCompactInline) {
             return (
                 <div className="inline-action-chips" data-inline-action-chips="true">
-                    {buttons.map(button => {
+                    {inlineMenuButtons.map(button => {
                         if (favorites.includes(button.command) || seenCommands.has(button.command)) return null;
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
                     })}
                     {favorites.map(command => {
-                        const button = buttons.find(candidate => candidate.command === command);
+                        const button = inlineMenuButtons.find(candidate => candidate.command === command);
                         if (!button || seenCommands.has(button.command)) return null;
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
+                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
                     })}
                     <button
                         type="button"
@@ -268,7 +381,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
         // Inline entity actions are grouped by the traits that provide them.
         if (isInlineMenu) {
-            const actionButtons = buttons.filter(button => {
+            const actionButtons = inlineMenuButtons.filter(button => {
                 if (seenCommands.has(button.command)) return false;
                 const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                 if (!isValid || !resolvedTraitButtonIds.has(button.id)) return false;
@@ -292,32 +405,32 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 if (canObserve && targetContext && section.key === lookTraitKey) inspectionCommands.push('look');
                 if (canObserve && targetContext && section.key === 'trait-consider') inspectionCommands.push('consider');
                 return { section, buttons: sectionButtons, inspectionCommands };
-            }).filter(group => group.buttons.length > 0 || group.inspectionCommands.length > 0);
+            }).filter(group => group.buttons.length > 0 || group.inspectionCommands.length > 0)
+                .sort((left, right) => {
+                    const priority = (key: string) => key === lookTraitKey ? 0 : key === 'trait-consider' ? 1 : 2;
+                    return priority(left.section.key) - priority(right.section.key);
+                });
             return (
-                <div className="inline-action-groups" aria-label="Available actions">
-                    {actionGroups.map(({ section, buttons: sectionButtons, inspectionCommands }) => (
-                        <div className="inline-action-group is-trait-group" key={section.key}>
-                            <span className="inline-action-group-label">{section.label}</span>
-                            <div className="inline-action-list">
-                                {inspectionCommands.map(kind => (
-                                    <button
-                                        key={`inspect-${kind}`}
-                                        type="button"
-                                        className="terminal-inspect-row"
-                                        onPointerDown={event => event.stopPropagation()}
-                                        onClick={() => requestInspection(kind)}
-                                    >
-                                        <span>{kind}</span>
-                                        <span>&lt;{kind === 'look' ? 'look' : 'con'} {targetContext}&gt;</span>
-                                    </button>
-                                ))}
-                                {sectionButtons.map(button => (
-                                    <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestExamine={requestInlineExamine} compact terminal glowDelay="0s" />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                <InlineActionDeck
+                    key={`${popoverState.entityId || ''}:${targetContext || ''}`}
+                    groups={actionGroups}
+                    targetContext={targetContext}
+                    requestInspection={kind => requestInspection(kind)}
+                    renderButton={button => (
+                        <PopoverActionButton
+                            key={button.id}
+                            button={button}
+                            {...props}
+                            toggleFavorite={toggleFavorite}
+                            onRequestWhois={requestWhois}
+                            onRequestRoomReport={requestRoomReport}
+                            onRequestExamine={requestInlineExamine}
+                            compact
+                            terminal
+                            glowDelay="0s"
+                        />
+                    )}
+                />
             );
         }
 
@@ -334,7 +447,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         {favoritedButtons.length > 0 && (<>
                             <div style={{ fontSize: '0.58rem', opacity: 0.6, textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 700, color: '#ffd700', padding: '5px 8px 5px 8px', textAlign: 'right', borderRight: '1px solid rgba(255,255,255,0.12)', alignSelf: 'flex-start' }}>★ Favs</div>
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '4px 8px', alignSelf: 'flex-start' }}>
-                                {favoritedButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} compact glowDelay="0s" />)}
+                                {favoritedButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} compact glowDelay="0s" />)}
                             </div>
                         </>)}
                         {(() => {
@@ -353,7 +466,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                     {section.label}
                                 </div>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', padding: '4px 8px', alignSelf: 'flex-start', width: '100%', alignItems: 'center' }}>
-                                    {sectionButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} compact glowDelay={delay} />)}
+                                    {sectionButtons.map(b => <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} handleTabClick={handleTabClick} setGearTab={setGearTab} compact glowDelay={delay} />)}
                                     {section.key === 'trait-consider' && ['cat-npc', 'cat-enemy', 'cat-neutral', 'cat-ally'].includes(categoryId) && (
                                         <button
                                             className="popover-action-chip fight-btn"
@@ -395,7 +508,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 ) : (
                     buttons.filter(b => b.setId === safeSetId && !favorites.includes(b.command)).map(b => {
                         seenCommands.add(b.command);
-                        return <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} handleTabClick={handleTabClick} setGearTab={setGearTab} />;
+                        return <PopoverActionButton key={b.id} button={b} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} handleTabClick={handleTabClick} setGearTab={setGearTab} />;
                     })
                 )}
             </>
@@ -470,12 +583,22 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         >
             {!isParleyType && !isAccountType && !isCompactInline && (
                 <div className="popover-header" onPointerDown={(e) => { e.stopPropagation(); }} style={{ cursor: !isSetManager && !isInlineMenu ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', marginBottom: '3px', paddingBottom: '3px', color: 'var(--accent)', fontWeight: 'bold', textTransform: 'none' }} onClick={(event) => { if (event.target instanceof HTMLElement && event.target.closest('[data-keyword-editor="true"]')) return; if (!isInlineMenu && !isSetManager) { triggerHaptic?.(20); setPopoverState({ ...popoverState, setId: 'setmanager' }); } }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: 'hidden', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', overflow: isInlineMenu ? 'visible' : 'hidden', flex: 1 }}>
                         {CategoryIcon && <CategoryIcon className="popover-category-icon" size={16} style={{ flexShrink: 0, opacity: 0.8 }} />}
-                        <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', flex: 1 }}>
-                            <span style={{ fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {isSetManager ? 'Main Menu' : (cleanDisplayName ? cleanDisplayName : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
-                            </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', overflow: isInlineMenu ? 'visible' : 'hidden', flex: 1 }}>
+                            {isInlineMenu ? (
+                                <RoomEntityPicker
+                                    entries={roomEntityEntries}
+                                    currentEntityId={popoverState.entityId}
+                                    currentContext={popoverState.context}
+                                    currentLabel={cleanDisplayName || cleanHeaderContext || formatSetLabel(safeSetId).toUpperCase()}
+                                    onSelect={selectRoomEntity}
+                                />
+                            ) : (
+                                <span style={{ fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {isSetManager ? 'Main Menu' : (cleanDisplayName ? cleanDisplayName : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
+                                </span>
+                            )}
                             <span style={{ fontSize: '0.58rem', opacity: 0.58, fontWeight: 'normal', marginTop: '2px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>{renderHeaderSubtitle()}</span>
                         </div>
                     </div>
@@ -499,7 +622,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             {!isTacticalSet && popoverState.assignSourceId && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = safeSetId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {safeSetId.toUpperCase()} as Menu</div>
                             )}
-                            {!isCompactInline && (!isInlineMenu || popoverState.isCapturingWhois || popoverState.capturedWhoisLines !== undefined || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines !== undefined || popoverState.capturedConsiderLines !== undefined) && (
+                            {!isCompactInline && (!isInlineMenu || hasCapturedDetails) && (
                                 <CapturedDetailsCard
                                     examineLines={popoverState.capturedExamineLines}
                                     examineMode={popoverState.examineMode}
@@ -508,13 +631,36 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                     isCapturingConsider={popoverState.isCapturingConsider}
                                     whoisLines={popoverState.capturedWhoisLines}
                                     isCapturingWhois={popoverState.isCapturingWhois}
-                                    onRequestLook={() => requestInspection('look')}
-                                    onRequestExamine={() => requestInlineExamine('examine %n')}
-                                    onRequestConsider={() => requestInspection('consider')}
+                                    whoLines={popoverState.capturedWhoLines}
+                                    isCapturingWho={popoverState.isCapturingWho}
+                                    whereLines={popoverState.capturedWhereLines}
+                                    isCapturingWhere={popoverState.isCapturingWhere}
+                                    roomActionLines={popoverState.capturedRoomActionLines}
+                                    roomActionKind={popoverState.roomActionKind}
+                                    isCapturingRoomAction={popoverState.isCapturingRoomAction}
+                                />
+                            )}
+                            {isInlineMenu && !isCompactInline && hasCapturedDetails && (
+                                <CapturedDetailsSidePanel
+                                    examineLines={popoverState.capturedExamineLines}
+                                    examineMode={popoverState.examineMode}
+                                    considerLines={popoverState.capturedConsiderLines}
+                                    isCapturingExamine={popoverState.isCapturingExamine}
+                                    isCapturingConsider={popoverState.isCapturingConsider}
+                                    whoisLines={popoverState.capturedWhoisLines}
+                                    isCapturingWhois={popoverState.isCapturingWhois}
+                                    whoLines={popoverState.capturedWhoLines}
+                                    isCapturingWho={popoverState.isCapturingWho}
+                                    whereLines={popoverState.capturedWhereLines}
+                                    isCapturingWhere={popoverState.isCapturingWhere}
+                                    roomActionLines={popoverState.capturedRoomActionLines}
+                                    roomActionKind={popoverState.roomActionKind}
+                                    isCapturingRoomAction={popoverState.isCapturingRoomAction}
+                                    onClose={closeCapturedDetails}
                                 />
                             )}
                             {renderActionButtons()}
-                            {isInlineMenu && targetContext && (
+                            {isInlineMenu && targetContext && canSetTargetChipFromCategory(categoryId) && (
                                 <button type="button" className="terminal-inline-target-action"
                                     onPointerDown={event => event.stopPropagation()}
                                     onClick={event => {

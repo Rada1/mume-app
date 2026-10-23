@@ -1,7 +1,6 @@
 /** @file useMountCargoActions.ts — Sequential corpse-to-mount and shop-sale workflows. */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DrawerLine } from '../types';
-import type { CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
 import { useCorpseContentsStore } from '../stores/useCorpseContentsStore';
 import { useMessageStore } from '../stores/useMessageStore';
 import { useRoomStore } from '../stores/useRoomStore';
@@ -106,7 +105,7 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
         }
     }, []);
 
-    const lootValuables = useCallback((corpseId: string, corpseTarget: string, mountTarget: string) => {
+    const lootValuables = useCallback((corpseId: string, corpseTarget: string, mountTarget: string | null) => {
         void runAction('Looting valuables…', async startRoom => {
             const initialInventory = await refreshInventory(startRoom);
             const baseline = new Map<string, number>();
@@ -115,10 +114,12 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
                 if (noun) baseline.set(noun, (baseline.get(noun) || 0) + 1);
             });
             const contents = await examineContents(corpseId, corpseTarget, startRoom);
+            try {
             const valuableTargets = getValuableLootTargets(contents);
             if (!valuableTargets.length) return 'No valuable items found on this corpse.';
 
             let transferred = 0;
+            let lootedItems = 0;
             let lootedCoins = false;
             const removedByKeyword = new Map<string, number>();
             for (const item of valuableTargets) {
@@ -131,6 +132,8 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
                     lootedCoins = true;
                     continue;
                 }
+                lootedItems += 1;
+                if (!mountTarget) continue;
                 const inventorySelector = makeItemSelector(item.keyword, (baseline.get(item.keyword) || 0) + 1);
                 const giveLines = await sendAndWait(`give ${inventorySelector} ${mountTarget}`, startRoom);
                 if (!hasGivenItem(giveLines)) {
@@ -141,13 +144,22 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
                 }
                 transferred += 1;
             }
+            if (!mountTarget) {
+                const itemText = `${lootedItems} valuable ${lootedItems === 1 ? 'item' : 'items'}`;
+                return lootedCoins
+                    ? lootedItems ? `Looted ${itemText} and coins into your inventory.` : 'Looted coins into your inventory.'
+                    : `Looted ${itemText} into your inventory.`;
+            }
             if (lootedCoins && transferred === 0) return 'Looted coins; no other valuable items to give to the mount.';
             if (lootedCoins) return `Looted coins and gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
             return `Gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
+            } finally {
+                await examineContents(corpseId, corpseTarget, startRoom);
+            }
         });
     }, [examineContents, refreshInventory, runAction, sendAndWait]);
 
-    const sellMountLoot = useCallback((mounts: CommandTargetSuggestion[]) => {
+    const sellMountLoot = useCallback(() => {
         void runAction('Checking mount cargo…', async startRoom => {
             const initialInventory = await refreshInventory(startRoom);
             const baseline = new Map<string, number>();
@@ -158,43 +170,41 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
             let sold = 0;
             const returned: string[] = [];
 
-            for (const mount of mounts) {
-                const cargo = await examineContents(`mount:${mount.key}`, mount.value, startRoom);
-                const groups = getCargoItemGroups(cargo);
-                for (const group of groups) {
-                    for (let occurrence = 0; occurrence < group.count; occurrence += 1) {
-                        const unsaddleLines = await sendAndWait(`unsaddle ${mount.value} ${group.keyword}`, startRoom);
-                        if (!hasDroppedItem(unsaddleLines)) {
-                            return `Could not confirm ${group.label} was unsaddled from ${mount.label}. Stopped before pickup or sale.`;
-                        }
-                        await sendAndWait(`get ${group.keyword}`, startRoom);
-                        const inventory = await refreshInventory(startRoom);
-                        const expectedCount = (baseline.get(group.keyword) || 0) + 1;
-                        const actualCount = countKeyword(inventory, group.keyword);
-                        if (actualCount !== expectedCount) {
-                            return `Stopped at ${group.label}; it was unsaddled, but inventory did not confirm pickup. No sale was attempted.`;
-                        }
-
-                        const selector = makeItemSelector(group.keyword, expectedCount);
-                        const saleLines = await sendAndWait(`sell ${selector}`, startRoom);
-                        if (hasSoldItem(saleLines)) {
-                            sold += 1;
-                            continue;
-                        }
-
-                        await sendAndWait(`give ${selector} ${mount.value}`, startRoom);
-                        const restoredInventory = await refreshInventory(startRoom);
-                        const restoredCount = countKeyword(restoredInventory, group.keyword);
-                        if (restoredCount !== (baseline.get(group.keyword) || 0)) {
-                            return `Could not confirm ${group.label} was returned to ${mount.label}. Stopped for safety.`;
-                        }
-                        returned.push(`${group.label} (${mount.label})`);
-                        break;
+            const cargo = await examineContents('mount:current', 'mount', startRoom);
+            const groups = getCargoItemGroups(cargo);
+            for (const group of groups) {
+                for (let occurrence = 0; occurrence < group.count; occurrence += 1) {
+                    const unsaddleLines = await sendAndWait(`unsaddle mount ${group.keyword}`, startRoom);
+                    if (!hasDroppedItem(unsaddleLines)) {
+                        return `Could not confirm ${group.label} was unsaddled from your mount. Stopped before pickup or sale.`;
                     }
+                    await sendAndWait(`get ${group.keyword}`, startRoom);
+                    const inventory = await refreshInventory(startRoom);
+                    const expectedCount = (baseline.get(group.keyword) || 0) + 1;
+                    const actualCount = countKeyword(inventory, group.keyword);
+                    if (actualCount !== expectedCount) {
+                        return `Stopped at ${group.label}; it was unsaddled, but inventory did not confirm pickup. No sale was attempted.`;
+                    }
+
+                    const selector = makeItemSelector(group.keyword, expectedCount);
+                    const saleLines = await sendAndWait(`sell ${selector}`, startRoom);
+                    if (hasSoldItem(saleLines)) {
+                        sold += 1;
+                        continue;
+                    }
+
+                    await sendAndWait(`give ${selector} mount`, startRoom);
+                    const restoredInventory = await refreshInventory(startRoom);
+                    const restoredCount = countKeyword(restoredInventory, group.keyword);
+                    if (restoredCount !== (baseline.get(group.keyword) || 0)) {
+                        return `Could not confirm ${group.label} was returned to your mount. Stopped for safety.`;
+                    }
+                    returned.push(`${group.label} (your mount)`);
+                    break;
                 }
             }
 
-            const returnedText = returned.length ? ` Returned ${returned.join(', ')} to their mounts.` : '';
+            const returnedText = returned.length ? ` Returned ${returned.join(', ')} to your mount.` : '';
             return sold ? `Sold ${sold} ${sold === 1 ? 'item' : 'items'}.${returnedText}`
                 : returned.length ? `The shop refused the cargo.${returnedText}` : 'No mount cargo found to sell.';
         });

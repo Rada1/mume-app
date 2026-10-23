@@ -1,0 +1,63 @@
+/* @file Stars.css */
+/* --- Logic Section --- */
+.client-star-veil {
+    position: absolute;
+    inset: 0;
+    /* Keep stars above the dark vignette so the night sky does not erase them. */
+    z-index: 22;
+    pointer-events: none;
+    opacity: 0;
+    mix-blend-mode: screen;
+    filter: blur(0.1px);
+    background:
+        radial-gradient(circle 0.55px at 97% 3%, rgba(195, 213, 242, 0.48), transparent 100%),
+        radial-gradient(circle 1.2px at 90% 3%, rgba(224, 232, 249, 0.72), transparent 100%),
+        radial-gradient(circle 0.7px at 83% 3%, rgba(198, 216, 245, 0.52), transparent 100%),
+        radial-gradient(circle 0.9px at 76% 3%, rgba(215, 226, 247, 0.64), transparent 100%),
+        radial-gradient(circle 0.55px at 69% 3%, rgba(193, 211, 240, 0.46), transparent 100%),
+        radial-gradient(circle 0.8px at 94% 8%, rgba(218, 228, 248, 0.6), transparent 100%),
+        radial-gradient(circle 0.65px at 87% 8%, rgba(196, 214, 243, 0.5), transparent 100%),
+        radial-gradient(circle 1.35px at 80% 8%, rgba(225, 233, 250, 0.74), transparent 100%),
+        radial-gradient(circle 0.7px at 73% 8%, rgba(198, 215, 243, 0.52), transparent 100%),
+        radial-gradient(circle 0.65px at 97% 13%, rgba(198, 215, 243, 0.48), transparent 100%),
+        radial-gradient(circle 0.9px at 89% 13%, rgba(221, 230, 249, 0.66), transparent 100%),
+        radial-gradient(circle 0.55px at 81% 13%, rgba(193, 211, 240, 0.46), transparent 100%),
+        radial-gradient(circle 1.1px at 73% 13%, rgba(215, 226, 247, 0.64), transparent 100%),
+        radial-gradient(circle 0.7px at 65% 13%, rgba(197, 214, 242, 0.5), transparent 100%),
+        radial-gradient(circle 0.8px at 94% 18%, rgba(217, 228, 248, 0.58), transparent 100%),
+        radial-gradient(circle 0.55px at 86% 18%, rgba(194, 212, 241, 0.46), transparent 100%),
+        radial-gradient(circle 1.3px at 78% 18%, rgba(225, 233, 250, 0.72), transparent 100%),
+        radial-gradient(circle 0.7px at 70% 18%, rgba(198, 216, 245, 0.52), transparent 100%),
+        radial-gradient(circle 0.55px at 97% 23%, rgba(194, 212, 241, 0.46), transparent 100%),
+        radial-gradient(circle 1px at 89% 23%, rgba(220, 230, 249, 0.64), transparent 100%),
+        radial-gradient(circle 0.55px at 81% 23%, rgba(195, 213, 242, 0.48), transparent 100%),
+        radial-gradient(circle 0.8px at 73% 23%, rgba(216, 227, 248, 0.6), transparent 100%),
+        radial-gradient(circle 0.7px at 65% 23%, rgba(197, 214, 243, 0.5), transparent 100%),
+        radial-gradient(circle 0.55px at 94% 28%, rgba(195, 213, 242, 0.46), transparent 100%),
+        radial-gradient(circle 0.9px at 86% 28%, rgba(220, 230, 249, 0.62), transparent 100%),
+        radial-gradient(circle 0.7px at 78% 28%, rgba(197, 215, 244, 0.5), transparent 100%),
+        radial-gradient(circle 1.35px at 70% 28%, rgba(226, 234, 250, 0.74), transparent 100%),
+        radial-gradient(circle 0.55px at 66% 33%, rgba(195, 213, 242, 0.46), transparent 100%),
+        radial-gradient(circle 0.8px at 97% 33%, rgba(218, 228, 248, 0.58), transparent 100%),
+        radial-gradient(circle 0.55px at 89% 33%, rgba(194, 212, 241, 0.46), transparent 100%),
+        radial-gradient(circle 1.1px at 81% 33%, rgba(222, 231, 249, 0.68), transparent 100%),
+        radial-gradient(circle 0.7px at 73% 33%, rgba(198, 216, 245, 0.5), transparent 100%),
+        radial-gradient(circle 0.65px at 94% 38%, rgba(196, 214, 243, 0.46), transparent 100%),
+        radial-gradient(circle 0.9px at 86% 38%, rgba(219, 229, 249, 0.6), transparent 100%),
+        radial-gradient(circle 0.55px at 78% 38%, rgba(194, 212, 241, 0.46), transparent 100%),
+        radial-gradient(circle 0.8px at 70% 38%, rgba(215, 226, 247, 0.56), transparent 100%),
+        radial-gradient(circle 0.75px at 38% 2%, rgba(203, 218, 244, 0.48), transparent 100%),
+        radial-gradient(circle 1.1px at 44% 4%, rgba(222, 231, 249, 0.58), transparent 100%),
+        radial-gradient(circle 0.65px at 50% 2%, rgba(198, 215, 243, 0.46), transparent 100%),
+        radial-gradient(circle 0.9px at 56% 5%, rgba(217, 228, 248, 0.54), transparent 100%),
+        radial-gradient(circle 0.7px at 62% 2%, rgba(201, 217, 244, 0.46), transparent 100%),
+        radial-gradient(ellipse 22px 15px at 74% 16%, rgba(128, 157, 203, 0.04), transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.76) 22%, transparent 45%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.76) 22%, transparent 45%);
+    transition: opacity 5s ease-in-out;
+}
+
+.client-star-veil.is-visible {
+    opacity: 0.96;
+}
+

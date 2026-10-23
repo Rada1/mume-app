@@ -22,12 +22,15 @@ export interface CharacterSessionProgress {
     isTpMet: boolean;
 }
 
+const sessionBaselines = new Map<string, { xp: number | null; tp: number | null }>();
+
 export const useCharacterSessionProgress = (
     characterName: string | null | undefined,
     currentXp: number | null | undefined,
     currentTp: number | null | undefined,
     tnl: number | null | undefined,
-    tpnl: number | null | undefined
+    tpnl: number | null | undefined,
+    sessionKey?: string
 ): CharacterSessionProgress => {
     const lastCharRef = useRef<string | null>(null);
     const startXpRef = useRef<number | null>(null);
@@ -41,24 +44,41 @@ export const useCharacterSessionProgress = (
     const [lastTpGainKey, setLastTpGainKey] = useState(0);
 
     const safeName = characterName?.trim().toLowerCase() || null;
+    const safeSessionKey = sessionKey?.trim().toLowerCase() || safeName;
+    const shareSessionBaseline = Boolean(sessionKey?.trim());
     const safeXp = typeof currentXp === 'number' && Number.isFinite(currentXp) ? currentXp : 0;
     const safeTp = typeof currentTp === 'number' && Number.isFinite(currentTp) ? currentTp : 0;
     const safeTnl = typeof tnl === 'number' && Number.isFinite(tnl) ? Math.max(0, tnl) : 0;
     const safeTpnl = typeof tpnl === 'number' && Number.isFinite(tpnl) ? Math.max(0, tpnl) : 0;
 
     // Detect character switch
-    if (safeName !== lastCharRef.current) {
-        lastCharRef.current = safeName;
-        startXpRef.current = safeXp > 0 ? safeXp : null;
-        startTpRef.current = safeTp > 0 ? safeTp : null;
+    if (safeSessionKey !== lastCharRef.current) {
+        if (shareSessionBaseline && lastCharRef.current) sessionBaselines.delete(lastCharRef.current);
+        lastCharRef.current = safeSessionKey;
+        const sharedBaseline = shareSessionBaseline && safeSessionKey ? sessionBaselines.get(safeSessionKey) : undefined;
+        startXpRef.current = sharedBaseline?.xp ?? (safeXp > 0 ? safeXp : null);
+        startTpRef.current = sharedBaseline?.tp ?? (safeTp > 0 ? safeTp : null);
+        if (shareSessionBaseline && safeSessionKey) sessionBaselines.set(safeSessionKey, { xp: startXpRef.current, tp: startTpRef.current });
         prevXpRef.current = safeXp > 0 ? safeXp : null;
         prevTpRef.current = safeTp > 0 ? safeTp : null;
     } else {
         if (startXpRef.current === null && safeXp > 0) {
-            startXpRef.current = safeXp;
+            if (shareSessionBaseline && safeSessionKey) {
+                const baseline = sessionBaselines.get(safeSessionKey);
+                startXpRef.current = baseline?.xp ?? safeXp;
+                sessionBaselines.set(safeSessionKey, { xp: startXpRef.current, tp: baseline?.tp ?? startTpRef.current });
+            } else {
+                startXpRef.current = safeXp;
+            }
         }
         if (startTpRef.current === null && safeTp > 0) {
-            startTpRef.current = safeTp;
+            if (shareSessionBaseline && safeSessionKey) {
+                const baseline = sessionBaselines.get(safeSessionKey);
+                startTpRef.current = baseline?.tp ?? safeTp;
+                sessionBaselines.set(safeSessionKey, { xp: baseline?.xp ?? startXpRef.current, tp: startTpRef.current });
+            } else {
+                startTpRef.current = safeTp;
+            }
         }
     }
 

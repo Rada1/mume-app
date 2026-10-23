@@ -384,7 +384,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         setOpenParleyPicker(null);
     }, [parley.target, setParley, triggerHaptic]);
 
-    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote'];
+    const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act'];
 
     const handleParleyClear = () => {
         initAudio?.();
@@ -423,6 +423,7 @@ const InputArea: React.FC<InputAreaProps> = ({
 
     const {
         commandTextParts,
+        commandTextColor,
         mumeCommandMatch,
         showCompletionPopup,
         showCommandPopup,
@@ -784,11 +785,12 @@ const InputArea: React.FC<InputAreaProps> = ({
                         {commandTextParts && (
                             <div className="command-input-highlight" aria-hidden={commandArgumentChips.length === 0}>
                                 <span>{commandTextParts.leading}</span>
-                                <span className={commandTextParts.isValid ? 'command-input-token-valid' : 'command-input-token-plain'}>
+                                <span className={commandTextParts.isValid ? 'command-input-token-valid' : 'command-input-token-plain'}
+                                    style={{ color: commandTextColor, textShadow: commandTextColor ? 'none' : undefined }}>
                                     {commandTextParts.token}
                                 </span>
                                 {!commandTextParts.suffix && commandTextParts.autocomplete && (
-                                    <span className="command-input-autocomplete">{commandTextParts.autocomplete}</span>
+                                    <span className="command-input-autocomplete" style={{ color: commandTextColor, opacity: commandTextColor ? 0.4 : undefined }}>{commandTextParts.autocomplete}</span>
                                 )}
                                 <CommandArgumentText
                                     text={commandTextParts.suffix}

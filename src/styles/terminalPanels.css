@@ -3,6 +3,42 @@
  * @description Shared terminal surface for independently docked right-side panels.
  */
 
+/* --- Command workspace width shared by the panel and reserved log lane --- */
+:root {
+    --desktop-command-panel-width: min(60vw, max(420px, var(--desktop-command-width, calc(var(--desktop-character-width, 260px) + 200px))));
+}
+
+/* --- Command panel color profiles --- */
+.app-container {
+    --command-panel-surface: #211b16;
+    --command-panel-surface-rgb: 33, 27, 22;
+    --command-panel-surface-deep: #17120f;
+    --command-panel-surface-raised: #2d271e;
+    --command-panel-surface-alt: #29221a;
+    --command-panel-surface-hover: #3b3024;
+    --command-panel-value-surface: #342c22;
+}
+
+.app-container.immersion-mode {
+    --command-panel-surface: #000;
+    --command-panel-surface-rgb: 0, 0, 0;
+    --command-panel-surface-deep: #000;
+    --command-panel-surface-raised: #111;
+    --command-panel-surface-alt: #000;
+    --command-panel-surface-hover: #222;
+    --command-panel-value-surface: #292929;
+}
+
+.app-container.performance-mode.immersion-mode {
+    --command-panel-surface: #171717;
+    --command-panel-surface-rgb: 23, 23, 23;
+    --command-panel-surface-deep: #141414;
+    --command-panel-surface-raised: #222;
+    --command-panel-surface-alt: #222;
+    --command-panel-surface-hover: #303030;
+    --command-panel-value-surface: #292929;
+}
+
 /* --- Shared pane geometry --- */
 @media (min-width: 1025px) {
     /* Align the Map Find and Target dividers with minimized This Is You. */
@@ -68,9 +104,13 @@
         margin: 0 !important;
     }
 
+    .app-container .content-layer .message-log-wrapper {
+        align-items: flex-start;
+    }
+
     .app-container .desktop-center-column {
-        max-width: none !important;
-        margin-right: 0 !important;
+        max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px)) !important;
+        margin: 0 !important;
     }
 
     .app-container .content-layer.has-docked-panels .desktop-center-column {
@@ -79,12 +119,12 @@
         margin: 0 !important;
     }
 
-    /* Fill the lane up to the docked panel unless the player has resized the log. */
-    .app-container .content-layer.has-docked-panels .message-log-container {
+    /* Keep the preferred log width when the reserved panel lane becomes available. */
+    .app-container .content-layer .message-log-container {
         width: 100% !important;
         min-width: 0 !important;
-        max-width: var(--desktop-log-width, none) !important;
-        margin-left: auto !important;
+        max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px)) !important;
+        margin-left: 0 !important;
         margin-right: auto !important;
     }
 
@@ -151,6 +191,69 @@
     .app-container .docked-panel { animation: none !important; }
 }
 
+/* The character console uses the same terminal surface as the command columns
+   in standard and immersion modes. */
+.app-container:not(.immersion-mode) .this-is-you-console,
+.app-container:not(.immersion-mode) .this-is-you-console.has-blurred-background {
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(30, 25, 21, 0.98) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.app-container.is-mobile.immersion-mode .this-is-you-console.has-blurred-background,
+.app-container.immersion-mode .this-is-you-console,
+.app-container.immersion-mode .this-is-you-console.has-blurred-background {
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.app-container.performance-mode.immersion-mode .this-is-you-console {
+    background: #171717 !important;
+}
+
+/* Keep the docked command bar's solid, square terminal surface in both modes. */
+.app-container:not(.immersion-mode) .message-log-docked-input,
+.app-container.immersion-mode .message-log-docked-input {
+    box-sizing: border-box !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: rgba(30, 25, 21, 0.98) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.app-container.immersion-mode .message-log-docked-input {
+    width: calc(100% - 28px) !important;
+    margin-inline: 14px !important;
+    background: #000 !important;
+    box-shadow: none !important;
+}
+
+.app-container.immersion-mode .message-log-container {
+    z-index: var(--z-hud-interactive) !important;
+}
+
+.app-container.performance-mode.immersion-mode .message-log-docked-input {
+    background: #171717 !important;
+}
+
+.app-container:not(.immersion-mode) .command-docked-panel .unified-command-column,
+body:not(:has(.app-container.immersion-mode)).has-unified-command-chat-history .command-chat-history-side-panel,
+.app-container:not(.immersion-mode) .command-chat-history-panel {
+    border: 0 !important;
+    background: rgba(30, 25, 21, 0.98) !important;
+}
+
 /* --- Commands use the same single divider as Chat and Help --- */
 .app-container .command-docked-panel .right-action-panel {
     border: 0 !important;
@@ -162,8 +265,15 @@
 }
 
 .app-container .command-docked-panel {
-    width: var(--desktop-character-width, 260px);
+    width: var(--desktop-command-panel-width, 460px);
+    box-sizing: border-box;
     container-type: inline-size;
+}
+
+.app-container .message-log-docked-input,
+.app-container .this-is-you-console,
+.app-container .command-docked-panel {
+    box-shadow: none !important;
 }
 
 @media (min-width: 1025px) {
@@ -291,4 +401,81 @@
 .app-container .docked-panel pre,
 .app-container .docked-panel code {
     font-family: var(--font-mono, monospace) !important;
+}
+
+/* Keep hover feedback visible against the black immersion surfaces. */
+.app-container.immersion-mode .command-guide-goal:hover,
+.app-container.immersion-mode .command-guide-goal:focus-visible,
+.app-container.immersion-mode .command-guide-finder-toggle:hover,
+.app-container.immersion-mode .command-guide-finder-toggle:focus-visible,
+.app-container.immersion-mode .command-guide-class-tab:hover,
+.app-container.immersion-mode .command-guide-class-tab:focus-visible,
+.app-container.immersion-mode .command-guide-entry:hover,
+.app-container.immersion-mode .command-guide-entry:focus-visible,
+.app-container.immersion-mode .command-guide-help:hover,
+.app-container.immersion-mode .command-guide-help:focus-visible,
+.app-container.immersion-mode .command-guide-show-all:hover,
+.app-container.immersion-mode .command-guide-show-all:focus-visible,
+.app-container.immersion-mode .command-guide-close:hover,
+.app-container.immersion-mode .command-guide-close:focus-visible {
+    background: rgba(201, 168, 76, 0.18) !important;
+}
+
+.app-container.immersion-mode .command-action-target-option:hover,
+.app-container.immersion-mode .command-action-target-option:focus-visible,
+.app-container.immersion-mode .terminal-inline-popover .room-entity-picker-option:hover,
+.app-container.immersion-mode .terminal-inline-popover .room-entity-picker-option:focus-visible {
+    background: rgba(201, 168, 76, 0.2) !important;
+}
+
+.app-container.immersion-mode .command-action-target-option[data-target-kind="room"]:hover,
+.app-container.immersion-mode .command-action-target-option[data-target-kind="room"]:focus-visible {
+    background: rgba(248, 250, 252, 0.18) !important;
+}
+
+.app-container.immersion-mode .command-action-target-option[data-target-kind="enemy"]:hover,
+.app-container.immersion-mode .command-action-target-option[data-target-kind="enemy"]:focus-visible {
+    background: rgba(248, 113, 113, 0.22) !important;
+}
+
+.app-container.immersion-mode .command-action-target-option[data-target-kind="ally"]:hover,
+.app-container.immersion-mode .command-action-target-option[data-target-kind="ally"]:focus-visible {
+    background: rgba(97, 194, 144, 0.22) !important;
+}
+
+.app-container.immersion-mode .terminal-inline-popover .terminal-inspect-row:hover,
+.app-container.immersion-mode .terminal-inline-popover .inline-action-list .terminal-action-row:hover,
+.app-container.immersion-mode .terminal-inline-popover .inline-action-group-toggle:hover,
+.app-container.immersion-mode .terminal-inline-popover .inline-action-group-toggle:focus-visible,
+.app-container.immersion-mode .right-action-panel .right-panel-action-btn:hover,
+.app-container.immersion-mode .right-action-panel .right-panel-action-btn:focus-visible,
+.app-container.immersion-mode .right-action-panel .action-target-menu button:hover,
+.app-container.immersion-mode .right-action-panel .right-panel-navigation .movement-pad-cell:hover,
+.app-container.immersion-mode .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed):not(.movement-pad-flee),
+.app-container.immersion-mode .movement-pad-map .movement-pad-cell:focus-visible:not(.movement-pad-flee) {
+    background: rgba(201, 168, 76, 0.19) !important;
+}
+
+.app-container.immersion-mode .terminal-inline-popover .terminal-inline-target-action:hover {
+    background: rgba(145, 201, 158, 0.2) !important;
+}
+
+.app-container.immersion-mode .popover-menu:has(.terminal-inline-popover) .popover-side-panel-close:hover,
+.app-container.immersion-mode .popover-menu:has(.terminal-inline-popover) .popover-side-panel-close:focus-visible,
+.app-container.immersion-mode .popover-inspection-panel-heading button:hover,
+.app-container.immersion-mode .popover-inspection-panel-heading button:focus-visible {
+    background: rgba(201, 168, 76, 0.18) !important;
+}
+
+.app-container.immersion-mode .character-card .prompt-gear-panel-drawer .prompt-slot-row:hover,
+.app-container.immersion-mode .character-card .prompt-gear-panel-drawer .prompt-inventory-chip-row:hover,
+.app-container.immersion-mode .character-card .prompt-gear-panel-drawer .prompt-inventory-chip:hover,
+.app-container.immersion-mode .character-card .prompt-gear-panel-drawer .prompt-inventory-chip.is-active,
+.app-container.immersion-mode .this-is-you-console .this-is-you-pill:hover,
+.app-container.immersion-mode .this-is-you-console .this-is-you-pill:focus-visible,
+.app-container.immersion-mode .this-is-you-console .this-is-you-vitals-refresh:hover:not([aria-disabled="true"]),
+.app-container.immersion-mode .this-is-you-console .this-is-you-vitals-refresh:focus-visible,
+.app-container.immersion-mode .this-is-you-mode-toggle:hover:not(:disabled),
+.app-container.immersion-mode .this-is-you-mode-toggle:focus-visible {
+    background: rgba(201, 168, 76, 0.18) !important;
 }

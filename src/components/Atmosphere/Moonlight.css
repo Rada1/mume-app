@@ -1,0 +1,30 @@
+/** @file Moonlight.css — A small moon softened by the night-sky veil. */
+
+/* --- Cool moon glow behind stars and passing weather --- */
+.environment-root.front .environment-vignette-scene.lighting-state-moon .client-corner-light-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle 22px at 94% 8%,
+            rgba(231, 239, 255, 0.78) 0%,
+            rgba(219, 231, 252, 0.65) 28%,
+            rgba(191, 211, 242, 0.24) 62%,
+            transparent 100%
+        ),
+        radial-gradient(circle 65px at 94% 8%,
+            rgba(167, 193, 237, 0.18) 0%,
+            rgba(139, 169, 223, 0.06) 45%,
+            transparent 100%
+        );
+    filter: blur(3px);
+}
+
+/* A faint moon glow sits beneath the rain cloud layer. */
+.environment-root.front .environment-vignette-scene.lighting-state-moon.weather-state-rain .client-corner-light-overlay::before {
+    background:
+        radial-gradient(circle 20px at 94% 8%, rgba(213, 226, 250, 0.2), rgba(190, 210, 242, 0.1) 48%, transparent 100%),
+        radial-gradient(circle 58px at 94% 8%, rgba(151, 179, 226, 0.045), transparent 100%);
+    filter: blur(7px);
+}
