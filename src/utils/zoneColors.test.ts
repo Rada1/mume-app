@@ -19,8 +19,8 @@ describe('zoneColors', () => {
         expect(getZoneColor('(the Shire)')).toBe('#69b68f');
         expect(getZoneColor('Rivendell')).toBe('#69b68f');
         expect(getZoneColor('Bree')).toBe('#69b68f');
-        expect(getZoneColor('Lorien Surroundings')).toBe('#69b68f');
-        expect(getZoneColor('the Lorien Surroundings')).toBe('#69b68f');
+        expect(getZoneColor('Lorien Surroundings')).toBe('#75b2e8');
+        expect(getZoneColor('the Lorien Surroundings')).toBe('#75b2e8');
         expect(getZoneColor('Moria')).toBe('#a51c24');
         expect(getZoneColor('Dol Guldur')).toBe('#a51c24');
         expect(getZoneColor('the Troll Warrens')).toBe('#a51c24');

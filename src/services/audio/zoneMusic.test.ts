@@ -18,11 +18,11 @@ describe('Lorien Surroundings zone audio and metadata', () => {
     });
 
     it('maps alignment and colors for both lorien surroundings formats', () => {
-        expect(getZoneAlignment('lorien surroundings')).toBe('good');
-        expect(getZoneAlignment('the lorien surroundings')).toBe('good');
-        expect(getZoneAlignment('Lorien Surroundings')).toBe('good');
+        expect(getZoneAlignment('lorien surroundings')).toBe('semi-good');
+        expect(getZoneAlignment('the lorien surroundings')).toBe('semi-good');
+        expect(getZoneAlignment('Lorien Surroundings')).toBe('semi-good');
 
-        expect(KNOWN_ZONE_COLORS['lorien surroundings']).toBe('#69b68f');
-        expect(KNOWN_ZONE_COLORS['the lorien surroundings']).toBe('#69b68f');
+        expect(KNOWN_ZONE_COLORS['lorien surroundings']).toBe('#75b2e8');
+        expect(KNOWN_ZONE_COLORS['the lorien surroundings']).toBe('#75b2e8');
     });
 });

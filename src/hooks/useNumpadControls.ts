@@ -1,14 +1,5 @@
 import { useEffect } from 'react';
-
-const NUMPAD_MAP: Record<string, string> = {
-    Numpad8: 'n',
-    Numpad2: 's',
-    Numpad6: 'e',
-    Numpad4: 'w',
-    Numpad7: 'u',
-    Numpad3: 'd',
-    Numpad5: 'look',
-};
+import { NUMPAD_DIRECTION_KEYS } from '../utils/defaultHotkeys';
 
 const emitNumpadCommandPress = (cmd: string) => {
     window.dispatchEvent(new CustomEvent('mume:numpad-command-press', { detail: { cmd } }));
@@ -23,26 +14,11 @@ export function useNumpadControls(
             const isNumpad = e.code.startsWith('Numpad') || e.location === 3;
             if (!isNumpad) return;
 
-            let dir: string | undefined = undefined;
-            
-            // Map keys based on code or key + location
-            if (e.code === 'Numpad8' || (e.location === 3 && (e.key === 'ArrowUp' || e.key === '8'))) {
-                dir = 'n';
-            } else if (e.code === 'Numpad2' || (e.location === 3 && (e.key === 'ArrowDown' || e.key === '2'))) {
-                dir = 's';
-            } else if (e.code === 'Numpad6' || (e.location === 3 && (e.key === 'ArrowRight' || e.key === '6'))) {
-                dir = 'e';
-            } else if (e.code === 'Numpad4' || (e.location === 3 && (e.key === 'ArrowLeft' || e.key === '4'))) {
-                dir = 'w';
-            } else if (e.code === 'Numpad7' || (e.location === 3 && (e.key === 'Home' || e.key === '7'))) {
-                dir = 'u';
-            } else if (e.code === 'Numpad3' || (e.location === 3 && (e.key === 'PageDown' || e.key === '3'))) {
-                dir = 'd';
-            } else if (e.code === 'Numpad5' || (e.location === 3 && (e.key === 'Clear' || e.key === '5'))) {
-                dir = 'look';
-            }
+            const shortcut = NUMPAD_DIRECTION_KEYS.find(item => item.code === e.code
+                || (e.location === 3 && item.alternateKeys.some(key => key === e.key)));
+            const dir = shortcut?.command;
 
-            if (!dir) return;
+            if (!dir || !e.altKey) return;
 
             const activeEl = (e.target || document.activeElement) as HTMLElement;
             const isInputField = activeEl?.classList?.contains('input-field');
@@ -56,16 +32,13 @@ export function useNumpadControls(
             e.stopPropagation();
             emitNumpadCommandPress(dir);
 
-            // Alt+numpad: toggle open/close on the exit in that direction
-            if (e.altKey && dir !== 'look' && getExitState) {
+            // Alt+numpad toggles the door on the exit in that direction.
+            if (dir !== 'look' && getExitState) {
                 const state = getExitState(dir);
                 if (state?.hasDoor) {
                     executeCommand(state.isClosed ? `open ${dir}` : `close ${dir}`);
                 }
-                return;
             }
-
-            executeCommand(dir);
         };
 
         window.addEventListener('keydown', handleKeyDown, true);

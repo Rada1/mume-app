@@ -8,6 +8,7 @@ export interface ClientMacro {
 }
 export interface ClientMacroState {
     macros: ClientMacro[];
+    defaultMacrosInstalled: boolean;
     save: (macro: ClientMacro, previousName?: string) => string | null;
     remove: (name: string) => void;
 }

@@ -1,6 +1,6 @@
 # Client macros and customizable keybindings
 
-Requested: October 23, 2026. Status: client macros and macro keybindings implemented in Settings → Actions/Macros. Dedicated built-in action rebinding and mount/lead presets remain future work.
+Requested: October 23, 2026. Status: client macros, macro keybindings, and editable default numpad movement/look macros are available in Settings → Actions/Macros. Mount/lead presets remain future work.
 
 ## User goal
 
@@ -26,6 +26,7 @@ Settings and command-bar definitions use the same persistent client macro store,
 - Treat `/alias` as a local client command. Parse its entire definition before splitting the macro body, so defining a chain never executes its commands.
 - Commands send in order without waiting for responses. Semicolons and newlines separate steps; quoting/escaping literal semicolons and response waits remain future work.
 - Keybindings record physical key codes with Ctrl/Alt/Shift/Meta modifiers, preserving numpad identity with Num Lock on or off. Duplicate macro bindings are rejected, and assigned numpad keys take precedence over defaults.
+- Default numpad directions and Look are regular macro records. Players can edit their names, command chains, and bindings or delete them like any other macro.
 - Macro expansion resolves nested named macros before sending, rejecting cycles and chains exceeding 100 commands.
 
 ## Implementation

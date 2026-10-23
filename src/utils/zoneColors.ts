@@ -17,11 +17,11 @@ export const KNOWN_ZONE_COLORS: Record<string, string> = {
     'blue mountains': '#69b68f',
     'grey havens': '#69b68f',
     'shire': '#69b68f',
-    'lorien surroundings': '#69b68f',
-    'the lorien surroundings': '#69b68f',
 
     // Semi-good zones use a light blue with a green hue.
     'fangorn': '#75b2e8',
+    'lorien surroundings': '#75b2e8',
+    'the lorien surroundings': '#75b2e8',
     'rohan': '#75b2e8',
     'ettenmoors': '#75b2e8',
     'gladden fields': '#75b2e8',
