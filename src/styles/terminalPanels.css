@@ -29,6 +29,16 @@
     --command-panel-value-surface: #292929;
 }
 
+.app-container.performance-mode:not(.immersion-mode):not(.classic-mode) {
+    --command-panel-surface: #171717;
+    --command-panel-surface-rgb: 23, 23, 23;
+    --command-panel-surface-deep: #141414;
+    --command-panel-surface-raised: #222;
+    --command-panel-surface-alt: #222;
+    --command-panel-surface-hover: #303030;
+    --command-panel-value-surface: #292929;
+}
+
 .app-container.performance-mode.immersion-mode {
     --command-panel-surface: #171717;
     --command-panel-surface-rgb: 23, 23, 23;

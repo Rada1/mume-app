@@ -205,8 +205,8 @@ export const MovementPad: FC<{
                     type="button"
                     className={`movement-pad-cell ${cell.className}${stateClass}${isPressed ? ' is-key-pressed' : ''}`}
                     onPointerDown={event => event.stopPropagation()}
-                    onPointerEnter={() => (!doorSelectionOnly || hasDoor) && onPreviewDirection?.(cell.cmd)}
-                    onFocus={() => (!doorSelectionOnly || hasDoor) && onPreviewDirection?.(cell.cmd)}
+                    onPointerEnter={event => { if (event.pointerType === 'mouse' && (!doorSelectionOnly || hasDoor)) onPreviewDirection?.(cell.cmd); }}
+                    onFocus={event => { if (event.currentTarget.matches(':focus-visible') && (!doorSelectionOnly || hasDoor)) onPreviewDirection?.(cell.cmd); }}
                     onClick={event => fire(cell.cmd, event)}
                     title={title}
                     aria-label={title}

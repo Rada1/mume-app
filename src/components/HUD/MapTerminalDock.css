@@ -19,9 +19,17 @@
     }
 
     .app-container .left-drawer-stack .drawer-resize-handle--right::after {
-        top: 37.5%;
+        top: 50%;
         bottom: auto;
-        height: 25%;
+        height: 36px;
+        transform: translateY(-50%);
+        transition: background 0.15s ease, box-shadow 0.15s ease, height 0.15s ease;
+    }
+
+    .app-container .left-drawer-stack .drawer-resize-handle--right:hover::after,
+    .app-container .left-drawer-stack .drawer-resize-handle--right.is-hovered::after,
+    .app-container .left-drawer-stack .drawer-resize-handle--right.is-active::after {
+        height: 52px;
     }
 
     .app-container .left-drawer-stack .map-drawer-desktop .drawer-content,

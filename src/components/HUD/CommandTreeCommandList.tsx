@@ -30,7 +30,7 @@ export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExec
                     data-help-mode={controller.isHelpMode || undefined}
                     aria-expanded={!controller.isHelpMode && tree.command?.id === button.id}
                     onPointerEnter={event => {if (event.pointerType === 'mouse') tree.defer(() => tree.chooseCommand(button));}}
-                    onFocus={() => tree.chooseCommand(button)} onClick={event => {
+                    onFocus={() => {if (!isMobile) tree.chooseCommand(button);}} onClick={event => {
                         tree.cancelPreview();
                         if (controller.isHelpMode) controller.executeHelp(button.command, button.label);
                         else if (selectTargetOnTap) tree.chooseCommand(button);
@@ -45,7 +45,7 @@ export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExec
                     <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
                 </button>
                 : <div key={button.id} onPointerEnter={event => {if (event.pointerType === 'mouse') tree.chooseCommand(button);}}
-                    onFocus={() => tree.chooseCommand(button)}>
+                    onFocus={() => {if (!isMobile) tree.chooseCommand(button);}}>
                     <CommandTreeAction controller={controller} button={button}/>
                 </div>;
         })}

@@ -7,6 +7,10 @@ import { getWhoPlayerNames } from '../utils/chatWindowUtils';
 import { menuVerticalPlacement } from '../utils/menuVerticalPlacement';
 // --- Menu State Section ---
 export const isDirectedParleyChannel = (command: string) => ['tell','whisper','ask'].includes(command);
+const CHANNEL_MENU_WIDTH = 180;
+const RECIPIENT_MENU_WIDTH = 220;
+const MENU_EDGE_GUTTER = 8;
+
 export function useParleyChannelMenu(props: ParleyChannelChipProps) {
     const { roomPlayers, roomNpcs, characterName, groupMembers } = useGame();
     const anchorRef = useRef<HTMLDivElement>(null);
@@ -24,14 +28,22 @@ export function useParleyChannelMenu(props: ParleyChannelChipProps) {
         cancelClose();
         const rect = anchorRef.current?.getBoundingClientRect();
         if (!rect) return;
-        setPosition({ left: Math.max(8, Math.min(rect.right - 180, window.innerWidth - 188)),
+        const availableWidth = Math.max(1, window.innerWidth - MENU_EDGE_GUTTER * 2);
+        const channelWidth = Math.min(CHANNEL_MENU_WIDTH, availableWidth * 0.45);
+        const recipientWidth = Math.min(RECIPIENT_MENU_WIDTH, availableWidth - channelWidth);
+        const maxLeft = window.innerWidth - channelWidth - recipientWidth - MENU_EDGE_GUTTER;
+        const left = Math.max(MENU_EDGE_GUTTER, Math.min(rect.right - channelWidth, maxLeft));
+        setPosition({ left, width: channelWidth,
             ...menuVerticalPlacement(rect.top, rect.bottom, window.innerHeight) });
         setOpen(true);
     };
     const previewChannel = (command: string, element: HTMLElement) => {
         cancelClose();
         const rect = element.getBoundingClientRect();
-        setRecipientPosition({ left: rect.left >= 228 ? rect.left - 220 : Math.min(window.innerWidth - 228, rect.right),
+        const channelLeft = typeof position.left === 'number' ? position.left : MENU_EDGE_GUTTER;
+        const channelWidth = typeof position.width === 'number' ? position.width : CHANNEL_MENU_WIDTH;
+        const recipientWidth = Math.min(RECIPIENT_MENU_WIDTH, Math.max(1, window.innerWidth - channelLeft - channelWidth - MENU_EDGE_GUTTER));
+        setRecipientPosition({ left: channelLeft + channelWidth, width: recipientWidth,
             ...menuVerticalPlacement(rect.top, rect.bottom, window.innerHeight, true) });
         setPreview(command);
         if (command === 'tell' && preview !== 'tell') props.requestWhoList();

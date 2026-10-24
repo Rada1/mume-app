@@ -26,13 +26,13 @@ export const ParleyChannelChip: React.FC<ParleyChannelChipProps> = props => {
                 {CHAT_PARLEY_CHANNELS.filter(channel => channel !== 'group').map(channel => <button type="button" key={channel} role="menuitem" aria-haspopup={isDirectedParleyChannel(channel) ? 'menu' : undefined}
                     aria-expanded={isDirectedParleyChannel(channel) ? menu.preview === channel : undefined}
                     onMouseEnter={event => menu.previewChannel(channel, event.currentTarget)} onFocus={event => menu.previewChannel(channel, event.currentTarget)}
-                    onKeyDown={event => { if (event.key === 'ArrowLeft' && isDirectedParleyChannel(channel)) { event.preventDefault(); menu.previewChannel(channel, event.currentTarget); requestAnimationFrame(() => menu.menuRef.current?.querySelector<HTMLButtonElement>('.parley-recipient-menu button')?.focus()); } }}
+                    onKeyDown={event => { if (event.key === 'ArrowRight' && isDirectedParleyChannel(channel)) { event.preventDefault(); menu.previewChannel(channel, event.currentTarget); requestAnimationFrame(() => menu.menuRef.current?.querySelector<HTMLButtonElement>('.parley-recipient-menu button')?.focus()); } }}
                     onClick={event => isDirectedParleyChannel(channel) ? menu.previewChannel(channel, event.currentTarget) : menu.choose(channel)}>
-                    <span style={{ color: getChatChannelColor(channel) }}>{channel}</span>{isDirectedParleyChannel(channel) && <span aria-hidden="true">‹</span>}
+                    <span style={{ color: getChatChannelColor(channel) }}>{channel}</span>{isDirectedParleyChannel(channel) && <span aria-hidden="true">›</span>}
                 </button>)}
             </section>
             {isDirectedParleyChannel(menu.preview) && <section className="parley-branch-menu parley-recipient-menu" style={menu.recipientPosition} role="menu" aria-label={`${menu.preview} recipients`}
-                onKeyDown={event => { if (event.key === 'ArrowRight') { event.preventDefault(); menu.menuRef.current?.querySelector<HTMLButtonElement>('button[aria-expanded="true"]')?.focus(); } }}>
+                onKeyDown={event => { if (event.key === 'ArrowLeft') { event.preventDefault(); menu.menuRef.current?.querySelector<HTMLButtonElement>('button[aria-expanded="true"]')?.focus(); } }}>
                 <small>{menu.preview === 'tell' ? 'Recipients' : 'Room entities'}</small>
                 {menu.recipients.map(entry => <button type="button" role="menuitem" key={entry.key} onClick={() => menu.choose(menu.preview as ParleyChannelChipProps['command'], entry.value)}
                     style={{ color: getInlineGlowColor(entry.category, settings.inlineCategories, { player:settings.playerColor, ally:settings.playerColor, npc:settings.npcColor, enemy:settings.enemyColor, neutral:settings.neutralColor }, settings.theme) }} title={entry.label}>{entry.label}</button>)}

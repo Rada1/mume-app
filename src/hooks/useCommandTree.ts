@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCommandTreeController } from './useCommandTreeController';
 import { useCommandPanelStore } from '../stores/useCommandPanelStore';
+import { getCommandMenuSectionKey, useCommandMenuSectionsStore } from '../stores/useCommandMenuSectionsStore';
 import { useGearPanelData } from './useGearPanelData';
 import { getEligibleActionButtonIds, isButtonValidForEntity } from '../utils/actionUtils';
 import { ITEM_BUTTONS } from '../constants/buttons/inline/items';
@@ -48,7 +49,8 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
   controller.game.setCommandPreview?.(getCommandTreeBasePreview(command.command));
   return () => controller.game.setCommandPreview?.(null);
  }, [group, command?.id, command?.command, controller.game.setCommandPreview]);
- const panelData = useGearPanelData(group === 1 || group === 2 || group === 3 || isCommandTreeObservation(command) || isCommandTreeAccess(command), group === 1 || group === 2 || group === 3 || isCommandTreeObservation(command) || isCommandTreeAccess(command));
+ const needsGearTargets = group === 3 || isCommandTreeObservation(command) || Boolean(command && isCommandTreeContainer(command));
+ const panelData = useGearPanelData(needsGearTargets, needsGearTargets);
  const roomWaterAvailable = useRoomDrinkWater();
  const finishCatalog = uiPerformance.startWork('Tree catalog');
  const {catalog, variantsByAction} = useMemo(() => {
@@ -265,13 +267,8 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
    return priority(a) - priority(b);
   }))
   .map(label => ({label, buttons: label === 'Shop' ? COMMAND_TREE_SHOP_BUTTONS : grouped[group].buttons.filter(button => sectionFor(button) === label)})), [group, grouped, sectionFor]);
- useEffect(() => {
-  if (group !== 1 || command) return;
-  const movementCommand = grouped[1]?.buttons.find(isCommandTreeMoveAction);
-  if (movementCommand) setCommand(movementCommand);
- }, [group, command, grouped]);
- useEffect(() => { if (controller.shopOpenRequest && atShop) {useCommandPanelStore.getState().clearShopOpenRequest(); setGroup(3); setSection('Shop'); setCommand(COMMAND_TREE_SHOP_BUTTONS[0]);} }, [controller.shopOpenRequest, atShop]);
- useEffect(() => { if (controller.shop.browsing && atShop) {setGroup(3); setSection('Shop'); if (!isCommandTreeShopAction(command)) setCommand(COMMAND_TREE_SHOP_BUTTONS[0]);} }, [controller.shop.browsing, atShop]);
+ useEffect(() => { if (controller.shopOpenRequest && atShop) {useCommandPanelStore.getState().clearShopOpenRequest(); setGroup(3); setSection('Shop'); setCommand(COMMAND_TREE_SHOP_BUTTONS[0]); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop'));} }, [controller.shopOpenRequest, atShop]);
+ useEffect(() => { if (controller.shop.browsing && atShop) {setGroup(3); setSection('Shop'); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop')); if (!isCommandTreeShopAction(command)) setCommand(COMMAND_TREE_SHOP_BUTTONS[0]);} }, [controller.shop.browsing, atShop]);
  useEffect(() => { if (controller.practiceOpenRequest) {useCommandPanelStore.getState().clearPracticeOpenRequest(); setGroup(0); setSection('Training'); setCommand(COMMAND_TREE_PRACTICE_BUTTON);} }, [controller.practiceOpenRequest]);
  useEffect(() => { controller.practice.setOpen(group === 0 && isCommandTreePracticeAction(command)); }, [group, command, controller.practice.setOpen]);
  useEffect(() => {

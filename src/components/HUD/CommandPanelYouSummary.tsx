@@ -1,4 +1,4 @@
-/** @file CommandPanelYouSummary.tsx — Compact read-only character status for the command panel. */
+/** @file CommandPanelYouSummary.tsx — Compact character status and controls for the command panel. */
 import React from 'react';
 import { useGame, useUI } from '../../context/GameContext';
 import { useActiveEffectTimers } from '../../hooks/useActiveEffectTimers';
@@ -9,6 +9,9 @@ import { useActiveVitals } from '../../stores/useActiveGameState';
 import type { DrawerLine, ExecuteCommand } from '../../types';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useCommandInfoStore } from '../../stores/useCommandInfoStore';
+import { useCommandSummaryHeight } from '../../hooks/useCommandSummaryHeight';
+import { useWimpyThresholdControl } from '../../hooks/useWimpyThresholdControl';
+import { getMovementModeActions } from '../../hooks/useMovementModeActions';
 import './CommandPanelYouSummary.css';
 
 // --- Logic Section ---
@@ -28,11 +31,13 @@ export const CommandPanelYouSummary = ({
     scopeKey: string;
 }) => {
     const vitals = useActiveVitals();
+    const summaryRef = useCommandSummaryHeight();
     const collapsed = useCommandInfoStore(state => state.collapsed);
     const toggle = useCommandInfoStore(state => state.toggle);
     const detailsId = React.useId();
-    const { characterInfo: gameCharacterInfo, gameState, isSpectateMode } = useGame();
+    const { characterInfo: gameCharacterInfo, gameState, isSpectateMode, triggerHaptic } = useGame();
     const { displayEqLines } = useUI();
+    const { value: wimpyValue, canChange: canChangeWimpy, changeThreshold } = useWimpyThresholdControl();
     const activeTimers = useActiveEffectTimers();
     const { snapshot } = useVitalsScoreSnapshot(scoreLines, executeCommand, scopeKey);
     const [showSnapshot, setShowSnapshot] = React.useState(false);
@@ -49,15 +54,25 @@ export const CommandPanelYouSummary = ({
     const flags = [
         vitals.isRiding || ['riding', 'mounted'].includes(String(vitals.position || '').toLowerCase()) ? 'Riding' : null,
         vitals.sneak && String(vitals.sneak).toLowerCase() !== 'off' ? 'Sneaking' : null,
-        vitals.climb && String(vitals.climb).toLowerCase() !== 'off' ? 'Climbing' : null,
-        vitals.isSwimming ? 'Swimming' : null,
         vitals.isHidden ? 'Hidden' : null,
         vitals.isRidden ? 'Being ridden' : null,
     ].filter((flag): flag is string => Boolean(flag));
+    const movementModes = getMovementModeActions({
+        climb: vitals.climb,
+        isSwimming: vitals.isSwimming,
+        isRiding: vitals.isRiding,
+        sneak: vitals.sneak,
+        isHidden: vitals.isHidden,
+    });
     const { sessionXp, sessionTp } = useCharacterSessionProgress(
         name, character.xp, character.tp, character.tnl, character.tpnl, scopeKey
     );
     const canRefreshCombatStats = gameState === 'playing' && !isSpectateMode;
+    const toggleMovementMode = (command: string) => {
+        if (!canRefreshCombatStats) return;
+        triggerHaptic(10);
+        executeCommand(command);
+    };
     const refreshCombatStats = React.useCallback(() => {
         if (!canRefreshCombatStats) return;
         executeCommand('info %O %D %k %A', true, true, true, true);
@@ -93,7 +108,9 @@ export const CommandPanelYouSummary = ({
             aria-describedby={`command-tree-vital-tooltip-${label.toLowerCase()}`}>
             <small>{label}</small>
             <span className={`command-tree-you-vital-value${showSnapshot ? ' is-showing-snapshot' : ''}`} aria-live="polite">
-                <span className="command-tree-you-vital-status" data-vital-type={label.toLowerCase()} aria-hidden={showSnapshot}>{displayStatus}</span>
+                <span className="command-tree-you-vital-status" data-vital-type={label.toLowerCase()} aria-hidden={showSnapshot}>
+                    {displayStatus} <span className="command-tree-you-vital-regen">({formatRegen(regeneration)}/tick)</span>
+                </span>
                 <span className="command-tree-you-vital-snapshot" aria-hidden={!showSnapshot}>{scoreText}</span>
             </span>
             <span id={`command-tree-vital-tooltip-${label.toLowerCase()}`} className="command-tree-you-vital-tooltip" role="tooltip">
@@ -108,7 +125,7 @@ export const CommandPanelYouSummary = ({
         move: vitals.move, maxMove: vitals.maxMove
     };
 
-    return <section className="command-tree-you-summary" aria-label="Character status">
+    return <section ref={summaryRef} className="command-tree-you-summary" aria-label="Character status">
         <button type="button" className="command-tree-you-identity command-tree-you-toggle"
             aria-expanded={!collapsed} aria-controls={detailsId}
             aria-label={`${collapsed ? 'Expand' : 'Collapse'} character info`} onClick={toggle}>
@@ -139,7 +156,18 @@ export const CommandPanelYouSummary = ({
             </button>)}
         </div>
         <div className="command-tree-you-details">
-            <div><small>Flags</small><span title={flags.join(', ')}>{flags.length ? flags.join(' \u00b7 ') : '—'}</span></div>
+            <div><small>Flags</small><span className="command-tree-you-flag-list" title={flags.join(', ')}>
+                {flags.length ? <>{flags.join(' · ')} · </> : null}
+                {movementModes.filter(mode => mode.id === 'climb' || mode.id === 'swim').map(mode => <React.Fragment key={mode.id}>
+                    {mode.id === 'swim' && ' · '}
+                    <button type="button" className={`command-tree-you-mode-toggle${mode.active ? ' is-active' : ''}`}
+                        aria-pressed={mode.active} disabled={!canRefreshCombatStats}
+                        title={`Click to turn ${mode.label.toLowerCase()} ${mode.active ? 'off' : 'on'}`}
+                        onClick={() => toggleMovementMode(mode.command)}>
+                        {mode.label} {mode.active ? 'On' : 'Off'}
+                    </button>
+                </React.Fragment>)}
+            </span></div>
             <div><small>Conditions</small><span className="command-tree-you-conditions">{conditions.length ? conditions.map((condition, index) => {
                 const details = getConditionTimerDetails(condition);
                 const tone = details?.tone;
@@ -151,6 +179,13 @@ export const CommandPanelYouSummary = ({
                         tabIndex={details ? 0 : undefined}>{condition}</span>
                 </React.Fragment>;
             }) : 'None'}</span></div>
+            <div className="command-tree-you-wimpy"><small>Wimpy</small>
+                <button type="button" disabled={!canRefreshCombatStats || !canChangeWimpy} onClick={changeThreshold}
+                    title="Click to cycle the automatic flee threshold"
+                    aria-label={`Wimpy threshold ${wimpyValue ?? 0} HP. Click to change`}>
+                    {wimpyValue ?? 0}
+                </button>
+            </div>
         </div>
         </div>
     </section>;

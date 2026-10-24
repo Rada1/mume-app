@@ -63,8 +63,8 @@ export const CommandPanelV2Branches = ({
         else controller.previewEntity(entry);
     };
     const renderTarget = (entry: CommandActionTargetEntry, displayLabel = entry.id === 'command-panel-self' ? 'Self' : getCommandActionTargetDisplayLabel(entry)) => <div key={entry.id}
-        onMouseEnter={() => previewTarget(entry)}
-        onFocus={() => previewTarget(entry)}>
+        onPointerEnter={event => { if (event.pointerType === 'mouse') previewTarget(entry); }}
+        onFocus={() => { if (!isMobile) previewTarget(entry); }}>
         <CommandTreeAction targetLabel={displayLabel} targetGearRow={entry.gearRow}
             controller={controller} button={tree.command!} targetState={{x:0,y:0,type:'menu',setId:entry.category,category:entry.category,context:entry.context,keyword:entry.keyword,displayName:entry.group === 'objects' && entry.scope === 'room' ? entry.label : displayLabel,entityId:entry.id,parentNoun:entry.parentNoun,hasDoor:entry.hasDoor}}/>
     </div>;

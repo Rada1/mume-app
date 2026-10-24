@@ -46,7 +46,19 @@ class ParserWorkerClient {
     private worker: Worker | null = null;
     private nextId = 1;
     private pending = new Map<number, PendingRequest>();
-    private isDisabled = false;
+    private isDisabled = typeof Worker === 'undefined' || import.meta.env.MODE === 'test';
+    private isReady = false;
+
+    constructor() {
+        if (!this.isDisabled && typeof window !== 'undefined') {
+            const warm = () => { this.getWorker(); };
+            if ('requestIdleCallback' in window) {
+                window.requestIdleCallback(warm, { timeout: 1500 });
+            } else {
+                setTimeout(warm, 200);
+            }
+        }
+    }
 
     tokenize(
         chunkLines: WorkerLineEntry[],
@@ -57,7 +69,7 @@ class ParserWorkerClient {
         }
 
         const worker = this.getWorker();
-        if (!worker) {
+        if (!worker || !this.isReady) {
             return Promise.resolve(this.tokenizeOnMainThread(chunkLines, context));
         }
 
@@ -65,7 +77,11 @@ class ParserWorkerClient {
         const request: ParserWorkerRequest = { id, chunkLines, context };
 
         return new Promise((resolve, reject) => {
-            const timeout = setTimeout(() => this.restartWorker(new Error('Parser worker timed out')), WORKER_TIMEOUT_MS);
+            const timeout = setTimeout(() => {
+                this.pending.delete(id);
+                this.disableWorker(new Error('Parser worker timed out'));
+                resolve(this.tokenizeOnMainThread(chunkLines, context));
+            }, WORKER_TIMEOUT_MS);
             this.pending.set(id, { resolve, reject, timeout });
             try {
                 worker.postMessage(request);
@@ -96,6 +112,8 @@ class ParserWorkerClient {
                 type: 'module',
             });
             this.worker.onmessage = (event: MessageEvent<ParserWorkerMessage>) => {
+                this.isReady = true;
+                if (event.data.id === 0) return;
                 const pending = this.pending.get(event.data.id);
                 if (!pending) return;
                 this.pending.delete(event.data.id);
@@ -112,6 +130,7 @@ class ParserWorkerClient {
             this.worker.onerror = event => {
                 this.disableWorker(event.message);
             };
+            this.worker.postMessage({ id: 0, chunkLines: [], context: {} as TokenizerContext });
             return this.worker;
         } catch (error) {
             this.disableWorker(error);
@@ -121,6 +140,7 @@ class ParserWorkerClient {
 
     private disableWorker(reason: unknown) {
         this.isDisabled = true;
+        this.isReady = false;
         this.restartWorker(reason);
     }
 
@@ -129,6 +149,7 @@ class ParserWorkerClient {
             this.worker.terminate();
             this.worker = null;
         }
+        this.isReady = false;
         this.pending.forEach(pending => {
             clearTimeout(pending.timeout);
             pending.reject(new Error(reason instanceof Error ? reason.message : String(reason)));
@@ -138,3 +159,4 @@ class ParserWorkerClient {
 }
 
 export const parserWorkerClient = new ParserWorkerClient();
+

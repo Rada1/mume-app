@@ -20,3 +20,33 @@
 }
 .command-tree-you-summary .command-tree-you-expanded[hidden],
 .command-tree-you-summary .command-tree-you-toggle small[hidden] { display:none !important; }
+
+/* --- Interactive movement and flee settings --- */
+.command-tree-v2 .command-tree-you-details { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) auto; }
+.command-tree-you-flag-list { display:inline-flex; align-items:baseline; flex-wrap:wrap; gap:0 4px; }
+.command-tree-you-mode-toggle,
+.command-tree-you-wimpy button {
+    padding:0;
+    border:0;
+    background:transparent;
+    color:#a89b83;
+    font:inherit;
+    cursor:pointer;
+}
+.command-tree-you-mode-toggle.is-active,
+.command-tree-you-wimpy button { color:#dfbf6c; }
+.command-tree-you-mode-toggle:hover:not(:disabled),
+.command-tree-you-mode-toggle:focus-visible,
+.command-tree-you-wimpy button:hover:not(:disabled),
+.command-tree-you-wimpy button:focus-visible { color:#fff1bd; text-decoration:underline; outline:none; }
+.command-tree-you-mode-toggle:disabled,
+.command-tree-you-wimpy button:disabled { cursor:default; opacity:.65; }
+.command-tree-you-wimpy { white-space:nowrap; }
+.command-tree-you-wimpy small { margin-right:6px; }
+
+@media (max-width:520px) {
+    .command-tree-v2 .command-tree-you-details { grid-template-columns:minmax(0,1fr) auto; }
+    .command-tree-you-details > div:first-child { grid-column:1; }
+    .command-tree-you-details > div:nth-child(2) { grid-column:1 / -1; grid-row:2; }
+    .command-tree-you-wimpy { grid-column:2; grid-row:1; }
+}

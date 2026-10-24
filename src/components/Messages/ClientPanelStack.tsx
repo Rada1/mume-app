@@ -1,4 +1,4 @@
-/** @file ClientPanelStack.tsx — A reserved desktop column for entities, chat, and details. */
+/** @file ClientPanelStack.tsx — A reserved desktop column for entities, chat, actions, and details. */
 
 import React from 'react';
 import ChatWindow from './ChatTranscriptWindow';
@@ -9,6 +9,7 @@ import type { ClientPanelStackId } from '../../types/clientPanelStack';
 import { ClientPanelStackResizeHandle } from './ClientPanelStackResizeHandle';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { useHelpStore } from '../../stores/useHelpStore';
+import { useUIStore } from '../../stores/useUIStore';
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 
 // --- Logic Section ---
@@ -23,12 +24,17 @@ export const ClientPanelStack: React.FC = () => {
     const detailsEnabled = useClientPanelStackStore(state => state.detailsEnabled);
     const setDetailsEnabled = useClientPanelStackStore(state => state.setDetailsEnabled);
     const movePanel = useClientPanelStackStore(state => state.movePanel);
+    const popoverState = useUIStore(state => state.popoverState);
+    const inlineActionsOpen = Boolean(popoverState?.entityId && popoverState.sourceRect
+        && (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial');
 
     const isVisible = (panel: ClientPanelStackId) => panel === 'entities'
         ? showGroupPanel
         : panel === 'chat'
             ? showChatWindow
-            : panel === 'help' ? showHelpPanel : detailsEnabled;
+            : panel === 'actions'
+                ? inlineActionsOpen
+                : panel === 'help' ? showHelpPanel : detailsEnabled;
     const visiblePanels = order.filter(isVisible);
     const isSingle = visiblePanels.length === 1;
     const singleRatio = isSingle && visiblePanels[0] ? (singleHeights?.[visiblePanels[0]] ?? 1) : 1;
@@ -69,12 +75,12 @@ export const ClientPanelStack: React.FC = () => {
             style={{
                 '--client-single-panel-height': isSingle ? `${Math.round(singleRatio * 1000) / 10}%` : '100%'
             } as React.CSSProperties}
-            aria-label="Entities, chat, details, and help"
+            aria-label="Entities, chat, inline actions, details, and help"
         >
             <DrawerResizeHandle
                 handleType="left"
                 widthVar="--desktop-client-panels-width"
-                label="Resize entities, chat, details, and help panel width"
+                label="Resize entities, chat, inline actions, details, and help panel width"
                 minWidthPx={220}
                 maxWidth={50}
             />
@@ -99,7 +105,8 @@ export const ClientPanelStack: React.FC = () => {
                         <div
                             className={`client-panel-stack-slot client-panel-stack-slot--${panel}`}
                             data-client-panel-id={panel}
-                            id={panel === 'details' ? 'client-panel-details-slot' : undefined}
+                            data-inline-actions-slot={panel === 'actions' ? 'true' : undefined}
+                            id={panel === 'actions' ? 'client-panel-inline-actions-slot' : panel === 'details' ? 'client-panel-details-slot' : undefined}
                             data-active={visible}
                             style={slotStyle}
                             onDragStart={event => startReorder(panel, event)}

@@ -26,6 +26,7 @@
 .command-tree-you-vital-status[data-vital-type="health"] { color:#ff5555; }
 .command-tree-you-vital-status[data-vital-type="mana"] { color:#aa55ff; }
 .command-tree-you-vital-status[data-vital-type="move"] { color:#55ff55; }
+.command-tree-you-vital-regen { color:#aaa18c; font-size:9px; font-weight:400; }
 .command-tree-you-vital-snapshot { opacity:0; color:#fff0bd; }
 .command-tree-you-vital-value.is-showing-snapshot .command-tree-you-vital-status { opacity:0; }
 .command-tree-you-vital-value.is-showing-snapshot .command-tree-you-vital-snapshot { opacity:1; }

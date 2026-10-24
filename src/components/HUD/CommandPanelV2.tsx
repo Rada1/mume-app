@@ -15,6 +15,7 @@ import { CommandPanelYouSummary } from './CommandPanelYouSummary';
 import { CommandTreeMenuHeader } from './CommandTreeMenuHeader';
 import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
+import { useCommandMenuSectionsStore } from '../../stores/useCommandMenuSectionsStore';
 import { CommandPanelV2Branches } from './CommandPanelV2Branches';
 import './UnifiedCommandPanel.css';
 import './CommandPanelV2.css';
@@ -35,12 +36,13 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  const finishTree = uiPerformance.startWork('Target tree');
  const tree = useCommandTree(controller);
  finishTree();
+ const collapsedCommandSections = useCommandMenuSectionsStore(state => state.collapsed);
  const {game} = controller;
  const isReadabilityMode = useSettingsStore(state=>state.isReadabilityMode);
  const activeView = useModeStore(state=>state.activeView);
  const spectateTarget = useModeStore(state=>state.spectateTarget);
  const viewingSpectateTarget = game.isSpectateMode && activeView === 'target';
- const summaryCharacterName = controller.vitals.characterInfo.name || game.characterName || '';
+ const summaryCharacterName = controller.vitals?.characterInfo?.name || game.characterName || '';
  const summaryScopeKey = game.isSpectateMode
   ? `spectate:${viewingSpectateTarget ? spectateTarget || '' : 'self'}`
   : `player:${summaryCharacterName}`;
@@ -184,6 +186,15 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   if (rootBranch) rootBranch.scrollTop = 0;
  }, [tree.group]);
  React.useLayoutEffect(() => {
+  if (tree.group === null || !tree.section || !tree.command) return;
+  const rootBranch = Array.from(branchListRef.current?.querySelectorAll<HTMLElement>('.command-tree-branch') || [])
+   .find(branch => branch.getAttribute('aria-label') === tree.grouped[tree.group!]?.label);
+  const selectedSection = Array.from(rootBranch?.querySelectorAll<HTMLElement>('.command-tree-section') || [])
+   .find(section => section.getAttribute('aria-label') === tree.section);
+  const selectedCommand = selectedSection?.querySelector<HTMLElement>('.command-tree-row[aria-expanded="true"]');
+  (selectedCommand || selectedSection)?.scrollIntoView({block:'nearest'});
+ }, [tree.group, tree.section, tree.command?.id, collapsedCommandSections]);
+ React.useLayoutEffect(() => {
   if (tree.group === null || !tree.command) return;
   const branches = Array.from(branchListRef.current?.querySelectorAll<HTMLElement>('.command-tree-branch') || []);
   const submenu = branches[branches.length - 1];
@@ -205,7 +216,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  const commandToolbar = <div className="command-tree-dock-action-bar">
   {categoryMenu}
  </div>;
- const characterSummary = <UiProfiler id="Character summary"><CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui.scoreLines}
+ const characterSummary = <UiProfiler id="Character summary"><CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui?.scoreLines}
   executeCommand={game.executeCommand} scopeKey={summaryScopeKey}/></UiProfiler>;
  const characterControls = <div className="command-tree-dock-controls-inner">
     <nav className="command-tree-state-controls" aria-label="Quick state controls">

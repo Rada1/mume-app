@@ -279,9 +279,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const rotatingCommand = useRotatingCommandSuggestion(showRotatingSuggestion);
 
     const isParleyActive = Boolean(parley?.active && parley?.command);
-    const handleParleyClear = useCallback(() => {
+    const handleParleyClear = useCallback((blurOnMobile = true) => {
         setParley(prev => ({ ...prev, active: false, mode: 'command', command: 'none', target: null, message: '' }));
-        if (viewport?.isMobile) inputRef.current?.blur();
+        if (blurOnMobile && viewport?.isMobile) inputRef.current?.blur();
     }, [setParley, viewport?.isMobile]);
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
@@ -340,6 +340,14 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         }
         if (handleCommandArgumentKeyDown(e)) return;
 
+        if (e.key === 'Backspace' && isParleyActive
+            && e.currentTarget.selectionStart === 0
+            && e.currentTarget.selectionEnd === 0) {
+            e.preventDefault();
+            handleParleyClear(false);
+            return;
+        }
+
         if (e.key === 'Enter') {
             if (e.shiftKey && viewport?.isMobile && !isPasswordMode) return;
             e.preventDefault();
@@ -354,7 +362,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             e.preventDefault();
             setInput('');
         }
-    }, [handleCommandArgumentKeyDown, handleSuggestionKeyDown, handleSubmit, isPasswordMode, setInput, viewport?.isMobile]);
+    }, [handleCommandArgumentKeyDown, handleParleyClear, handleSuggestionKeyDown, handleSubmit, isParleyActive, isPasswordMode, setInput, viewport?.isMobile]);
 
     const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setInput(event.currentTarget.value);

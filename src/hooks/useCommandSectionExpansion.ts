@@ -1,6 +1,6 @@
 /** @file useCommandSectionExpansion.ts — Scope section preferences to their containing menu. */
 import { useLayoutEffect, useRef, useState } from 'react';
-import { useCommandMenuSectionsStore } from '../stores/useCommandMenuSectionsStore';
+import { getCommandMenuSectionKey, useCommandMenuSectionsStore } from '../stores/useCommandMenuSectionsStore';
 
 // --- Section Identity Section ---
 export function useCommandSectionExpansion(label: string) {
@@ -12,7 +12,7 @@ export function useCommandSectionExpansion(label: string) {
     // when switching commands that both have, for example, Inventory targets.
     useLayoutEffect(() => {
         const menu = sectionRef.current?.parentElement?.closest('[aria-label]');
-        const nextKey = JSON.stringify([menu?.getAttribute('aria-label') || 'Commands', label]);
+        const nextKey = getCommandMenuSectionKey(menu?.getAttribute('aria-label') || 'Commands', label);
         if (key !== nextKey) setKey(nextKey);
     });
     return { sectionRef, open: !collapsed, toggle: () => { if (key) toggle(key); } };

@@ -1220,7 +1220,7 @@ body.has-popover .dial-menu-overlay {
     width: min(430px, calc(100vw - 24px)) !important;
     max-width: min(430px, calc(100vw - 24px)) !important;
     padding: 8px 14px 11px !important;
-    background: #211b16 !important;
+    background: var(--command-panel-surface, #211b16) !important;
     border: 0 !important;
     border-left: 1px solid rgba(201, 168, 76, 0.34) !important;
     border-right: 1px solid rgba(201, 168, 76, 0.34) !important;
@@ -1264,6 +1264,14 @@ body.has-popover .dial-menu-overlay {
         animation: terminal-pane-enter 180ms ease-out both !important;
     }
 
+    /* Desktop inline menus are content within their docked panel, not another card. */
+    .app-container .popover-menu:has(.terminal-inline-popover),
+    .app-container .popover-menu:has(.terminal-inline-popover) .terminal-inline-popover {
+        border: 0 !important;
+        box-shadow: none !important;
+        filter: none !important;
+    }
+
     .popover-menu:has(.terminal-inline-popover) .popover-side-panel-close {
         position: sticky;
         top: 0;
@@ -1277,7 +1285,7 @@ body.has-popover .dial-menu-overlay {
         padding: 0;
         border: 1px solid rgba(201, 168, 76, 0.28);
         border-radius: 4px;
-        background: rgba(33, 27, 22, 0.92);
+        background: var(--command-panel-surface, #211b16);
         color: var(--text-dim, #b7a88b);
         font-size: 20px;
         line-height: 1;
@@ -1816,12 +1824,6 @@ body.has-popover .dial-menu-overlay {
     background: rgba(201, 168, 76, 0.08) !important;
 }
 
-.terminal-inline-popover .inline-action-group.is-action-family {
-    margin-top: 8px !important;
-    padding-top: 6px !important;
-    border-top: 1px solid rgba(201, 168, 76, 0.16) !important;
-}
-
 .terminal-inline-popover .inline-action-group.is-action-family > .inline-action-group-toggle {
     color: var(--inline-trait-color, #c9a84c);
 }
@@ -1879,20 +1881,20 @@ body.has-popover .dial-menu-overlay {
 }
 
 .terminal-inline-popover .inline-action-desktop-deck {
-    display: none;
+    display: none !important;
 }
 
 .terminal-inline-popover .inline-action-mobile-groups {
-    display: block;
+    display: block !important;
 }
 
 @media (min-width: 1025px) {
     .terminal-inline-popover .inline-action-desktop-deck {
-        display: block;
+        display: block !important;
     }
 
     .terminal-inline-popover .inline-action-mobile-groups {
-        display: none;
+        display: none !important;
     }
 
     .terminal-inline-popover .inline-action-groups-content {
@@ -1901,9 +1903,6 @@ body.has-popover .dial-menu-overlay {
         border-top: 0 !important;
     }
 
-    .terminal-inline-popover .inline-action-groups-content .inline-action-group.is-action-family {
-        border-top-color: rgba(201, 168, 76, 0.1) !important;
-    }
 }
 
 /* Slide down keyframe for chat notification toast entry */

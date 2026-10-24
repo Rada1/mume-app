@@ -7,6 +7,7 @@ import { ClientPanelStack } from './ClientPanelStack';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useClientPanelStackStore } from '../../stores/useClientPanelStackStore';
+import { useUIStore } from '../../stores/useUIStore';
 
 vi.mock('../Drawers/DrawerResizeHandle', () => ({
     DrawerResizeHandle: () => <div data-testid="drawer-resize-handle" />
@@ -28,10 +29,11 @@ describe('ClientPanelStack', () => {
     beforeEach(() => {
         useSettingsStore.setState({ showGroupPanel: false, showChatWindow: false });
         useHelpStore.setState({ isOpen: false });
+        useUIStore.setState({ popoverState: null });
         useClientPanelStackStore.setState({
-            order: ['entities', 'chat', 'details', 'help'],
-            weights: { entities: 1.2, chat: 1.15, details: 1.45, help: 1.4 },
-            singleHeights: { entities: 1, chat: 1, details: 1, help: 1 },
+            order: ['entities', 'chat', 'actions', 'details', 'help'],
+            weights: { entities: 1.2, chat: 1.15, actions: 1.45, details: 1.45, help: 1.4 },
+            singleHeights: { entities: 1, chat: 1, actions: 1, details: 1, help: 1 },
             detailsOpen: true,
             detailsEnabled: true
         });

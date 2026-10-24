@@ -1,4 +1,5 @@
 import React, { useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { CharacterInfo, CustomButton, CustomTraitConfig, PopoverState, DrawerLine, GroupMember, PracticeData, GmcpOccupant } from '../../types';
 import type { SelectedTargetInfo } from '../../stores/useUIStore';
 
@@ -90,7 +91,10 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const lastAudiblePopoverKeyRef = React.useRef<string | null>(null);
     const openCommandPanel = useCommandPanelStore(state => state.setIsOpen);
     const openMobileCommandPanel = useCommandPanelStore(state => state.setIsMobileGuideOpen);
+    const isCommandPanelContext = [parentPopoverState?.entityId, localState?.entityId]
+        .some(entityId => entityId === 'command-panel-room' || entityId === 'command-panel-self');
     const isEntityMenu = !!parentPopoverState?.entityId &&
+        !isCommandPanelContext &&
         (!parentPopoverState.type || parentPopoverState.type === 'menu') && parentPopoverState.menuDisplay !== 'dial';
     const isDesktopEntityMenu = !isMobile && isEntityMenu;
     const isReadabilityMobileEntityMenu = isMobile && isReadabilityMode && isEntityMenu;
@@ -127,10 +131,14 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [parentPopoverState]);
 
     const popoverState = localState;
-    const isUnifiedDesktopMenu = !isMobile && !!popoverState?.entityId &&
+    const isDesktopEntityPopover = !isMobile && !isCommandPanelContext && !!popoverState?.entityId &&
         (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
-    const isMobileCommandPanelMenu = isMobile && !!popoverState?.entityId && !popoverState.sourceRect &&
+    const isDesktopInlineMenu = isDesktopEntityPopover && !!popoverState?.sourceRect;
+    const isMobileCommandPanelMenu = isMobile && !isCommandPanelContext && !!popoverState?.entityId && !popoverState.sourceRect &&
         (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
+    const inlineActionsSlot = isDesktopInlineMenu && typeof document !== 'undefined'
+        ? document.getElementById('client-panel-inline-actions-slot')
+        : null;
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         const entityId = popoverState?.entityId;
@@ -155,7 +163,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState?.entityId]);
 
     useLayoutEffect(() => {
-        if (popoverState && !isMobileCommandPanelMenu && popoverState.type !== 'help-card' && popoverRef.current) {
+        if (popoverState && !isMobileCommandPanelMenu && !inlineActionsSlot && popoverState.type !== 'help-card' && popoverRef.current) {
             const el = popoverRef.current;
 
             const positionPopover = () => {
@@ -244,13 +252,14 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             };
         }
         return undefined;
-    }, [popoverState, popoverRef, isMobileCommandPanelMenu]);
+    }, [popoverState, popoverRef, isMobileCommandPanelMenu, inlineActionsSlot]);
 
     const lastHoveredIndex = React.useRef<number | null>(null);
     const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
-        if (!popoverState || isUnifiedDesktopMenu || isMobileCommandPanelMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
+        // Desktop entity menus use their native click handlers; skip only legacy drag selection.
+        if (!popoverState || isDesktopEntityPopover || isMobileCommandPanelMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
             // Touch pointers need native vertical panning so mobile users can scroll menus.
@@ -386,9 +395,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             // Clean up any persistent highlights from log items
             document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         };
-    }, [popoverState, isUnifiedDesktopMenu, isMobileCommandPanelMenu, triggerHaptic, setPopoverState]);
+    }, [popoverState, isDesktopEntityPopover, isMobileCommandPanelMenu, triggerHaptic, setPopoverState]);
 
-    if (!popoverState || isUnifiedDesktopMenu || isMobileCommandPanelMenu) return null;
+    if (!popoverState || isMobileCommandPanelMenu) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     const detectedCatId = normalizeInlineCategoryId(popoverState.category || popoverState.setId);
@@ -494,7 +503,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const hasCapturedDetails = !!(popoverState.hasInspectionCard || popoverState.isCapturingExamine || popoverState.isCapturingConsider || popoverState.capturedExamineLines || popoverState.capturedConsiderLines || popoverState.isCapturingWhois || popoverState.capturedWhoisLines || popoverState.isCapturingWho || popoverState.capturedWhoLines || popoverState.isCapturingWhere || popoverState.capturedWhereLines || popoverState.isCapturingRoomAction || popoverState.capturedRoomActionLines || popoverState.isCapturingPersonalAction || popoverState.capturedPersonalActionLines);
     const isParleyType = popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target';
     const isAnchoredDropdown = !!popoverState.sourceRect && !isParleyType && popoverState.type !== 'menu' && popoverState.type !== undefined;
-    return (
+    const popoverMenu = (
         <div className={`popover-menu${isParleyType ? ' parley-dropdown' : ''}${isAnchoredDropdown ? ' inline-dropdown' : ''}${isClosing ? ' closing' : ''}${hasCapturedDetails ? ' popover-captured-wide' : ''}`} ref={popoverRef} style={{
             position: 'fixed',
             left: popoverState.x,
@@ -583,4 +592,6 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
                 />            )}
         </div>
     );
+    if (isCommandPanelContext) return null;
+    return inlineActionsSlot ? createPortal(popoverMenu, inlineActionsSlot) : popoverMenu;
 };
