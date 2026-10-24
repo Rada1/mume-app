@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { splitLookLines, sanitizeLines, stripHtml } from '../../../utils/lookTextUtils';
-import { sanitizeMumeHtml } from '../../../utils/securityUtils';
+import { escapeHtml, sanitizeMumeHtml } from '../../../utils/securityUtils';
 
 // --- Types Section ---
 
@@ -30,6 +30,11 @@ interface CapturedDetailsCardProps {
     personalActionLines?: string[];
     personalActionKind?: 'info' | 'stat' | 'score';
     isCapturingPersonalAction?: boolean;
+    shopLines?: Array<{ id: string | number; text: string; html?: string }>;
+    shopTitle?: string;
+    practiceLines?: Array<{ id: string | number; text: string; html?: string }> | string[];
+    practiceSkillName?: string;
+    isPracticePending?: boolean;
 }
 
 interface AssessmentLine {
@@ -122,8 +127,66 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     isCapturingRoomAction,
     personalActionLines,
     personalActionKind,
-    isCapturingPersonalAction
+    isCapturingPersonalAction,
+    shopLines,
+    shopTitle,
+    isShopPending,
+    practiceLines,
+    practiceSkillName,
+    isPracticePending
 }) => {
+    if (isShopPending || shopLines !== undefined || shopTitle) {
+        return (
+            <section className="captured-details-card captured-shop-report" onPointerDown={(e) => e.stopPropagation()}>
+                <div className="captured-details-grid captured-details-grid-single">
+                    <div className="captured-detail-panel whois-panel">
+                        <div className="captured-detail-kicker">{shopTitle || 'Shop'}</div>
+                        {isShopPending ? (
+                            <div className="captured-detail-loading">
+                                <span className="captured-spinner" />
+                                <span>Waiting for shop response…</span>
+                            </div>
+                        ) : shopLines && shopLines.length > 0 ? (
+                            <div className="command-shop-output-lines" aria-live="polite">
+                                {shopLines.map((line, index) => (
+                                    <div key={`${line.id}:${index}`} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(line.html || escapeHtml(line.text)) }} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="captured-detail-empty">No shop information returned.</div>
+                        )}
+                    </div>
+                </div>
+            </section>
+        );
+    }
+    if (practiceSkillName || isPracticePending || practiceLines !== undefined) {
+        return (
+            <section className="captured-details-card captured-practice-report" onPointerDown={(e) => e.stopPropagation()}>
+                <div className="captured-details-grid captured-details-grid-single">
+                    <div className="captured-detail-panel whois-panel">
+                        <div className="captured-detail-kicker">{practiceSkillName ? `Practice · ${practiceSkillName}` : 'Practice'}</div>
+                        {isPracticePending ? (
+                            <div className="captured-detail-loading">
+                                <span className="captured-spinner" />
+                                <span>Waiting for training response…</span>
+                            </div>
+                        ) : practiceLines && practiceLines.length > 0 ? (
+                            <div className="command-practice-output-lines" aria-live="polite">
+                                {practiceLines.map((line, index) => {
+                                    const key = typeof line === 'object' && line ? `${line.id}:${index}` : index;
+                                    const html = typeof line === 'object' && line ? (line.html || escapeHtml(line.text)) : escapeHtml(line);
+                                    return <div key={key} dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(html) }} />;
+                                })}
+                            </div>
+                        ) : (
+                            <div className="captured-detail-empty">No training response returned.</div>
+                        )}
+                    </div>
+                </div>
+            </section>
+        );
+    }
     if (isCapturingHelp || helpLines !== undefined) {
         return renderCapturedReport(helpTopic ? `Help · ${helpTopic}` : 'Help', helpLines, !!isCapturingHelp, 'Loading help...', 'No help information returned.');
     }

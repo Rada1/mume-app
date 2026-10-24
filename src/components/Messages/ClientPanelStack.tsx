@@ -18,6 +18,7 @@ export const ClientPanelStack: React.FC = () => {
     const showHelpPanel = useHelpStore(state => state.isOpen);
     const order = useClientPanelStackStore(state => state.order);
     const weights = useClientPanelStackStore(state => state.weights);
+    const singleHeights = useClientPanelStackStore(state => state.singleHeights);
     const detailsOpen = useClientPanelStackStore(state => state.detailsOpen);
     const detailsEnabled = useClientPanelStackStore(state => state.detailsEnabled);
     const setDetailsEnabled = useClientPanelStackStore(state => state.setDetailsEnabled);
@@ -29,6 +30,8 @@ export const ClientPanelStack: React.FC = () => {
             ? showChatWindow
             : panel === 'help' ? showHelpPanel : detailsEnabled;
     const visiblePanels = order.filter(isVisible);
+    const isSingle = visiblePanels.length === 1;
+    const singleRatio = isSingle && visiblePanels[0] ? (singleHeights?.[visiblePanels[0]] ?? 1) : 1;
 
     const startReorder = (panel: ClientPanelStackId, event: React.DragEvent<HTMLDivElement>) => {
         if (!(event.target as HTMLElement).closest('[data-client-panel-drag-handle]')) {
@@ -59,7 +62,15 @@ export const ClientPanelStack: React.FC = () => {
 
     // --- Render Section ---
     return (
-        <aside className="client-panels-stack" data-active={visiblePanels.length > 0} aria-label="Entities, chat, details, and help">
+        <aside
+            className="client-panels-stack"
+            data-active={visiblePanels.length > 0}
+            data-single-panel={isSingle ? 'true' : undefined}
+            style={{
+                '--client-single-panel-height': isSingle ? `${Math.round(singleRatio * 1000) / 10}%` : '100%'
+            } as React.CSSProperties}
+            aria-label="Entities, chat, details, and help"
+        >
             <DrawerResizeHandle
                 handleType="left"
                 widthVar="--desktop-client-panels-width"
@@ -70,6 +81,19 @@ export const ClientPanelStack: React.FC = () => {
             {order.map((panel, index) => {
                 const visible = isVisible(panel);
                 const nextPanel = order.slice(index + 1).find(isVisible);
+                const isSinglePanel = isSingle && visible;
+                const slotStyle: React.CSSProperties = isSinglePanel
+                    ? {
+                        display: 'flex',
+                        flex: '0 0 auto',
+                        height: singleRatio < 1 ? `calc(${Math.round(singleRatio * 1000) / 10}% - 12px)` : 'calc(100% - 12px)',
+                        maxHeight: 'calc(100% - 12px)'
+                    }
+                    : {
+                        display: visible ? 'flex' : 'none',
+                        flexGrow: weights[panel]
+                    };
+
                 return (
                     <React.Fragment key={panel}>
                         <div
@@ -77,7 +101,7 @@ export const ClientPanelStack: React.FC = () => {
                             data-client-panel-id={panel}
                             id={panel === 'details' ? 'client-panel-details-slot' : undefined}
                             data-active={visible}
-                            style={{ display: visible ? 'flex' : 'none', flexGrow: weights[panel] }}
+                            style={slotStyle}
                             onDragStart={event => startReorder(panel, event)}
                             onDragOver={event => event.preventDefault()}
                             onDrop={event => dropReorder(panel, event)}
@@ -104,7 +128,9 @@ export const ClientPanelStack: React.FC = () => {
                                 ⋮⋮
                             </span>
                         </div>
-                        {visible && nextPanel && <ClientPanelStackResizeHandle firstPanel={panel} secondPanel={nextPanel} />}
+                        {visible && (nextPanel || isSingle) && (
+                            <ClientPanelStackResizeHandle firstPanel={panel} secondPanel={nextPanel} />
+                        )}
                     </React.Fragment>
                 );
             })}

@@ -6,7 +6,6 @@
 import React, { ReactNode } from 'react';
 import { X, User, Shield, Activity, LogIn } from 'lucide-react';
 import { useUI, useGame } from '../../context/GameContext';
-import { useInputStore } from '../../stores/useInputStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { EnvironmentGlow } from '../Atmosphere/EnvironmentGlow';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
@@ -31,7 +30,6 @@ const ACCOUNT_TABS = [
 export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, children }) => {
     const { ui, setUI, handleTabClick } = useUI();
     const { triggerHaptic, handleLogClick, handleLogPointerDown, handleLogPointerUp, viewport, currentTerrain, lighting, accountState, gameState, sessionMode } = useGame() as any;
-    const input = useInputStore(s => s.input);
     const drawerZoom = useSettingsStore(s => s.drawerZoom ?? 1.0);
     const setDrawerZoom = useSettingsStore(s => s.setDrawerZoom);
     const isOpen = ui.drawer === id;
@@ -57,7 +55,7 @@ export const DrawerShell: React.FC<DrawerShellProps> = ({ id, side, title, child
             <DrawerResizeHandle handleType="top-right" widthVar="--desktop-right-width" rightVar="--desktop-right-right" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
             <DrawerResizeHandle handleType="bottom-left" widthVar="--desktop-right-width" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
             <DrawerResizeHandle handleType="bottom-right" widthVar="--desktop-right-width" rightVar="--desktop-right-right" topVar="--desktop-right-top" bottomVar="--desktop-right-bottom" />
-            <EnvironmentGlow terrain={accountState?.stage !== 'none' ? undefined : (currentTerrain || undefined)} lighting={lighting} input={input} />
+            <EnvironmentGlow terrain={accountState?.stage !== 'none' ? undefined : (currentTerrain || undefined)} lighting={lighting} />
             <div className="drawer-header">
                 <span className="drawer-title">
                     {title || id}

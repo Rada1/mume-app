@@ -28,7 +28,7 @@ it('handles batched native toggles and guild visibility changes without event re
   expect(details.open).toBe(true);
   practice.guild.hasGuildmaster=false;
   await act(async()=>root.render(<React.StrictMode><CommandPracticeTargets practice={practice} embedded/></React.StrictMode>));
-  expect(host.textContent).toBe('');
+  expect(host.textContent).toContain('Known skills and spells · Visit a guildmaster to train');
   practice.guild.hasGuildmaster=true;
   await act(async()=>root.render(<React.StrictMode><CommandPracticeTargets practice={practice} embedded/></React.StrictMode>));
   expect(host.querySelector('details')?.open).toBe(true);

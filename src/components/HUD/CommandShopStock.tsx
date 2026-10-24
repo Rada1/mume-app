@@ -24,7 +24,11 @@ export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, 
             <span>{shop.keeperName}</span>
             {!inline && <button type="button" disabled={Boolean(shop.pendingCommand) || shop.stockPending} onClick={() => shop.browse()}>Refresh stock</button>}
         </div>
-        <input type="search" value={catalog.search} onChange={event => catalog.setSearch(event.target.value)} aria-label="Search shop stock" placeholder="Search stock…" />
+        <div className="chat-communication-bar command-shop-search-bar" role="search" aria-label="Search shop inventory">
+            <span className="docked-prompt-symbol" aria-hidden="true">&gt;</span>
+            <span className="command-shop-search-chip" aria-label="Command: list">list</span>
+            <input className="chat-communication-input command-shop-search-input" type="search" value={catalog.search} onChange={event => catalog.setSearch(event.target.value)} aria-label="Search shop stock" placeholder="Search stock…" />
+        </div>
         <ShopBrowseNavigation activeCategory={catalog.category} activeFilter={catalog.filter}
             onCategorySelect={catalog.selectCategory} onFilterSelect={catalog.selectFilter} />
         {catalog.items.length ? catalog.items.map(item => <ShopItemGroup key={item.num} item={item} objectColorTargets

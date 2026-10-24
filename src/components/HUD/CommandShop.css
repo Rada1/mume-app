@@ -1,4 +1,4 @@
-/** @file CommandShop.css — Compact shared stock, commands, and shop output styling. */
+﻿/** @file CommandShop.css - Compact shared stock, commands, and shop output styling. */
 /* --- Shop targets in the existing selection column --- */
 .command-shop-stock { --shop-rule: rgba(201,168,76,.2); }
 .command-shop-stock-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; padding: 5px; color: var(--text-dim); font-size: 10px; }
@@ -6,7 +6,50 @@
 .command-shop-stock button { cursor: pointer; font: inherit; }
 .command-shop-stock-tools button { padding: 6px; border: 1px solid rgba(201,168,76,.3); background: transparent; color: var(--accent); border-radius: 3px; }
 .command-shop-stock button:disabled, .command-shop-actions button:disabled { opacity: .45; cursor: default; }
-.command-shop-stock > input { box-sizing: border-box; width: 100%; min-width: 0; padding: 6px; background: transparent; border: 1px solid rgba(201,168,76,.2); color: var(--text-primary); font: inherit; font-size: 11px; }
+
+/* --- Shop inventory search bar matching Chat and Help composer --- */
+.command-shop-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 32px;
+    margin: 2px 0 6px;
+    padding: 3px 6px;
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 0;
+    background: rgba(0, 0, 0, 0.35);
+}
+.command-shop-search-chip {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 2px;
+    background: #292929;
+    color: var(--text-dim, #94a3b8);
+    font: 700 10px var(--font-mono, monospace);
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    user-select: none;
+}
+.command-shop-search-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 24px;
+    padding: 0 4px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--text-primary);
+    font: 11px var(--font-mono, monospace);
+}
+.command-shop-search-input::placeholder { color: var(--text-dim); opacity: 0.7; }
+.command-shop-search-input::-webkit-search-cancel-button { filter: grayscale(1) opacity(0.6); }
+
 .command-shop-stock .shop-item-row, .command-shop-stock .shop-variant-row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: baseline; min-width: 0; gap: 3px 8px; padding: 8px 6px; font-size: 11px; cursor: pointer; border-bottom-color: rgba(201,168,76,.08); }
 .command-shop-stock .shop-item-name, .command-shop-stock .shop-variant-condition { grid-column: 2; grid-row: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 11px; line-height: 1.5; font-weight: 500; color: var(--text-primary); }
 .command-shop-stock .shop-item-price { grid-column: 2 / -1; grid-row: 2; width: auto; white-space: normal; text-align: left; font-size: 10px; line-height: 1.4; font-weight: 400; color: color-mix(in srgb, var(--accent, #c9a84c) 85%, var(--text-dim)); }
@@ -15,8 +58,8 @@
 .command-shop-stock .shop-stock-inline { grid-column: 3; grid-row: 1; display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; margin: 0; padding: 2px 0 2px 6px; border: 0; border-radius: 2px; background: transparent; color: var(--text-dim); box-shadow: none; font-size: 10px; line-height: 1.4; white-space: nowrap; }
 .command-shop-stock .shop-stock-inline-count { font-variant-numeric: tabular-nums; }
 .command-shop-stock .shop-stock-inline svg { flex: none; opacity: .65; transition: transform .15s ease; }
-.command-shop-stock .shop-stock-inline[aria-expanded="true"] svg { transform: rotate(90deg); }
-.command-shop-stock .shop-stock-inline:hover, .command-shop-stock .shop-stock-inline[aria-expanded="true"] { color: var(--accent); }
+.command-shop-stock .shop-stock-inline[aria-expanded= true] svg { transform: rotate(90deg); }
+.command-shop-stock .shop-stock-inline:hover, .command-shop-stock .shop-stock-inline[aria-expanded=true] { color: var(--accent); }
 .command-shop-stock .shop-stock-inline:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
 .command-shop-stock .shop-variant-list { margin: 0 0 0 26px; padding: 0 0 0 8px; border-left: 1px solid var(--shop-rule); }
 .command-shop-stock .shop-variant-inspect { grid-column: 3; grid-row: 1; padding: 2px 0 2px 6px; border: 0; background: transparent; font-size: 10px; color: var(--text-dim); }

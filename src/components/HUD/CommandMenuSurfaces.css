@@ -11,7 +11,16 @@
 .command-tree-v2 .command-tree-dock-popup .command-tree-branch,
 .command-tree-v2 .command-tree-quick-options,
 .command-tree-v2 .command-tree-gear-quick-menu {
+    position: relative;
     box-sizing: border-box;
     border: 0;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.5);
 }
+
+/* Deeper cascading submenu columns stack on top so their drop shadow wins */
+.command-tree-v2 .command-tree-branches > .command-tree-branch:nth-child(1) { z-index: 10; }
+.command-tree-v2 .command-tree-branches > .command-tree-branch:nth-child(2) { z-index: 11; }
+.command-tree-v2 .command-tree-branches > .command-tree-branch:nth-child(3) { z-index: 12; }
+.command-tree-v2 .command-tree-branches > .command-tree-branch:nth-child(4) { z-index: 13; }
+.command-tree-v2 .command-tree-branches > .command-tree-branch:nth-child(n+5) { z-index: 14; }
+

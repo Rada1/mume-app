@@ -186,18 +186,21 @@ it('shows the sun at Wedmath 8:09 even when the sunlit room has indoor terrain',
     expect(scene.querySelector('.client-sun-disc')).toBe(disc);
 });
 
-it('renders the horizon sun outside the sky mask during outdoor artificial lighting at 5:00 and 5:19', () => {
-    const at = (minute: number) => getMumeTimeFromEpoch(0, dateToMumeMinutes(2850, 7, 27, 5, minute) * 1000);
-    const view = render(<Harness {...initial} isIndoor={false} isOutdoor gameTime={at(0)} />);
-    const scene = view.container.querySelector<HTMLElement>('.vignette-state-artificial')!;
+it('renders the horizon sun outside the sky mask during sunlight at 4:00 and 5:19, and never during artificial lighting', () => {
+    const at = (hour: number, minute: number) => getMumeTimeFromEpoch(0, dateToMumeMinutes(2850, 7, 27, hour, minute) * 1000);
+    const view = render(<Harness {...initial} isIndoor={false} isOutdoor gameTime={at(4, 0)} />);
+    expect(view.container.querySelector('.client-sun-disc')).toBeNull();
+    view.rerender(<Harness {...initial} lighting="sun" isIndoor={false} isOutdoor gameTime={at(4, 0)} />);
+    const scene = view.container.querySelector<HTMLElement>('.vignette-state-sun')!;
     const sun = scene.querySelector<HTMLElement>('.client-sun-disc')!;
     expect(sun).not.toBeNull();
     expect(sun.parentElement).toBe(scene);
     expect(sun.style.top).toBe('54%');
     expect(sun.style.opacity).toBe('1');
-    view.rerender(<Harness {...initial} isIndoor={false} isOutdoor gameTime={at(19)} />);
+    view.rerender(<Harness {...initial} lighting="sun" isIndoor={false} isOutdoor gameTime={at(5, 19)} />);
     expect(scene.querySelector('.client-sun-disc')).toBe(sun);
     expect(parseFloat(sun.style.top)).toBeLessThan(54);
-    view.rerender(<Harness {...initial} gameTime={at(19)} />);
+    view.rerender(<Harness {...initial} isIndoor={false} isOutdoor gameTime={at(5, 19)} />);
+    nextFrame(1000);
     expect(view.container.querySelector('.client-sun-disc')).toBeNull();
 });

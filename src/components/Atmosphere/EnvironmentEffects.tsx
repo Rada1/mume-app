@@ -10,7 +10,6 @@ import { EnvironmentWeatherLayers } from './EnvironmentWeatherLayers';
 import { EnvironmentVignetteLayers } from './EnvironmentVignetteLayers';
 import { Embers } from './Embers';
 import { useSettingsStore } from '../../stores/useSettingsStore';
-import { useInputStore } from '../../stores/useInputStore';
 import { EnvironmentGlow } from './EnvironmentGlow';
 import { getZoneAmbientGlow } from '../../utils/zoneColors';
 import { isOutdoorTerrain } from '../../utils/terrainUtils';
@@ -71,7 +70,6 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     isSleeping = false,
     isNight = false, gameTime,
 }) => {
-    const input = useInputStore(s => s.input);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
     const zoneBackgroundPosition = useSettingsStore(s => s.zoneBackgroundPositions[normalizeZoneBackgroundKey(zone)]);
@@ -225,7 +223,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                     </>
                 )}
                 {isImmersionMode && (
-                    <EnvironmentGlow terrain={terrain || undefined} zone={zone} lighting={lighting} input={input} />
+                    <EnvironmentGlow terrain={terrain || undefined} zone={zone} lighting={lighting} />
                 )}
                 {isImmersionMode && (
                     <>
@@ -260,7 +258,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
             {isImmersionMode && !isMobile && !isPerformanceMode && (
                 <div className={`embers-client-layer${lighting === 'dark' || (lighting === 'artificial' && showStars) ? ' avoids-top-right-vignette' : ''}`}>
-                    <Embers count={44} zone={zone} />
+                    <Embers count={24} zone={zone} />
                 </div>
             )}
 

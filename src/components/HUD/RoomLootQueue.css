@@ -1,4 +1,4 @@
-/** @file RoomLootQueue.css â€” Kill feedback and persistent room loot controls. */
+/** @file RoomLootQueue.css — Kill feedback and persistent room loot controls. */
 /* --- Component Styles --- */
 @import './RoomLootPanel.css';
 
@@ -21,57 +21,44 @@
     right: 12px;
 }
 
-.room-loot-trigger-wrap { position: relative; display: grid; justify-items: end; }
-.room-loot-desktop-popover { position: absolute; top: calc(100% + 8px); right: 0; z-index: 5; pointer-events: auto; }
-.room-loot-root button { font: inherit; }
-.room-loot-root button:disabled { opacity: .55; cursor: progress; }
-.room-loot-status { max-width: min(76vw, 360px); padding: 7px 9px; border: 1px solid rgba(217, 178, 106, .4); border-radius: 6px; color: #f1e6ce; background: rgba(18, 17, 15, .94); font-size: 10px; pointer-events: auto; }
-.room-loot-trigger {
+.room-loot-trigger-wrap {
+    position: relative;
+    display: grid;
+    justify-items: end;
+}
+
+.room-loot-desktop-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 5;
+    pointer-events: auto;
+}
+
+.room-loot-root button {
+    font: inherit;
+}
+
+.room-loot-root button:disabled {
+    opacity: .55;
+    cursor: progress;
+}
+
+.room-loot-status {
+    max-width: min(76vw, 360px);
+    padding: 7px 10px;
+    border: 0;
+    border-radius: 0;
     color: #f1e6ce;
-    border: 1px solid rgba(217, 178, 106, 0.5);
-    background: rgba(18, 17, 15, 0.94);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(23, 23, 23, .94);
+    font-size: 11px;
+    font-weight: 600;
     pointer-events: auto;
 }
 
-.room-loot-trigger {
-    position: relative;
-    z-index: 2;
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    padding: 6px 10px;
-    border-radius: 6px;
-    color: #f5d99e;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
-.room-shop-trigger {
-    position: relative;
-    z-index: 2;
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 10px;
-    border: 1px solid rgba(125, 190, 145, 0.56);
-    border-radius: 6px;
-    color: #b9e4c3;
-    background: rgba(18, 17, 15, 0.94);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    pointer-events: auto;
-    font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-}
-
+/* --- Shared Borderless Gray Surface for All Room Chips --- */
+.room-loot-trigger,
+.room-shop-trigger,
 .room-context-trigger {
     position: relative;
     z-index: 2;
@@ -79,105 +66,104 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 6px 10px;
-    border: 1px solid rgba(164, 151, 198, 0.5);
-    border-radius: 6px;
-    color: #ded1f2;
-    background: rgba(18, 17, 15, 0.94);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.36);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    padding: 6px 12px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(23, 23, 23, 0.94);
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     pointer-events: auto;
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
+    user-select: none;
+    transition: transform 110ms ease, background-color 110ms ease, color 110ms ease;
+}
+
+.room-loot-trigger {
+    color: #dfbf6c;
+}
+
+.room-shop-trigger {
+    color: #b9e4c3;
+}
+
+.room-context-trigger {
+    color: #ded1f2;
 }
 
 .room-context-trigger.is-rent {
-    border-color: rgba(201, 168, 76, 0.56);
     color: #f1d998;
 }
 
 .room-context-trigger.is-guild {
-    border-color: rgba(135, 169, 219, 0.56);
     color: #c7dcfa;
 }
 
 .room-context-trigger.is-seek {
-    border-color: rgba(125, 190, 145, 0.56);
     color: #b9e4c3;
 }
 
-.room-loot-count {
-    min-width: 20px;
-    height: 20px;
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    color: #21170a;
-    background: #edb84f;
-    font-size: 11px;
+/* Hover and active states */
+.room-loot-trigger:hover:not(:disabled),
+.room-shop-trigger:hover:not(:disabled),
+.room-context-trigger:hover:not(:disabled) {
+    background: rgba(38, 38, 38, 0.96);
 }
 
+.room-loot-trigger:active:not(:disabled),
+.room-shop-trigger:active:not(:disabled),
+.room-context-trigger:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+    background: rgba(50, 50, 50, 0.96);
+}
+
+.room-loot-root .room-loot-trigger[aria-expanded="true"] {
+    background: rgba(45, 38, 24, 0.96);
+    color: #f5d99e;
+}
+
+/* Loot source count indicator badge */
+.room-loot-count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border: 1px solid rgba(223, 191, 108, 0.45);
+    border-radius: 10px;
+    background: rgba(223, 191, 108, 0.14);
+    color: #dfbf6c;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* Mobile responsive sizing */
 .room-loot-root.is-mobile {
     top: calc(env(safe-area-inset-top, 0px) + 76px);
     right: 8px;
 }
 
-.room-loot-root.is-mobile .room-loot-trigger {
-    min-height: 42px;
-    gap: 8px;
-    padding: 7px 11px;
-    border-radius: 8px;
-    border-color: rgba(237, 184, 79, 0.62);
-    background: rgba(24, 21, 17, 0.97);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45), inset 0 1px rgba(255, 255, 255, 0.04);
-    font-size: 13px;
-}
-
+.room-loot-root.is-mobile .room-loot-trigger,
 .room-loot-root.is-mobile .room-shop-trigger,
 .room-loot-root.is-mobile .room-context-trigger {
     min-height: 42px;
     gap: 8px;
-    padding: 7px 11px;
-    border-radius: 8px;
-    background: rgba(24, 21, 17, 0.97);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.45), inset 0 1px rgba(255, 255, 255, 0.04);
+    padding: 7px 12px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(23, 23, 23, 0.97);
+    box-shadow: none;
     font-size: 13px;
+    font-weight: 800;
 }
 
 .room-loot-root.is-mobile .room-loot-count {
     min-width: 22px;
     height: 22px;
+    border-radius: 11px;
+    font-size: 12px;
 }
-
-.room-context-trigger,
-.room-shop-trigger,
-.room-loot-trigger {
-    transition: transform 110ms ease, filter 110ms ease, background-color 110ms ease, box-shadow 110ms ease;
-}
-
-.room-context-trigger:active:not(:disabled),
-.room-shop-trigger:active:not(:disabled),
-.room-loot-trigger:active:not(:disabled) {
-    transform: translateY(1px) scale(0.97);
-    filter: brightness(1.22);
-}
-
-.room-context-trigger.is-seek:active:not(:disabled) {
-    background: rgba(70, 145, 95, 0.32);
-    box-shadow: 0 0 12px rgba(68, 255, 112, 0.24), inset 0 0 0 1px rgba(185, 228, 195, 0.2);
-}
-
-.room-loot-trigger:active:not(:disabled),
-.room-loot-root .room-loot-trigger[aria-expanded="true"] {
-    border-color: rgba(237, 184, 79, 0.95);
-    background: rgba(104, 73, 19, 0.46);
-    box-shadow: none;
-}
-
-/* --- Loot entry matches command section badges --- */
-.room-loot-root .room-loot-trigger { min-height: 36px; padding: 7px 11px; gap: 8px; border: 0; border-radius: 0; background: rgba(23,23,23,.94); box-shadow: none; backdrop-filter: none; font-size: .72rem; font-weight: 600; color: #dfbf6c; }
-.room-loot-root .room-loot-trigger[aria-expanded="true"] { background: rgba(201,168,76,.12); border-color: rgba(201,168,76,.5); box-shadow: none; }
-.room-loot-count, .room-loot-root.is-mobile .room-loot-count { display: inline-grid; place-items: center; min-width: 18px; height: 17px; padding: 0 4px; box-sizing: border-box; border: 1px solid rgba(201,168,76,.3); border-radius: 9px; background: transparent; color: #dfbf6c; font-size: .56rem; }
-.room-loot-root.is-mobile .room-loot-trigger { min-height: 44px; border: 0; border-radius: 0; }

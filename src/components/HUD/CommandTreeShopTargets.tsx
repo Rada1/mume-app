@@ -11,7 +11,7 @@ import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 export const CommandTreeShopTargets=({controller,command}:{controller:ReturnType<typeof useCommandTreeController>;command:CustomButton})=>{
  const targets=useCommandTreeShopTargets(controller,command);
  const {shop}=controller;
- return <section className={`command-tree-branch${targets.showStock ? ' command-tree-shop-stock-targets' : ''}`} aria-label={`Targets for ${command.label}`}>
+ return <section className="command-tree-branch command-tree-shop-stock-targets" aria-label={`Targets for ${command.label}`}>
   <CommandTreeTargetHeader/>
   {targets.showStock&&<CommandShopStock shop={{...shop,selectStock:targets.selectStock}} open inline onOpenChange={()=>undefined}/>}
   {targets.showInventory&&<CommandTreeCollapsibleSection label="Inventory">

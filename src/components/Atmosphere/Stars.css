@@ -8,7 +8,6 @@
     pointer-events: none;
     opacity: 0;
     mix-blend-mode: screen;
-    filter: blur(0.1px);
     background:
         radial-gradient(circle 0.55px at 97% 3%, rgba(195, 213, 242, 0.48), transparent 100%),
         radial-gradient(circle 1.2px at 90% 3%, rgba(224, 232, 249, 0.72), transparent 100%),

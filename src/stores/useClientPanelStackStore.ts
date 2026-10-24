@@ -2,17 +2,19 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { ClientPanelStackId, ClientPanelStackWeights } from '../types/clientPanelStack';
+import type { ClientPanelStackId, ClientPanelStackWeights, ClientPanelStackHeights } from '../types/clientPanelStack';
 
 // --- Logic Section ---
 type ClientPanelStackState = {
     order: ClientPanelStackId[];
     weights: ClientPanelStackWeights;
+    singleHeights: ClientPanelStackHeights;
     detailsOpen: boolean;
     detailsEnabled: boolean;
     setDetailsEnabled: (enabled: boolean) => void;
     setDetailsOpen: (open: boolean) => void;
     resizePair: (first: ClientPanelStackId, second: ClientPanelStackId, firstWeight: number, secondWeight: number) => void;
+    setSingleHeight: (panel: ClientPanelStackId, ratio: number) => void;
     movePanel: (panel: ClientPanelStackId, target: ClientPanelStackId, before: boolean) => void;
 };
 
@@ -21,16 +23,20 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
     ClientPanelStackState,
     [],
     [],
-    Pick<ClientPanelStackState, 'order' | 'weights' | 'detailsEnabled'>
+    Pick<ClientPanelStackState, 'order' | 'weights' | 'singleHeights' | 'detailsEnabled'>
 >((set) => ({
     order: ['entities', 'chat', 'details', 'help'],
     weights: { entities: 1.2, chat: 1.15, details: 1.45, help: 1.4 },
+    singleHeights: { entities: 1, chat: 1, details: 1, help: 1 },
     detailsOpen: false,
     detailsEnabled: true,
     setDetailsEnabled: detailsEnabled => set({ detailsEnabled }),
     setDetailsOpen: detailsOpen => set({ detailsOpen }),
     resizePair: (first, second, firstWeight, secondWeight) => set(state => ({
         weights: { ...state.weights, [first]: firstWeight, [second]: secondWeight }
+    })),
+    setSingleHeight: (panel, ratio) => set(state => ({
+        singleHeights: { ...state.singleHeights, [panel]: Math.max(0.15, Math.min(1, ratio)) }
     })),
     movePanel: (panel, target, before) => set(state => {
         const remaining = state.order.filter(item => item !== panel);
@@ -47,8 +53,9 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
         const savedOrder = saved.order?.filter(panel => current.order.includes(panel)) ?? [];
         return { ...current, ...saved,
             order: [...new Set([...savedOrder, ...current.order])],
-            weights: { ...current.weights, ...saved.weights }
+            weights: { ...current.weights, ...saved.weights },
+            singleHeights: { ...current.singleHeights, ...saved.singleHeights }
         };
     },
-    partialize: state => ({ order: state.order, weights: state.weights, detailsEnabled: state.detailsEnabled })
+    partialize: state => ({ order: state.order, weights: state.weights, singleHeights: state.singleHeights, detailsEnabled: state.detailsEnabled })
 }));

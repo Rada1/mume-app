@@ -10,7 +10,7 @@ import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 export const CommandTreeSections = ({controller, tree, menuHeader}: {controller:ReturnType<typeof useCommandTreeController>; tree:ReturnType<typeof useCommandTree>; menuHeader?: React.ReactNode}) =>
  <section className="command-tree-branch terminal-inline-popover" aria-label={tree.grouped[tree.group].label}>
   {menuHeader}
-  {[...tree.commandSections].reverse().map(section => {
+  {tree.commandSections.map(section => {
    const hasMovementPad = section.buttons.some(isCommandTreeMoveAction);
    const buttons = section.buttons.filter(button => !isCommandTreeMoveAction(button));
    const commandClasses = ['command-tree-section-commands', tree.grouped[tree.group]?.label === 'Objects' ? 'is-object-menu' : '', section.label === 'Doors' ? 'is-door-menu' : ''].filter(Boolean).join(' ');

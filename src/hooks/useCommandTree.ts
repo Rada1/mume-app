@@ -1,6 +1,7 @@
 /** @file useCommandTree.ts — Command-first navigation, available targets and delayed branch previews. */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useCommandTreeController } from './useCommandTreeController';
+import { useCommandPanelStore } from '../stores/useCommandPanelStore';
 import { useGearPanelData } from './useGearPanelData';
 import { getEligibleActionButtonIds, isButtonValidForEntity } from '../utils/actionUtils';
 import { ITEM_BUTTONS } from '../constants/buttons/inline/items';
@@ -215,8 +216,9 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
    return priority(a) - priority(b);
   }))
   .map(label => ({label, buttons: label === 'Shop' ? COMMAND_TREE_SHOP_BUTTONS : grouped[group].buttons.filter(button => sectionFor(button) === label)})), [group, grouped, sectionFor]);
+ useEffect(() => { if (controller.shopOpenRequest && atShop) {useCommandPanelStore.getState().clearShopOpenRequest(); setGroup(3); setSection('Shop'); setCommand(COMMAND_TREE_SHOP_BUTTONS[0]);} }, [controller.shopOpenRequest, atShop]);
  useEffect(() => { if (controller.shop.browsing && atShop) {setGroup(3); setSection('Shop'); if (!isCommandTreeShopAction(command)) setCommand(COMMAND_TREE_SHOP_BUTTONS[0]);} }, [controller.shop.browsing, atShop]);
- useEffect(() => { if (controller.practiceOpenRequest) {setGroup(0); setSection('Training'); setCommand(COMMAND_TREE_PRACTICE_BUTTON);} }, [controller.practiceOpenRequest]);
+ useEffect(() => { if (controller.practiceOpenRequest) {useCommandPanelStore.getState().clearPracticeOpenRequest(); setGroup(0); setSection('Training'); setCommand(COMMAND_TREE_PRACTICE_BUTTON);} }, [controller.practiceOpenRequest]);
  useEffect(() => { controller.practice.setOpen(group === 0 && isCommandTreePracticeAction(command)); }, [group, command, controller.practice.setOpen]);
  useEffect(() => {
   if (group !== null && isCommandTreeAccess(command) && !grouped[group].buttons.some(button => button.id === command?.id)) setCommand(null);

@@ -35,4 +35,4 @@ export * from './mapMarkers';
 export * from './soundSettings';
 export * from './clientMacros';
 
-export type { ClientPanelStackId, ClientPanelStackWeights } from './clientPanelStack';
+export type { ClientPanelStackId, ClientPanelStackWeights, ClientPanelStackHeights } from './clientPanelStack';

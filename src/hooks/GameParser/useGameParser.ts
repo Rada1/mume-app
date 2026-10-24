@@ -83,10 +83,17 @@ const extractXmlRoomTitle = (line: string): string | null => {
 const extractXmlRoomArea = (line: string): string | null => {
     const decodedLine = decodeTextEntities(line);
     const attrs = decodedLine.match(/<room\b([^>]*)>/i)?.[1];
-    if (!attrs) return null;
-    const rawArea = attrs.match(/\barea\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s/>]*))/i);
-    const area = rawArea?.[1] ?? rawArea?.[2] ?? rawArea?.[3];
-    return area ? decodeTextEntities(area).trim() || null : null;
+    if (attrs) {
+        const rawArea = attrs.match(/\barea\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s/>]*))/i);
+        const area = rawArea?.[1] ?? rawArea?.[2] ?? rawArea?.[3];
+        const cleanArea = area ? decodeTextEntities(area).trim() : '';
+        if (cleanArea) return cleanArea;
+    }
+    const trailingZone = decodedLine
+        .match(/<\/name\b[^>]*>\s*(?:\x1b\[[0-9;]*m\s*)*\(([^()]+)\)/i)?.[1]
+        ?.replace(/\x1b\[[0-9;]*m/g, '')
+        .trim();
+    return trailingZone || null;
 };
 
 const extractXmlTagText = (line: string, tagName: string): string | null => {
@@ -1632,8 +1639,12 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
                 messageHtml = messageObj.html;
             }
             if (!isAccountPhase && finalType === 'room-name') {
+                const decodedLine = decodeTextEntities(lineToParse);
+                const withoutTrailingAfterName = xmlRoomTitle
+                    ? decodedLine.replace(/(<\/name\b[^>]*>)[\s\S]*$/i, '$1')
+                    : lineToParse;
                 const titleSource = xmlRoomTitle
-                    ? decodeTextEntities(lineToParse).replace(/<[^>]*>/g, '')
+                    ? withoutTrailingAfterName.replace(/<[^>]*>/g, '').trimEnd()
                     : lineToParse;
                 messageHtml = deps.ansiConvert.toHtml(titleSource);
             }

@@ -144,7 +144,7 @@ export const FastMapCanvas = React.memo(forwardRef<HTMLCanvasElement, FastMapCan
         return true;
       }
     };
-    tryLoadMap();
+    if (tryLoadMap()) return;
     let attempts = 0;
     const timer = window.setInterval(() => {
       attempts++;

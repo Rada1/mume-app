@@ -74,16 +74,15 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
     });
     React.useEffect(() => {
         if (!shopOpenRequest) return;
-        useCommandPanelStore.getState().clearShopOpenRequest();
         setCommandColumnOpen(true);
         selectContext('room');
-        shop.browse();
-    }, [selectContext, shop.browse, shopOpenRequest]);
+        if (!shop.browsing) shop.browse();
+        else shop.refreshBalance();
+    }, [selectContext, shop.browse, shop.browsing, shop.refreshBalance, shopOpenRequest]);
     const practice = useCommandPractice(activeState, !shop.outputVisible,
         () => { setCommandColumnOpen(true); shop.setOutputOpen(false); });
     React.useEffect(() => {
         if (!practiceOpenRequest) return;
-        useCommandPanelStore.getState().clearPracticeOpenRequest();
         setCommandColumnOpen(true);
         selectContext('room');
         practice.setOpen(true);
@@ -163,5 +162,5 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         else closePanel();
     };
 const treeButtons = React.useMemo(() => [...menuButtons, ...communicationActionGroup.buttons], [menuButtons, communicationActionGroup.buttons]);
-return { practiceOpenRequest, previewEntity, previewTargetContext, game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, actionGroups, menuButtons: treeButtons };
+return { shopOpenRequest, practiceOpenRequest, previewEntity, previewTargetContext, game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, actionGroups, menuButtons: treeButtons };
 };

@@ -3610,14 +3610,31 @@ span.inline-btn {
 
 
 /* ==========================================================================
-   When Immersion Mode is disabled, turn off decorative log text animations.
+   When Immersion Mode or Text Animations are disabled, or Performance Mode is
+   active, turn off decorative log text animations.
    ========================================================================== */
 .app-container:not(.immersion-mode) .message-log .log-text-word,
 .app-container:not(.immersion-mode) .message-log .log-char,
 .app-container:not(.immersion-mode) .message-log .log-word,
 .app-container:not(.immersion-mode) .message-log .inline-btn,
 .app-container:not(.immersion-mode) .message-log .room-name-inline,
-.app-container:not(.immersion-mode) .message-log .room-title-text {
+.app-container:not(.immersion-mode) .message-log .room-title-text,
+.app-container:not(.immersion-text-animations-enabled) .message-log .log-text-word,
+.app-container:not(.immersion-text-animations-enabled) .message-log .log-char,
+.app-container:not(.immersion-text-animations-enabled) .message-log .log-word,
+.app-container:not(.immersion-text-animations-enabled) .message-log .inline-btn,
+.app-container:not(.immersion-text-animations-enabled) .message-log .room-name-inline,
+.app-container:not(.immersion-text-animations-enabled) .message-log .room-title-text,
+.app-container:not(.immersion-text-animations-enabled) .message-log .comm-action,
+.app-container:not(.immersion-text-animations-enabled) .message-log .custom-prompt-container .prompt-entity-inline,
+.app-container.performance-mode .message-log .log-text-word,
+.app-container.performance-mode .message-log .log-char,
+.app-container.performance-mode .message-log .log-word,
+.app-container.performance-mode .message-log .inline-btn,
+.app-container.performance-mode .message-log .room-name-inline,
+.app-container.performance-mode .message-log .room-title-text,
+.app-container.performance-mode .message-log .comm-action,
+.app-container.performance-mode .message-log .custom-prompt-container .prompt-entity-inline {
     animation: none !important;
 }
 

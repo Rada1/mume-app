@@ -26,7 +26,7 @@ interface EnvironmentGlowProps {
     terrain?: string;
     zone?: string | null;
     lighting?: string;
-    input: string;
+    input?: string;
 }
 
 const ZONE_COLOR_TRANSITION_MS = 7000;
@@ -35,7 +35,6 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
     terrain,
     zone,
     lighting = 'none',
-    input,
 }) => {
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
@@ -87,14 +86,17 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
 
     const phaseRef = useRef(0);
 
-    // Detect keyboard typing spikes
+    // Subscribe to keyboard typing spikes directly without re-rendering React
     useEffect(() => {
-        const len = input.length;
-        if (len !== prevInputLen.current) {
-            typingActivityTarget.current = Math.min(1.0, typingActivityTarget.current + 0.22);
-            prevInputLen.current = len;
-        }
-    }, [input]);
+        prevInputLen.current = useInputStore.getState().input.length;
+        return useInputStore.subscribe((state) => {
+            const len = state.input.length;
+            if (len !== prevInputLen.current) {
+                typingActivityTarget.current = Math.min(1.0, typingActivityTarget.current + 0.22);
+                prevInputLen.current = len;
+            }
+        });
+    }, []);
 
     // Detect command execution spikes
     useEffect(() => {
@@ -119,7 +121,7 @@ export const EnvironmentGlow: React.FC<EnvironmentGlowProps> = ({
         let frameId = 0;
         let lastFrameTime = 0;
         const FRAME_MS = 100; // 10fps for performance efficiency
-        const CANVAS_SCALE = Math.max(0.5, (window.devicePixelRatio || 1) * 0.5);
+        const CANVAS_SCALE = 0.25; // Low-frequency blurred wave needs only quarter resolution
 
         const resize = () => {
             const rect = canvas.parentElement?.getBoundingClientRect();

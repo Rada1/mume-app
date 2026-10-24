@@ -543,7 +543,16 @@ const MessageItem = React.memo(({
                                         ? (msg.roomZone || useRoomStore.getState().roomZone)?.trim()
                                         : undefined;
                                     const formatted = rawZone ? `(${formatZoneDisplayName(rawZone)})` : null;
-                                    const titleHtml = sanitizeMumeHtml(content.split(/<div class="room-desc-line">/i, 1)[0]);
+                                    const rawTitleHtml = sanitizeMumeHtml(content.split(/<div class="room-desc-line">/i, 1)[0]);
+                                    const titleHtml = rawZone
+                                        ? rawTitleHtml.replace(
+                                            new RegExp(
+                                                `\\s*\\((?:${rawZone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}|${formatZoneDisplayName(rawZone).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\)\\s*((?:<\\/span>\\s*)*)$`,
+                                                'i'
+                                            ),
+                                            '$1'
+                                        )
+                                        : rawTitleHtml;
                                     return (
                                         <span className="room-title-badge">
                                             <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
@@ -1013,7 +1022,7 @@ const MessageLog: React.FC<MessageLogProps> = ({
             if (showBlockHeaders && msg.isCommBlockStart) h += 24;
             return h;
         }, [viewport.columns, viewport.logFontSize, viewport.logFontSizePx, showBlockHeaders]),
-        overscan: 12,
+        overscan: 6,
         rangeExtractor,
         // When reading history, keep the viewport pinned to the same content even
         // if a measured row above it changes height as new output arrives.

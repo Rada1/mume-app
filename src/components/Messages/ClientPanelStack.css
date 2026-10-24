@@ -124,7 +124,9 @@
         color: var(--text-primary, #d4cdb8) !important;
     }
 
-    .client-panel-stack-slot--details .captured-details-card {
+    .client-panel-stack-slot--details .captured-details-card,
+    .client-panel-stack-slot--details .command-shop-output-lines,
+    .client-panel-stack-slot--details .command-practice-response {
         flex: 1 1 auto !important;
         min-height: 0 !important;
         margin: 0 !important;
@@ -166,6 +168,11 @@
         box-shadow: 0 0 8px rgba(201, 168, 76, 0.5);
     }
 
+    .client-panels-stack[data-single-panel="true"] > .drawer-resize-handle--left {
+        bottom: auto;
+        height: var(--client-single-panel-height, 100%);
+    }
+
     .client-panel-stack-resize-handle {
         position: relative;
         z-index: 10;
@@ -175,6 +182,28 @@
         cursor: row-resize;
         touch-action: none;
         outline: none;
+    }
+
+    .client-panel-stack-resize-handle::after {
+        content: '';
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 36px;
+        height: 2px;
+        border-radius: 2px;
+        background: rgba(201, 168, 76, 0.25);
+        pointer-events: none;
+        transition: background 0.15s ease, box-shadow 0.15s ease, width 0.15s ease;
+    }
+
+    .client-panel-stack-resize-handle:hover::after,
+    .client-panel-stack-resize-handle:focus-visible::after,
+    .client-panel-stack-resize-handle.is-active::after {
+        background: rgba(201, 168, 76, 0.85);
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
+        width: 56px;
     }
 
     .client-panel-stack-resize-handle:focus-visible { outline: 1px dashed #c9a84c; outline-offset: -3px; }

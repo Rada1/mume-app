@@ -2,11 +2,24 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 // --- Logic Section ---
-export const useCommandDockPosition = (isMobile: boolean, open: boolean) => {
+export const useCommandDockPosition = (isMobile: boolean, open: boolean, anchorKey?: unknown) => {
     const anchorRef = useRef<HTMLElement | null>(null);
     const [position, setPosition] = useState<{right:number;bottom:number;maxWidth:number} | null>(null);
+
+    const resolveAnchor = useCallback(() => {
+        const current = anchorRef.current;
+        if (current && (!current.parentElement?.classList.contains('command-tree-root-actions') || current.getAttribute('aria-expanded') === 'true')) {
+            return current;
+        }
+        const active = typeof document !== 'undefined'
+            ? document.querySelector<HTMLElement>('.command-tree-root-actions > .command-tree-row[aria-expanded="true"]')
+            : null;
+        if (active) anchorRef.current = active;
+        return active || current;
+    }, []);
+
     const update = useCallback(() => {
-        const anchor = anchorRef.current;
+        const anchor = resolveAnchor();
         if (!anchor) return;
         const rect = anchor.getBoundingClientRect();
         const next = {
@@ -16,29 +29,32 @@ export const useCommandDockPosition = (isMobile: boolean, open: boolean) => {
         };
         setPosition(previous => previous?.right === next.right && previous.bottom === next.bottom
             && previous.maxWidth === next.maxWidth ? previous : next);
-    }, [isMobile]);
+    }, [isMobile, resolveAnchor]);
+
     useEffect(() => {
-        const anchor = anchorRef.current;
+        const anchor = resolveAnchor();
         if (!open || !anchor) return;
+        update();
         let frame = 0;
         const schedule = () => { if (!frame) frame = requestAnimationFrame(() => {frame = 0; update();}); };
         const scroll = (event: Event) => {
             // Log and submenu scrolling do not move a fixed command-bar anchor.
             if (event.target instanceof Element && event.target.contains(anchor)) schedule();
         };
-        const observer = new ResizeObserver(schedule);
-        observer.observe(anchor);
+        const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(schedule) : null;
+        observer?.observe(anchor);
         window.addEventListener('resize', schedule);
         window.addEventListener('scroll', scroll, true);
         window.visualViewport?.addEventListener('resize', schedule);
         schedule();
         return () => {
             cancelAnimationFrame(frame);
-            observer.disconnect();
+            observer?.disconnect();
             window.removeEventListener('resize', schedule);
             window.removeEventListener('scroll', scroll, true);
             window.visualViewport?.removeEventListener('resize', schedule);
         };
-    }, [open, update]);
+    }, [open, update, anchorKey, resolveAnchor]);
+
     return {position, anchorRef, update};
 };

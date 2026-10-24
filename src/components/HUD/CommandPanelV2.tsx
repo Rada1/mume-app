@@ -134,7 +134,7 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
  const closeGearMenu = () => {setGearMenu(null); setGearMenuBottom(null); controller.previewEntity(null);};
  const isRotatedLandscape = game.viewport?.isRotatedLandscape === true;
  const [dockSlots, setDockSlots] = React.useState<{summary:HTMLElement;controls:HTMLElement;actions:HTMLElement;menu:HTMLElement}|null>(null);
- const {position:dockPopupPosition, anchorRef:dockPopupButtonRef, update:updateDockPopupPosition} = useCommandDockPosition(isMobile, tree.group !== null);
+ const {position:dockPopupPosition, anchorRef:dockPopupButtonRef, update:updateDockPopupPosition} = useCommandDockPosition(isMobile, tree.group !== null, tree.group);
  const openQuickMenu = (label: string, button: HTMLElement) => {
   if (tree.group !== null || controller.isHelpMode) closeSubmenu();
   quickMenuPlacement.anchorRef.current = button;
@@ -171,13 +171,13 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   if (tree.group === null) return;
   const rootBranch = Array.from(branchListRef.current?.querySelectorAll<HTMLElement>('.command-tree-branch') || [])
    .find(branch => branch.getAttribute('aria-label') === tree.grouped[tree.group!]?.label);
-  if (rootBranch) rootBranch.scrollTop = rootBranch.scrollHeight;
+  if (rootBranch) rootBranch.scrollTop = 0;
  }, [tree.group]);
  React.useLayoutEffect(() => {
   if (tree.group === null || !tree.command) return;
   const branches = Array.from(branchListRef.current?.querySelectorAll<HTMLElement>('.command-tree-branch') || []);
   const submenu = branches[branches.length - 1];
-  if (branches.length > 1 && submenu) submenu.scrollTop = submenu.scrollHeight;
+  if (branches.length > 1 && submenu) submenu.scrollTop = 0;
  }, [tree.group, tree.command?.id, tree.command?.command]);
  useUpwardCommandBranches(branchListRef, Boolean(dockSlots && tree.group !== null));
  React.useEffect(() => {
@@ -201,7 +201,7 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   <CommandTreeAction targetLabel={displayLabel} targetGearRow={entry.gearRow} targetShowSlot={/^remove\b/i.test(tree.command?.command || '') && entry.group === 'worn'} controller={controller} button={tree.command!} targetState={{x:0,y:0,type:'menu',setId:entry.category,category:entry.category,context:entry.context,keyword:entry.keyword,displayName:displayLabel,entityId:entry.id,parentNoun:entry.parentNoun,hasDoor:entry.hasDoor}}/>
  </div>;
  const categoryMenu = <nav className={isMobile && !dockSlots ? 'command-tree-categories' : 'command-tree-root-actions'} aria-label="Command groups" onPointerEnter={cancelScheduledMenuClose} onPointerLeave={event=>{tree.cancelPreview();if(dockSlots||isMobile)dismissMenuOnPointerLeave(event.pointerType);}}>
-  {tree.grouped.map((group,index) => <button key={group.label} className="command-tree-row" aria-expanded={tree.group === index}
+  {tree.grouped.map((group,index) => <button key={group.label} className="command-tree-row" aria-expanded={tree.group === index} ref={tree.group === index ? (el => { if (el) dockPopupButtonRef.current = el; }) : undefined}
    onPointerEnter={event => {if(event.pointerType==='touch')return;dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index);}} onFocus={event => {if(!event.currentTarget.matches(':focus-visible'))return;dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index);}}
    onClick={event => {dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index,true);}}><span className="command-tree-row-label">{group.label}</span>
    {!isMobile && <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>}</button>)}
@@ -280,12 +280,9 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   </CommandPanelViews>
  </div>;
  if (dockSlots) return <>
-  {createPortal(characterSummary, dockSlots.summary)}
-  {createPortal(characterControls, dockSlots.controls)}
-  {createPortal(commandToolbar, dockSlots.actions)}
+  {createPortal(characterSummary, dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
   {(tree.group !== null || controller.isHelpMode) && createPortal(commandMenu, dockSlots.menu)}
-  <span className="command-tree-portal-host" aria-hidden="true" />
-  <CommandTreeOutputs controller={controller}/>
+  <span className="command-tree-portal-host" aria-hidden="true" /><CommandTreeOutputs controller={controller}/>
  </>;
  return <aside className="command-guide-panel unified-command-panel command-tree-v2" aria-label="Command tree">
   <header className="command-tree-header"><span className="command-tree-header-title">COMMANDS</span><span className="command-tree-header-spacer" aria-hidden="true" />
@@ -294,10 +291,7 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   </header>
   {isMobile && <div className="command-tree-category-bar">{categoryMenu}</div>}
   <div className="command-tree-flat-layout">
-   <section className="command-tree-character-dock" aria-label="Character controls">
-    {characterSummary}
-    {characterControls}
-   </section>
+   <section className="command-tree-character-dock" aria-label="Character controls">{characterSummary}{characterControls}</section>
    {commandMenu}
   </div>
   <CommandTreeOutputs controller={controller}/>
