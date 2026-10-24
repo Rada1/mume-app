@@ -24,7 +24,7 @@
 .command-dock-summary,.command-dock-controls,.command-dock-input-main,.command-dock-actions { pointer-events:auto; }
 .command-dock-summary .command-tree-you-vital-tooltip { top:auto; bottom:calc(100% + 4px); }
 .command-dock-summary {
-    grid-area:1 / 1;
+    grid-area:1 / 3;
     width:100%;
     min-width:0;
     padding:0 4px 4px;
@@ -51,7 +51,7 @@
 .command-dock-input-main .docked-input-form { flex:1 1 0; min-width:0; }
 .command-dock-input-main .docked-input-wrap { min-width:0; }
 .command-dock-controls {
-    grid-area:2 / 1;
+    grid-area:2 / 3;
     position:relative;
     z-index:12;
     display:flex;
@@ -74,7 +74,7 @@
 .command-tree-dock-controls-inner .command-tree-quick-state > button small { margin-top:2px; font-size:10px; text-transform:capitalize; }
 .command-tree-dock-controls-inner .command-tree-gear-controls { flex:0 1 136px; width:136px; gap:4px; }
 .command-tree-dock-controls-inner .command-tree-quick-gear > button { min-height:46px; padding:5px; font-size:10px; text-transform:uppercase; }
-.command-dock-actions { grid-area:2 / 3; display:flex; min-width:0; }
+.command-dock-actions { grid-area:2 / 1; display:flex; min-width:0; }
 .command-tree-dock-action-bar { display:flex; align-items:stretch; width:100%; min-width:0; }
 .command-tree-root-actions { display:flex; flex:1 1 auto; align-items:stretch; min-width:0; overflow-x:auto; background:var(--command-tree-surface); }
 .command-tree-v2 .command-tree-root-actions > .command-tree-row { flex:1 1 0; min-width:0; min-height:58px; padding:8px 4px; font-size:11px; text-transform:uppercase; letter-spacing:0; }
@@ -121,7 +121,7 @@
 .command-dock-shell .command-tree-dock-popup .command-tree-branches {
     display:flex;
     flex:0 0 auto;
-    flex-direction:row-reverse;
+    flex-direction:row;
     align-items:flex-end;
     width:max-content;
     max-width:100%;
@@ -218,89 +218,5 @@
 .command-tree-target-crosshair { flex:none; color:#fca5a5; }
 .command-tree-current-target > button + .command-tree-target-crosshair { position:absolute; right:8px; top:50%; transform:translateY(-50%); pointer-events:none; }
 
-/* --- Mobile Command Console: Input / Actions / State / Info --- */
-.app-container .content-layer:has(.command-dock-shell-mobile) { padding-bottom:env(safe-area-inset-bottom, 0px) !important; }
-.command-tree-v2.command-dock-shell.command-dock-shell-mobile {
-    position:relative;
-    inset:auto;
-    flex:0 0 auto;
-    grid-template-columns:minmax(0,1fr);
-    grid-template-rows:auto auto auto auto;
-    width:100%;
-    max-width:100%;
-    min-height:0;
-}
-.command-dock-shell-mobile .command-dock-input-main { grid-area:1 / 1; min-height:44px; }
-.command-dock-shell-mobile .command-dock-actions { grid-area:2 / 1; margin-top:4px; }
-.command-dock-shell-mobile .command-dock-controls { grid-area:3 / 1; padding:0; }
-.command-dock-shell-mobile .command-dock-summary { grid-area:4 / 1; padding:4px 0 0; }
-.command-dock-shell-mobile .command-tree-root-actions { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); width:100%; overflow:visible; }
-.command-dock-shell-mobile .command-tree-root-actions > .command-tree-row { min-width:0; min-height:42px; padding:6px 2px; font-size:9px; letter-spacing:0; }
-.command-dock-shell-mobile .command-tree-dock-controls-inner { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:0; }
-.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-state-controls,
-.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-gear-controls { display:contents; }
-.command-dock-shell-mobile .command-tree-quick-state,
-.command-dock-shell-mobile .command-tree-quick-gear { width:100%; min-width:0; }
-.command-dock-shell-mobile .command-tree-quick-state > button,
-.command-dock-shell-mobile .command-tree-quick-gear > button { min-height:44px; padding:5px 2px; font-size:9px; line-height:12px; }
-.command-dock-shell-mobile .command-tree-quick-state > button small { font-size:9px; }
-.command-dock-shell-mobile .command-tree-dock-popup { max-width:calc(100vw - 16px); }
-.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branches { max-width:calc(100vw - 16px); overflow:auto; }
-.command-dock-shell-mobile .command-tree-you-identity { gap:4px 6px; }
-.command-dock-shell-mobile .command-tree-you-progression { font-size:9px; }
-.command-dock-shell-mobile .command-tree-quick-gear,
-.command-dock-shell-mobile .command-tree-quick-state { position:static; }
-.command-dock-shell-mobile .command-tree-gear-quick-menu {
-    top:auto;
-    left:auto;
-    right:8px;
-    display:flex;
-    align-items:stretch;
-    width:max-content;
-    max-width:calc(100vw - 16px);
-}
-.command-dock-shell-mobile .command-tree-gear-quick-details {
-    display:flex;
-    flex:0 0 calc((100vw - 24px) / 2);
-    flex-direction:column;
-    box-sizing:border-box;
-    width:calc((100vw - 24px) / 2);
-    height:min(55dvh,480px);
-    max-height:min(55dvh,480px);
-    overflow:visible;
-}
-.command-dock-shell-mobile .command-tree-gear-quick-list,
-.command-dock-shell-mobile .command-tree-gear-quick-list.is-equipment {
-    flex:0 0 calc((100vw - 24px) / 2);
-    box-sizing:border-box;
-    width:calc((100vw - 24px) / 2);
-    min-width:calc((100vw - 24px) / 2);
-    max-width:calc((100vw - 24px) / 2);
-    max-height:min(55dvh,480px);
-}
-.command-dock-shell-mobile .command-tree-gear-quick-actions,
-.command-dock-shell-mobile .command-tree-gear-quick-contents {
-    flex:1 1 0;
-    box-sizing:border-box;
-    width:100%;
-    min-width:0;
-    max-width:100%;
-    max-height:none;
-    min-height:0;
-    overflow:auto;
-}
-.command-dock-shell-mobile .command-tree-gear-quick-details:empty { display:none; }
-.command-dock-shell-mobile .command-tree-quick-options { left:0; right:0; width:100%; }
 
-/* --- Mobile Keyboard: Keep Only the Command Input Above the Keyboard --- */
-@media (max-width:1024px) {
-    .app-container.is-mobile.kb-open .command-dock-shell-mobile {
-        grid-template-rows:auto;
-    }
-    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-actions,
-    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-controls,
-    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-summary,
-    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-menu {
-        display:none !important;
-    }
-}
+

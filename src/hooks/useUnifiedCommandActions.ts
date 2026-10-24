@@ -60,7 +60,8 @@ export const useUnifiedCommandActions = (
     scope: UnifiedCommandActionScope,
     targetContext: string | null,
     communicationCommands: CommunicationCommandChoice[] = [],
-    chatCommunicationCommands: CommunicationCommandChoice[] = communicationCommands
+    chatCommunicationCommands: CommunicationCommandChoice[] = communicationCommands,
+    includeActionGroups = true
 ) => {
     const game = useGame();
     const skillsReady = usePanelDataStore(state => state.status.skills === 'ready');
@@ -156,6 +157,7 @@ export const useUnifiedCommandActions = (
     }, [communicationButtons, game.btn.buttons, learnedAbilities]);
 
     const sections = useMemo(() => {
+        if (!includeActionGroups) return [];
         const resolved = getResolvedTraitSections(categoryId, targetContext, game.inlineCategories || [])
             .filter(section => categoryId !== 'cat-exit' || activeState.hasDoor !== false || section.trait.id !== 'trait-door-actions');
         if (isSelectedGroupMember) {
@@ -191,12 +193,13 @@ export const useUnifiedCommandActions = (
             ...(stateTrait ? [{ trait: stateTrait, buttonIds: stateTrait.buttonIds }] : []),
             ...otherSections
         ];
-    }, [activeState.entityId, categoryId, game.inlineCategories, game.isSpectateMode, isSelectedGroupMember, targetContext]);
+    }, [activeState.entityId, categoryId, game.inlineCategories, game.isSpectateMode, includeActionGroups, isSelectedGroupMember, targetContext]);
     const traitButtonIds = useMemo(
         () => new Set(getButtonIdsForTraits(sections.map(section => section.trait))),
         [sections]
     );
     const actionGroups = useMemo(() => {
+        if (!includeActionGroups) return [];
         const mountButtonIds = new Set(sections
             .filter(section => section.trait.id === 'trait-mount')
             .flatMap(section => section.buttonIds));
@@ -263,7 +266,7 @@ export const useUnifiedCommandActions = (
             : groups;
         if (isHostile) return targetGroups.filter(group => HOSTILE_TRAITS.has(group.section.key));
         return isNonGroupNpc ? targetGroups.filter(group => !FRIENDLY_TRAITS.has(group.section.key)) : targetGroups;
-    }, [activeState.entityId, activeState.setId, categoryId, game.currentTerrain, game.entities, game.inlineCategories, game.roomNpcs, game.isRiding, game.isSpectateMode, game.playerPosition, isHostile, isNonGroupNpc, isSelectedGroupMember, menuButtons, scope, sections, skillsReady, targetContext, traitButtonIds, vitals.characterInfo]);
+    }, [activeState.entityId, activeState.setId, categoryId, game.currentTerrain, game.entities, game.inlineCategories, game.roomNpcs, game.isRiding, game.isSpectateMode, game.playerPosition, includeActionGroups, isHostile, isNonGroupNpc, isSelectedGroupMember, menuButtons, scope, sections, skillsReady, targetContext, traitButtonIds, vitals.characterInfo]);
 
     return { menuButtons, actionGroups, communicationActionGroup };
 };

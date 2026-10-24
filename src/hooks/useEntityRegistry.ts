@@ -111,6 +111,10 @@ export const useEntityRegistry = () => {
         };
 
         setEntities(prev => {
+            const existing = prev[id];
+            if (existing && existing.name === name && existing.noun === noun && existing.location === location
+                && existing.capabilities.length === capabilities.length
+                && existing.capabilities.every((capability, index) => capability === capabilities[index])) return prev;
             const next = { ...prev, [id]: newEntity };
             entitiesRef.current = next;
             return next;

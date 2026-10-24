@@ -1,5 +1,6 @@
 import React, { lazy, Suspense, useState, useEffect, useCallback, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
+import { UiProfiler } from './components/Utility/UiProfiler';
 import { createPortal } from 'react-dom';
 
 import './index.css';
@@ -473,6 +474,7 @@ const MudClient = () => {
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
+    <UiProfiler id="Client">
     <GameProvider>
         <MapperProvider>
             <MudClient />
@@ -480,4 +482,5 @@ root.render(
             <SpeedInsights />
         </MapperProvider>
     </GameProvider>
+    </UiProfiler>
 );

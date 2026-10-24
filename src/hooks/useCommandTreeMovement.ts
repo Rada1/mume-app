@@ -7,5 +7,6 @@ export const useCommandTreeMovement = (controller: ReturnType<typeof useCommandT
         if (controller.isHelpMode) { controller.executeHelp(command); return; }
         if (controller.game.gameState !== 'playing' || controller.game.isSpectateMode) return;
         controller.game.executeCommand(command);
+        controller.game.setCommandPreview?.(null);
     }
 });

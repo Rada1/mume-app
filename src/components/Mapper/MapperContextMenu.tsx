@@ -3,7 +3,9 @@
  * @description Right-click actions for mapped rooms and empty map locations.
  */
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Search } from 'lucide-react';
+import { useMapMenuActivation } from '../../hooks/useMapMenuActivation';
 import './MapperContextMenu.css';
 import './MapPopupSurfaces.css';
 
@@ -42,6 +44,12 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     mode = 'edit',
     isMobile = false
 }) => {
+    const activation = useMapMenuActivation(isMobile);
+    const canUseViewport = isMobile && typeof window !== 'undefined';
+    const menuHeight = mode === 'edit' ? 240 : isMobile ? 160 : 108;
+    const menuWidth = canUseViewport ? Math.min(200, window.innerWidth - 16) : 176;
+    const boundedX = canUseViewport ? Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - menuWidth - 8)) : x;
+    const boundedY = canUseViewport ? Math.min(Math.max(y, 8), Math.max(8, window.innerHeight - menuHeight - 8)) : y;
     const menu = (
     <>
         <div
@@ -54,10 +62,12 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
             className="mapper-context-menu map-popup-surface"
             role="menu"
             data-mobile={isMobile || undefined}
+            {...activation}
             style={{
-                top: `clamp(8px, ${y}px, calc(100% - ${mode === 'edit' ? 194 : isMobile ? 160 : 116}px))`,
-                left: `clamp(8px, ${x}px, calc(100% - ${isMobile ? 216 : 176}px))`,
-                maxHeight: 'calc(100% - 16px)'
+                position: isMobile ? 'fixed' : undefined,
+                top: isMobile ? `${boundedY}px` : `clamp(8px, ${y}px, calc(100% - ${menuHeight}px))`,
+                left: isMobile ? `${boundedX}px` : `clamp(8px, ${x}px, calc(100% - 176px))`,
+                maxHeight: isMobile ? 'calc(100dvh - 16px)' : 'calc(100% - 16px)'
             }}
         >
             {mode === 'edit' && (
@@ -146,5 +156,8 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     </>
     );
 
+    if (isMobile && typeof document !== 'undefined') {
+        return createPortal(menu, document.querySelector('.app-container') ?? document.body);
+    }
     return menu;
 };

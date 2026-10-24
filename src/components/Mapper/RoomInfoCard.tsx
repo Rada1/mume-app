@@ -29,7 +29,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
                     : '48px',
                 left: isMobile ? '12px' : '48px',
                 right: isMobile ? '12px' : '48px',
-                zIndex: isMobile ? 65002 : 100,
+                zIndex: isMobile ? 2147483647 : 100,
                 backgroundColor: isMobile
                     ? (isDarkMode ? 'rgba(24, 24, 27, 0.96)' : 'rgba(245, 245, 247, 0.96)')
                     : (isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)'),

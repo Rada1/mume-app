@@ -5,6 +5,8 @@
 
 // --- Logic Section ---
 import React, { useCallback, useMemo, useEffect, useRef } from 'react';
+import { withUiProfiler } from '../Utility/UiProfiler';
+import { commandLatency } from '../../utils/commandLatency';
 import { 
     MessageSquare, CloudSun, Footprints,
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
@@ -222,6 +224,7 @@ const MessageItem = React.memo(({
     };
 }) => {
     const showBlockHeaders = useSettingsStore(s => s.showBlockHeaders);
+    React.useLayoutEffect(() => commandLatency.recordCommit(msg.id), [msg.id]);
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
     const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode || s.isClassicMode);
@@ -1271,4 +1274,4 @@ const MessageLog: React.FC<MessageLogProps> = ({
     );
 };
 
-export default React.memo(MessageLog);
+export default withUiProfiler('Log', React.memo(MessageLog));

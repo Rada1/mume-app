@@ -70,13 +70,13 @@
 
 .mapper-context-menu[data-mobile="true"] {
     width: min(200px, calc(100vw - 16px));
-    z-index: 3201;
+    z-index: 2147483647;
     border-radius: 8px;
 }
 
 .mapper-context-menu-backdrop[data-mobile="true"] {
-    position: absolute;
-    z-index: 3200;
+    position: fixed;
+    z-index: 2147483646;
 }
 
 .mapper-context-menu[data-mobile="true"] .mapper-context-menu-action {

@@ -1,69 +1,42 @@
 /** @file CommandPanelV2.tsx — Minimal command-first branching menu workspace. */
 // @refresh reset
 import React from 'react';
+import { UiProfiler, withUiProfiler } from '../Utility/UiProfiler';
+import { uiPerformance } from '../../utils/uiPerformance';
 import { createPortal } from 'react-dom';
 import { Pin } from 'lucide-react';
 import { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import { useCommandTree } from '../../hooks/useCommandTree';
 import type { UnifiedCommandActionScope } from '../../hooks/useUnifiedCommandActions';
-import { CommandTreeTransferTargets } from './CommandTreeTransferTargets';
-import { isCommandTreeTransfer } from '../../utils/commandTreeTransfer';
-import { CommandTreeAccessTargets } from './CommandTreeAccessTargets';
-import { isCommandTreeAccess } from '../../utils/commandTreeAccess';
-import { CommandTreeObservationTargets } from './CommandTreeObservationTargets';
-import { isCommandTreeObservation } from '../../utils/commandTreeObservation';
-import { CommandTreeGetTargets } from './CommandTreeGetTargets';
-import { isCommandTreeGetAction } from '../../utils/commandTreeGet';
-import { CommandTreePracticeTargets } from './CommandTreePracticeTargets';
-import { isCommandTreePracticeAction } from '../../utils/commandTreePractice';
-import { CommandTreeShopTargets } from './CommandTreeShopTargets';
-import { isCommandTreeShopAction } from '../../utils/commandTreeShop';
-import { CommandTreeSections } from './CommandTreeSections';
-import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { CommandTreeAction } from './CommandTreeAction';
 import { CommandTreeOutputs } from './CommandTreeOutputs';
-import { CommandPanelViews } from './CommandPanelViews';
-import { OnlineCommandTargets } from '../Popovers/StandardMenu/OnlineCommandTargets';
 import { CommandTreeGearQuickMenu } from './CommandTreeGearQuickMenu';
 import { CommandPanelYouSummary } from './CommandPanelYouSummary';
-import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeMenuHeader } from './CommandTreeMenuHeader';
-import type { CommandActionTargetEntry } from '../../objects/commandActionTargetModel';
 import { useModeStore } from '../../stores/useModeStore';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import { CommandPanelV2Branches } from './CommandPanelV2Branches';
 import './UnifiedCommandPanel.css';
 import './CommandPanelV2.css';
+import './CommandPanelFlatDock.css';
 import './CommandDockStrip.css';
+import './CommandDockStripMobile.css';
+import './CommandDockMobileFocus.css';
+import './CommandDockMobileReadabilityMenus.css';
 import { useCommandDockPosition } from '../../hooks/useCommandDockPosition';
 import { useQuickStateMenuPosition } from '../../hooks/useQuickStateMenuPosition';
 import { useUpwardCommandBranches } from '../../hooks/useUpwardCommandBranches';
 // --- Render Section ---
-const getObjectTargetSections = (entries: CommandActionTargetEntry[]) => [
- {label:'Room Objects',entries:entries.filter(entry=>entry.group==='objects'&&entry.scope==='room')},
- {label:'Inventory',entries:entries.filter(entry=>entry.group==='inventory')},
- {label:'Worn',entries:entries.filter(entry=>entry.group==='worn')}
-].filter(section=>section.entries.length>0);
-const getCommandTargetSections = (entries: CommandActionTargetEntry[]) => {
- const sections: {label:string;entries:CommandActionTargetEntry[]}[] = [
- {label:'Room Entities',entries:entries.filter(entry=>entry.scope==='room'&&['players','npcs'].includes(entry.group)&&entry.category!=='cat-exit')},
- {label:'Room Objects',entries:entries.filter(entry=>entry.scope==='room'&&entry.group==='objects')},
- {label:'Doors',entries:entries.filter(entry=>entry.scope==='room'&&entry.category==='cat-exit'&&entry.hasDoor===true)},
- {label:'Exits',entries:entries.filter(entry=>entry.scope==='room'&&entry.category==='cat-exit'&&entry.hasDoor!==true)},
- {label:'You',entries:entries.filter(entry=>entry.scope==='self'&&entry.group!=='inventory'&&entry.group!=='worn')},
- {label:'Inventory',entries:entries.filter(entry=>entry.scope==='self'&&entry.group==='inventory')},
- {label:'Worn',entries:entries.filter(entry=>entry.scope==='self'&&entry.group==='worn')},
- {label:'Group Members',entries:entries.filter(entry=>entry.scope==='remote'||entry.group==='group')},
- {label:'Weather',entries:entries.filter(entry=>entry.group==='weather')}
- ];
- const assigned = new Set(sections.flatMap(section=>section.entries.map(entry=>entry.id)));
- const otherEntries = entries.filter(entry=>!assigned.has(entry.id));
- if (otherEntries.length) sections.push({label:'Other Targets',entries:otherEntries});
- return sections.filter(section=>section.entries.length>0);
-};
 
-export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedCommandActionScope; onClose?: () => void}) => {
- const controller = useCommandTreeController(initialScope, onClose);
+export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose}: {initialScope?: UnifiedCommandActionScope; onClose?: () => void}) => {
+ const [gearMenu, setGearMenu] = React.useState<'Inventory'|'Equipment'|null>(null);
+ // V2 builds its own command tree; the legacy action groups are only needed by gear quick menus.
+ const controller = useCommandTreeController(initialScope, onClose, gearMenu !== null);
+ const finishTree = uiPerformance.startWork('Target tree');
  const tree = useCommandTree(controller);
+ finishTree();
  const {game} = controller;
+ const isReadabilityMode = useSettingsStore(state=>state.isReadabilityMode);
  const activeView = useModeStore(state=>state.activeView);
  const spectateTarget = useModeStore(state=>state.spectateTarget);
  const viewingSpectateTarget = game.isSpectateMode && activeView === 'target';
@@ -72,11 +45,11 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   ? `spectate:${viewingSpectateTarget ? spectateTarget || '' : 'self'}`
   : `player:${summaryCharacterName}`;
  const stanceValue = ['riding','mounted'].includes((game.playerPosition || '').toLowerCase()) ? 'standing' : game.playerPosition;
- const [gearMenu, setGearMenu] = React.useState<'Inventory'|'Equipment'|null>(null);
- const [gearMenuBottom, setGearMenuBottom] = React.useState<number|null>(null);
+ const [gearMenuPosition, setGearMenuPosition] = React.useState<{right:number;bottom:number;maxWidth:number}|null>(null);
  const gearMenuButtonRef = React.useRef<HTMLElement|null>(null);
  const quickMenuPlacement = useQuickStateMenuPosition(tree.quick);
  const isMobile = game.viewport?.isMobile === true;
+ const mobileCommandFocus = Boolean(isMobile && (tree.group !== null || controller.isHelpMode));
  const [menuPinned, setMenuPinned] = React.useState(false);
  const menuPinnedRef = React.useRef(false);
  const menuDismissTimerRef = React.useRef<number|null>(null);
@@ -92,6 +65,9 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   if (tree.group !== null) tree.chooseGroup(tree.group);
   if (controller.isHelpMode) controller.toggleHelpMode();
   resetMenuPin();
+ };
+ const closeMenuAfterAction = () => {
+  if (isMobile && !isReadabilityMode && !menuPinnedRef.current) closeSubmenu();
  };
  const closeSubmenuRef = React.useRef(closeSubmenu);
  closeSubmenuRef.current = closeSubmenu;
@@ -125,16 +101,27 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
  React.useEffect(() => () => {
   if (menuDismissTimerRef.current !== null) window.clearTimeout(menuDismissTimerRef.current);
  }, []);
+ const updateGearMenuPosition = React.useCallback(() => {
+  const button = gearMenuButtonRef.current;
+  if (!button) return;
+  const rect = button.getBoundingClientRect();
+  setGearMenuPosition({
+   right:Math.max(0, window.innerWidth - rect.right),
+   bottom:Math.max(8, window.innerHeight - rect.top + 4),
+   maxWidth:Math.max(0, rect.right - 8),
+  });
+ }, []);
  const openGearMenu = (label: 'Inventory'|'Equipment', button: HTMLElement) => {
   if (tree.group !== null || controller.isHelpMode) closeSubmenu();
   gearMenuButtonRef.current = button;
-  if (isMobile) setGearMenuBottom(Math.max(8, window.innerHeight - button.getBoundingClientRect().top + 4));
+  updateGearMenuPosition();
   setGearMenu(label);
  };
- const closeGearMenu = () => {setGearMenu(null); setGearMenuBottom(null); controller.previewEntity(null);};
+ const closeGearMenu = () => {setGearMenu(null); setGearMenuPosition(null); controller.previewEntity(null);};
  const isRotatedLandscape = game.viewport?.isRotatedLandscape === true;
- const [dockSlots, setDockSlots] = React.useState<{summary:HTMLElement;controls:HTMLElement;actions:HTMLElement;menu:HTMLElement}|null>(null);
- const {position:dockPopupPosition, anchorRef:dockPopupButtonRef, update:updateDockPopupPosition} = useCommandDockPosition(isMobile, tree.group !== null, tree.group);
+ const [dockSlots, setDockSlots] = React.useState<{summary:HTMLElement;controls:HTMLElement;actions:HTMLElement;menu:HTMLElement;app:HTMLElement}|null>(null);
+ const mobileReadabilitySplit = Boolean(isMobile && isReadabilityMode && dockSlots && !isRotatedLandscape);
+ const {position:dockPopupPosition, anchorRef:dockPopupButtonRef, update:updateDockPopupPosition} = useCommandDockPosition(isMobile, tree.group !== null && !mobileCommandFocus, tree.group);
  const openQuickMenu = (label: string, button: HTMLElement) => {
   if (tree.group !== null || controller.isHelpMode) closeSubmenu();
   quickMenuPlacement.anchorRef.current = button;
@@ -146,26 +133,49 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   const controls = document.getElementById('command-dock-controls');
   const actions = document.getElementById('command-dock-actions');
   const menu = document.getElementById('command-dock-menu');
-  if (summary && controls && actions && menu) setDockSlots({summary,controls,actions,menu});
+  const app = document.querySelector<HTMLElement>('.app-container');
+  if (summary && controls && actions && menu && app) setDockSlots({summary,controls,actions,menu,app});
   else setDockSlots(null);
  }, [isMobile, isRotatedLandscape]);
- React.useEffect(() => {
-  if (!isMobile || !gearMenu) return;
-  const update = () => {
-   const button = gearMenuButtonRef.current;
-   if (button) setGearMenuBottom(Math.max(8, window.innerHeight - button.getBoundingClientRect().top + 4));
+ React.useLayoutEffect(() => {
+  if (!mobileReadabilitySplit || !dockSlots) return;
+  const {app,controls,actions,summary} = dockSlots;
+  const updateRegion = () => {
+   const controlsBottom = controls.getBoundingClientRect().bottom;
+   const summaryTop = summary.getBoundingClientRect().top;
+   app.style.setProperty('--mobile-readability-menu-top', `${Math.ceil(controlsBottom + 4)}px`);
+   app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - summaryTop + 4))}px`);
   };
-  window.addEventListener('resize', update);
+  updateRegion();
+  const observer = new ResizeObserver(updateRegion);
+  observer.observe(controls);
+  observer.observe(actions);
+  observer.observe(summary);
+  window.addEventListener('resize', updateRegion);
+  window.visualViewport?.addEventListener('resize', updateRegion);
+  window.visualViewport?.addEventListener('scroll', updateRegion);
+  return () => {
+   observer.disconnect();
+   window.removeEventListener('resize', updateRegion);
+   window.visualViewport?.removeEventListener('resize', updateRegion);
+   window.visualViewport?.removeEventListener('scroll', updateRegion);
+   app.style.removeProperty('--mobile-readability-menu-top');
+   app.style.removeProperty('--mobile-readability-menu-bottom');
+  };
+ }, [dockSlots, mobileReadabilitySplit]);
+ React.useEffect(() => {
+  if (!gearMenu) return;
+  window.addEventListener('resize', updateGearMenuPosition);
   const onScroll = (event: Event) => {
    const target = event.target;
-   if (target instanceof Element && target.contains(gearMenuButtonRef.current)) update();
+   if (!(target instanceof Element) || target.contains(gearMenuButtonRef.current)) updateGearMenuPosition();
   };
   window.addEventListener('scroll', onScroll, true);
   return () => {
-   window.removeEventListener('resize', update);
+   window.removeEventListener('resize', updateGearMenuPosition);
    window.removeEventListener('scroll', onScroll, true);
   };
- }, [gearMenu, isMobile]);
+ }, [gearMenu, updateGearMenuPosition]);
  const branchListRef = React.useRef<HTMLDivElement>(null);
  React.useLayoutEffect(() => {
   if (tree.group === null) return;
@@ -179,38 +189,24 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
   const submenu = branches[branches.length - 1];
   if (branches.length > 1 && submenu) submenu.scrollTop = 0;
  }, [tree.group, tree.command?.id, tree.command?.command]);
- useUpwardCommandBranches(branchListRef, Boolean(dockSlots && tree.group !== null));
+ useUpwardCommandBranches(branchListRef, Boolean(dockSlots && tree.group !== null && !mobileCommandFocus));
  React.useEffect(() => {
   if (isMobile || typeof window === 'undefined' || window.innerWidth < 641) return;
   const branchList = branchListRef.current;
   if (!branchList) return;
   branchList.scrollTo({left: tree.group === null ? 0 : branchList.scrollWidth, behavior: 'smooth'});
  }, [isMobile, tree.command?.id, tree.group, tree.targets.length]);
- const atShop = controller.shop.atShop ?? controller.shop.available;
- const isBashTargetCommand = Boolean(tree.command && /^bash\s+%n(?:\||\s|$)/i.test(tree.command.command.trim()));
- const isOnlinePlayerTargetCommand = Boolean(tree.command && /^(?:tell|whois)\b/i.test(tree.command.command.trim()));
- const isTellTargetCommand = Boolean(tree.command && /^tell\b/i.test(tree.command.command.trim()));
- const bashTargetSections = isBashTargetCommand ? [
-  {label:'Room Entities',emptyLabel:'No room entities available.',entries:tree.targets.filter(entry=>entry.scope==='room'&&['players','npcs'].includes(entry.group)&&entry.category!=='cat-exit')},
-  {label:'Doors',emptyLabel:'No doors available.',entries:tree.targets.filter(entry=>entry.category==='cat-exit'&&entry.hasDoor===true)}
- ] : [];
- const objectTargetSections = tree.targets.length && tree.targets.every(entry=>['objects','inventory','worn'].includes(entry.group))
-  ? getObjectTargetSections(tree.targets) : [];
- const commandTargetSections = getCommandTargetSections(tree.targets);
- const renderTarget = (entry: CommandActionTargetEntry, displayLabel = entry.id === 'command-panel-self' ? 'Self' : entry.label) => <div key={entry.id} onMouseEnter={() => entry.id === 'command-panel-self' ? controller.previewTargetContext('self') : entry.id === 'command-panel-room' ? controller.previewTargetContext('room') : controller.previewEntity(entry)} onFocus={() => entry.id === 'command-panel-self' ? controller.previewTargetContext('self') : controller.previewEntity(entry)}>
-  <CommandTreeAction targetLabel={displayLabel} targetGearRow={entry.gearRow} targetShowSlot={/^remove\b/i.test(tree.command?.command || '') && entry.group === 'worn'} controller={controller} button={tree.command!} targetState={{x:0,y:0,type:'menu',setId:entry.category,category:entry.category,context:entry.context,keyword:entry.keyword,displayName:displayLabel,entityId:entry.id,parentNoun:entry.parentNoun,hasDoor:entry.hasDoor}}/>
- </div>;
  const categoryMenu = <nav className={isMobile && !dockSlots ? 'command-tree-categories' : 'command-tree-root-actions'} aria-label="Command groups" onPointerEnter={cancelScheduledMenuClose} onPointerLeave={event=>{tree.cancelPreview();if(dockSlots||isMobile)dismissMenuOnPointerLeave(event.pointerType);}}>
   {tree.grouped.map((group,index) => <button key={group.label} className="command-tree-row" aria-expanded={tree.group === index} ref={tree.group === index ? (el => { if (el) dockPopupButtonRef.current = el; }) : undefined}
-   onPointerEnter={event => {if(event.pointerType==='touch')return;dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index);}} onFocus={event => {if(!event.currentTarget.matches(':focus-visible'))return;dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index);}}
-   onClick={event => {dockPopupButtonRef.current=event.currentTarget;updateDockPopupPosition();openCommandGroup(index,true);}}><span className="command-tree-row-label">{group.label}</span>
+   onPointerEnter={event => {if(event.pointerType==='touch')return;dockPopupButtonRef.current=event.currentTarget;if(!mobileCommandFocus)updateDockPopupPosition();openCommandGroup(index);}} onFocus={event => {if(!event.currentTarget.matches(':focus-visible'))return;dockPopupButtonRef.current=event.currentTarget;if(!mobileCommandFocus)updateDockPopupPosition();openCommandGroup(index);}}
+   onClick={event => {dockPopupButtonRef.current=event.currentTarget;if(!mobileCommandFocus)updateDockPopupPosition();openCommandGroup(index,true);}}><span className="command-tree-row-label">{group.label}</span>
    {!isMobile && <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>}</button>)}
  </nav>;
  const commandToolbar = <div className="command-tree-dock-action-bar">
   {categoryMenu}
  </div>;
- const characterSummary = <CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui.scoreLines}
-  executeCommand={game.executeCommand} scopeKey={summaryScopeKey}/>;
+ const characterSummary = <UiProfiler id="Character summary"><CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui.scoreLines}
+  executeCommand={game.executeCommand} scopeKey={summaryScopeKey}/></UiProfiler>;
  const characterControls = <div className="command-tree-dock-controls-inner">
     <nav className="command-tree-state-controls" aria-label="Quick state controls">
      {[['Mood', game.mood], ['Cast Speed', game.spellSpeed], ['Alertness', game.alertness], ['Position', stanceValue]].map(([label,value]) =>
@@ -222,78 +218,60 @@ export const CommandPanelV2 = ({initialScope, onClose}: {initialScope?: UnifiedC
      <nav className="command-tree-gear-controls" aria-label="Equipment and inventory">
       {(['Equipment','Inventory'] as const).map(label=><div key={label} className="command-tree-quick-gear" onPointerEnter={event=>{if(event.pointerType!=='touch'){const button=event.currentTarget.querySelector('button');if(button)openGearMenu(label,button);}}} onPointerLeave={event=>{if(event.pointerType!=='touch'&&gearMenu===label)closeGearMenu();}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null))closeGearMenu();}}>
        <button type="button" aria-haspopup="true" aria-expanded={gearMenu===label} onFocus={event=>{if(event.currentTarget.matches(':focus-visible'))openGearMenu(label,event.currentTarget);}} onClick={event=>gearMenu===label?closeGearMenu():openGearMenu(label,event.currentTarget)}>{label==='Equipment'?'Equipped':label}</button>
-       {gearMenu===label&&<CommandTreeGearQuickMenu kind={label} controller={controller} tree={tree} style={isMobile?{position:'fixed',left:'auto',right:8,bottom:gearMenuBottom??8,width:'max-content',maxWidth:'calc(100vw - 16px)'}:undefined}/>}
+       {gearMenu===label&&<CommandTreeGearQuickMenu kind={label} controller={controller} tree={tree} mobileReadabilitySplit={mobileReadabilitySplit} style={{position:'fixed',left:'auto',right:gearMenuPosition?.right??8,bottom:gearMenuPosition?.bottom??8,width:'max-content',maxWidth:gearMenuPosition?.maxWidth??'calc(100vw - 16px)'}}/>}
       </div>)}
      </nav>
    </div>;
- const menuHeaderInRootBranch = Boolean(dockSlots && tree.group !== null);
- const commandMenuHeader = <CommandTreeMenuHeader root={menuHeaderInRootBranch} showSkills={tree.group === 0}
+ const menuHeaderInRootBranch = Boolean(dockSlots && tree.group !== null && (!mobileCommandFocus || mobileReadabilitySplit));
+ const commandMenuHeader = !isMobile && <CommandTreeMenuHeader root={menuHeaderInRootBranch} showSkills={tree.group === 0}
    helpMode={controller.isHelpMode} pinned={menuPinned} cancelPreview={tree.cancelPreview}
-   onHelp={controller.toggleHelpMode} onPin={toggleMenuPin}/>;
- const commandMenu = <div className="command-tree-dock-popup" style={dockPopupPosition ? {
-  right:dockPopupPosition.right,
+   onHelp={controller.toggleHelpMode} onPin={toggleMenuPin} showClose={mobileCommandFocus} onClose={closeSubmenu}/>;
+ const commandMenu = <div className={`command-tree-dock-popup${mobileCommandFocus ? ' command-tree-mobile-focus-popup command-tree-v2' : ''}${mobileReadabilitySplit && mobileCommandFocus ? ' command-tree-mobile-readability-popup' : ''}`} role={mobileCommandFocus ? 'dialog' : undefined} aria-modal={mobileCommandFocus || undefined} aria-label={mobileCommandFocus ? 'Command menu' : undefined} style={!mobileCommandFocus && dockPopupPosition ? {
+  ...(dockSlots && !isMobile ? {
+   left:dockPopupPosition.left ?? 8,
+   right:'auto',
+   maxWidth:dockPopupPosition.rightMaxWidth ?? dockPopupPosition.maxWidth,
+  } : {right:dockPopupPosition.right,maxWidth:dockPopupPosition.maxWidth}),
   bottom:dockPopupPosition.bottom,
-  maxWidth:dockPopupPosition.maxWidth,
- } : undefined} onPointerEnter={cancelScheduledMenuClose} onPointerLeave={event=>dismissMenuOnPointerLeave(event.pointerType)}>
+  } : undefined} onPointerEnter={cancelScheduledMenuClose} onPointerLeave={event=>dismissMenuOnPointerLeave(event.pointerType)} onClick={event=>{
+  if (!isMobile || menuPinnedRef.current) return;
+  if (event.target instanceof Element) {
+   const menuItem = event.target.closest('[data-menu-item="true"]');
+   if (menuItem && !menuItem.hasAttribute('data-command-tree-selection')) closeMenuAfterAction();
+  }
+ }}>
   {!menuHeaderInRootBranch && commandMenuHeader}
-  <CommandPanelViews communication={controller.communication}>
-    {controller.isHelpMode && <p className="command-tree-hint">Choose an action to inspect its help.</p>}
-    <div ref={branchListRef} className="command-tree-branches" onMouseLeave={tree.cancelPreview}>
-      {!isMobile && !dockSlots && categoryMenu}
-     {tree.group !== null && <CommandTreeSections controller={controller} tree={tree} menuHeader={menuHeaderInRootBranch ? commandMenuHeader : undefined}/>}
-     {tree.command && !isCommandTreeTransfer(tree.command) && !isCommandTreeAccess(tree.command) && !isCommandTreeObservation(tree.command) && !isCommandTreeGetAction(tree.command) && !isCommandTreeShopAction(tree.command) && !isCommandTreePracticeAction(tree.command) && /%n/.test(tree.command.command) && <section className="command-tree-branch terminal-inline-popover" aria-label={`Targets for ${tree.command.label}`}>
-     <CommandTreeTargetHeader/>
-     {!isOnlinePlayerTargetCommand && (isBashTargetCommand ? bashTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-      <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
-       {section.entries.map(entry=>renderTarget(entry,entry.category==='cat-exit'?`${entry.doorName||'Door'} (${entry.label})`:entry.label))}
-       {!section.entries.length&&<p className="command-tree-section-empty">{section.emptyLabel}</p>}
-      </div>
-     </CommandTreeCollapsibleSection>) : objectTargetSections.length ? objectTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-      <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry => renderTarget(entry))}</div>
-     </CommandTreeCollapsibleSection>) : commandTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-      <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry=>renderTarget(entry))}</div>
-     </CommandTreeCollapsibleSection>))}
-     {isTellTargetCommand && Boolean(game.groupMembers?.length) && <CommandTreeCollapsibleSection label="Group">
-       <button type="button" className="command-tree-row" onClick={() => controller.communication.handleCommand('tell group')}>Group</button>
-     </CommandTreeCollapsibleSection>}
-     {isOnlinePlayerTargetCommand && <CommandTreeCollapsibleSection label="Online Players">
-      <OnlineCommandTargets hideHeader open excludedNames={isTellTargetCommand ? [game.characterName || ''] : []}
-       onPreviewTarget={controller.previewEntity}
-       onSelect={entry => {
-        if (isTellTargetCommand) {
-         controller.communication.handleCommand(`tell ${entry.context}`);
-         return;
-        }
-        controller.dismissOutputs();
-        controller.requestWhois(entry);
-       }}/>
-     </CommandTreeCollapsibleSection>}
-     {!tree.targets.length && !isBashTargetCommand && !isOnlinePlayerTargetCommand && <p>No available targets.</p>}
-    </section>}
-    {tree.command && isCommandTreeTransfer(tree.command) && <CommandTreeTransferTargets key={tree.command.id} controller={controller} tree={tree} command={tree.command}/>}
-    {tree.command && isCommandTreeGetAction(tree.command) && <CommandTreeGetTargets key={tree.command.id} controller={controller} tree={tree} button={tree.command} targets={tree.targets}/>}
-    {tree.command && isCommandTreeAccess(tree.command) && <CommandTreeAccessTargets controller={controller} button={tree.command} targets={tree.targets}/>}
-    {tree.command && isCommandTreeObservation(tree.command) && <CommandTreeObservationTargets controller={controller} button={tree.command} targets={tree.targets}/>}
-    {tree.command && isCommandTreePracticeAction(tree.command) && <CommandTreePracticeTargets controller={controller}/>}
-    {tree.command && atShop && isCommandTreeShopAction(tree.command) && <CommandTreeShopTargets controller={controller} command={tree.command}/>}
-    </div>
-  </CommandPanelViews>
+  {mobileCommandFocus && !mobileReadabilitySplit && categoryMenu}
+  <UiProfiler id="Menu branches"><CommandPanelV2Branches controller={controller} tree={tree} branchListRef={branchListRef} isMobile={isMobile}
+   hasDockSlots={Boolean(dockSlots)} mobileReadabilitySplit={mobileReadabilitySplit} menuHeaderInRootBranch={menuHeaderInRootBranch}
+   commandMenuHeader={commandMenuHeader} categoryMenu={categoryMenu} onCommandExecuted={closeMenuAfterAction}/></UiProfiler>
  </div>;
+ React.useLayoutEffect(() => {
+  if (!mobileCommandFocus || mobileReadabilitySplit) return;
+  const branchList = branchListRef.current;
+  const branches = branchList?.querySelectorAll<HTMLElement>(':scope > .command-tree-branch');
+  const activeBranch = branches?.[branches.length - 1];
+  if (activeBranch && typeof activeBranch.scrollIntoView === 'function') {
+   activeBranch.scrollIntoView({block:'nearest',inline:tree.command ? 'end' : 'start',behavior:'smooth'});
+  }
+ }, [mobileCommandFocus, mobileReadabilitySplit, tree.command?.id, tree.command?.command, tree.targets.length]);
  if (dockSlots) return <>
   {createPortal(characterSummary, dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
-  {(tree.group !== null || controller.isHelpMode) && createPortal(commandMenu, dockSlots.menu)}
-  <span className="command-tree-portal-host" aria-hidden="true" /><CommandTreeOutputs controller={controller}/>
+  {(tree.group !== null || controller.isHelpMode) && createPortal(commandMenu, mobileCommandFocus ? dockSlots.app : dockSlots.menu)}
+  <span className="command-tree-portal-host" aria-hidden="true" /><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </>;
  return <aside className="command-guide-panel unified-command-panel command-tree-v2" aria-label="Command tree">
-  <header className="command-tree-header"><span className="command-tree-header-title">COMMANDS</span><span className="command-tree-header-spacer" aria-hidden="true" />
+  {!isMobile && <header className="command-tree-header"><span className="command-tree-header-title">COMMANDS</span><span className="command-tree-header-spacer" aria-hidden="true" />
    <button onClick={controller.toggleHelpMode} aria-pressed={controller.isHelpMode}>Help</button>
    <button type="button" aria-label={menuPinned?'Unpin command menu':'Pin command menu'} title={menuPinned?'Unpin command menu':'Pin command menu'} aria-pressed={menuPinned} onClick={toggleMenuPin}><Pin size={14} fill={menuPinned?'currentColor':'none'}/></button>
-  </header>
-  {isMobile && <div className="command-tree-category-bar">{categoryMenu}</div>}
+  </header>}
+  {isMobile && !mobileCommandFocus && <div className="command-tree-category-bar">{categoryMenu}</div>}
   <div className="command-tree-flat-layout">
    <section className="command-tree-character-dock" aria-label="Character controls">{characterSummary}{characterControls}</section>
-   {commandMenu}
+   {mobileCommandFocus && typeof document !== 'undefined'
+    ? createPortal(commandMenu, document.querySelector<HTMLElement>('.app-container') || document.body)
+    : commandMenu}
   </div>
-  <CommandTreeOutputs controller={controller}/>
+  <UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </aside>;
-};
+});

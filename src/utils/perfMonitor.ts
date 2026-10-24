@@ -8,6 +8,10 @@
  * early-returns. The PerfHUD flips `enabled` on/off with its visibility.
  */
 
+import { uiPerformance } from './uiPerformance';
+import { commandLatency } from './commandLatency';
+
+// --- Logic Section ---
 interface SaveStat {
     ms: number;
     bytes: number;
@@ -35,6 +39,8 @@ class PerfMonitor {
     set enabled(value: boolean) {
         if (this.active === value) return;
         this.active = value;
+        uiPerformance.enabled = value;
+        commandLatency.enabled = value;
         if (value) this.startLongTaskObserver();
         else this.stopLongTaskObserver();
     }
@@ -73,6 +79,12 @@ class PerfMonitor {
     }
     private parserWorkerTimes: number[] = [];
     private parserSyncTimes: number[] = [];
+    private lineHandlingTimes: number[] = [];
+    recordLineHandling(ms: number) {
+        if (!this.enabled) return;
+        this.lineHandlingTimes.push(ms);
+        if (this.lineHandlingTimes.length > MAX_SAMPLES) this.lineHandlingTimes.shift();
+    }
 
     private startLongTaskObserver(): void {
         if (typeof PerformanceObserver === 'undefined' || this.longTaskObserver) return;
@@ -171,10 +183,21 @@ class PerfMonitor {
     }
 
     resetPeaks() {
+        uiPerformance.reset();
+        commandLatency.reset();
         this.peakDrawMs = 0;
         this.peakFullSaveMs = 0;
         this.peakRebuildMs = 0;
         this.peakRebuild = null;
+        this.commandSendTimes = [];
+        this.textQueueTimes = [];
+        this.textProcessingTimes = [];
+        this.parserWorkerTimes = [];
+        this.parserSyncTimes = [];
+        this.lineHandlingTimes = [];
+        this.longTasks = [];
+        this.drawTimes = [];
+        this.frameIntervals = [];
     }
 
     getSnapshot() {
@@ -203,6 +226,8 @@ class PerfMonitor {
         const mem = (performance as any).memory;
 
         return {
+            ui: uiPerformance.getSnapshot(),
+            latency: commandLatency.getSnapshot(),
             fps: this.frameStamps.length,                 // rendered frames in last 1s
             rebuildsPerSec: this.rebuildStamps.length,    // cache rebuilds in last 1s
             rebuildReasons: reasonSummary,                // why rebuilds fired (last 1s)
@@ -220,6 +245,8 @@ class PerfMonitor {
             parserWorkerMaxMs: max(this.parserWorkerTimes),
             parserSyncAvgMs: avg(this.parserSyncTimes),
             parserSyncMaxMs: max(this.parserSyncTimes),
+            lineHandlingP95Ms: p95(this.lineHandlingTimes),
+            lineHandlingMaxMs: max(this.lineHandlingTimes),
             intervalAvgMs: avg(this.frameIntervals),
             intervalMaxMs: max(this.frameIntervals),       // longest gap = worst jank
             longTasks10s: this.longTasks.length,

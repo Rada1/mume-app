@@ -2,7 +2,7 @@
 import React from 'react';
 
 // --- Render Section ---
-export const CommandTreeTargetHeader = () =>
-    <header className="command-tree-header command-tree-target-header" aria-label="Command targets">
-        <span className="command-tree-header-title">TARGETS</span>
+export const CommandTreeTargetHeader = ({title = 'TARGETS'}: {title?: string} = {}) =>
+    <header className="command-tree-header command-tree-target-header" aria-label={title}>
+        <span className="command-tree-header-title">{title}</span>
     </header>;

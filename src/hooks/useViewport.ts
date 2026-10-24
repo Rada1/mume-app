@@ -4,20 +4,7 @@
  */
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import { clampLogFontSize, getMinimumLogFontSize, getMobilePortraitFontBias } from '../utils/logFontSizing';
-
-// --- Constants ---
-
-const DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX = 16;
-
-// --- Helpers ---
-
-const readHorizontalPadding = (element: HTMLElement) => {
-    const style = window.getComputedStyle(element);
-    const left = parseFloat(style.paddingLeft) || 0;
-    const right = parseFloat(style.paddingRight) || 0;
-    return left + right;
-};
+import { useTerminalLayout } from './useTerminalLayout';
 
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
@@ -29,8 +16,8 @@ export function useViewport(
 ) {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
-    const [columns, setColumns] = useState(80);
-    const [rows, setRows] = useState(24);
+
+
 
     // Scroll refs
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -130,7 +117,7 @@ export function useViewport(
         const v = saved ? parseFloat(saved) : 1.0;
         return isNaN(v) ? 1.0 : Math.min(2.5, Math.max(0.5, v));
     });
-    const [logFontSizePx, setLogFontSizePx] = useState(16);
+
 
     const setLogFontSizeAndPersist = useCallback((v: number | ((prev: number) => number)) => {
         setLogFontSize(prev => {
@@ -197,112 +184,10 @@ export function useViewport(
         };
     }, [isMobile]);
 
-    // --- Dedicated Precision Layout Engine ---
-    useEffect(() => {
-        const updateLayout = () => {
-            // Measure the inner scroll element — its clientWidth already excludes the scrollbar.
-            const messageLog = document.querySelector('.message-log') as HTMLElement | null;
-            const logContainer = document.querySelector('.message-log-container') as HTMLElement | null;
-            const accountExperience = isMobile
-                ? document.querySelector('.mobile-account-experience') as HTMLElement | null
-                : null;
-            const isAccountSurface = !messageLog && Boolean(accountExperience);
-            const measurementElement = messageLog ?? accountExperience;
-            const measurementContainer = logContainer ?? accountExperience;
-            if (!measurementElement || !measurementContainer) return;
-
-            const width = measurementElement.clientWidth; // excludes scrollbar when measuring the log
-            const height = measurementContainer.clientHeight;
-            if (width === 0 || height === 0) return;
-
-            // --- DOM-based character width measurement ---
-            const span = document.createElement('span');
-            span.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;' +
-                `font-family:${fontFamily},monospace;font-size:100px;pointer-events:none;`;
-            span.innerText = 'W'.repeat(100); 
-            document.body.appendChild(span);
-            const charWidthRatio = span.getBoundingClientRect().width / (100 * 100);
-            document.body.removeChild(span);
-
-            // baseline cols needed for game content
-            const baseCols = 80;
-            const timestampWidth = messageLog && isTimestampEnabled ? 12 : 0;
-            const targetCols = baseCols + timestampWidth;
-
-            const totalPadding = readHorizontalPadding(measurementElement);
-
-            // Sub-pixel buffer: use a small buffer to prevent rounding-induced wrapping across different browsers.
-            // Mobile portrait targets "barely fits 80 cols" so we skip the buffer there.
-            const safetyBuffer = (isMobile && !isLandscape) ? 0 : 2;
-
-            if (!isMobile) {
-                // Let the log width be driven by --desktop-log-width without max-width overrides
-            } else {
-                document.documentElement.style.setProperty('--message-log-max-width', 'none');
-            }
-
-            const usableWidth = Math.max(0, width - totalPadding - safetyBuffer); 
-
-            let calculatedFontSize = usableWidth / (targetCols * charWidthRatio);
-            if (!isMobile) {
-                calculatedFontSize = Math.min(DESKTOP_MAX_AUTO_LOG_FONT_SIZE_PX, calculatedFontSize);
-            }
-
-            // Apply user zoom multiplier
-            calculatedFontSize *= logFontSize;
-
-            // Safety clamps: 
-            // On mobile portrait, we allow it to go down to 6px to satisfy the "fit 80" requirement.
-            // On desktop/landscape, we now allow it to shrink further (down to 10px) to better honor 
-            // the 80-column requirement on smaller windows/split-screens, while still preventing illegibility.
-            calculatedFontSize += getMobilePortraitFontBias(isMobile, isLandscape);
-            const minSize = getMinimumLogFontSize(isMobile, isLandscape);
-            const safeSize = clampLogFontSize(calculatedFontSize, minSize);
-            document.documentElement.style.setProperty('--dynamic-log-size', `${safeSize}px`);
-            setLogFontSizePx(safeSize);
-
-            // The mobile account screens replace the log entirely. Keep their terminal
-            // prompt text on the same responsive font scale without changing MUD rows.
-            if (isAccountSurface) return;
-
-            // Derive final grid metrics for the game server
-            const finalCharWidth = charWidthRatio * safeSize;
-            const finalLineHeight = safeSize * 1.1;
-
-            // Use a 0.1 buffer to handle floating point precision
-            const actualCols = Math.floor((usableWidth / finalCharWidth) + 0.1);
-            const actualRows = Math.floor((height / finalLineHeight) + 0.1);
-
-            setColumns(actualCols);
-            setRows(actualRows);
-            // console.log(`[Layout] mobile=${isMobile} width=${width} pad=${totalPadding} target=${targetCols} font=${safeSize.toFixed(1)}px → ${actualCols}x${actualRows} (ratio=${charWidthRatio.toFixed(3)})`);
-
-        };
-
-        const timer = setTimeout(updateLayout, 10);
-        const timer2 = setTimeout(updateLayout, 250); // Final settlement
-
-        // Re-measure after web fonts finish loading (Space Mono may not be ready at mount)
-        document.fonts.ready.then(updateLayout);
-
-        // Re-measure if the container resizes (drawer opens/closes, orientation change, etc.)
-        const layoutRoot = document.querySelector('.desktop-center-column');
-        const container = document.querySelector('.message-log-container');
-        let ro: ResizeObserver | null = null;
-        if (layoutRoot || container) {
-            ro = new ResizeObserver(updateLayout);
-            ro.observe(layoutRoot ?? container!);
-        }
-        const mutationObserver = layoutRoot ? new MutationObserver(updateLayout) : null;
-        mutationObserver?.observe(layoutRoot!, { childList: true });
-
-        return () => {
-            clearTimeout(timer);
-            clearTimeout(timer2);
-            ro?.disconnect();
-            mutationObserver?.disconnect();
-        };
-    }, [isMobile, isLandscape, logFontSize, windowWidth, fontFamily, isTimestampEnabled, isNewbieMode]);
+    // --- Terminal Layout ---
+    const {columns, rows, logFontSizePx} = useTerminalLayout({
+        isMobile, isLandscape, logFontSize, windowWidth, fontFamily, isTimestampEnabled, isNewbieMode
+    });
 
     const updateHeight = useCallback(() => {
         const viewport = window.visualViewport;

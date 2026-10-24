@@ -1,4 +1,5 @@
 import { useCallback, useRef, useEffect, useMemo, useState } from 'react';
+import { commandLatency } from '../utils/commandLatency';
 import { MessageType, Message } from '../types';
 import { useMessageStore } from '../stores/useMessageStore';
 import { useSettingsStore } from '../stores/useSettingsStore';
@@ -925,6 +926,7 @@ export function useMessageLog(
             }
             if (mid) addedMidSetRef.current.add(mid);
             messageBufferRef.current.push(msg);
+            if (!isSystem && !msg.isSnoop && !msg.isEmpty) commandLatency.recordOutput(msg.id);
             observeRoomLine(msg);
 
             // One commit per paint keeps a burst of socket chunks from repainting

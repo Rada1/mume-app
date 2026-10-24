@@ -1,5 +1,6 @@
 /** @file useCommandTreeController.ts — Shared command execution and capture engines for the V2 tree. */
 import React from 'react';
+import { uiPerformance } from '../utils/uiPerformance';
 import { useGame, useUI, useVitals } from '../context/GameContext';
 import { useCommandPanelStore } from '../stores/useCommandPanelStore';
 import { useUnifiedCommandActions, type UnifiedCommandActionScope } from './useUnifiedCommandActions';
@@ -16,7 +17,8 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 import { applyTacticalCommandPrefix, useTacticalCommandPrefixStore } from '../stores/useTacticalCommandPrefixStore';
 import type { CustomButton } from '../types';
 // --- Logic Section ---
-export const useCommandTreeController = (initialScope: UnifiedCommandActionScope = "room", onClose?: () => void) => {
+export const useCommandTreeController = (initialScope: UnifiedCommandActionScope = "room", onClose?: () => void, includeActionGroups = true) => {
+    const finishController = uiPerformance.startWork('Controller');
     const game = useGame();
     const roomLabel = stripAnsiCodes(game.roomName) || 'Room';
     const settings = useSettingsStore(useShallow(state => ({
@@ -44,6 +46,7 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
     React.useEffect(() => {
         setCommandColumnOpen(true);
     }, [openRequest]);
+    const finishContext = uiPerformance.startWork('Target context');
     const {
         activeScope,
         entries,
@@ -63,15 +66,20 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         contextColor,
         setPanelOpen
     });
+    finishContext();
+    const finishChat = uiPerformance.startWork('Chat model');
     const communication = useCommandPanelChat(activeState);
+    finishChat();
     React.useEffect(() => {
         if (!communication.pendingRecipientCommand) return;
         setCommandColumnOpen(true);
         setTargetColumnOpen(true);
     }, [communication.pendingRecipientCommand]);
+    const finishShop = uiPerformance.startWork('Shop model');
     const shop = useCommandShop(activeState, true, () => {
         setCommandColumnOpen(true);
     });
+    finishShop();
     React.useEffect(() => {
         if (!shopOpenRequest) return;
         setCommandColumnOpen(true);
@@ -79,8 +87,10 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         if (!shop.browsing) shop.browse();
         else shop.refreshBalance();
     }, [selectContext, shop.browse, shop.browsing, shop.refreshBalance, shopOpenRequest]);
+    const finishPractice = uiPerformance.startWork('Practice model');
     const practice = useCommandPractice(activeState, !shop.outputVisible,
         () => { setCommandColumnOpen(true); shop.setOutputOpen(false); });
+    finishPractice();
     React.useEffect(() => {
         if (!practiceOpenRequest) return;
         setCommandColumnOpen(true);
@@ -91,7 +101,9 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
     const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
     const { isHelpMode, toggleHelpMode, executeHelp } = useCommandHelpMode({ dismissOutputs, requestHelp });
     const targetContext = activeState.context || null;
-    const { menuButtons, actionGroups, communicationActionGroup } = useUnifiedCommandActions(activeState, activeScope, targetContext, communication.commands, communication.chatCommands);
+    const finishActions = uiPerformance.startWork('Action catalog');
+    const { menuButtons, actionGroups, communicationActionGroup } = useUnifiedCommandActions(activeState, activeScope, targetContext, communication.commands, communication.chatCommands, includeActionGroups);
+    finishActions();
     const visibleActionGroups = isChatCommandsOpen
         ? (communicationActionGroup.buttons.length ? [communicationActionGroup] : [])
         : actionGroups;
@@ -162,5 +174,6 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         else closePanel();
     };
 const treeButtons = React.useMemo(() => [...menuButtons, ...communicationActionGroup.buttons], [menuButtons, communicationActionGroup.buttons]);
+finishController();
 return { shopOpenRequest, practiceOpenRequest, previewEntity, previewTargetContext, game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, actionGroups, menuButtons: treeButtons };
 };

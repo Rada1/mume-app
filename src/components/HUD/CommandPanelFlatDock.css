@@ -1,0 +1,39 @@
+/** @file CommandPanelFlatDock.css — Flattened full-width command dock layout and responsive adapters. */
+
+/* --- Flattened Full-Width Command Dock --- */
+.command-tree-flat-layout { display:flex; flex-direction:column-reverse; align-items:flex-end; gap:6px; }
+.command-tree-character-dock { display:flex; flex-direction:column; align-items:flex-end; width:min(540px,calc(100dvw - 24px)); flex:0 0 auto; }
+@media (min-width:641px) {
+    .app-container .docked-panel.command-docked-panel:has(.command-tree-v2) {
+        top:auto !important;
+        right:8px !important;
+        bottom:calc(env(safe-area-inset-bottom, 0px) + 4px) !important;
+        left:8px !important;
+        width:auto !important;
+        height:auto !important;
+        max-width:none !important;
+        max-height:calc(100dvh - env(safe-area-inset-top, 0px) - 28px) !important;
+        align-items:stretch;
+        justify-content:flex-end;
+    }
+    .app-container .command-docked-panel .command-tree-v2 {
+        flex:1 1 auto;
+        align-items:stretch;
+        width:100%;
+        min-width:0;
+        max-width:100%;
+        max-height:calc(100dvh - env(safe-area-inset-top, 0px) - 28px);
+    }
+    .command-tree-v2 .command-tree-header { align-self:flex-end; }
+    .command-tree-v2 .command-tree-flat-layout { flex-direction:row; align-items:flex-end; gap:6px; width:100%; max-width:100%; }
+    .command-tree-v2 .command-tree-character-dock { flex:0 0 min(540px,calc(100dvw - 270px)); width:min(540px,calc(100dvw - 270px)); }
+    .command-tree-v2 .command-tree-you-summary,
+    .command-tree-v2 .command-tree-state-controls,
+    .command-tree-v2 .command-tree-input-controls { width:100%; }
+    .command-tree-v2 .unified-command-workspace { flex:1 1 0; width:0; min-width:0; max-width:none; align-self:flex-end; }
+    .command-tree-v2 .command-tree-branches { flex:1 1 auto; flex-direction:row; width:100%; min-width:0; max-width:100%; overflow-x:auto; overflow-y:hidden; }
+    .command-tree-v2 .command-tree-branch { max-height:min(55dvh,calc(100dvh - 180px)); }
+}
+@media (min-width:641px) and (max-width:800px) {
+    .command-tree-v2 .command-tree-gear-controls { flex-basis:140px; }
+}

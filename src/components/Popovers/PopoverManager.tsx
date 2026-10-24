@@ -127,10 +127,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [parentPopoverState]);
 
     const popoverState = localState;
-    // Inline entity menus are represented by the unified command panel in mobile readability mode.
-    const isReadabilityMobileInlineMenu = isMobile && isReadabilityMode && !!popoverState?.entityId &&
-        (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
     const isUnifiedDesktopMenu = !isMobile && !!popoverState?.entityId &&
+        (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
+    const isMobileCommandPanelMenu = isMobile && !!popoverState?.entityId && !popoverState.sourceRect &&
         (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial';
     useLayoutEffect(() => {
         document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
@@ -156,7 +155,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     }, [popoverState?.entityId]);
 
     useLayoutEffect(() => {
-        if (popoverState && !isReadabilityMobileInlineMenu && popoverState.type !== 'help-card' && popoverRef.current) {
+        if (popoverState && !isMobileCommandPanelMenu && popoverState.type !== 'help-card' && popoverRef.current) {
             const el = popoverRef.current;
 
             const positionPopover = () => {
@@ -245,13 +244,13 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             };
         }
         return undefined;
-    }, [popoverState, popoverRef, isReadabilityMobileInlineMenu]);
+    }, [popoverState, popoverRef, isMobileCommandPanelMenu]);
 
     const lastHoveredIndex = React.useRef<number | null>(null);
     const scrollIntervalRef = React.useRef<number | null>(null);
 
     React.useEffect(() => {
-        if (!popoverState || isUnifiedDesktopMenu || isReadabilityMobileInlineMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
+        if (!popoverState || isUnifiedDesktopMenu || isMobileCommandPanelMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
         const handlePointerMove = (e: PointerEvent) => {
             // Touch pointers need native vertical panning so mobile users can scroll menus.
@@ -387,9 +386,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             // Clean up any persistent highlights from log items
             document.querySelectorAll('.inline-btn.menu-active').forEach(el => el.classList.remove('menu-active'));
         };
-    }, [popoverState, isUnifiedDesktopMenu, isReadabilityMobileInlineMenu, triggerHaptic, setPopoverState]);
+    }, [popoverState, isUnifiedDesktopMenu, isMobileCommandPanelMenu, triggerHaptic, setPopoverState]);
 
-    if (!popoverState || isUnifiedDesktopMenu || isReadabilityMobileInlineMenu) return null;
+    if (!popoverState || isUnifiedDesktopMenu || isMobileCommandPanelMenu) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     const detectedCatId = normalizeInlineCategoryId(popoverState.category || popoverState.setId);
@@ -500,7 +499,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
             position: 'fixed',
             left: popoverState.x,
             top: popoverState.sourceRect ? undefined : popoverState.y,
-            zIndex: 70000,
+            zIndex: isMobile && isReadabilityMode ? 2147483647 : 70000,
             '--accent': themeColor || 'var(--set-accent, var(--accent))'
         } as any}>
             {(!popoverState.type || popoverState.type === 'menu') && popoverState.entityId && (

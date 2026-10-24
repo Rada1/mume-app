@@ -64,7 +64,7 @@ export const useUnifiedCommandContext = ({
         const handlePointerMove = (event: PointerEvent) => {
             const target = event.target;
             const isInsideCascade = target instanceof Element
-                && Boolean(target.closest('.unified-command-panel, .command-action-you-popover, .command-mount-popover'));
+                && Boolean(target.closest('.unified-command-panel, .command-action-you-popover, .command-mount-popover, .command-tree-gear-quick-menu, .command-tree-quick-options, .command-tree-dock-popup'));
             if (isInsideCascade) {
                 if (clearTimer !== null) window.clearTimeout(clearTimer);
                 clearTimer = null;

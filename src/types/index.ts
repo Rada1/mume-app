@@ -4,6 +4,8 @@
  */
 
 export * from './game';
+export * from './performance';
+export * from './viewport';
 export * from './gmcp';
 export * from './ui';
 export * from './entities';

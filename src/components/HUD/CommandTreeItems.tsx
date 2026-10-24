@@ -3,6 +3,7 @@ import React from 'react';
 import type { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import type { useCommandTree } from '../../hooks/useCommandTree';
 import { useCommandTreeItems } from '../../hooks/useCommandTreeItems';
+import { getCommandActionTargetDisplayLabel } from '../../utils/commandTreeTargetSections';
 import { GearItemLabel } from '../GearItemLabel';
 import { PanelDataEmpty } from './PanelDataEmpty';
 import { CommandTreeAction } from './CommandTreeAction';
@@ -18,7 +19,8 @@ export const CommandTreeItems = ({controller, tree}: {controller: ReturnType<typ
    {items.objectSections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label} ariaLabel={`${section.label} objects`}>
     {section.ready ? section.objects.map(entry => <button key={entry.id} className="command-tree-object" aria-expanded={items.selected?.id === entry.id}
      onMouseEnter={() => tree.defer(() => items.chooseObject(entry))} onFocus={() => items.chooseObject(entry)} onClick={() => items.chooseObject(entry)}>
-     <span>{entry.gearRow ? <GearItemLabel row={entry.gearRow} category={entry.category} showSlot={section.label === 'Equipment'}/> : entry.label}</span><span aria-hidden="true">&#8249;</span>
+     <span>{section.label === 'Room' ? getCommandActionTargetDisplayLabel(entry)
+      : entry.gearRow ? <GearItemLabel row={entry.gearRow} category={entry.category} showSlot={section.label === 'Equipment'}/> : entry.label}</span><span aria-hidden="true">&#8249;</span>
     </button>) : <PanelDataEmpty kind={section.kind} emptyLabel="No items here."/>}
     {section.ready && !section.objects.length && <p>No items here.</p>}
    </CommandTreeCollapsibleSection>)}

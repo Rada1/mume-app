@@ -18,6 +18,7 @@ import {
     type MapSwipeWheelPosition
 } from './mapSwipeWheelUtils';
 import { applyTacticalCommandPrefix } from '../../stores/useTacticalCommandPrefixStore';
+import { getMapContextMenuPosition } from '../../utils/mapContextMenuPosition';
 
 const MAP_SWIPE_REPEAT_COMMANDS = new Set(['north', 'south', 'east', 'west', 'up', 'down']);
 
@@ -1093,16 +1094,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                                     return;
                                 }
                                 const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
-                                const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
-                                const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
-                                const menuWidth = 176;
-                                const menuHeight = depsRef.current.mode === 'edit' ? 194 : 108;
-                                const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
-                                const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+                                const isMobile = depsRef.current.isMobile;
+                                const viewportBounds = {left: 0, top: 0, width: window.innerWidth, height: window.innerHeight};
+                                const bounds = isMobile ? viewportBounds : containerRect || viewportBounds;
+                                const menuWidth = isMobile ? Math.min(200, window.innerWidth - 16) : 176;
+                                const menuHeight = depsRef.current.mode === 'edit' ? 240 : isMobile ? 160 : 108;
+                                const position = getMapContextMenuPosition({clientX: e.clientX, clientY: e.clientY, bounds, menuWidth, menuHeight});
 
                                 depsRef.current.setContextMenu({
-                                    x: Math.min(Math.max(localX, 8), maxX),
-                                    y: Math.min(Math.max(localY, 8), maxY),
+                                    ...position,
                                     wx: Math.round(world.x / GRID_SIZE),
                                     wy: Math.round(world.y / GRID_SIZE),
                                     roomId: clickedRoomId
@@ -1114,17 +1114,17 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         }
 
                         if (clickedRoomId && depsRef.current.isMobile && mode === 'play') {
-                            const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
-                            const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
-                            const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
-                            const menuWidth = Math.min(200, (containerRect?.width || window.innerWidth) - 16);
-                            const menuHeight = 112;
-                            const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
-                            const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+                            const menuWidth = Math.min(200, window.innerWidth - 16);
+                            const position = getMapContextMenuPosition({
+                                clientX: e.clientX,
+                                clientY: e.clientY,
+                                bounds: {left: 0, top: 0, width: window.innerWidth, height: window.innerHeight},
+                                menuWidth,
+                                menuHeight: 160
+                            });
 
                             depsRef.current.setContextMenu({
-                                x: Math.min(Math.max(localX, 8), maxX),
-                                y: Math.min(Math.max(localY, 8), maxY),
+                                ...position,
                                 wx: Math.round(world.x / GRID_SIZE),
                                 wy: Math.round(world.y / GRID_SIZE),
                                 roomId: clickedRoomId
@@ -1356,16 +1356,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             // Empty-space menus also expose the saved marker manager in play mode.
 
             const containerRect = depsRef.current.canvasRef.current?.parentElement?.getBoundingClientRect();
-            const localX = containerRect ? e.clientX - containerRect.left : e.clientX;
-            const localY = containerRect ? e.clientY - containerRect.top : e.clientY;
-            const menuWidth = 176;
-            const menuHeight = depsRef.current.mode === 'edit' ? 194 : 108;
-            const maxX = Math.max(8, (containerRect?.width || window.innerWidth) - menuWidth - 8);
-            const maxY = Math.max(8, (containerRect?.height || window.innerHeight) - menuHeight - 8);
+            const isMobile = depsRef.current.isMobile;
+            const viewportBounds = {left: 0, top: 0, width: window.innerWidth, height: window.innerHeight};
+            const bounds = isMobile ? viewportBounds : containerRect || viewportBounds;
+            const menuWidth = isMobile ? Math.min(200, window.innerWidth - 16) : 176;
+            const menuHeight = depsRef.current.mode === 'edit' ? 240 : isMobile ? 160 : 108;
+            const position = getMapContextMenuPosition({clientX: e.clientX, clientY: e.clientY, bounds, menuWidth, menuHeight});
 
             depsRef.current.setContextMenu({
-                x: Math.min(Math.max(localX, 8), maxX),
-                y: Math.min(Math.max(localY, 8), maxY),
+                ...position,
                 wx: Math.round(world.x / GRID_SIZE),
                 wy: Math.round(world.y / GRID_SIZE),
                 roomId: clickedRoomId,

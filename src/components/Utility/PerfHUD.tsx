@@ -1,8 +1,10 @@
+/** @file PerfHUD.tsx — Live client performance measurements and reset controls. */
 import React, { useState, useEffect } from 'react';
 import { perfMonitor } from '../../utils/perfMonitor';
 import { useMessageStore } from '../../stores/useMessageStore';
 import { getFastMapMetrics } from '../Mapper/performance/fastMapTelemetry';
 
+// --- Logic Section ---
 const PERF_FLAG = 'mume_perf_hud';
 
 const fmtMs = (ms: number | null | undefined) =>
@@ -61,12 +63,12 @@ export const PerfHUD: React.FC = () => {
     return (
         <div data-testid="performance-hud" style={{
             position: 'fixed', top: 8, left: 8, zIndex: 100000000,
-            background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)',
+            background: '#0b0d10',
             border: '1px solid rgba(125,211,252,0.4)', borderRadius: 8,
-            padding: '8px 10px', minWidth: 230,
+            padding: '8px 10px', minWidth: 230, maxWidth: 'calc(100vw - 16px)', boxSizing: 'border-box',
             fontFamily: "'JetBrains Mono','Roboto Mono',monospace", fontSize: '0.68rem',
             color: '#fff', userSelect: 'none', pointerEvents: 'auto',
-            display: 'flex', flexDirection: 'column', gap: 3,
+            display: 'flex', flexDirection: 'column', gap: 3, maxHeight: '80dvh', overflowY: 'auto',
         }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
                 <strong style={{ letterSpacing: '0.08em', color: '#7dd3fc' }}>PERF</strong>
@@ -76,6 +78,24 @@ export const PerfHUD: React.FC = () => {
                 </div>
             </div>
 
+            <Row label="isolated replies / overlaps skipped" value={`${snap.latency.count} / ${snap.latency.skipped}`}/>
+            <Row label="last press → send" value={fmtMs(snap.latency.last?.pressToSendMs)}/>
+            <Row label="last send → first text" value={fmtMs(snap.latency.last?.sendToTextMs)}/>
+            <Row label="last text → log commit" value={fmtMs(snap.latency.last?.textToCommitMs)}/>
+            <Row label="last press → log commit" value={fmtMs(snap.latency.last?.pressToCommitMs)}/>
+            {snap.ui.work.map(work => <Row key={work.name} label={`JS ${work.name} p95/max`}
+                value={`${fmtMs(work.p95Ms)} / ${fmtMs(work.maxMs)}`} warn={work.maxMs > 16}/>)}
+            {snap.ui.renders.length ? snap.ui.renders.map(render => <Row key={render.name}
+                label={`React ${render.name} p95/max`}
+                value={`${fmtMs(render.p95Ms)} / ${fmtMs(render.maxMs)}`} warn={render.maxMs > 16}/>)
+                : <Row label="React timings" value="waiting (dev/profiling build)"/>}
+            {snap.ui.frameTimingAvailable ? <>
+                <Row label="slow browser frames/max" value={`${snap.ui.frameCount} / ${fmtMs(snap.ui.longestFrameMs)}`} warn={snap.ui.longestFrameMs > 100}/>
+                <Row label="frame script work max" value={fmtMs(snap.ui.scriptWorkMaxMs)} warn={snap.ui.scriptWorkMaxMs > 50}/>
+                <Row label="style/layout/render tail max" value={fmtMs(snap.ui.renderingTailMaxMs)} warn={snap.ui.renderingTailMaxMs > 16}/>
+                <Row label="forced layout in scripts max" value={fmtMs(snap.ui.forcedLayoutMaxMs)} warn={snap.ui.forcedLayoutMaxMs > 16}/>
+                {snap.ui.slowestScript && <Row label={`slow script: ${snap.ui.slowestScript.slice(0, 28)}`} value={fmtMs(snap.ui.slowestScriptMs)}/>}
+            </> : <Row label="browser frame attribution" value="unavailable"/>}
             <Row label="FPS" value={snap.fps} warn={snap.fps > 0 && snap.fps < 30} />
             {fastMap && <>
                 <Row label="worker map FPS" value={fastMap.fps} warn={fastMap.fps > 0 && fastMap.fps < 30} />
@@ -93,6 +113,7 @@ export const PerfHUD: React.FC = () => {
             <Row label="text processing p95/max" value={`${fmtMs(snap.textProcessingP95Ms)} / ${fmtMs(snap.textProcessingMaxMs)}`} warn={snap.textProcessingP95Ms > 16} />
             <Row label="parser worker avg/max" value={`${fmtMs(snap.parserWorkerAvgMs)} / ${fmtMs(snap.parserWorkerMaxMs)}`} warn={snap.parserWorkerMaxMs > 50} />
             <Row label="parser sync avg/max" value={`${fmtMs(snap.parserSyncAvgMs)} / ${fmtMs(snap.parserSyncMaxMs)}`} warn={snap.parserSyncMaxMs > 50} />
+            <Row label="line handlers p95/max" value={`${fmtMs(snap.lineHandlingP95Ms)} / ${fmtMs(snap.lineHandlingMaxMs)}`} warn={snap.lineHandlingMaxMs > 16} />
             <Row label="worst frame gap" value={fmtMs(snap.intervalMaxMs)} warn={snap.intervalMaxMs > 100} />
             <Row label="main-thread long tasks/10s" value={`${snap.longTasks10s} (max ${fmtMs(snap.longTaskMaxMs)})`} warn={snap.longTaskMaxMs > 50} />
             <Row label="cache rebuilds/s" value={snap.rebuildsPerSec} warn={snap.rebuildsPerSec > 4} />

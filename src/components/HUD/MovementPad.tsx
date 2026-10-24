@@ -164,7 +164,7 @@ export const MovementPad: FC<{
             role="group"
             aria-label={ariaLabel}
             onClick={e => e.stopPropagation()}
-            onPointerLeave={() => doorSelectionOnly && onPreviewDirection?.(null)}
+            onPointerLeave={() => onPreviewDirection?.(null)}
         >
             {visibleCells.map(cell => {
                 const Icon = cell.icon;
@@ -205,13 +205,12 @@ export const MovementPad: FC<{
                     type="button"
                     className={`movement-pad-cell ${cell.className}${stateClass}${isPressed ? ' is-key-pressed' : ''}`}
                     onPointerDown={event => event.stopPropagation()}
-                    onPointerEnter={() => doorSelectionOnly && hasDoor && onPreviewDirection?.(cell.cmd)}
-                    onFocus={() => doorSelectionOnly && hasDoor && onPreviewDirection?.(cell.cmd)}
+                    onPointerEnter={() => (!doorSelectionOnly || hasDoor) && onPreviewDirection?.(cell.cmd)}
+                    onFocus={() => (!doorSelectionOnly || hasDoor) && onPreviewDirection?.(cell.cmd)}
                     onClick={event => fire(cell.cmd, event)}
                     title={title}
                     aria-label={title}
-                    disabled={layout === 'menu' && (disabled || (doorSelectionOnly ? !hasDoor : !isValid))}
-                    aria-disabled={isMovement && !isValid && !(doorSelectionOnly && hasDoor) ? true : undefined}
+                    disabled={layout === 'menu' && (disabled || (doorSelectionOnly && !hasDoor))}
                 >
                     {layout === 'panel' && cell.hotkey && <span className="movement-pad-key">{cell.hotkey}</span>}
                     <Icon size={layout === 'map' ? 28 : 16} strokeWidth={2.2} />

@@ -1,0 +1,122 @@
+/** @file CommandDockMobileReadabilityMenus.css — Place quick state and gear menus in the readability menu lane. */
+
+/* --- Single Choice Sections --- */
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup :is(
+    .command-tree-section-commands,
+    .command-tree-section-content:not([hidden]),
+    .command-tree-section-content > [role="group"]:not(.movement-pad)
+) > :only-child {
+    grid-column:1 / -1;
+}
+
+/* --- Readability Menu Lane --- */
+.app-container.is-mobile.readability-mode .command-tree-quick-options,
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu {
+    position:fixed !important;
+    top:var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
+    right:4px !important;
+    bottom:var(--mobile-readability-menu-bottom, 34px) !important;
+    left:4px !important;
+    z-index:2147483001 !important;
+    box-sizing:border-box;
+    width:auto !important;
+    max-width:none !important;
+    max-height:none !important;
+    background:var(--command-tree-surface, #211b16) !important;
+    box-shadow:none !important;
+    pointer-events:auto;
+}
+
+/* --- Quick State Choices --- */
+.app-container.is-mobile.readability-mode .command-tree-quick-options {
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    align-content:start;
+    gap:6px;
+    padding:8px;
+    overflow:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-quick-options > * { min-width:0; }
+.app-container.is-mobile.readability-mode .command-tree-quick-options :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
+    justify-content:center;
+    min-height:48px;
+    padding:8px 4px;
+    text-align:center;
+    white-space:normal;
+}
+.app-container.is-mobile.readability-mode .command-tree-quick-options .command-tree-row-label {
+    overflow-wrap:anywhere;
+    text-align:center;
+    white-space:normal;
+}
+
+/* --- Equipment and Inventory Cascades --- */
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu {
+    display:grid !important;
+    align-items:stretch !important;
+    overflow:hidden;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-details,
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-list {
+    height:100% !important;
+    max-height:none !important;
+    min-height:0;
+    overflow:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-details {
+    overflow:hidden;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-list {
+    margin-left:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-details:empty) .command-tree-gear-quick-list {
+    flex:1 1 100% !important;
+    width:100% !important;
+    min-width:100% !important;
+    max-width:100% !important;
+    margin-left:0;
+}
+
+/* --- Backwards Gear Command: Action / Contained Object / Container --- */
+.app-container.is-mobile .command-tree-gear-quick-menu {
+    display:grid !important;
+    grid-template-columns:repeat(6, minmax(0, 1fr));
+    grid-template-rows:minmax(0, 1fr);
+    gap:4px;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu .command-tree-gear-quick-details {
+    display:contents !important;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents, .command-tree-gear-quick-list) {
+    grid-column:span 3;
+    grid-row:1;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    margin:0;
+    overflow:auto;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu:has(.command-tree-gear-quick-contents) :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents, .command-tree-gear-quick-list) {
+    grid-column:span 2;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-details:empty) .command-tree-gear-quick-list {
+    grid-column:1 / -1;
+    min-width:0 !important;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu .command-tree-gear-content-item {
+    display:flex;
+    width:100%;
+    min-height:40px;
+    padding:8px 4px;
+    text-align:left;
+    white-space:normal;
+    overflow-wrap:anywhere;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
+    max-height:none !important;
+    min-height:0;
+    overflow:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
+    transform:none !important;
+}

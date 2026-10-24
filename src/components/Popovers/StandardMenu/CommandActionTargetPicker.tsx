@@ -282,7 +282,7 @@ export const CommandActionTargetPicker: React.FC<CommandActionTargetPickerProps>
                 })}>Group</button>}
                 {renderTargetEntries(groupRosterEntries)}
             </> }] : []),
-        { id: 'online', label: 'Online Players', content: <OnlineCommandTargets onSelect={onSelect}
+        { id: 'online', label: 'Online Players', content: <OnlineCommandTargets onSelect={onSelect} namesOnly={isRecipientTargeting}
             currentEntityId={currentEntityId} color={selection.colorFor('cat-ally-remote')}
             onPreviewTarget={onPreviewTarget}
             open={activeCategory === 'global' && activeGlobalSection === 'online'}

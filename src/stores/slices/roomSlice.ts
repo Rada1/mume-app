@@ -10,6 +10,7 @@ import { getOccupantCommandKeyword } from '../../utils/occupantKeywordUtils';
 import { applyVisibleRoomOrder } from '../../hooks/roomVisibleOrder';
 import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
+import { roomFieldUpdate } from './roomFieldUpdate';
 
 export interface RoomState {
     roomName: string;
@@ -221,23 +222,23 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
     },
 
     setRoomName: (roomName: string | null | ((prev: string) => string)) => 
-        set((state: RoomState) => ({ roomName: typeof roomName === 'function' ? roomName(state.roomName) : (roomName || '') })),
+        set((state: RoomState) => roomFieldUpdate(state, 'roomName', typeof roomName === 'function' ? roomName(state.roomName) : (roomName || ''))),
     setRoomDesc: (roomDesc: string | null | ((prev: string) => string)) => 
-        set((state: RoomState) => ({ roomDesc: typeof roomDesc === 'function' ? roomDesc(state.roomDesc) : (roomDesc || '') })),
+        set((state: RoomState) => roomFieldUpdate(state, 'roomDesc', typeof roomDesc === 'function' ? roomDesc(state.roomDesc) : (roomDesc || ''))),
     setRoomZone: (roomZone: string | null | ((prev: string) => string)) => 
-        set((state: RoomState) => ({ roomZone: typeof roomZone === 'function' ? roomZone(state.roomZone) : (roomZone || '') })),
+        set((state: RoomState) => roomFieldUpdate(state, 'roomZone', typeof roomZone === 'function' ? roomZone(state.roomZone) : (roomZone || ''))),
 
     setRoomExits: (exits: string[] | ((prev: string[]) => string[])) => 
-        set((state: RoomState) => ({ exits: typeof exits === 'function' ? exits(state.exits) : exits })),
+        set((state: RoomState) => roomFieldUpdate(state, 'exits', typeof exits === 'function' ? exits(state.exits) : exits)),
 
     setExits: (exits: string[] | ((prev: string[]) => string[])) => 
-        set((state: RoomState) => ({ exits: typeof exits === 'function' ? exits(state.exits) : exits })),
+        set((state: RoomState) => roomFieldUpdate(state, 'exits', typeof exits === 'function' ? exits(state.exits) : exits)),
 
     setCurrentTerrain: (terrain: string | ((prev: string) => string)) => 
-        set((state: RoomState) => ({ terrain: typeof terrain === 'function' ? terrain(state.terrain) : terrain })),
+        set((state: RoomState) => roomFieldUpdate(state, 'terrain', typeof terrain === 'function' ? terrain(state.terrain) : terrain)),
 
     setTerrain: (terrain: string | ((prev: string) => string)) => 
-        set((state: RoomState) => ({ terrain: typeof terrain === 'function' ? terrain(state.terrain) : terrain })),
+        set((state: RoomState) => roomFieldUpdate(state, 'terrain', typeof terrain === 'function' ? terrain(state.terrain) : terrain)),
 
     setChars: (chars: Record<number, GmcpOccupant> | ((prev: Record<number, GmcpOccupant>) => Record<number, GmcpOccupant>)) =>
         set((state: RoomState) => ({
@@ -251,7 +252,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
         } : state),
 
     setItems: (items: GmcpOccupant[] | ((prev: GmcpOccupant[]) => GmcpOccupant[])) =>
-        set((state: RoomState) => ({ items: typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items) })),
+        set((state: RoomState) => roomFieldUpdate(state, 'items', typeof items === 'function' ? items(state.items) : (Array.isArray(items) ? items : state.items))),
     
     applyItemsUpdate: (data: GmcpOccupant[]) => {
         set((state: RoomState) => ({ ...state, items: Array.isArray(data) ? data : [] }));

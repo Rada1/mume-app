@@ -34,7 +34,7 @@ export const CommandPracticeActions: React.FC<CommandPracticeActionsProps> = ({ 
                         }
                         action.run();
                     };
-                    return <button key={button.id} type="button" className={`terminal-inspect-row${isHelpMode ? ' is-help-mode' : ''}`}
+                    return <button key={button.id} type="button" data-menu-item="true" className={`terminal-inspect-row${isHelpMode ? ' is-help-mode' : ''}`}
                         disabled={action.disabled} title={action.title} aria-label={`${button.label} <${button.command}>`}
                         onPointerDown={event => event.stopPropagation()} onClick={handleClick}>
                         <span style={{ color: getSwipeCommandTextColor(button.command) || getInlineTraitTextColor('trait-guildmaster') }}>{button.label}</span>

@@ -44,6 +44,7 @@ export const useCommandTreeGetFrom = (controller: ReturnType<typeof useCommandTr
 
     const selectContainer = (target: GetFromTarget) => {
         setSelectedKey(target.key);
+        controller.game.setCommandPreview?.(`get <item> ${target.value}`);
         const alreadyLoaded = target.category === 'corpse'
             ? corpseContents[target.containerId] !== undefined
             : controller.game.containerContents[target.containerId] !== undefined;
@@ -72,11 +73,20 @@ export const useCommandTreeGetFrom = (controller: ReturnType<typeof useCommandTr
             ? selected.category === 'corpse' ? `get all ${selected.value}` : `get all from ${selected.value}`
             : `get ${item.value} ${selected.value}`;
         controller.game.executeCommand(command, false, false, false, false, {fromUi: true, shouldFocus: false});
+        controller.game.setCommandPreview?.(null);
+    };
+    const previewItem = (item: CommandTargetSuggestion) => {
+        if (!selected) return;
+        const command = item.value === 'all'
+            ? selected.category === 'corpse' ? `get all ${selected.value}` : `get all from ${selected.value}`
+            : `get ${item.value} ${selected.value}`;
+        controller.game.setCommandPreview?.(command);
     };
 
     const allItems: CommandTargetSuggestion[] = items.length
         ? [{key: `get-all-from:${selected?.key || ''}`, label: 'All', value: 'all', meta: 'container'}, ...items]
         : items;
-    return {fromSections, selected, items: allItems, loading, selectContainer, getItem, clearSelection: () => setSelectedKey(null),
+    return {fromSections, selected, items: allItems, loading, selectContainer, getItem, previewItem,
+        clearSelection: () => { setSelectedKey(null); controller.game.setCommandPreview?.('get'); },
         disabled: controller.game.gameState !== 'playing' || controller.game.isSpectateMode};
 };

@@ -9,12 +9,15 @@ import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { MovementPad } from './MovementPad';
 import { normalizeExitKey } from '../../utils/gmcpExitUtils';
+import { getCommandActionTargetDisplayLabel } from '../../utils/commandTreeTargetSections';
+import { getCommandTreeBasePreview, getCommandTreeTargetPreview } from '../../utils/commandTreePreview';
 // --- Render Section ---
-export const CommandTreeAccessTargets = ({controller, button, targets}: {
-    controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[];
+export const CommandTreeAccessTargets = ({controller, button, targets, onCommandExecuted}: {
+    controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[]; onCommandExecuted?: () => void;
 }) => {
     const access = useCommandTreeAccessTargets(controller, targets);
-    return <section className="command-tree-branch terminal-inline-popover" aria-label={`Targets for ${button.label}`}>
+    const hasDoors = access.sections.some(s => s.label === 'Doors');
+    return <section className={`command-tree-branch terminal-inline-popover${hasDoors ? ' is-movement-branch' : ''}`} aria-label={`Targets for ${button.label}`}>
         <CommandTreeTargetHeader/>
         {access.sections.map(section => {
             if (section.label === 'Doors') {
@@ -22,28 +25,41 @@ export const CommandTreeAccessTargets = ({controller, button, targets}: {
                 const entryForDirection = (direction: string | null) => direction
                     ? section.entries.find(entry => normalizeExitKey(entry.keyword) === normalizeExitKey(direction))
                     : undefined;
-                return <CommandTreeCollapsibleSection key={section.label} label={section.label}>
-                    <MovementPad layout="menu" hideFlee doorSelectionOnly ariaLabel="Door directions"
-                        doorNamesByDirection={doorNamesByDirection}
-                        onPreviewDirection={direction => {
-                            const entry = entryForDirection(direction);
-                            if (entry) access.preview(entry);
-                            else controller.previewEntity(null);
-                        }}
-                        onCommand={(direction, event) => {
-                            const entry = entryForDirection(direction);
-                            if (!entry) return;
+                return <MovementPad key={section.label} layout="menu" hideFlee doorSelectionOnly ariaLabel="Door directions"
+                    doorNamesByDirection={doorNamesByDirection}
+                    onPreviewDirection={direction => {
+                        const entry = entryForDirection(direction);
+                        if (entry) {
                             const action = access.actionFor(entry, button);
-                            if (controller.isHelpMode) controller.executeHelp(action.command, action.label);
-                            else controller.game.handleButtonClick(action, event.nativeEvent, entry.context, undefined, entry.parentNoun);
-                        }}/>
-                </CommandTreeCollapsibleSection>;
+                            controller.game.setCommandPreview?.(getCommandTreeTargetPreview(action.command, entry.context, entry.parentNoun));
+                            access.preview(entry);
+                        }
+                        else {
+                            controller.game.setCommandPreview?.(getCommandTreeBasePreview(button.command));
+                            controller.previewEntity(null);
+                        }
+                    }}
+                    onCommand={(direction, event) => {
+                        const entry = entryForDirection(direction);
+                        if (!entry) return;
+                        const action = access.actionFor(entry, button);
+                        if (controller.isHelpMode) controller.executeHelp(action.command, action.label);
+                        else controller.game.handleButtonClick(action, event, entry.context, undefined, entry.parentNoun);
+                        onCommandExecuted?.();
+                    }}/>;
             }
             return <CommandTreeCollapsibleSection key={section.label} label={section.label}>
                 <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
-                    {section.entries.map(entry => <div key={entry.id} onMouseEnter={() => access.preview(entry)} onFocus={() => access.preview(entry)}>
-                        <CommandTreeAction controller={controller} button={access.actionFor(entry, button)} targetLabel={entry.label} targetGearRow={entry.gearRow} targetState={access.targetState(entry)}/>
-                    </div>)}
+                    {section.entries.map(entry => {
+                        const action = access.actionFor(entry, button);
+                        const preview = () => {
+                            controller.game.setCommandPreview?.(getCommandTreeTargetPreview(action.command, entry.context, entry.parentNoun));
+                            access.preview(entry);
+                        };
+                        return <div key={entry.id} onMouseEnter={preview} onFocus={preview}>
+                            <CommandTreeAction controller={controller} button={action} targetLabel={getCommandActionTargetDisplayLabel(entry)} targetGearRow={entry.gearRow} targetState={access.targetState(entry)}/>
+                        </div>;
+                    })}
                 </div>
             </CommandTreeCollapsibleSection>;
         })}

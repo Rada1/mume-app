@@ -1,53 +1,34 @@
 /** @file CommandTreeGearQuickMenu.tsx — Quick inventory and equipment cascades. */
 import React from 'react';
-import { useCommandTreeItems } from '../../hooks/useCommandTreeItems';
+import { useCommandGearQuickMenu } from '../../hooks/useCommandGearQuickMenu';
 import type { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import type { useCommandTree } from '../../hooks/useCommandTree';
 import { GearItemLabel } from '../GearItemLabel';
 import { CommandTreeAction } from './CommandTreeAction';
 import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
-import { useCommandTreeGetFrom } from '../../hooks/useCommandTreeGetFrom';
 import { WORN_EQUIPMENT_SLOTS } from '../../utils/gearPanelUtils';
-import { commandTreeGroup } from '../../utils/commandTreeGroups';
-import { COMMAND_TREE_GROUPS } from '../../hooks/useCommandTree';
 import { useUpwardCommandBranches } from '../../hooks/useUpwardCommandBranches';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 
 // --- Gear Menu Section ---
-export const CommandTreeGearQuickMenu = ({kind, controller, tree, style}: {
+export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabilitySplit = false, style}: {
  kind: 'Inventory'|'Equipment';
  controller: ReturnType<typeof useCommandTreeController>;
  tree: ReturnType<typeof useCommandTree>;
+ mobileReadabilitySplit?: boolean;
  style?: React.CSSProperties;
 }) => {
- const items = useCommandTreeItems(controller, kind);
+ const {items, getFrom, contentItems, selectedContent, chooseObject, chooseContent, actionSections} = useCommandGearQuickMenu(controller, kind);
  const menuRef = React.useRef<HTMLDivElement>(null);
- useUpwardCommandBranches(menuRef, true, 'gear');
- const getFrom = useCommandTreeGetFrom(controller);
- React.useEffect(()=>{getFrom.clearSelection();},[kind]);
+ useUpwardCommandBranches(menuRef, !mobileReadabilitySplit, 'gear');
  const section = items.objectSections.find(entry=>entry.label===kind);
- const actionSections = COMMAND_TREE_GROUPS.map((label,index)=>({
-  label,
-  buttons:items.actions.filter(button=>{
-   const group=commandTreeGroup(button);
-   return group===index||(group===null&&index===3);
-  })
- })).filter(section=>section.buttons.length>0);
- const contentItems=getFrom.items.filter(item=>item.value!=='all');
- const chooseObject = (entry: typeof items.objects[number]) => {
-  items.chooseObject(entry);
-  const container = getFrom.fromSections.flatMap(group=>group.targets).find(target=>
-   target.meta===entry.group&&(target.objectId===entry.id||target.containerId===entry.gearRow?.line.id)
-  );
-  if(container)getFrom.selectContainer(container);else getFrom.clearSelection();
- };
  const renderEntry = (entry: typeof items.objects[number], slotLabel?: string) => <button type="button" key={entry.id} className="command-tree-object" aria-expanded={items.selected?.id===entry.id}
-  onMouseEnter={()=>tree.defer(()=>chooseObject(entry))} onFocus={()=>chooseObject(entry)} onClick={()=>chooseObject(entry)}>
+  onPointerEnter={event=>{if(event.pointerType==='mouse')tree.defer(()=>chooseObject(entry));}} onFocus={()=>{tree.cancelPreview();chooseObject(entry);}} onClick={()=>{tree.cancelPreview();chooseObject(entry);}}>
   <span className={kind==='Equipment'&&entry.gearRow?'command-tree-gear-object-label':''}>{entry.gearRow?<GearItemLabel row={slotLabel?{...entry.gearRow,slotLabel}:entry.gearRow} category={entry.category} showSlot={kind==='Equipment'}/>:entry.label}</span><span aria-hidden="true">&#8249;</span>
  </button>;
  return <div ref={menuRef} className="command-tree-gear-quick-menu" style={style} aria-label={`${kind} contents`}>
   <div className="command-tree-gear-quick-details">
-  {items.selected&&<section className="command-tree-gear-quick-actions" aria-label={`Actions for ${items.selected.label}`}>
+  {items.selected&&<section className="command-tree-gear-quick-actions" aria-label={`Actions for ${(selectedContent || items.selected).label}`}>
    {actionSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
     <div className="command-tree-section-commands" role="group" aria-label={`${section.label} commands`}>
      {section.buttons.map(button=><CommandTreeAction key={button.id} controller={controller} button={button}/>)}
@@ -58,9 +39,10 @@ export const CommandTreeGearQuickMenu = ({kind, controller, tree, style}: {
   {getFrom.selected&&getFrom.selected.meta!=='room'&&items.selected&&<CommandTreeCollapsibleSection className="command-tree-gear-quick-contents" label={`Contents of ${items.selected.label}`}>
    {getFrom.loading?<p className="command-tree-section-empty">Loading contents…</p>
     :contentItems.length
-     ?<div role="list" aria-label={`Items inside ${items.selected.label}`}>{contentItems.map(item=><div key={item.key} className="command-tree-gear-content-item" role="listitem" title={item.label}>
-       <CommandTreeObjectTargetLabel label={item.label} location={item.objectLocation||item.meta}/>
-      </div>)}</div>
+     ?<div role="group" aria-label={`Items inside ${items.selected.label}`}>{contentItems.map(item=><button type="button" key={item.id} className="command-tree-gear-content-item command-tree-object" aria-expanded={selectedContent?.id===item.id}
+       onPointerEnter={event=>{if(event.pointerType==='mouse')tree.defer(()=>chooseContent(item));}} onFocus={()=>chooseContent(item)} onClick={()=>{tree.cancelPreview();chooseContent(item);}} title={item.label}>
+       <CommandTreeObjectTargetLabel label={item.label} category="cat-container-item"/>
+      </button>)}</div>
      :<p className="command-tree-section-empty">Empty.</p>}
   </CommandTreeCollapsibleSection>}
   </div>

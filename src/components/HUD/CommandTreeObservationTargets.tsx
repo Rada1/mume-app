@@ -2,6 +2,7 @@
 import React from 'react';
 import { Crosshair } from 'lucide-react';
 import { isCurrentCommandTarget } from '../../utils/currentCommandTarget';
+import { getCommandActionTargetDisplayLabel } from '../../utils/commandTreeTargetSections';
 import type { CustomButton } from '../../types';
 import type { CommandActionTargetEntry } from '../../objects/commandActionTargetModel';
 import type { useCommandTreeController } from '../../hooks/useCommandTreeController';
@@ -15,13 +16,15 @@ export const CommandTreeObservationTargets = ({controller, button, targets}: {
     controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[];
 }) => {
     const observation = useCommandTreeObservation(controller, button, targets);
-    return <section className="command-tree-branch terminal-inline-popover" aria-label={`Targets for ${button.label}`}>
+    return <>
+      <section className="command-tree-branch terminal-inline-popover" aria-label={`Targets for ${button.label}`}>
         <CommandTreeTargetHeader/>
         {observation.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
             <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
                 {section.entries.map(entry => {
-                    const targetLabel = entry.id === 'command-panel-self' ? 'Self' : entry.label;
-                    return <button key={entry.id} type="button" className={`command-tree-row${isCurrentCommandTarget(entry, controller.vitals.target) ? ' command-tree-current-target' : ''}`}
+                    const targetLabel = entry.id === 'command-panel-self' ? 'Self' : getCommandActionTargetDisplayLabel(entry);
+                    return <button key={entry.id} type="button" data-menu-item={entry.id === LOOK_IN_TARGET_ID ? undefined : 'true'}
+                        className={`command-tree-row${isCurrentCommandTarget(entry, controller.vitals.target) ? ' command-tree-current-target' : ''}`}
                         disabled={observation.disabled} aria-expanded={entry.id === LOOK_IN_TARGET_ID ? observation.lookInOpen : undefined}
                         onMouseEnter={() => observation.preview(entry)} onFocus={() => observation.preview(entry)} onClick={() => observation.observe(entry)}>
                         <span className={`command-tree-row-label${entry.gearRow ? ' is-gear-target' : ''}`}>{entry.gearRow
@@ -33,11 +36,12 @@ export const CommandTreeObservationTargets = ({controller, button, targets}: {
                 })}
             </div>
         </CommandTreeCollapsibleSection>)}
-        {observation.lookInOpen && <section className="command-tree-branch terminal-inline-popover" aria-label="Containers to look in">
+      </section>
+      {observation.lookInOpen && <section className="command-tree-branch terminal-inline-popover" aria-label="Containers to look in">
             <CommandTreeTargetHeader/>
             {observation.containerSections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
                 <div className="command-tree-section-commands" role="group" aria-label={`${section.label} containers`} tabIndex={0}>
-                    {section.entries.map(entry => <button key={entry.id} type="button" className="command-tree-row"
+                    {section.entries.map(entry => <button key={entry.id} type="button" data-menu-item="true" className="command-tree-row"
                         disabled={observation.disabled} title={entry.label} onMouseEnter={() => observation.previewContainer(entry)}
                         onFocus={() => observation.previewContainer(entry)} onClick={() => observation.lookIn(entry)}>
                         <span className={`command-tree-row-label${entry.gearRow ? ' is-gear-target' : ''}`}>{entry.gearRow
@@ -47,6 +51,6 @@ export const CommandTreeObservationTargets = ({controller, button, targets}: {
                 </div>
             </CommandTreeCollapsibleSection>)}
             {!observation.containers.length && <p className="command-tree-section-empty">No containers available.</p>}
-        </section>}
-    </section>;
+      </section>}
+    </>;
 };

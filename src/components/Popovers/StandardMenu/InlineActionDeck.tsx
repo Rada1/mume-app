@@ -12,14 +12,12 @@ import { InlineTraitActionGroup } from './InlineTraitActionGroup';
 
 interface InlineActionDeckProps {
     groups: InlineActionDeckGroup[];
-    targetContext: string | null;
     requestInspection: (kind: 'look' | 'consider') => void;
     renderButton: (button: CustomButton) => React.ReactNode;
 }
 
 export const InlineActionDeck: React.FC<InlineActionDeckProps> = ({
     groups,
-    targetContext,
     requestInspection,
     renderButton
 }) => {
@@ -29,7 +27,6 @@ export const InlineActionDeck: React.FC<InlineActionDeckProps> = ({
             section={group.section}
             buttons={group.buttons}
             inspectionCommands={group.inspectionCommands}
-            targetContext={targetContext}
             requestInspection={requestInspection}
             renderButton={renderButton}
         />

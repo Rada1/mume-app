@@ -34,8 +34,17 @@ it.each([['track %n','rangerskilllist'],['bash %n','warriorskilllist'],['steal %
 });
 
 // --- Movement and Vision Split ---
-it.each(['look','examine','consider','scout','watch','search','scan','reveal','exits','map','weather'])('%s belongs to Vision', command => {
+it.each(['look','examine','consider','scout','watch','search','scan','reveal'])('%s belongs to Vision', command => {
  expect(commandTreeGroup(button(command))).toBe(2);
+});
+it('places weather in Info', () => {
+ expect(commandTreeGroup(button('weather'))).toBe(5);
+});
+it.each(['exits','map'])('%s belongs to Info', command => {
+ expect(commandTreeGroup(button(command))).toBe(5);
+});
+it.each(['who','whois','where'])('%s belongs to Info', command => {
+ expect(commandTreeGroup(button(command))).toBe(5);
 });
 it.each(['enter','leave','climb','swim','ride','lead','abandon','dismount','open','close'])('%s belongs to Movement', command => {
  expect(commandTreeGroup(button(command))).toBe(1);

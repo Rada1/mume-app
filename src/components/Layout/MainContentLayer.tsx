@@ -122,6 +122,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCommandPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileGuideOpen : s.isOpen);
     const isSkillsPanelOpen = useCommandPanelStore(s => viewport.isMobile ? s.isMobileOpen : s.isSkillsOpen);
     const setIsCommandPanelOpen = useCommandPanelStore(s => s.setIsOpen);
+    const setIsMobileGuideOpen = useCommandPanelStore(s => s.setIsMobileGuideOpen);
     const setIsSkillsPanelOpen = useCommandPanelStore(s => s.setIsSkillsOpen);
     const setIsMobileSkillsPanelOpen = useCommandPanelStore(s => s.setIsMobileOpen);
     const isGearPanelOpen = useGearPanelStore(s => s.isOpen);
@@ -150,6 +151,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     React.useEffect(() => {
         if (isAccountScreen && !viewport.isMobile) setIsCommandPanelOpen(true);
     }, [isAccountScreen, accountState.stage, viewport.isMobile, setIsCommandPanelOpen]);
+
+    React.useEffect(() => {
+        if (!isAccountScreen && viewport.isMobile && isReadabilityMode) setIsMobileGuideOpen(true);
+    }, [isAccountScreen, isReadabilityMode, viewport.isMobile, setIsMobileGuideOpen]);
 
     React.useEffect(() => {
         document.body.classList.toggle('has-docked-panels', hasDockedPanels);

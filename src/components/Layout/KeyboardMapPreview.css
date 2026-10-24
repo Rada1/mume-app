@@ -59,9 +59,10 @@
         pointer-events: auto !important;
     }
 
-body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-room-info-panel,
-body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-context-menu[data-mobile="true"],
-body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-context-menu-backdrop[data-mobile="true"] {
+/* Keep typing previews clear while allowing room actions in the command workspace. */
+body:has(.app-container.is-mobile.kb-open) .mapper-room-info-panel,
+body:has(.app-container.is-mobile.kb-open) .mapper-context-menu[data-mobile="true"],
+body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mobile="true"] {
         display: none !important;
     }
 
@@ -225,5 +226,28 @@ body:has(.app-container.is-mobile:is(.kb-open, .readability-mode)) .mapper-conte
         height: 100% !important;
         padding: 0 !important;
         overflow: hidden !important;
+    }
+}
+
+/* --- Readability Movement Cascade Minimap --- */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile.readability-mode:not(.kb-open):has(.command-tree-mobile-readability-popup) .mobile-map-panel {
+        display: none !important;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.kb-open):has(.command-tree-mobile-readability-popup .is-movement-branch) .mobile-map-panel {
+        display: flex !important;
+        z-index: 65001 !important;
+        top: var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
+        right: 4px !important;
+        bottom: var(--mobile-readability-menu-bottom, 34px) !important;
+        left: auto !important;
+        width: calc((100vw - 16px) / 3) !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        border-radius: 0 !important;
+        mask-image: none !important;
+        -webkit-mask-image: none !important;
     }
 }

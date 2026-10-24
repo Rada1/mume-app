@@ -51,6 +51,7 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
         setCurrencyKey(null);
         setAmountSelected(false);
         setSourceId(source.key);
+        controller.game.setCommandPreview?.(`${verb} ${source.value}`);
         if (source.value === 'all') { controller.previewEntity(null); return; }
         controller.previewEntity({id: source.key, label: source.label, keyword: source.value, context: source.value,
             category: 'cat-inventory-object', group: 'inventory', scope: 'self'});
@@ -60,18 +61,30 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
         setCurrencyKey(key);
         setAmount('1');
         setAmountSelected(false);
+        controller.game.setCommandPreview?.(`${verb} <amount> ${key}`);
         controller.previewEntity(null);
     };
     const updateAmount = (value: string) => {
         setAmount(value);
         setAmountSelected(false);
+        if (currency) controller.game.setCommandPreview?.(`${verb} ${value || '<amount>'} ${currency.value}`);
     };
     const chooseAmount = (value: string) => {
         setAmount(value);
         setAmountSelected(true);
+        if (currency) controller.game.setCommandPreview?.(`${verb} ${value} ${currency.value}`);
     };
     const confirmAmount = () => {
-        if (amountValid) setAmountSelected(true);
+        if (amountValid) {
+            setAmountSelected(true);
+            if (currency) controller.game.setCommandPreview?.(`${verb} ${amount} ${currency.value}`);
+        }
+    };
+    const previewDestination = (destination: CommandTargetSuggestion) => {
+        const prefix = currency
+            ? `${verb} ${amountValid ? amount : '<amount>'} ${currency.value}`
+            : `${verb} ${selected?.value || '<item>'}`;
+        controller.game.setCommandPreview?.(`${prefix} ${destination.value}`);
     };
     const disabled = controller.game.gameState !== 'playing' || controller.game.isSpectateMode;
     const transfer = (destination: CommandTargetSuggestion, event: MouseEvent) => {
@@ -84,7 +97,7 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
             : `${verb} ${selected!.value} ${destination.value}`;
         controller.game.handleButtonClick({...command, actionType: 'command', command: syntax}, event);
     };
-    return {sources, selected, sections, chooseSource, transfer, disabled, label, preposition: give ? 'to' : 'into',
+    return {sources, selected, sections, chooseSource, previewDestination, transfer, disabled, label, preposition: give ? 'to' : 'into',
         currencies: give ? GIVE_CURRENCIES : [], currency, chooseCurrency, amount, amountValid,
         amountSelected, updateAmount, chooseAmount, confirmAmount,
         destinationLabel: give ? 'Give recipients in this room' : 'Put destination containers',

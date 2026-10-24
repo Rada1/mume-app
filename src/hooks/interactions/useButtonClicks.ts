@@ -1,12 +1,14 @@
+/** @file useButtonClicks.ts — Handles command button execution and interaction feedback. */
 import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
-import { extractMumeKeyword, formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
-import { triggerRingAnimation, getPressedColor } from './pointerUtils';
-import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
-import { decodeCommandEntities } from '../../utils/commandTextUtils';
 import { isDesktopInlineActionPanel } from '../../utils/popoverPanelUtils';
+import { triggerRingAnimation, getPressedColor } from './pointerUtils';
+import { perfMonitor } from '../../utils/perfMonitor';
+import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { resolveButtonClickCommand } from './resolveButtonClickCommand';
 
+// --- Logic Section ---
 export const useButtonClicks = (deps: InteractionDeps) => {
     const {
         executeCommand, setInput, setTarget, addMessage, triggerHaptic, btn, joystick, target,
@@ -19,7 +21,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         ? deps.applyOptimisticChange
         : () => {};
 
-    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => {
+    const handleButtonClick = useCallback((button: CustomButton & { entityId?: string, _skipInteractionFire?: boolean, _skipJoystick?: boolean }, e: React.MouseEvent, context?: string, isContainer?: boolean, parentNoun?: string, direction?: string) => perfMonitor.measureCommandSubmission(() => {
         initAudio();
         e.stopPropagation();
         if (isSoundEnabled) playClickSound();
@@ -49,7 +51,8 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         if (popoverState && !keepInlinePanelOpen && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
             setPopoverState(null);
         }
-        if (targetEl?.classList) { 
+        const isMobileMenuItem = viewport.isMobile && Boolean(targetEl?.closest('[data-menu-item="true"]'));
+        if (targetEl?.classList && !isMobileMenuItem) {
             targetEl.classList.remove('btn-glow-active'); 
             void targetEl.offsetWidth; 
             targetEl.classList.add('btn-glow-active'); 
@@ -76,86 +79,17 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
 
-        const effectiveContext = (context && keywordOverrides[context]) ? keywordOverrides[context] : context;
-        const popoverAxes = getInlineCategoryAxes(popoverState?.category || popoverState?.setId);
-        const isNpcContext = popoverAxes.isCharacter || !!popoverState?.setId?.startsWith('npc');
-        let finalContext = popoverAxes.categoryId === 'cat-mount-object' ? effectiveContext || '' : popoverAxes.isObject
-            ? extractMumeKeyword(effectiveContext || '')
-            : formatMumeTarget(effectiveContext) || effectiveContext || '';
-        let detectedParent = parentNoun;
-
-        // If no explicit parentNoun, try to detect it from the context (e.g. food.2.backpack or 2.boots.backpack)
-        const isIndexedTarget = /^\d+\.[\w'*.-]+/.test(finalContext);
-        if (!isNpcContext && !isIndexedTarget && !detectedParent && finalContext && finalContext.includes('.')) {
-            const parts = finalContext.split('.');
-            // If it ends with a known container noun (e.g. .backpack), that's the parent.
-            const lastPart = parts[parts.length - 1];
-            if (isNaN(parseInt(lastPart))) {
-                detectedParent = lastPart;
-            }
-        }
-
-        // If we found a parent container in the context string, strip it to get the item target
-        if (detectedParent && finalContext && finalContext.endsWith(`.${detectedParent}`)) {
-            finalContext = finalContext.slice(0, -(detectedParent.length + 1));
-        }
-
-        // MUME Duplicate Handling:
-        // finalContext might be '2.boots' or 'food.2'. 
-        // We want to keep '2.boots' as is. If it's 'food.2', sanitizeGameTarget might have 
-        // messed with it, but here we prioritize the keyword if available.
-
-        let cmd = decodeCommandEntities(button.command);
-        let consumedTarget = false;
-        if (finalContext) {
-            if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, finalContext);
-            else cmd = cmd.includes('%n') ? cmd.replace(/%n/g, finalContext) : cmd;
-        }
-        else if (cmd.includes('%n') && target) {
-            if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, target);
-            else cmd = cmd.replace(/%n/g, target);
-            consumedTarget = true;
-        } else if (cmd.match(/%n\|/)) {
-            cmd = cmd.replace(/%n\|([^\s]+)/g, '$1');
-        }
-        if (detectedParent) { cmd = cmd.includes('%p') ? cmd.replace(/%p/g, detectedParent) : cmd; }
-        
-        // Direction resolution with fallback
-        const isDirection = (s: string) => ['n','s','e','w','u','d','north','south','east','west','up','down','ne','nw','se','sw'].includes(s.toLowerCase());
-        const resolvedDir = direction || (finalContext && isDirection(finalContext) ? finalContext : undefined) || (target && isDirection(target) ? target : undefined);
-        
-        if (resolvedDir) { cmd = cmd.includes('%d') ? cmd.replace(/%d/g, resolvedDir) : cmd; }
-        
-        // Smart Append for Doors: If a door button command has no placeholders, append the resolved direction or target
-        if (button.setId === 'doors' && !button.command.includes('%')) {
-            const appendTarget = resolvedDir || target || finalContext;
-            if (appendTarget && !cmd.toLowerCase().includes(appendTarget.toLowerCase())) {
-                cmd = `${cmd} ${appendTarget}`;
-            }
-        }
-
-        // Strip any remaining placeholders to avoid sending raw templates to game
-        cmd = cmd.replace(/%[ndp]/g, '').replace(/%%n/g, '').trim();
-
-        let finalCmd = cmd;
-        if (deps.isTrackpadModifierActive && !(button as any)._skipJoystick) {
-            // Requirement 2: Trackpad Long-Press (Modifier) + Button Tap = Look <button>
-            // We use the button's base noun/command as the target for the look command
-            const lookTarget = decodeCommandEntities(button.command).trim();
-            if (lookTarget && lookTarget !== '__clear_target__') {
-                finalCmd = `look ${lookTarget}`;
-            }
-        } else if (joystick.currentDir && !(button as any)._skipJoystick) {
-            const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
-            finalCmd = `${finalCmd} ${dirMap[joystick.currentDir] || joystick.currentDir}`;
-            joystick.setIsJoystickConsumed(true);
-            joystick.setIsSwipeWheelHidden(true);
-        } else if (joystick.isTargetModifierActive && target && !consumedTarget && !(button as any)._skipJoystick) {
-            finalCmd = `${finalCmd} ${target}`;
+        const { finalCmd, baseCmd, finalContext, detectedParent, consumesJoystick } = resolveButtonClickCommand({
+            button, context, parentNoun, direction, target, keywordOverrides,
+            popoverCategory: popoverState?.category, popoverSetId: popoverState?.setId,
+            isTrackpadModifierActive: Boolean(deps.isTrackpadModifierActive),
+            joystickDirection: joystick.currentDir,
+            joystickTargetModifierActive: joystick.isTargetModifierActive
+        });
+        if (consumesJoystick) {
             joystick.setIsJoystickConsumed(true);
             joystick.setIsSwipeWheelHidden(true);
         }
-        const commandPrefixes = deps.heldButton?.commandPrefixes || [];
 
         if (button.actionType === 'nav' || button.actionType === 'menu') {
             const rect = targetEl?.getBoundingClientRect();
@@ -209,7 +143,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         } else if (button.actionType === 'preload' || finalCmd.startsWith('input:')) {
             const isInputPrefix = finalCmd.startsWith('input:');
-            const prefill = isInputPrefix ? finalCmd.slice(6) : (cmd + (cmd.endsWith(' ') ? '' : ' '));
+            const prefill = isInputPrefix ? finalCmd.slice(6) : (baseCmd + (baseCmd.endsWith(' ') ? '' : ' '));
             setInput(prefill);
 
             // Only trigger keyboard on mobile if it's explicitly an 'input:' command
@@ -259,11 +193,10 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 // For nested items, finalContext (e.g. '2.boots') is the exact target
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
-            finalCmd = decodeCommandEntities([...commandPrefixes, finalCmd].filter(Boolean).join(' '));
-
+            const executableCmd = decodeCommandEntities([...(deps.heldButton?.commandPrefixes || []), finalCmd].filter(Boolean).join(' '));
             // --- Optimistic Updates for Common Actions ---
-            const firstWord = finalCmd.split(' ')[0].toLowerCase();
-            const remainder = finalCmd.slice(firstWord.length).trim();
+            const firstWord = executableCmd.split(' ')[0].toLowerCase();
+            const remainder = executableCmd.slice(firstWord.length).trim();
             if (firstWord === 'wear' || firstWord === 'hold') {
                 applyOptimisticChange({ type: 'wear', noun: remainder });
             } else if (firstWord === 'remove') {
@@ -285,9 +218,9 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
             // EXPLICITLY pass shouldFocus: false to avoid unintentional keyboard pop on mobile
             setInput('');
-            setCommandPreview(finalCmd);
+            setCommandPreview(executableCmd);
             executeCommand(
-                finalCmd,
+                executableCmd,
                 false,
                 false,
                 false,
@@ -316,7 +249,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
         }
         if (button.trigger?.enabled && button.trigger.autoHide && button.display === 'floating') btn.setButtons(prev => prev.map(x => x.id === button.id ? { ...x, isVisible: false } : x));
-    }, [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley, keywordOverrides, applyOptimisticChange]);
+    }), [btn, popoverState, setPopoverState, triggerHaptic, joystick, target, executeCommand, setInput, setTarget, addMessage, setCommandPreview, wasDraggingRef, viewport, setParley, parley, keywordOverrides, applyOptimisticChange]);
 
     return { handleButtonClick };
 };

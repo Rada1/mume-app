@@ -5,6 +5,7 @@ import type { CommandActionTargetEntry } from '../../objects/commandActionTarget
 import type { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import type { useCommandTree } from '../../hooks/useCommandTree';
 import { useCommandTreeGetFrom } from '../../hooks/useCommandTreeGetFrom';
+import { getCommandActionTargetDisplayLabel } from '../../utils/commandTreeTargetSections';
 import { CommandTreeAction } from './CommandTreeAction';
 import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
@@ -26,10 +27,11 @@ export const CommandTreeGetTargets = ({controller, tree, button, targets}: {
                 <div role="group" aria-label="Room object targets">
                     {targets.map(entry => <div key={entry.id} onMouseEnter={() => {
                         getFrom.clearSelection();
+                        controller.game.setCommandPreview?.(`get ${entry.keyword.toLowerCase() === 'all' ? 'all' : entry.context}`.trim());
                         if (entry.id.startsWith('command-tree-all:')) controller.previewEntity(null);
                         else controller.previewEntity(entry);
                     }}>
-                        <CommandTreeAction targetLabel={entry.label} targetGearRow={entry.gearRow} controller={controller} button={button} targetState={targetState(entry)}/>
+                        <CommandTreeAction targetLabel={getCommandActionTargetDisplayLabel(entry)} targetGearRow={entry.gearRow} controller={controller} button={button} targetState={targetState(entry)}/>
                     </div>)}
                 </div>
             </CommandTreeCollapsibleSection>
@@ -49,8 +51,9 @@ export const CommandTreeGetTargets = ({controller, tree, button, targets}: {
             <CommandTreeTargetHeader/>
             <CommandTreeCollapsibleSection label={`Contents of ${getFrom.selected.label}`} ariaLabel={`${getFrom.selected.label} contents`}>
             {getFrom.loading ? <p className="command-tree-section-empty">Loading contents…</p>
-                : getFrom.items.length ? getFrom.items.map(item => <button key={item.key} type="button" className="command-tree-row"
-                    disabled={getFrom.disabled} title={item.label} onClick={() => getFrom.getItem(item)}>
+                : getFrom.items.length ? getFrom.items.map(item => <button key={item.key} type="button" data-menu-item="true" className="command-tree-row"
+                    disabled={getFrom.disabled} title={item.label} onMouseEnter={() => getFrom.previewItem(item)}
+                    onFocus={() => getFrom.previewItem(item)} onClick={() => getFrom.getItem(item)}>
                     <span className={`command-tree-row-label${item.value === 'all' ? '' : ' is-gear-target'}`}>{item.value === 'all'
                         ? item.label : <CommandTreeObjectTargetLabel label={item.label} location={item.objectLocation || item.meta}/>}</span>
                 </button>) : <p className="command-tree-section-empty">Nothing to get.</p>}

@@ -10,8 +10,8 @@ import { isFriendlyTargetCommand } from '../utils/friendlyTargetCommand';
 // --- Default Execution Section ---
 export function getDefaultCommandTarget(controller: ReturnType<typeof useCommandTreeController>, targets: CommandActionTargetEntry[], button: CustomButton) {
     if (isFriendlyTargetCommand(button)) return null;
-    if (controller.isHelpMode || controller.game.gameState !== 'playing' || controller.game.isSpectateMode) return null;
-    return targets.find(candidate => isCurrentCommandTarget(candidate, controller.vitals.target)) || null;
+    if (controller.isHelpMode || controller.game?.gameState !== 'playing' || controller.game?.isSpectateMode) return null;
+    return targets.find(candidate => isCurrentCommandTarget(candidate, controller.vitals?.target)) || null;
 }
 export function executeDefaultCommandTarget(controller: ReturnType<typeof useCommandTreeController>, button: CustomButton,
     targets: CommandActionTargetEntry[], event: MouseEvent) {

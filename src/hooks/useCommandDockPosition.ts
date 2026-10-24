@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 // --- Logic Section ---
 export const useCommandDockPosition = (isMobile: boolean, open: boolean, anchorKey?: unknown) => {
     const anchorRef = useRef<HTMLElement | null>(null);
-    const [position, setPosition] = useState<{right:number;bottom:number;maxWidth:number} | null>(null);
+    const [position, setPosition] = useState<{right:number;bottom:number;maxWidth:number;left?:number;rightMaxWidth?:number} | null>(null);
 
     const resolveAnchor = useCallback(() => {
         const current = anchorRef.current;
@@ -25,10 +25,13 @@ export const useCommandDockPosition = (isMobile: boolean, open: boolean, anchorK
         const next = {
             right: isMobile ? 8 : Math.max(8, window.innerWidth - rect.right),
             bottom: Math.max(8, window.innerHeight - rect.top + 4),
-            maxWidth: isMobile ? window.innerWidth - 16 : Math.max(0, rect.right - 8)
+            maxWidth: isMobile ? window.innerWidth - 16 : Math.max(0, rect.right - 8),
+            left: isMobile ? undefined : rect.left,
+            rightMaxWidth: isMobile ? undefined : Math.max(0, window.innerWidth - rect.left - 8)
         };
         setPosition(previous => previous?.right === next.right && previous.bottom === next.bottom
-            && previous.maxWidth === next.maxWidth ? previous : next);
+            && previous.maxWidth === next.maxWidth && previous.left === next.left
+            && previous.rightMaxWidth === next.rightMaxWidth ? previous : next);
     }, [isMobile, resolveAnchor]);
 
     useEffect(() => {

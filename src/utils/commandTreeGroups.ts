@@ -6,10 +6,11 @@ const verbs = (value: string) => new Set(value.split(' '));
 const combat = verbs('attack kill hit assist rescue flee disengage bash kick charge backstab shoot missile bandage cast');
 const movement = verbs('north south east west up down northeast northwest southeast southwest enter leave sneak hide ride lead abandon dismount track open close lock unlock pick knock call');
 const rangerSkills = verbs('climb swim');
-const vision = verbs('look examine consider con scout watch search scan reveal exits map weather');
+const vision = verbs('look examine consider con scout watch search scan reveal');
 const items = verbs('buy sell value mend list get take put give drop wear wield hold remove eat drink taste sip quaff forage recite pour fill empty light snuff cover uncover extinguish sacrifice junk loot compare identify read show saddle unsaddle offer rent camp');
-const messages = verbs('say tell whisper ask reply emote narrate yell shout sing pray chat group follow who whois where');
-const character = verbs('info stat score skills spells train help time');
+const messages = verbs('say tell whisper ask reply emote narrate yell shout sing pray chat group follow');
+const game = verbs('help hint hints time');
+const character = verbs('info stat score skills spells train exits map who whois where weather history quest quests achievement achievements');
 export const commandTreeAbilityClass = (button: CustomButton): string | null => {
  const match = button.setId.match(/^(ranger|warrior|thief|mage|cleric)(?:skill|spell)list$/i);
  if (match) return match[1].toLowerCase();
@@ -39,6 +40,7 @@ export const commandTreeGroup = (button: CustomButton): number | null => {
  if (messages.has(verb) || /social|communicat/.test(button.setId)) return 4;
  if (movement.has(verb)) return 1;
  if (items.has(verb)) return 3;
+ if (game.has(verb)) return 5;
  if (character.has(verb)) return 5;
  if (combat.has(verb)) return 0;
  // Trait families admit learned powers while unknown saved buttons stay out of the tree.

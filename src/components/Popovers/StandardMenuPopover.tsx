@@ -414,7 +414,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 <InlineActionDeck
                     key={`${popoverState.entityId || ''}:${targetContext || ''}`}
                     groups={actionGroups}
-                    targetContext={targetContext}
                     requestInspection={kind => requestInspection(kind)}
                     renderButton={button => (
                         <PopoverActionButton

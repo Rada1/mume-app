@@ -2,6 +2,7 @@
 import React from 'react';
 import { Crosshair } from 'lucide-react';
 import { isCurrentCommandTarget } from '../../utils/currentCommandTarget';
+import { getCommandObjectTargetDisplayLabel } from '../../utils/commandTreeTargetSections';
 import type { CustomButton } from '../../types';
 import type { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import type { useCommandTree } from '../../hooks/useCommandTree';
@@ -25,7 +26,7 @@ export const CommandTreeTransferTargets = ({controller, tree, command}: {
                         onMouseEnter={() => tree.defer(() => transfer.chooseSource(source))} onMouseLeave={tree.cancelPreview}
                         onFocus={() => transfer.chooseSource(source)} onClick={() => transfer.chooseSource(source)}>
                         <span className={`command-tree-row-label${source.value === 'all' ? '' : ' is-gear-target'}`}>{source.value === 'all'
-                            ? source.label : <CommandTreeObjectTargetLabel label={source.label} location={source.meta}/>}</span><span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
+                            ? source.label : <CommandTreeObjectTargetLabel label={source.label} location={source.meta}>{getCommandObjectTargetDisplayLabel(source.value, source.label)}</CommandTreeObjectTargetLabel>}</span><span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
                     </button>)}
                 </div>
             </CommandTreeCollapsibleSection>
@@ -65,10 +66,12 @@ export const CommandTreeTransferTargets = ({controller, tree, command}: {
             <CommandTreeTargetHeader/>
             {transfer.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
                 <div className="command-tree-section-commands" role="group" aria-label={`${section.label} destinations`} tabIndex={0}>
-                    {section.targets.map(destination => <button key={destination.key} type="button" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
-                        disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label} onClick={event => transfer.transfer(destination, event)}>
+                    {section.targets.map(destination => <button key={destination.key} type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
+                        disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label}
+                        onMouseEnter={() => transfer.previewDestination(destination)} onFocus={() => transfer.previewDestination(destination)}
+                        onClick={event => transfer.transfer(destination, event)}>
                         <span className={`command-tree-row-label${transfer.label === 'Put' ? ' is-gear-target' : ''}`}>{transfer.label === 'Put'
-                            ? <CommandTreeObjectTargetLabel label={destination.label} location={destination.meta}/>
+                            ? <CommandTreeObjectTargetLabel label={destination.label} location={destination.meta}>{getCommandObjectTargetDisplayLabel(destination.value, destination.label)}</CommandTreeObjectTargetLabel>
                             : destination.label}</span>
                         {isTargetDestination(destination.value) && <Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/>}
                     </button>)}

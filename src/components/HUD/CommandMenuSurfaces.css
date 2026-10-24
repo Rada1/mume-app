@@ -2,7 +2,6 @@
 
 /* --- Floating Menu Surfaces --- */
 .command-tree-v2 .command-tree-dock-popup,
-.command-tree-v2 .command-tree-quick-options,
 .command-tree-v2 .command-tree-gear-quick-menu {
     --command-tree-surface: var(--command-panel-surface-hover, #3b3024);
     --command-tree-surface-hover: color-mix(in srgb, var(--command-panel-surface-hover, #3b3024), white 7%);

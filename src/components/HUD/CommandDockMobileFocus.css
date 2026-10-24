@@ -1,0 +1,313 @@
+/** @file CommandDockMobileFocus.css — Full-screen mobile command menu focus surface. */
+
+/* --- Full-screen Menu Section --- */
+/* --- Mobile Command Focus: Replace the crowded log view with full-screen branches --- */
+.app-container.is-mobile .command-tree-mobile-focus-popup.command-tree-v2 {
+    position:fixed !important;
+    inset:0 !important;
+    z-index:2147483000 !important;
+    display:flex !important;
+    flex:1 1 auto;
+    flex-direction:column;
+    align-items:stretch;
+    box-sizing:border-box;
+    width:100vw !important;
+    max-width:none !important;
+    min-width:0;
+    height:100dvh;
+    max-height:none !important;
+    margin:0;
+    padding:calc(env(safe-area-inset-top, 0px) + 8px) 12px calc(env(safe-area-inset-bottom, 0px) + 8px) !important;
+    overflow:hidden !important;
+    background:var(--command-tree-surface, #211b16) !important;
+    box-shadow:none !important;
+    overscroll-behavior:contain;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > .command-tree-header {
+    align-self:stretch;
+    flex:0 0 auto;
+    box-sizing:border-box;
+    width:100%;
+    max-width:none;
+    min-height:44px;
+    margin:0 0 8px;
+    padding:4px 8px;
+    background:var(--command-tree-surface) !important;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > .command-tree-header .command-tree-header-title {
+    font-size:12px;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > .command-tree-header > button {
+    min-width:40px;
+    min-height:40px;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > .command-tree-root-actions,
+.app-container.is-mobile .command-tree-mobile-focus-popup > .command-tree-categories {
+    position:static;
+    display:grid;
+    flex:0 0 auto;
+    grid-template-columns:repeat(6, minmax(0, 1fr));
+    width:100%;
+    min-height:44px;
+    margin:0 0 8px;
+    overflow:visible;
+    background:var(--command-tree-surface);
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > :is(.command-tree-root-actions, .command-tree-categories) > .command-tree-row {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    min-width:0;
+    min-height:44px;
+    padding:5px 2px;
+    border-bottom:2px solid transparent;
+    font-size:10px;
+    line-height:13px;
+    text-align:center;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup > :is(.command-tree-root-actions, .command-tree-categories) > .command-tree-row[aria-expanded="true"] {
+    border-bottom-color:#c9a84c;
+    background:var(--command-tree-surface-raised);
+    color:#fff0bd;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .unified-command-workspace {
+    display:flex;
+    flex:1 1 auto;
+    flex-direction:column;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    min-height:0;
+    overflow:hidden;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branches {
+    display:flex;
+    flex:1 1 auto;
+    flex-direction:row;
+    align-items:stretch;
+    width:100%;
+    max-width:100%;
+    height:auto;
+    min-height:0;
+    max-height:none;
+    padding:0;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    overscroll-behavior-x:contain;
+    background:transparent;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branches > .command-tree-branch {
+    position:relative;
+    flex:0 0 100%;
+    box-sizing:border-box;
+    width:100%;
+    min-width:100%;
+    max-width:100%;
+    height:100%;
+    max-height:none;
+    padding:8px 4px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    scroll-snap-align:start;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) {
+    background:transparent !important;
+    box-shadow:none !important;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)),
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) .command-tree-target-header {
+    background:transparent !important;
+    box-shadow:none !important;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
+    box-sizing:border-box;
+    min-height:42px;
+    margin-bottom:6px;
+    padding:10px 12px;
+    gap:8px;
+    font-size:14px;
+    line-height:18px;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch .command-tree-row-label {
+    font-size:14px;
+    line-height:18px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+}
+.app-container.is-mobile .command-tree-mobile-focus-popup .command-tree-branch .command-tree-section-heading {
+    min-height:26px;
+    margin:12px 6px 4px;
+    font-size:10px;
+    line-height:16px;
+}
+.app-container.is-mobile.kb-open .command-tree-mobile-focus-popup { display:none !important; }
+
+/* --- Readability Mode Split Console --- */
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup {
+    position:fixed !important;
+    inset:0 !important;
+    display:block !important;
+    box-sizing:border-box;
+    width:100vw !important;
+    height:100dvh;
+    max-width:none !important;
+    max-height:none !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    pointer-events:none !important;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup > .command-tree-header {
+    position:fixed;
+    top:calc(50dvh + 8px);
+    right:8px;
+    z-index:2;
+    display:flex;
+    width:auto;
+    min-height:36px;
+    margin:0;
+    padding:2px 4px;
+    background:transparent !important;
+    pointer-events:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .unified-command-workspace {
+    display:contents;
+    width:auto;
+    max-width:none;
+    min-width:0;
+    min-height:0;
+    overflow:visible;
+    pointer-events:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches {
+    position:fixed !important;
+    top:var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
+    right:0 !important;
+    bottom:var(--mobile-readability-menu-bottom, 34px) !important;
+    left:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr);
+    --mobile-command-menu-button-columns:6;
+    --mobile-command-menu-grid:repeat(auto-fit, minmax(calc((100% - (var(--mobile-command-menu-button-columns) - 1) * 4px) / var(--mobile-command-menu-button-columns)), 1fr));
+    grid-template-rows:minmax(0, 1fr);
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(0, 1fr);
+    align-items:stretch;
+    box-sizing:border-box;
+    width:100vw !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:0;
+    max-height:none !important;
+    gap:4px;
+    margin:0;
+    padding:0 4px;
+    overflow:hidden !important;
+    background:transparent;
+    pointer-events:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch:nth-child(2)) {
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    --mobile-command-menu-button-columns:3;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch:nth-child(3)) {
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    --mobile-command-menu-button-columns:2;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-movement-branch) {
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    --mobile-command-menu-button-columns:2;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch {
+    position:relative;
+    box-sizing:border-box;
+    width:auto;
+    min-width:0;
+    max-width:none;
+    height:100%;
+    max-height:none;
+    margin:0;
+    padding:6px 2px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    scroll-snap-align:none;
+    pointer-events:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-main-branch:first-child {
+    grid-column:1;
+    grid-row:1;
+    align-self:stretch;
+    margin-top:0;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-branch:nth-child(n + 2) {
+    grid-row:1;
+    align-self:stretch;
+    height:100%;
+    max-height:100%;
+    margin-top:0;
+    background:var(--command-tree-surface) !important;
+    box-shadow:none !important;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="false"] > .command-tree-branch {
+    grid-row:1;
+    align-self:stretch;
+    margin-top:0;
+    background:var(--command-tree-surface) !important;
+    box-shadow:none !important;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands {
+    display:grid; grid-template-columns:var(--mobile-command-menu-grid); align-items:stretch; gap:4px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands > div {
+    min-width:0;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
+    justify-content:center;
+    min-height:40px;
+    padding:6px 5px;
+    text-align:center;
+    white-space:normal;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands .command-tree-row-label {
+    white-space:normal;
+    overflow-wrap:anywhere;
+    text-align:center;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-row-chevron {
+    display:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-heading {
+    gap:5px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-heading-label {
+    flex:0 1 auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-branch:nth-child(n + 2) .command-tree-section-commands,
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="false"] > .command-tree-branch .command-tree-section-commands {
+    display:grid; grid-template-columns:var(--mobile-command-menu-grid); align-items:stretch; gap:4px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-branch:nth-child(n + 2) :is(.command-tree-row, .terminal-inspect-row, .popover-action-button),
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="false"] > .command-tree-branch :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
+    justify-content:center; min-height:48px; padding:8px 2px; font-size:11px; line-height:16px; text-align:center; white-space:normal;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-branch:nth-child(n + 2) .command-tree-section-commands .command-tree-row-label,
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="false"] > .command-tree-branch .command-tree-section-commands .command-tree-row-label {
+    overflow-wrap:anywhere; text-align:center; white-space:normal;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-root-header {
+    flex-wrap:wrap; gap:2px; padding:4px 0;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branch .command-tree-row-label {
+    min-width:0; font-size:11px; line-height:16px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-heading-label {
+    white-space:normal; overflow-wrap:anywhere;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-content:not([hidden]):has(> .command-tree-row),
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-content > [role="group"]:not(.movement-pad):not(.command-tree-section-commands) {
+    display:grid; grid-template-columns:var(--mobile-command-menu-grid); gap:4px;
+}
+.app-container.is-mobile.readability-mode.kb-open .command-tree-mobile-readability-popup { display:none !important; }

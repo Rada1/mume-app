@@ -59,7 +59,7 @@ const findPlayerLine = (lines: DrawerLine[], name: string) => {
 };
 
 // --- Render Section ---
-export const OnlineCommandTargets: React.FC<OnlineCommandTargetsProps> = ({ onSelect, onPreviewTarget, currentEntityId, color, open = false, hideHeader = false, onOpenChange, excludedNames = [] }) => {
+export const OnlineCommandTargets: React.FC<OnlineCommandTargetsProps> = ({ onSelect, onPreviewTarget, currentEntityId, color, open = false, hideHeader = false, namesOnly = false, onOpenChange, excludedNames = [] }) => {
     const online = useOnlineCommandTargets();
     const excluded = new Set(excludedNames.map(name => name.trim().toLowerCase()));
     const entries = online.entries.filter(entry => !excluded.has(entry.label.trim().toLowerCase()));
@@ -69,7 +69,8 @@ export const OnlineCommandTargets: React.FC<OnlineCommandTargetsProps> = ({ onSe
             className="command-action-target-option command-tree-row" aria-current={currentEntityId === entry.id ? 'true' : undefined}
             onMouseEnter={() => onPreviewTarget?.(entry)}
             onClick={() => onSelect(entry)}>
-            <span className="command-action-target-online-line">{renderOnlinePlayerLine(line, entry.label, color)}</span>
+            {namesOnly ? <span className="command-tree-row-label command-action-target-online-player-name" style={{ color: color || '#61c290' }}>{entry.label}</span>
+                : <span className="command-action-target-online-line">{renderOnlinePlayerLine(line, entry.label, color)}</span>}
         </button>;
     }) : <p className="command-action-target-empty">No online players listed yet.</p>;
     React.useEffect(() => {

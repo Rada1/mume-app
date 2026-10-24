@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useViewport } from '../../hooks/useViewport';
+import { useMessageLogShell } from '../../context/GameContext';
 import { X } from 'lucide-react';
 import { ansiConvert } from '../../utils/ansi';
 import { sanitizeMumeHtml } from '../../utils/securityUtils';
@@ -21,7 +21,7 @@ interface HelpCardProps {
 export const HelpCard: React.FC<HelpCardProps> = ({ 
     helpData, onClose, popoverRef, executeCommand, triggerHaptic 
 }) => {
-    const { isMobile, isLandscape } = useViewport();
+    const { viewport: { isMobile, isLandscape } } = useMessageLogShell();
     const isPortrait = isMobile && !isLandscape;
     const theme = useSettingsStore(state => state.theme);
     const isDarkMode = theme === 'dark';

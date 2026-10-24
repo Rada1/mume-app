@@ -5,9 +5,10 @@ import { useCommandTreeMovement } from '../../hooks/useCommandTreeMovement';
 import { MovementPad } from './MovementPad';
 import './CommandTreeMovement.css';
 // --- Render Section ---
-export const CommandTreeMovement = ({controller}: {controller: ReturnType<typeof useCommandTreeController>}) => {
+export const CommandTreeMovement = ({controller, onCommandExecuted}: {controller: ReturnType<typeof useCommandTreeController>; onCommandExecuted?: () => void}) => {
     const movement = useCommandTreeMovement(controller);
     return <div className="command-tree-movement-pad" aria-label="Movement directions">
-        <MovementPad layout="menu" onCommand={movement.move} disabled={movement.disabled}/>
+        <MovementPad layout="menu" onPreviewDirection={direction => controller.game.setCommandPreview?.(direction || 'move')}
+            onCommand={command => {movement.move(command); onCommandExecuted?.();}} disabled={movement.disabled}/>
     </div>;
 };

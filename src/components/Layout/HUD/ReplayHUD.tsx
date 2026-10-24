@@ -4,20 +4,19 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useUI } from '../../../context/GameContext';
+import { useUI, useMessageLogShell } from '../../../context/GameContext';
 import type { FlagEntry } from '../../../types/session';
 import { ReplayHUDMinimized } from './ReplayHUDMinimized';
 import { ReplayHUDExpanded } from './ReplayHUDExpanded';
 import type { ReplayFlagMarker } from './ReplayHUDTypes';
 
-import { useViewport } from '../../../hooks/useViewport';
 import { useSessionStore } from '../../../stores/useSessionStore';
 
 export const ReplayHUD: React.FC = () => {
     // --- Logic Section ---
     const { replayer } = useUI();
     const { log, state, seek, performSearch, setTrimRange } = replayer;
-    const { isMobile } = useViewport();
+    const { viewport: { isMobile } } = useMessageLogShell();
 
     const flagMarkers = useMemo(() => {
         if (!log?.log) return [];

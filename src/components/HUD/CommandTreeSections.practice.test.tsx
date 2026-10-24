@@ -24,9 +24,9 @@ it('keeps Training unique and opens skill targets from the Practice command',asy
  const root=createRoot(host);
  try{
   await act(async()=>root.render(<CommandTreeSections controller={controller} tree={tree}/>));
-  expect([...host.querySelectorAll('h3')].filter(node=>node.textContent==='Training')).toHaveLength(1);
+  expect([...host.querySelectorAll('.command-tree-section-heading-label')].filter(node=>node.textContent==='Training')).toHaveLength(1);
   expect(host.textContent).not.toContain('Bash');
-  await act(async()=>host.querySelector('button')!.click());
+  await act(async()=>host.querySelector<HTMLButtonElement>('.command-tree-row')!.click());
   expect(chooseCommand).toHaveBeenCalledWith(COMMAND_TREE_PRACTICE_BUTTON);
   const targets=renderToStaticMarkup(<CommandTreePracticeTargets controller={controller}/>);
   expect(targets).toContain('Practice skill targets');

@@ -38,3 +38,42 @@
         font-size: 0.85rem !important;
     }
 }
+
+/* Inline popovers render in a body-level portal, so use the viewport breakpoint
+   instead of an .app-container ancestor to keep the mobile layout rules active. */
+@media (max-width: 720px) {
+    .terminal-inline-popover .inline-action-list .inline-action-subgroup {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 4px;
+        align-items: stretch;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup-label {
+        grid-column: 1 / -1;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup :is(.terminal-action-row, .terminal-inspect-row) {
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+        min-height: 48px !important;
+        margin: 0 !important;
+        padding: 8px 4px !important;
+        text-align: center;
+        white-space: normal !important;
+        overflow-wrap: anywhere;
+    }
+
+    .terminal-inline-popover .terminal-action-command {
+        display: none !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row > span:first-child {
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+}

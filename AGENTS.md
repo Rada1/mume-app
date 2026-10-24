@@ -1,5 +1,13 @@
 # AGENTS.md: AI Orchestration & Developer Blueprint
 
+Performance capture: `/perf` includes React Client/Log/Commands render boundaries and supported-browser slow-frame script/layout attribution. See `docs/client-performance-capture.md` and `src/utils/uiPerformance.ts`. React durations are inclusive and require a development/profiling build; worker map idle intervals are not stalls.
+
+Command-tree eligibility is lazy per group and target snapshot. Root navigation must read group labels without materializing every `group.buttons` array; only viewed groups and explicitly requested command targets need checks. Keep catalog normalization/sorting independent of live target filtering.
+
+Terminal sizing lives in `src/hooks/useTerminalLayout.ts`, called by `useViewport.ts`. Coalesce resize notifications per animation frame, cache font probes, and avoid unchanged CSS writes. Font loading must invalidate the cached probe; cleanup must cancel scheduled work.
+
+Only GameProvider owns `useViewport()`. Replay/help consumers must read the shared viewport context to avoid duplicate layout/keyboard observers and competing terminal CSS writes. `/perf` isolated-command latency comes from `src/utils/commandLatency.ts`; send-to-text is browser-observed latency, and log commit is before paint. Do not attribute overlapping/spammed commands as isolated replies.
+
 This document is the primary onboarding and operational guide for AI agents (Gemini CLI, Jules, etc.) and human developers. It defines the system's "Mental Model" to ensure high-speed, high-accuracy contributions.
 
 ## 🧠 System Mental Model
@@ -172,6 +180,8 @@ ParleyChannelChip.tsx and useParleyChannelMenu.ts share the destination cascade 
 
 Nested command, inventory/equipment, and parley menus use menuVerticalPlacement.ts to choose upward or downward placement based on available viewport space. Nested columns stay aligned with their parent row; the chosen side also bounds their scroll height. useUpwardCommandBranches.ts retains its existing name but now supports both directions.
 
+Equipment and Inventory quick menus use `useCommandGearQuickMenu.ts` for backwards selection: container → optional contained item → action. Mobile reserves two of six columns each for actions, contents, and gear when a container is open; without contents, actions and gear share the width. Contained items use `cat-container-item` with the explicit parent noun and preserve indexed selectors for commands such as `get 2.sword backpack`. Selecting the parent again restores its own actions without sending a command.
+
 The header's former Group panel is now an Entities window. GroupStatusWindow.tsx renders Group Members and Room Entities sections; useRoomEntitiesPanel.ts projects shared room-character entries, keeps listed group members out of the other-entities section, and updates selected-target metadata plus the current target without executing game actions. GroupTableView.tsx supports an optional member-selection callback. Existing floating group geometry/preferences remain compatible.
 
 Entities-panel selection follows canSetTargetChipFromCategory: only NPCs and enemies become the command target. Their active row shares the command-chip red highlight and crosshair indicator; selecting other characters updates selection without changing the command target.
@@ -188,4 +198,5 @@ Command panel eligibility prepares `getEligibleActionButtonIds` from `src/utils/
 
 
 ## Mobile Command Performance
+Mobile readability command menus use three fixed lanes in the bottom half: commands, first targets, then second targets. `CommandDockMobileFocus.css` keeps each menu in a two-column button grid with independent vertical scrolling; the log remains visible above. Tap a targeted command to open its existing target branch, then tap a target to execute. Commands without targets execute directly. Execution keeps the menus open regardless of pin state. Desktop and regular mobile retain their existing interactions.
 `useCommandDockPosition.ts` schedules measurements only for open menus and ignores unrelated log scrolling. Preserve equal-position state reuse and the branch aligner's cached transform offsets. Root menus start at the bottom on category changes, not on each eligibility refresh. Touch must not schedule desktop hover previews. Ordinary text uses run spans when word effects are inactive. PERF includes command-dispatch-to-socket, text queue wait, total chunk processing (including worker waits), and socket backlog; these are not network RTT or paint latency. See `docs/webcockpit-performance-review.md`.

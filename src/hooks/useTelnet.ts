@@ -13,6 +13,7 @@ import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
 import { PipelineOrchestrator } from '../services/parser/PipelineOrchestrator';
 import { perfMonitor } from '../utils/perfMonitor';
 import { processIncomingTextChunk } from './telnetTextQueue';
+import { commandLatency } from '../utils/commandLatency';
 import { getRoom as getActiveRoom } from '../stores/useRoomStore';
 import { getCombat as getActiveCombat } from '../stores/useCombatStore';
 import { getVitals as getActiveVitals } from '../stores/useVitalsStore';
@@ -116,6 +117,7 @@ export function useTelnet(config: TelnetConfig) {
     }, [isConnected, sendGmcp]);
 
     const processText = (text: string) => {
+        if (text.trim()) commandLatency.recordText();
         bufferRef.current += text;
         
         const currentBuffer = bufferRef.current;

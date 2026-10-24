@@ -16,3 +16,36 @@
     touch-action: pan-x pan-y pinch-zoom !important;
     overscroll-behavior-x: contain;
 }
+
+/* --- Command Panel Split Section --- */
+/* Sent commands need a full row even when game output keeps its natural width. */
+.app-container.is-mobile .message-log.keep-text-on-one-line .message.user {
+    min-width:100%;
+}
+
+.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) {
+    display:flex;
+    flex-direction:column;
+}
+
+.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) > .message-log {
+    flex:1 1 0;
+    min-height:0;
+}
+
+.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) > .command-dock-shell-mobile {
+    flex:0 0 50%;
+    height:50%;
+    min-height:0;
+    max-height:50%;
+    box-sizing:border-box;
+    grid-template-rows:minmax(44px,auto) minmax(42px,auto) minmax(44px,auto) minmax(0,1fr);
+}
+
+@media (max-width:1024px) {
+    .app-container.is-mobile.readability-mode.kb-open .message-log-container:has(> .command-dock-shell-mobile) > .command-dock-shell-mobile {
+        flex:0 0 auto;
+        height:auto;
+        max-height:none;
+    }
+}

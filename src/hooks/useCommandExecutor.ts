@@ -4,6 +4,7 @@ import { extractNoun } from '../utils/gameUtils';
 import { MapperRef } from '../components/Mapper/mapperTypes';
 import { getExitTargetId, getGateState } from '../components/Mapper/mapperUtils';
 import { useSettingsStore } from '../stores/useSettingsStore';
+import { commandLatency } from '../utils/commandLatency';
 
 // --- Command Registry Imports ---
 import { CommandRegistry } from '../services/command/CommandRegistry';
@@ -130,6 +131,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         // --- Send bytes ASAP; GMCP remains authoritative for mapper door state. ---
         if (status === 'connected') {
+            if (d.gameState === 'playing') commandLatency.recordSend(!silent && !isSystem);
             if (typeof window !== 'undefined') {
                 if (!isSystem && /^scout(?:\s|$)/i.test(finalCmd.trim())) {
                     window.dispatchEvent(new CustomEvent('mume-mapper-scout-state', {

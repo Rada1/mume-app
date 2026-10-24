@@ -13,7 +13,6 @@ interface InlineTraitActionGroupProps {
     section: { key: string; label: string };
     buttons: CustomButton[];
     inspectionCommands: Array<'look' | 'consider'>;
-    targetContext: string | null;
     requestInspection: (kind: 'look' | 'consider') => void;
     renderButton: (button: CustomButton) => React.ReactNode;
 }
@@ -27,7 +26,6 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
     section,
     buttons,
     inspectionCommands,
-    targetContext,
     requestInspection,
     renderButton
 }) => {
@@ -71,18 +69,19 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
                 <span className={`inline-action-group-chevron${isCollapsed ? ' is-collapsed' : ''}`} aria-hidden="true">⌄</span>
             </button>
             <div className="inline-action-list" id={contentId} hidden={isCollapsed}>
-                {inspectionCommands.map(kind => (
-                    <button
-                        key={`inspect-${kind}`}
-                        type="button"
-                        className="terminal-inspect-row"
-                        onPointerDown={event => event.stopPropagation()}
-                        onClick={() => requestInspection(kind)}
-                    >
-                        <span style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
-                        <span>&lt;{kind === 'look' ? 'look' : 'con'} {targetContext}&gt;</span>
-                    </button>
-                ))}
+                {inspectionCommands.length > 0 && <div className="inline-action-subgroup inline-action-inspection-subgroup">
+                    {inspectionCommands.map(kind => (
+                        <button
+                            key={`inspect-${kind}`}
+                            type="button"
+                            className="terminal-inspect-row"
+                            onPointerDown={event => event.stopPropagation()}
+                            onClick={() => requestInspection(kind)}
+                        >
+                            <span style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
+                        </button>
+                    ))}
+                </div>}
                 {Array.from(subgroupMap.entries()).map(([label, groupButtons]) => (
                     <div className="inline-action-subgroup" key={label || section.key}>
                         {hasSubgroups && <span className="inline-action-subgroup-label">{label}</span>}
