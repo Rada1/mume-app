@@ -43,9 +43,17 @@
 }
 
 @media (max-width:1024px) {
-    .app-container.is-mobile.readability-mode.kb-open .message-log-container:has(> .command-dock-shell-mobile) > .command-dock-shell-mobile {
-        flex:0 0 auto;
-        height:auto;
-        max-height:none;
+    /* While typing, collapse the split command workspace to its input row. */
+    .app-container.is-mobile.readability-mode.kb-open .message-log-container:has(.command-dock-shell-mobile) .command-dock-shell-mobile {
+        flex:0 0 auto !important;
+        height:auto !important;
+        min-height:0 !important;
+        max-height:none !important;
+        grid-template-rows:minmax(44px, auto) !important;
+    }
+
+    .app-container.is-mobile.readability-mode.kb-open .command-dock-shell-mobile :is(.command-dock-actions, .command-dock-controls, .command-dock-summary, .command-dock-menu),
+    .app-container.is-mobile.readability-mode.kb-open .docked-panel.command-docked-panel {
+        display:none !important;
     }
 }

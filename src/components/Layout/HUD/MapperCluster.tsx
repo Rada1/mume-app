@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Mapper } from '../../Mapper/Mapper';
 import { LineCluster } from './LineCluster';
 import { CommandDeck } from '../../HUD/CommandDeck';
@@ -8,6 +9,7 @@ import { useSettingsStore } from '../../../stores/useSettingsStore';
 import { GameContextType, UIContextType } from '../../../context/GameContext/types';
 import { ArrowLeft, BookOpen, Info, Menu, ChevronLeft, HelpCircle, Play, Plus, KeyRound, Clock, Link2, Activity, MapPin, Timer, UserCircle, LogOut } from 'lucide-react';
 import { useMapper } from '../../../context/useMapper';
+import { useMobileMovementMapSlot } from '../../../hooks/useMobileMovementMapSlot';
 import { MapFilterBar } from '../../Mapper/MapFilterBar';
 import { MapActionButtons } from './MapActionButtons';
 import { CounterRotatedContent } from '../CounterRotatedContent';
@@ -36,7 +38,6 @@ interface MapperClusterProps {
     isMobile: boolean;
     mapperRef: React.RefObject<any>;
     dragState: { id: string; type: string; startX: number; startY: number } | null;
-    isLandscape?: boolean;
     wasDraggingRef: React.MutableRefObject<boolean>;
     heldButton: any;
     heldButtonRef?: React.MutableRefObject<any>;
@@ -48,7 +49,7 @@ interface MapperClusterProps {
 
 export const MapperCluster: React.FC<MapperClusterProps> = ({
     uiPositions, isEditMode, handleDragStart, characterName, isMobile, mapperRef,
-    dragState, isLandscape, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
+    dragState, wasDraggingRef, heldButton, setHeldButton, setCommandPreview,
     handleSend, handleInputSwipe
 }) => {
     const {
@@ -57,6 +58,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         inlineCategories, gameState, currentTerrain, accountState, setAccountState,
     } = useGame() as GameContextType;
     const { target, activePrompt } = useVitals();
+    const movementMapSlot = useMobileMovementMapSlot(isMobile && viewport.isLandscape);
     const {
         ui, setUI, setPopoverState,
         handleTabClick, toggleMap
@@ -257,14 +259,14 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         };
     }, [setAccountState, triggerHaptic]);
 
-    // On mobile portrait, we show the gutter. On desktop/landscape, Mapper is in DrawerManager
-    if (!isMobile || isLandscape || (gameState === 'disconnected' && !isReplaying) || (gameState === 'account' && !isReplaying)) {
+    // The mobile map surface can be shown as a preview beside movement commands.
+    if (!isMobile || (gameState === 'disconnected' && !isReplaying) || (gameState === 'account' && !isReplaying)) {
         return null;
     }
 
     const isShown = ui.mapExpanded;
     
-    return (
+    const mobileMapPanel = (
         <div
             className={`mobile-map-panel ${isShown ? 'map-expanded' : ''}`}
             style={{
@@ -396,4 +398,5 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
             </div>
         </div>
     );
+    return movementMapSlot ? createPortal(mobileMapPanel, movementMapSlot) : mobileMapPanel;
 };

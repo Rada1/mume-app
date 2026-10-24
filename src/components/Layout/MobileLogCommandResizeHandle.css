@@ -1,0 +1,206 @@
+/* @file MobileLogCommandResizeHandle.css — Mobile log and command split geometry. */
+
+/* --- Mobile split frame --- */
+.mobile-log-command-split {
+    display: contents;
+}
+
+.mobile-log-command-resize-handle {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .app-container.is-mobile:not(.state-account) .message-log-wrapper {
+        align-items: stretch !important;
+        overflow: hidden !important;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-split {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-width: 0;
+        min-height: 0;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .app-container.is-mobile:not(.state-account) .desktop-center-column {
+        flex: 1 1 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0;
+        min-height: 0;
+        height: 100%;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-command-column {
+        display: flex;
+        flex: 0 0 var(--mobile-command-area-size, auto);
+        flex-direction: column;
+        box-sizing: border-box;
+        min-width: 0;
+        min-height: 0;
+        overflow: hidden;
+        background: var(--bg-app, #090c12);
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-command-column:has(.command-dock-shell-mobile) {
+        flex-basis: var(--mobile-command-area-size, 35dvh);
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-shell-mobile {
+        flex: 1 1 auto;
+        width: 100%;
+        max-width: 100%;
+        min-height: 0;
+        align-content: start;
+        overflow: auto !important;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle {
+        position: relative;
+        z-index: 80;
+        display: block;
+        flex: 0 0 12px;
+        width: 100%;
+        height: 12px;
+        cursor: row-resize;
+        touch-action: none;
+        outline: none;
+        background: rgba(12, 15, 22, 0.92);
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle::after {
+        position: absolute;
+        top: 5px;
+        left: 50%;
+        width: 36px;
+        height: 2px;
+        border-radius: 2px;
+        background: rgba(201, 168, 76, 0.3);
+        content: '';
+        transform: translateX(-50%);
+        transition: background 0.15s ease, box-shadow 0.15s ease, width 0.15s ease;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle:hover::after,
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle:focus-visible::after,
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle.is-active::after {
+        width: 56px;
+        background: rgba(201, 168, 76, 0.9);
+        box-shadow: 0 0 8px rgba(201, 168, 76, 0.6);
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle:focus-visible {
+        outline: 1px dashed #c9a84c;
+        outline-offset: -3px;
+    }
+
+    .app-container.is-mobile.kb-open .mobile-log-command-resize-handle {
+        display: none;
+    }
+
+    .app-container.is-mobile.kb-open .mobile-command-column {
+        flex: 0 0 auto;
+        width: 100%;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-split {
+        flex-direction: column !important;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-log-command-resize-handle {
+        flex: 0 0 12px;
+        width: 100% !important;
+        height: 12px !important;
+        cursor: row-resize;
+    }
+
+    .app-container.is-mobile:not(.state-account) .command-tree-mobile-focus-popup.command-tree-v2 {
+        top: var(--mobile-command-panel-top, 65dvh) !important;
+        right: var(--mobile-command-panel-right, 0px) !important;
+        bottom: var(--mobile-command-panel-bottom, 0px) !important;
+        left: var(--mobile-command-panel-left, 0px) !important;
+        width: auto !important;
+        height: auto !important;
+        max-width: none !important;
+        max-height: none !important;
+        padding: 8px 12px !important;
+    }
+
+    .app-container.is-mobile.readability-mode:not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches {
+        right: var(--mobile-command-panel-right, 0px) !important;
+        left: var(--mobile-command-panel-left, 0px) !important;
+        width: auto !important;
+        max-width: none !important;
+    }
+}
+
+@media (max-width: 1024px) and (orientation: landscape) {
+    .app-container.is-mobile.is-landscape:not(.state-account) .content-layer .message-log-wrapper,
+    .app-container.is-mobile.is-landscape:not(.state-account) .content-layer .message-log-wrapper.chat-window-active {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-split {
+        flex-direction: row !important;
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-split > .desktop-center-column {
+        flex: 1 1 0 !important;
+        width: auto !important;
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-command-column.landscape-command-column {
+        flex: 0 0 var(--mobile-command-area-size, 50%) !important;
+        width: auto !important;
+        height: 100% !important;
+        border-left: 0 !important;
+        border-right: 1px solid rgba(201, 168, 76, 0.22);
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-resize-handle {
+        flex: 0 0 12px;
+        width: 12px !important;
+        height: 100% !important;
+        cursor: col-resize;
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-resize-handle::after {
+        top: 50%;
+        left: 5px;
+        width: 2px;
+        height: 36px;
+        transform: translateY(-50%);
+    }
+
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-resize-handle:hover::after,
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-resize-handle:focus-visible::after,
+    .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-resize-handle.is-active::after {
+        width: 2px;
+        height: 56px;
+    }
+}
+
+/* --- Keep the portrait character info line on the client bottom edge --- */
+@media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-summary {
+        position: fixed;
+        z-index: 65001;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        box-sizing: border-box;
+        padding: 4px 0 0;
+    }
+
+    .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-summary .command-tree-you-summary {
+        width: 100%;
+        margin: 0;
+    }
+}

@@ -2270,18 +2270,6 @@ span.inline-btn {
     z-index: 10;
 }
 
-.message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-    border-color: color-mix(in srgb, var(--glow-color, #ffffff), #ffffff 18%) !important;
-    /* Crisp double ring instead of a blurred glow. A blurred box-shadow is a per-element
-       CPU paint, and this rule matches EVERY inline button in the (non-virtualized) log,
-       so the blur turned target-selection into a full-log paint storm. A spread-only ring
-       paints almost for free. (Same trade-off already made for .target-highlighter above.) */
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18),
-        0 0 0 2px color-mix(in srgb, var(--glow-color, #ffffff), transparent 55%) !important;
-    color: var(--glow-color, #ffffff) !important;
-}
-
 .room-name-inline {
     --glow-color: currentColor;
     text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
@@ -3322,8 +3310,7 @@ span.inline-btn {
 .message-content .inline-btn[data-category="npc"],
 .message-content .inline-btn.auto-item,
 .message-content .inline-btn.auto-obj,
-.message-content .inline-btn[data-category="object"],
-.message-log-container.tactical-targeting-active .message-log .message-content .inline-btn:not(.comm-bubble):not(.reply-btn):not([data-targetable="false"]) {
+.message-content .inline-btn[data-category="object"] {
     color: var(--glow-color, var(--mume-wiki-link-color, #c9a84c)) !important;
     text-shadow: none !important;
 }

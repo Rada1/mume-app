@@ -323,6 +323,14 @@
         z-index: 65001 !important;
     }
 
+    /* Keep Chat and Help above the command dock and lower app-shell command menus beneath them. */
+    .app-container.is-mobile .content-layer.has-client-panel-overlay :is(.docked-panel.help-panel, .docked-panel.chat-window-panel:not(.shop-panel)) {
+        z-index: 65002 !important;
+    }
+    .app-container.is-mobile:has(.content-layer.has-client-panel-overlay) .command-tree-mobile-focus-popup {
+        z-index: 64999 !important;
+    }
+
     .app-container .gear-panel > .gear-shop-panel .chat-window-header,
     .app-container .gear-panel > .gear-shop-panel .shop-panel-tab-bar {
         background: transparent;

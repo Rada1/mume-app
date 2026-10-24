@@ -17,7 +17,6 @@ import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { getDockedWidth } from '../../utils/dockedPanelUtils';
 import { useRetainedLogWidth } from '../../hooks/useRetainedLogWidth';
 import { LineCluster } from './HUD/LineCluster';
-import { RotatedStatusPanel } from './RotatedStatusPanel';
 import { CounterRotatedContent } from './CounterRotatedContent';
 import { CharacterCard } from '../HUD/CharacterCard';
 import { useCharacterCardStore } from '../../stores/useCharacterCardStore';
@@ -45,6 +44,7 @@ import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } fr
 import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
 import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
 import { SwipeWheelCellDialogHost } from '../Controls/GameButton/SwipeWheelCellDialog';
+import { MobileLogCommandResizeHandle } from './MobileLogCommandResizeHandle';
 
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
@@ -57,7 +57,6 @@ interface MainContentLayerProps {
     handleSend: (e?: React.FormEvent) => void;
     handleInputSwipe: (dir: 'up' | 'down' | 'left' | 'right' | 'sw') => void;
     commandPreview: string | null;
-    heldButton: any;
     mumeEditState: MumeEditState;
     setMumeEditState: React.Dispatch<React.SetStateAction<MumeEditState>>;
 }
@@ -69,7 +68,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     handleSend,
     handleInputSwipe,
     commandPreview,
-    heldButton,
     mumeEditState,
     setMumeEditState
 }) => {
@@ -402,20 +400,10 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const showMobileAccountExperience = isMobile && isAccountScreen && useMobileAccountPanels;
     const shouldShowAccountInput = isAccountScreen;
 
-    // Tactical-targeting flag, scoped to the log container instead of the root
-    // .app-container. Toggling a class on the root invalidates style matching for the
-    // entire tree; scoping it here bounds the recalc to the message log subtree.
-    const heldBtnActionType = typeof heldButton?.id === 'string'
-        ? btn.buttons.find((b: any) => b.id === heldButton.id)?.actionType
-        : undefined;
-    const isTacticalTargetingActive = !!heldButton
-        && !heldButton.didFire
-        && typeof heldButton.id === 'string'
-        && (heldButton.id.startsWith('tactical-') || heldButton.id === 'map-long-press')
-        && heldBtnActionType !== 'modifier';
-    const isRotatedStatusPanel = viewport.isRotatedLandscape && !isAccountScreen;
+    const isLandscapeCommandLayout = viewport.isMobile && viewport.isLandscape && !isAccountScreen;
     const shouldRenderDockedInput = !(isReplaying && gameState === 'account');
-    const useCommandDockToolbar = !viewport.isRotatedLandscape && !isAccountScreen && (isCommandPanelOpen || (!viewport.isMobile && isSkillsPanelOpen));
+    const useMobileLogCommandSplit = viewport.isMobile && !isAccountScreen && shouldRenderDockedInput;
+    const useCommandDockToolbar = isLandscapeCommandLayout || (!viewport.isRotatedLandscape && !isAccountScreen && (isCommandPanelOpen || (!viewport.isMobile && isSkillsPanelOpen)));
     const dockedInput = shouldRenderDockedInput ? (
         useCommandDockToolbar ? (
             <div className={`command-tree-v2 command-dock-shell${viewport.isMobile ? ' command-dock-shell-mobile' : ''}`}>
@@ -436,9 +424,20 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             {viewport.isMobile && !viewport.isRotatedLandscape && !isAccountScreen && !isReadabilityMode && <MobileStateControls />}
         </>)
     ) : null;
+    const shouldShowCommandPanel = isCommandPanelOpen || isSkillsPanelOpen || isLandscapeCommandLayout;
+    const commandPanel = shouldShowCommandPanel && (
+        <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={viewport.isMobile ? (isSkillsPanelOpen ? 'Skills and Practice panel' : isReadabilityMode ? 'Command panel' : 'Command Guide panel') : 'Action panel'}>
+            {!viewport.isMobile && isAccountScreen && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
+            {isAccountScreen ? <MobileAccountExperience /> : isSkillsPanelOpen
+                ? viewport.isMobile
+                    ? <RightActionPanel skillsOnly onClose={() => setIsMobileSkillsPanelOpen(false)} />
+                    : <CommandGuidePanel initialScope="self" onClose={() => setIsSkillsPanelOpen(false)} />
+                : <CommandGuidePanel initialScope="room" onClose={() => setIsCommandPanelOpen(false)} />}
+        </aside>
+    );
     return (
         <div
-            className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels has-docked-panel-surface' : ''}${shouldBlurDockedPanels ? ' docked-panels-blurred' : ''}`}
+            className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels has-docked-panel-surface' : ''}${shouldBlurDockedPanels ? ' docked-panels-blurred' : ''}${viewport.isMobile && !isAccountScreen && (isHelpOpen || showChatWindow) ? ' has-client-panel-overlay' : ''}`}
             data-active-docked-panel={activeDockedPanels[0]}
             style={{
                 '--desktop-command-panel-width': isAccountScreen ? 'var(--desktop-character-width, 260px)' : undefined,
@@ -537,6 +536,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
 
             <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 {isCharacterCardOpen && !isAccountScreen && viewport.isMobile && <CharacterCard />}
+                <div className="mobile-log-command-split">
                 <div
                     className="desktop-center-column"
                     style={{
@@ -547,22 +547,15 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         overflow: 'hidden',
                         position: 'relative',
                         maxWidth: viewport.isMobile ? 'none' : 'var(--desktop-log-width, clamp(600px, 38vw, 1000px))',
-                        width: '100%',
+                        width: isLandscapeCommandLayout ? '50%' : '100%',
                         margin: viewport.isMobile ? 0 : '0 auto'
                     }}
                 >
                     {showMobileAccountExperience ? (
                         <MobileAccountExperience />
                     ) : <>
-                    {isRotatedStatusPanel && (
-                        <RotatedStatusPanel
-                            handleSend={handleSend}
-                            handleInputSwipe={handleInputSwipe}
-                            commandPreview={commandPreview}
-                        />
-                    )}
                     <div
-                        className={`message-log-container${isTacticalTargetingActive ? ' tactical-targeting-active' : ''}${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
+                        className={`message-log-container${isImmersionMode ? ` log-terrain-${getRoomTerrainVisualKey(roomCardTerrain)} log-lighting-${lighting} log-weather-${weather} log-zone-${zoneKey} log-lore-${zoneVisualKey}` : ''}`}
                         ref={logContainerRef}
                         onPointerDown={event => {
                             handleLogPointerDown(event);
@@ -625,7 +618,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             />
                         )}
                         {!isAccountScreen && <QuickButtonBar />}
-                        {(!viewport.isRotatedLandscape || isAccountScreen) && dockedInput}
+                        {!useMobileLogCommandSplit && !isLandscapeCommandLayout && dockedInput}
                         </CounterRotatedContent>
                     </div>
 
@@ -633,17 +626,18 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     </>}
 
                 </div>
-                {!viewport.isMobile && !isAccountScreen && <ClientPanelStack />}
-                {(isCommandPanelOpen || isSkillsPanelOpen) && (
-                    <aside className="docked-panel command-docked-panel" style={getPanelStyle('commands')} aria-label={viewport.isMobile ? (isSkillsPanelOpen ? 'Skills and Practice panel' : isReadabilityMode ? 'Command panel' : 'Command Guide panel') : 'Action panel'}>
-                        {!viewport.isMobile && isAccountScreen && <DrawerResizeHandle handleType="left" widthVar="--desktop-character-width" minWidth={14} maxWidth={50} />}
-                        {isAccountScreen ? <MobileAccountExperience /> : isSkillsPanelOpen
-                            ? viewport.isMobile
-                                ? <RightActionPanel skillsOnly onClose={() => setIsMobileSkillsPanelOpen(false)} />
-                                : <CommandGuidePanel initialScope="self" onClose={() => setIsSkillsPanelOpen(false)} />
-                            : <CommandGuidePanel initialScope="room" onClose={() => setIsCommandPanelOpen(false)} />}
-                    </aside>
+                {useMobileLogCommandSplit && (
+                    <>
+                        <MobileLogCommandResizeHandle axis={isLandscapeCommandLayout ? 'vertical' : 'horizontal'} />
+                        <div className={`mobile-command-column${isLandscapeCommandLayout ? ' landscape-command-column' : ''}`}>
+                            {dockedInput}
+                            {commandPanel}
+                        </div>
+                    </>
                 )}
+                </div>
+                {!viewport.isMobile && !isAccountScreen && <ClientPanelStack />}
+                {!useMobileLogCommandSplit && !isLandscapeCommandLayout && commandPanel}
                 {isGearPanelOpen && !isAccountScreen && (
                     <GearPanel style={getPanelStyle('gear')} />
                 )}

@@ -5,6 +5,7 @@
 
 // --- Logic Section ---
 import React, { FC, useState } from 'react';
+import { useUIStore } from '../../stores/useUIStore';
 
 export interface RightPanelTargetBarProps {
     target: string | null;
@@ -14,12 +15,14 @@ export interface RightPanelTargetBarProps {
 
 // --- Render Section ---
 export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setTarget, triggerHaptic }) => {
+    const clearObjectSelection = useUIStore(state => state.clearObjectSelection);
     const [isEditingTarget, setIsEditingTarget] = useState(false);
     const [targetDraft, setTargetDraft] = useState('');
 
     const handleSave = () => {
         const trimmed = targetDraft.trim();
         setTarget(trimmed || null);
+        if (!trimmed || trimmed !== target) clearObjectSelection();
         triggerHaptic?.(15);
         setIsEditingTarget(false);
     };
@@ -71,6 +74,7 @@ export const RightPanelTargetBar: FC<RightPanelTargetBarProps> = ({ target, setT
                                 e.stopPropagation();
                                 triggerHaptic?.(15);
                                 setTarget(null);
+                                clearObjectSelection();
                             }}
                         >
                             ✕

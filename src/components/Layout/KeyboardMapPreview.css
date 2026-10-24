@@ -229,7 +229,7 @@ body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mo
     }
 }
 
-/* --- Readability Movement Cascade Minimap --- */
+/* --- Movement Branch Minimap --- */
 @media (max-width: 1024px) and (orientation: portrait) {
     .app-container.is-mobile.readability-mode:not(.kb-open):has(.command-tree-mobile-readability-popup) .mobile-map-panel {
         display: none !important;
@@ -251,3 +251,13 @@ body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mo
         -webkit-mask-image: none !important;
     }
 }
+
+/* Keep the minimap hidden for other docked panels, but leave Movement's third column visible. */
+@media (max-width: 1024px) {
+    .app-container.is-mobile:has(.content-layer.has-docked-panels):not(:has(.command-tree-mobile-readability-popup .is-movement-branch)) .mobile-map-panel {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+}
+

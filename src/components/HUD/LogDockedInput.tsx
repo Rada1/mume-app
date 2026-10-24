@@ -74,6 +74,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         practice,
         executeCommand,
         setTarget,
+        clearObjectSelection,
         triggerHaptic,
         characterName,
         whoList,
@@ -163,10 +164,12 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     }, [isEditingTarget]);
 
     const finishTargetEdit = useCallback((value: string) => {
-        setTarget(value.trim() || null);
+        const nextTarget = value.trim() || null;
+        setTarget(nextTarget);
+        if (!nextTarget || nextTarget !== target) clearObjectSelection();
         setIsEditingTarget(false);
         inputRef.current?.focus();
-    }, [setTarget]);
+    }, [clearObjectSelection, setTarget, target]);
 
     const beginTargetEdit = useCallback(() => {
         setIsTargetPickerOpen(false);
@@ -179,8 +182,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         triggerHaptic?.(10);
         setIsEditingTarget(false);
         setTarget(null);
+        clearObjectSelection();
         inputRef.current?.blur();
-    }, [setTarget, triggerHaptic]);
+    }, [clearObjectSelection, setTarget, triggerHaptic]);
 
     const toggleTargetPicker = useCallback(() => {
         triggerHaptic?.(10);
@@ -189,16 +193,20 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const chooseGlobalTarget = useCallback((value: string) => {
         setTarget(value);
+        if (value !== target) clearObjectSelection();
         if (value !== (target || '')) triggerHaptic?.(15);
         setIsTargetPickerOpen(false);
-    }, [setTarget, target, triggerHaptic]);
+    }, [clearObjectSelection, setTarget, target, triggerHaptic]);
 
     const toggleAutoTarget = useCallback(() => {
-        if (!autoTargetEnabled) setTarget(null);
+        if (!autoTargetEnabled) {
+            setTarget(null);
+            clearObjectSelection();
+        }
         setAutoTargetEnabled(!autoTargetEnabled);
         triggerHaptic?.(15);
         setIsTargetPickerOpen(false);
-    }, [autoTargetEnabled, setAutoTargetEnabled, setTarget, triggerHaptic]);
+    }, [autoTargetEnabled, clearObjectSelection, setAutoTargetEnabled, setTarget, triggerHaptic]);
 
     const openManualTargetEntry = useCallback(() => {
         setAutoTargetEnabled(false);

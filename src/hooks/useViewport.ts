@@ -44,13 +44,14 @@ export function useViewport(
     }, [windowWidth, uiMode]);
 
     const isPhysicalLandscape = useMemo(() => {
-        if (uiMode === 'landscape') return true;
         if (uiMode === 'portrait' || uiMode === 'desktop') return false;
+        // A landscape preference selects mobile sizing, but the side-by-side
+        // layout only applies while the viewport itself is landscape.
         return isMobile && windowWidth > window.innerHeight;
     }, [isMobile, windowWidth, uiMode]);
-    // Mobile landscape keeps the portrait component tree and rotates the whole app.
-    const isRotatedLandscape = isMobile && isPhysicalLandscape;
-    const isLandscape = isPhysicalLandscape && !isRotatedLandscape;
+    // Mobile landscape uses its native orientation and receives a side-by-side layout.
+    const isRotatedLandscape: boolean = false;
+    const isLandscape = isPhysicalLandscape;
 
     const scrollToBottom = useCallback((force = false, instant = false, _source = 'unknown') => {
         if (!scrollContainerRef.current) return;

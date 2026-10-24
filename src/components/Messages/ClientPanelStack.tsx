@@ -71,6 +71,7 @@ export const ClientPanelStack: React.FC = () => {
         <aside
             className="client-panels-stack"
             data-active={visiblePanels.length > 0}
+            data-overlay-panel-open={showHelpPanel || showChatWindow ? 'true' : undefined}
             data-single-panel={isSingle ? 'true' : undefined}
             style={{
                 '--client-single-panel-height': isSingle ? `${Math.round(singleRatio * 1000) / 10}%` : '100%'

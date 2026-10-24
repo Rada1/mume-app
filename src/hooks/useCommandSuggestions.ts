@@ -530,12 +530,12 @@ export const useCommandSuggestions = ({
                         const width = Math.min(desiredWidth, availableWidth);
                         const commandLineRect = wrapRef.current?.closest('.command-dock-input-main, .message-log-docked-input')
                             ?.getBoundingClientRect();
-                        const commandLineBottom = commandLineRect && commandLineRect.height > 0
-                            ? commandLineRect.bottom : rect.bottom;
-                        const spaceAbove = commandLineBottom - viewportPadding;
+                        const popupBottom = commandLineRect && commandLineRect.height > 0
+                            ? commandLineRect.top - 4 : rect.bottom;
+                        const spaceAbove = popupBottom - viewportPadding;
                         setPopupStyle({
                             left: Math.round(mapRight - width),
-                            top: Math.max(viewportPadding, commandLineBottom),
+                            top: Math.max(viewportPadding, popupBottom),
                             width,
                             maxHeight: Math.max(80, Math.min(260, spaceAbove)),
                             transform: 'translateY(-100%)'

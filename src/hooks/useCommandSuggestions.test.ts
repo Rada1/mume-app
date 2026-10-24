@@ -387,7 +387,7 @@ describe('useCommandSuggestions', () => {
         expect(result.current.popupStyle.top).toBeDefined();
     });
 
-    it.each(['legacy', 'strip'])('places suggestions beside the visible %s command bar', layout => {
+    it.each(['legacy', 'strip'])('places suggestions above the visible %s command bar', layout => {
         const map = document.createElement('div');
         map.className = 'map-drawer-desktop open';
         map.getBoundingClientRect = () => ({
@@ -424,7 +424,7 @@ describe('useCommandSuggestions', () => {
 
         expect(result.current.popupStyle.left).toBe(252);
         expect(result.current.popupStyle.width).toBe(320);
-        expect(result.current.popupStyle.top).toBe(585);
+        expect(result.current.popupStyle.top).toBe(526);
         expect(result.current.popupStyle.transform).toBe('translateY(-100%)');
         unmount();
         map.remove();

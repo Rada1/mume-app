@@ -1,245 +1,202 @@
-/* @file landscapeLayout.css — Rotate the existing mobile portrait screen. */
+/* @file landscapeLayout.css — Native mobile landscape split layout. */
 
-/* --- App rotation frame --- */
+/* --- Native viewport and safe areas --- */
 
-.app-container.is-rotated-landscape {
-    position: fixed !important;
-    inset: auto !important;
-    top: 0 !important;
-    left: 100dvw !important;
-    right: auto !important;
-    bottom: auto !important;
-    width: 100dvh !important;
-    height: 100dvw !important;
+.app-container.is-mobile.is-landscape:not(.state-account) {
+    width: 100vw !important;
+    height: 100dvh !important;
     min-width: 0 !important;
     min-height: 0 !important;
     max-width: none !important;
     overflow: hidden !important;
-    transform: rotate(90deg);
-    transform-origin: top left;
 }
 
-.app-container.is-rotated-landscape .app-viewport-shell {
+.app-container.is-mobile.is-landscape:not(.state-account) .app-viewport-shell,
+.app-container.is-mobile.is-landscape:not(.state-account) .content-layer {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+.app-container.is-mobile.is-landscape:not(.state-account) .app-viewport-shell {
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+.app-container.is-mobile.is-landscape:not(.state-account) .content-layer {
+    height: auto !important;
+    padding: calc(env(safe-area-inset-top, 0px) + 42px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px) !important;
+}
+
+/* --- Log left, command workspace right --- */
+
+.app-container.is-mobile.is-landscape:not(.state-account) .message-log-wrapper,
+.app-container.is-mobile.is-landscape:not(.state-account) .message-log-wrapper.chat-window-active {
     display: flex !important;
     flex: 1 1 auto !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    align-items: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    gap: 0 !important;
+    overflow: hidden !important;
+}
+
+.app-container.is-mobile.is-landscape:not(.state-account) .desktop-center-column,
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column {
+    flex: 0 0 50% !important;
+    width: 50% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+}
+
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(201, 168, 76, 0.22);
+    background: var(--bg-app, #090c12);
+}
+
+.app-container.is-mobile.is-landscape:not(.state-account) .message-log-container {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    container-type: inline-size;
+}
+
+/* --- Keep the dock at the bottom of its half and menus inside the right half --- */
+
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column .command-dock-shell-mobile {
+    flex: 1 1 auto !important;
     width: 100% !important;
     height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
     min-height: 0 !important;
-    overflow: hidden !important;
-    padding: 0 !important;
+    grid-template-rows: minmax(44px, auto) minmax(42px, auto) minmax(44px, auto) minmax(0, 1fr) !important;
 }
 
-/* --- Keep the portrait flow inside the rotated frame --- */
-
-.app-container.is-rotated-landscape .content-layer {
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column .command-docked-panel {
     position: relative !important;
     inset: auto !important;
-    display: flex !important;
     flex: 1 1 auto !important;
-    flex-direction: column !important;
     width: 100% !important;
     height: auto !important;
     min-width: 0 !important;
     min-height: 0 !important;
-    max-width: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
     margin: 0 !important;
-    padding: calc(env(safe-area-inset-top, 0px) + 42px) 0 0 !important;
-    box-sizing: border-box !important;
-    overflow: visible !important;
-}
-
-/* --- Put command input and character status together beside the header --- */
-
-.app-container.is-rotated-landscape .desktop-center-column {
-    display: grid !important;
-    flex: 1 1 auto !important;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    max-width: none !important;
-    margin: 0 !important;
+    transform: none !important;
     overflow: hidden !important;
 }
 
-.app-container.is-rotated-landscape .rotated-status-panel {
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    overflow: visible;
-    z-index: var(--z-hud-interactive);
-}
-
-.app-container.is-rotated-landscape .rotated-status-panel .message-log-docked-input {
-    flex: 0 0 auto;
-}
-
-/* --- Keep the character panel layout and turn each text run upright --- */
-
-.app-container.is-rotated-landscape .this-is-you-console :is(
-    .this-is-you-level-tag,
-    .this-is-you-name,
-    .this-is-you-subtext,
-    .this-is-you-bio-item,
-    .terminal-progress-row,
-    .this-is-you-minimized-summary-group > strong,
-    .this-is-you-minimized-summary-group > span,
-    .this-is-you-state-column-title,
-    .this-is-you-pill,
-    .this-is-you-inline-slider-codes > span,
-    .this-is-you-inline-slider-options .disposition-option,
-    .this-is-you-cell-header .label,
-    .this-is-you-cell-header .regen,
-    .this-is-you-cell-val,
-    .this-is-you-combat-heading > span,
-    .this-is-you-capabilities-row > span,
-    .this-is-you-mode-row,
-    .this-is-you-no-buffs,
-    .this-is-you-buff-badge
-) {
-    rotate: -90deg;
-    transform-origin: center;
-}
-
-.app-container.is-rotated-landscape .this-is-you-console .this-is-you-vitals-group::before,
-.app-container.is-rotated-landscape .this-is-you-console .this-is-you-tier-states::before,
-.app-container.is-rotated-landscape .this-is-you-console .this-is-you-tier-modes::before {
-    rotate: -90deg;
-    transform-origin: center;
-}
-
-.app-container.is-rotated-landscape .message-log-container {
-    grid-row: 2;
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    min-height: 0 !important;
-    width: 100% !important;
+.app-container.is-mobile.is-landscape .command-tree-mobile-focus-popup {
+    top: 0 !important;
+    right: var(--mobile-command-panel-right, 0px) !important;
+    bottom: 0 !important;
+    left: var(--mobile-command-panel-left, 50vw) !important;
+    width: auto !important;
+    height: 100dvh !important;
     max-width: none !important;
     margin: 0 !important;
-    container-type: size;
 }
 
-.app-container.is-rotated-landscape .command-docked-panel {
-    transform: rotate(-90deg);
-    transform-origin: center;
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup {
+    top: 0 !important;
+    right: var(--mobile-command-panel-right, 0px) !important;
+    bottom: 0 !important;
+    left: var(--mobile-command-panel-left, 50vw) !important;
+    width: auto !important;
+    height: 100dvh !important;
+    max-width: none !important;
 }
 
-/* --- Counter-rotate the log and map inside their unchanged panel bounds --- */
-
-.app-container.is-rotated-landscape .rotated-log-display,
-.app-container.is-rotated-landscape .rotated-map-display {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 100cqh;
-    height: 100cqw;
-    min-width: 0;
-    min-height: 0;
-    transform: translate(-50%, -50%) rotate(-90deg);
-    transform-origin: center;
-    overflow: hidden;
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-branches {
+    right: var(--mobile-command-panel-right, 0px) !important;
+    left: var(--mobile-command-panel-left, 50vw) !important;
+    width: auto !important;
+    max-width: none !important;
 }
 
-.app-container.is-rotated-landscape .rotated-log-display {
-    display: flex;
-    flex-direction: column;
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column .command-tree-gear-quick-menu,
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-command-column .command-tree-quick-options {
+    max-width: calc(var(--mobile-command-panel-width, 50vw) - 16px) !important;
 }
 
-.app-container.is-rotated-landscape .mobile-map-command-overlay .custom-btn {
-    rotate: -90deg;
-    transform-origin: center;
-}
+/* --- Reserve the map for the movement menu's third landscape column --- */
 
-.app-container.is-rotated-landscape .mobile-map-panel .movement-pad-map {
-    transform: rotate(-90deg);
-    transform-origin: center;
-}
-
-.app-container.is-rotated-landscape.state-account .content-layer {
-    padding-bottom: 0 !important;
-}
-
-.app-container.is-rotated-landscape:not(.state-account) .content-layer > .input-container {
+.app-container.is-mobile.is-landscape:not(.state-account) .mobile-map-panel {
     display: none !important;
 }
 
-.app-container.is-rotated-landscape .prompt-box-container {
-    position: relative !important;
-    bottom: auto !important;
-    margin-bottom: 0 !important;
-    z-index: 6800 !important;
-}
-
-/* --- Portrait map panel, now at the rotated screen's left edge --- */
-
-.app-container.is-rotated-landscape {
-    --mobile-map-panel-height: 110px;
-    --mobile-gutter-height: 110px;
-}
-
-.app-container.is-rotated-landscape.is-map-expanded,
-.app-container.is-rotated-landscape.has-drawer-open {
-    --mobile-map-panel-height: calc(30dvw - var(--mobile-bottom-reserved-space, 0px));
-    --mobile-gutter-height: calc(30dvw - var(--mobile-bottom-reserved-space, 0px));
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel {
-    flex: 0 0 calc(var(--mobile-map-panel-height) + var(--mobile-bottom-reserved-space));
-    width: 100%;
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot {
+    display: none;
+    box-sizing: border-box;
+    min-width: 0;
     min-height: 0;
     overflow: hidden;
-    border-radius: 0;
-    transition: none !important;
+    pointer-events: auto;
 }
 
-.app-container.is-rotated-landscape .mobile-mapper-touch-surface {
-    container-type: size;
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-movement-branch) > .command-tree-movement-map-slot {
+    display: flex;
+    grid-column: 3;
+    grid-row: 1;
 }
 
-.app-container.is-rotated-landscape .rotated-map-display {
-    z-index: 1;
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel.map-expanded {
-    --tactical-control-size: clamp(52px, 15dvh, 62px);
-    --tactical-class-control-size: clamp(52px, 16dvh, 66px);
-    --tactical-bottom-action-size: clamp(60px, 20dvh, 88px);
-    --tactical-edge-inset: clamp(4px, 1.5dvh, 8px);
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel.map-expanded .mobile-map-command-overlay {
-    --tactical-frame-size: min(calc(100dvh - 88px), 760px);
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel.map-expanded .mobile-map-command-overlay .line-btn .button-label {
-    font-size: clamp(0.55rem, 2.4dvh, 0.72rem) !important;
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel.map-expanded .mobile-map-bottom-actions .button-label {
-    font-size: clamp(1.05rem, 4.5dvh, 1.3rem) !important;
-}
-
-.app-container.is-rotated-landscape .mobile-map-panel.map-expanded .mobile-map-bottom-actions .custom-btn-icon-node svg {
-    width: clamp(16px, 4.5dvh, 22px);
-    height: clamp(16px, 4.5dvh, 22px);
-}
-
-/* --- Rotate overlays with the app --- */
-
-.modals-layer-wrapper.is-rotated-landscape {
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot > .mobile-map-panel {
+    display: flex !important;
+    position: relative !important;
     inset: auto !important;
-    top: 0 !important;
-    left: 100dvw !important;
-    right: auto !important;
-    bottom: auto !important;
-    width: 100dvh !important;
-    height: 100dvw !important;
-    transform: rotate(90deg);
-    transform-origin: top left;
-    overflow: hidden;
+    z-index: auto !important;
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    border: 0 !important;
+    outline: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
+}
+
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot > .mobile-map-panel::before {
+    display: none !important;
+}
+
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot .mobile-mapper-touch-surface {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+}
+
+.app-container.is-mobile.is-landscape.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot .map-canvas {
+    mask-image: none !important;
+    -webkit-mask-image: none !important;
 }

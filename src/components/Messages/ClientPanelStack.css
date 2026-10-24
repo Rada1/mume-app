@@ -52,6 +52,9 @@
         background: transparent;
     }
 
+    /* Keep Chat and Help above the desktop command dock and its cascading menu columns. */
+    .client-panels-stack[data-overlay-panel-open="true"] { z-index: 65003; }
+
     .client-panels-stack:not([data-active="true"]) { display: none; }
 
     /* The fixed character summary occupies the right column above the bottom strip. */

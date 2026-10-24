@@ -106,7 +106,7 @@ export const CommandGuidePanel: React.FC<CommandGuidePanelProps> = ({ initialSco
     };
 
     if (!viewport.isMobile) return <UnifiedCommandPanel initialScope={initialScope} onClose={onClose} />;
-    if (isReadabilityMode || showUnifiedCommandPanel) return <UnifiedCommandPanel initialScope={initialScope} onClose={() => setOpen(false)} />;
+    if (isReadabilityMode || viewport.isLandscape || showUnifiedCommandPanel) return <UnifiedCommandPanel initialScope={initialScope} onClose={() => setOpen(false)} />;
 
     return <aside className="command-guide-panel" aria-label="Command guide">
         <header className="command-guide-heading">

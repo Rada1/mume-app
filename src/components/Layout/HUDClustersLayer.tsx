@@ -53,7 +53,6 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     isMobile={isMobile}
                     mapperRef={mapperRef}
                     dragState={btn.dragState}
-                    isLandscape={isLandscape}
                     wasDraggingRef={wasDraggingRef}
                     heldButton={heldButton}
                     heldButtonRef={heldButtonRef}

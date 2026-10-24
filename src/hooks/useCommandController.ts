@@ -245,14 +245,14 @@ export function useCommandController(deps: CommandControllerDeps) {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }): void => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }, fromMacro = false): void => {
         const d = depsRef.current;
-        if (!isSystem && !d.isPasswordMode) {
+        if (!fromMacro && !isSystem && !d.isPasswordMode) {
             if (cmd.trim().toLowerCase() === '/macros') {
                 d.setSettingsTab('actions'); d.setIsSettingsOpen(true); return;
             }
             if (handleClientMacro(cmd,
-                command => executeCommand(command, silent, isSystem, isHistorical, fromDrawer, options),
+                command => executeCommand(command, silent, isSystem, isHistorical, fromDrawer, options, true),
                 message => d.addMessage('system', message), d.gameState === 'playing')) return;
         }
         const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, nextCommandIsSilent } = d;

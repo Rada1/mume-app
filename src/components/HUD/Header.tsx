@@ -61,6 +61,7 @@ const Header: React.FC<HeaderProps> = () => {
     const setArchivePanelMode = useArchiveStore(state => state.setPanelMode);
     const showDeveloperTools = useSettingsStore(state => state.showDeveloperTools ?? false);
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
+    const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
 
     const [isEnteringTarget, setIsEnteringTarget] = useState(false);
     const [manualTargetInput, setManualTargetInput] = useState('');
@@ -400,7 +401,7 @@ const Header: React.FC<HeaderProps> = () => {
                             </button>
                         )}
 
-                        <button
+                        {!(viewport.isMobile && isReadabilityMode) && <button
                             className={`menu-toggle-btn${isCommandPanelOpen ? ' active' : ''}`}
                             onClick={() => {
                                 toggleHeaderTab('commands');
@@ -412,9 +413,9 @@ const Header: React.FC<HeaderProps> = () => {
                             style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
                         >
                             <TerminalSquare size={17} />
-                        </button>
+                        </button>}
 
-                        {viewport.isMobile && <MobileHeaderPanelButtons tabs={headerTabs} />}
+                        {viewport.isMobile && !isReadabilityMode && <MobileHeaderPanelButtons tabs={headerTabs} />}
 
                         <button
                             className={`menu-toggle-btn${showChatWindow ? ' active' : ''}`}

@@ -371,7 +371,6 @@ const MudClient = () => {
                         handleSend={handleSendCallback}
                         handleInputSwipe={handleInputSwipe}
                         commandPreview={commandPreview}
-                        heldButton={heldButton}
                         mumeEditState={mumeEditState}
                         setMumeEditState={setMumeEditState}
                     />

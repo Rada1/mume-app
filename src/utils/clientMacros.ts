@@ -20,6 +20,8 @@ export const expandClientMacro = (name: string, macros: readonly ClientMacro[], 
     if (visited.length >= 10) throw new Error('Macro nesting is limited to 10 levels.');
     const result: string[] = [];
     for (const command of macro.commands) {
+        // A slash explicitly invokes another macro inside a macro. Bare names
+        // remain ordinary game commands and are sent directly to the server.
         const nested = /^\/([a-z][\w-]*)$/i.exec(command);
         if (nested && macros.some(item => item.name === nested[1].toLowerCase())) {
             result.push(...expandClientMacro(nested[1], macros, [...visited, macro.name]));

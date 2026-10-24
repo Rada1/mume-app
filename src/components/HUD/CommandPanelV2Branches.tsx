@@ -118,6 +118,7 @@ export const CommandPanelV2Branches = ({
             {tree.command && isCommandTreeMoveAction(tree.command) && <div className="command-tree-branch terminal-inline-popover is-movement-branch" role="group" aria-label="Direction pad">
                 <CommandTreeMovement controller={controller} onCommandExecuted={onCommandExecuted}/>
             </div>}
+            {mobileReadabilitySplit && isMobile && controller.game.viewport?.isLandscape && <div className="command-tree-movement-map-slot" aria-label="Movement minimap" />}
         </div>
     </CommandPanelViews>;
 };

@@ -1,7 +1,7 @@
 /** @file CommandDockStripMobile.css — Mobile console layout, narrow 68px cascading branches, and movement submenu. */
 
 /* --- Mobile Command Console: Input / Actions / State / Info --- */
-.app-container .content-layer:has(.command-dock-shell-mobile) { padding-bottom:env(safe-area-inset-bottom, 0px) !important; }
+.app-container .content-layer:has(.command-dock-shell-mobile) { padding-bottom:0 !important; }
 .command-tree-v2.command-dock-shell.command-dock-shell-mobile {
     position:relative;
     inset:auto;

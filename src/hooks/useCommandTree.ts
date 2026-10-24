@@ -4,6 +4,7 @@ import { useCommandTreeController } from './useCommandTreeController';
 import { useCommandPanelStore } from '../stores/useCommandPanelStore';
 import { getCommandMenuSectionKey, useCommandMenuSectionsStore } from '../stores/useCommandMenuSectionsStore';
 import { useGearPanelData } from './useGearPanelData';
+import { useSettingsStore } from '../stores/useSettingsStore';
 import { getEligibleActionButtonIds, isButtonValidForEntity } from '../utils/actionUtils';
 import { ITEM_BUTTONS } from '../constants/buttons/inline/items';
 import { SOCIAL_BUTTONS } from '../constants/buttons/socials';
@@ -33,12 +34,25 @@ const isLegacyCommandTreeEatFood = (button: CustomButton) => /^eat\s+food$/i.tes
 const isDeferredCommandTreeCampRent = (button: CustomButton) => /^camp\s+rent(?:\s|$)/i.test(button.command.trim());
 export const useCommandTree = (controller: ReturnType<typeof useCommandTreeController>) => {
  const atShop = controller.shop.atShop ?? controller.shop.available;
- const [group, setGroup] = useState<number | null>(null);
+ const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
+ const isMobileReadabilityMode = controller.game.viewport?.isMobile === true && isReadabilityMode;
+ const [group, setGroup] = useState<number | null>(() => isMobileReadabilityMode ? 1 : null);
+ const previousMobileReadabilityMode = useRef(isMobileReadabilityMode);
  const [command, setCommand] = useState<CustomButton | null>(null);
  const [section, setSection] = useState<string | null>(null);
  const [quick, setQuick] = useState<string | null>(null);
  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+ useEffect(() => {
+  if (isMobileReadabilityMode && !previousMobileReadabilityMode.current) {
+   setGroup(1);
+   setSection(null);
+   setCommand(null);
+   setQuick(null);
+   controller.previewEntity(null);
+  }
+  previousMobileReadabilityMode.current = isMobileReadabilityMode;
+ }, [isMobileReadabilityMode, controller.previewEntity]);
  const cancelPreview = () => { if (timer.current) clearTimeout(timer.current); };
  const defer = (action: () => void) => { cancelPreview(); timer.current = setTimeout(action, 180); };
  const chooseGroup = (index: number) => { cancelPreview(); if (group === index) { setGroup(null); setSection(null); setCommand(null); setQuick(null); controller.previewEntity(null); return; } setGroup(index); setSection(null); setCommand(null); setQuick(null); controller.previewEntity(null); };
@@ -49,7 +63,7 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
   controller.game.setCommandPreview?.(getCommandTreeBasePreview(command.command));
   return () => controller.game.setCommandPreview?.(null);
  }, [group, command?.id, command?.command, controller.game.setCommandPreview]);
- const needsGearTargets = group === 3 || isCommandTreeObservation(command) || Boolean(command && isCommandTreeContainer(command));
+ const needsGearTargets = group === 1 || group === 3 || isCommandTreeObservation(command) || Boolean(command && isCommandTreeContainer(command));
  const panelData = useGearPanelData(needsGearTargets, needsGearTargets);
  const roomWaterAvailable = useRoomDrinkWater();
  const finishCatalog = uiPerformance.startWork('Tree catalog');

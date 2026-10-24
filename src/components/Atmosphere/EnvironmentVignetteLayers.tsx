@@ -94,7 +94,8 @@ export const EnvironmentVignetteLayers: React.FC<EnvironmentVignetteLayersProps>
                 style={{ opacity: layer.opacity }}
                 aria-hidden="true"
             >
-                {showVignette && <div className="client-vignette-overlay" />}
+                {/* Keep the artificial corner glow on mobile even when the general vignette is hidden. */}
+                {(showVignette || layer.lighting === 'artificial') && <div className="client-vignette-overlay" />}
                 {(layer.showSky || !['sun', 'moon'].includes(layer.lighting)) && <div className="client-corner-light-overlay" />}
                 {/* Keep the sun inside the room fade, outside the sky mask that vanishes at the horizon. */}
                 {layer.showSky && layer.lighting === 'sun' && <SunDisc time={gameTime} />}

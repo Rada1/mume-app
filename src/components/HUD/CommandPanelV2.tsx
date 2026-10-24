@@ -143,8 +143,16 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   if (!mobileReadabilitySplit || !dockSlots) return;
   const {app,controls,actions,summary} = dockSlots;
   const updateRegion = () => {
-   const controlsBottom = controls.getBoundingClientRect().bottom;
-   const summaryTop = summary.getBoundingClientRect().top;
+   const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
+   const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
+   const input = app.querySelector<HTMLElement>('.command-dock-input-main');
+   const controlsBottom = Math.max(
+    controlsContent?.getBoundingClientRect().bottom ?? controls.getBoundingClientRect().bottom,
+    actionsContent?.getBoundingClientRect().bottom ?? actions.getBoundingClientRect().bottom,
+    input?.getBoundingClientRect().bottom ?? 0,
+   );
+   const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
+   const summaryTop = (summaryContent ?? summary).getBoundingClientRect().top;
    app.style.setProperty('--mobile-readability-menu-top', `${Math.ceil(controlsBottom + 4)}px`);
    app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - summaryTop + 4))}px`);
   };
@@ -153,6 +161,15 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   observer.observe(controls);
   observer.observe(actions);
   observer.observe(summary);
+  const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
+  const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
+  const input = app.querySelector<HTMLElement>('.command-dock-input-main');
+  const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
+  [controlsContent, actionsContent, input, summaryContent].forEach(element => {
+   if (element) observer.observe(element);
+  });
+  const commandColumn = app.querySelector<HTMLElement>('.mobile-command-column');
+  if (commandColumn) observer.observe(commandColumn);
   window.addEventListener('resize', updateRegion);
   window.visualViewport?.addEventListener('resize', updateRegion);
   window.visualViewport?.addEventListener('scroll', updateRegion);
