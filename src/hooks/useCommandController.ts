@@ -245,7 +245,7 @@ export function useCommandController(deps: CommandControllerDeps) {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean }, fromMacro = false): void => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, isHistorical = false, fromDrawer = false, options?: { shouldFocus?: boolean, fromUi?: boolean, fromInput?: boolean }, fromMacro = false): void => {
         const d = depsRef.current;
         if (!fromMacro && !isSystem && !d.isPasswordMode) {
             if (cmd.trim().toLowerCase() === '/macros') {
@@ -253,7 +253,7 @@ export function useCommandController(deps: CommandControllerDeps) {
             }
             if (handleClientMacro(cmd,
                 command => executeCommand(command, silent, isSystem, isHistorical, fromDrawer, options, true),
-                message => d.addMessage('system', message), d.gameState === 'playing')) return;
+                message => d.addMessage('system', message), d.gameState === 'playing', options?.fromInput === true)) return;
         }
         const { viewport, waiting, isSoundEnabled, playClickSound, recordEntry, practice, nextCommandIsSilent } = d;
 
@@ -494,7 +494,7 @@ export function useCommandController(deps: CommandControllerDeps) {
         }
 
         perfMonitor.measureCommandSubmission(() => {
-            executeCommand(finalCmd, false, false, false, false, { shouldFocus: true });
+            executeCommand(finalCmd, false, false, false, false, { shouldFocus: true, fromInput: true });
         });
         if (cmd) useInputStore.getState().addToHistory(cmd);
         // Preserve any intentional command prefill produced during execution.

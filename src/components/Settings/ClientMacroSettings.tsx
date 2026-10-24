@@ -6,12 +6,23 @@ import './ClientMacroSettings.css';
 // --- Macro Settings View ---
 export const ClientMacroSettings = () => {
     const editor = useClientMacroEditor();
+    const formRef = React.useRef<HTMLFormElement>(null);
+    const nameInputRef = React.useRef<HTMLInputElement>(null);
+
+    React.useEffect(() => {
+        if (!editor.editing) return;
+        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const frame = window.requestAnimationFrame(() => nameInputRef.current?.focus({ preventScroll: true }));
+        return () => window.cancelAnimationFrame(frame);
+    }, [editor.editing]);
+
     return <section className="client-macro-settings setting-group">
         <h3 className="setting-label">Client Macros</h3>
         <p>Save command chains and optional keybindings on this browser. Use one command per line or separate commands with semicolons.</p>
         <p><code>/alias orc hit orc; examine orc</code> saves a macro. Type <code>orc</code> to run it.</p>
-        <form onSubmit={event => { event.preventDefault(); editor.submit(); }}>
-            <label>Name<input className="setting-input" value={editor.name} onChange={event => editor.setName(event.target.value)} placeholder="orc" required /></label>
+        <form ref={formRef} onSubmit={event => { event.preventDefault(); editor.submit(); }}>
+            {editor.editing && <p role="status">Editing macro: <strong>{editor.editing}</strong></p>}
+            <label>Name<input ref={nameInputRef} className="setting-input" value={editor.name} onChange={event => editor.setName(event.target.value)} placeholder="orc" required /></label>
             <label>Commands<textarea className="setting-input" rows={4} value={editor.body} onChange={event => editor.setBody(event.target.value)} placeholder={'hit orc\nexamine orc'} required /></label>
             <label>Optional keybinding<input className="setting-input" readOnly value={editor.recording ? '' : editor.hotkey ?? ''}
                 placeholder={editor.recording ? 'Press a key combination… Escape cancels' : 'Click here to record a keybinding'}

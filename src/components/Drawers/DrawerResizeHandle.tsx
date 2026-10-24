@@ -72,13 +72,12 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             const dxVw = ((me.clientX - startX) / window.innerWidth) * 100;
             const dyVh = ((me.clientY - startY) / window.innerHeight) * 100;
 
-            // Handle log resizing (symmetrical from center)
+            // Handle legacy log width resizing.
             if (handleType === 'log-left') {
-                const delta = -2 * dxVw;
-                const nextWidth = Math.max(30, Math.min(95, startWidth + delta));
+                const nextWidth = Math.max(30, Math.min(95, startWidth - 2 * dxVw));
                 document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
             } else if (handleType === 'log-right') {
-                const delta = 2 * dxVw;
+                const delta = dxVw;
                 const nextWidth = Math.max(30, Math.min(95, startWidth + delta));
                 document.documentElement.style.setProperty(widthVar, `${nextWidth}vw`);
             }
@@ -129,6 +128,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             if (handleType.includes('left') || handleType.includes('right') || handleType === 'left' || handleType === 'right' || handleType === 'log-left' || handleType === 'log-right') {
                 const w = parseFloat(document.documentElement.style.getPropertyValue(widthVar));
                 if (!isNaN(w)) stored[widthVar] = w;
+
                 
                 if (leftVar) {
                     const l = parseFloat(document.documentElement.style.getPropertyValue(leftVar));

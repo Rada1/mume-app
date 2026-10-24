@@ -17,7 +17,9 @@ export const useClientMacroHotkeys = (execute: (command: string) => void, enable
             const editing = target?.closest('input, textarea, select, [contenteditable="true"]');
             const commandInput = target?.classList.contains('input-field');
             if (editing && (!commandInput || (!event.code.startsWith('Numpad') && !event.ctrlKey && !event.altKey && !event.metaKey && !/^F\d+$/.test(event.code)))) return;
-            const macro = useClientMacroStore.getState().macros.find(item => item.hotkey === macroHotkeyFor(event));
+            const hotkey = macroHotkeyFor(event);
+            if (!hotkey) return;
+            const macro = useClientMacroStore.getState().macros.find(item => item.hotkey === hotkey);
             if (!macro) return;
             event.preventDefault();
             event.stopImmediatePropagation();

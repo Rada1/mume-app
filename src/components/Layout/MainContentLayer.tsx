@@ -583,10 +583,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         <div className="log-opaque-backdrop" />
                         {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
                         <CounterRotatedContent active={viewport.isRotatedLandscape} className="rotated-log-display">
-                        {!viewport.isMobile && <>
-                            <DrawerResizeHandle handleType="log-left" widthVar="--desktop-log-width" />
-                            <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" />
-                        </>}
+                        {!viewport.isMobile && <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" label="Resize log right edge" />}
                         {/* Room card hidden for now */}
                         {false && !isAccountScreen && roomName && isImmersionMode && (
                             <div className="desktop-log-room-card-wrapper">

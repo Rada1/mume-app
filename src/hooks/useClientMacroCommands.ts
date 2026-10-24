@@ -5,7 +5,7 @@ import { expandClientMacro, splitMacroCommands } from '../utils/clientMacros';
 
 // --- Local Command Interception ---
 export const useClientMacroCommands = () => useCallback((
-    input: string, execute: (command: string) => void, report: (message: string) => void, canRun: boolean
+    input: string, execute: (command: string) => void, report: (message: string) => void, canRun: boolean, allowBareInvocation = false
 ): boolean => {
     const command = input.trim();
     const store = useClientMacroStore.getState();
@@ -29,10 +29,10 @@ export const useClientMacroCommands = () => useCallback((
         else { store.remove(name); report(`Client macro ${name} deleted.`); }
         return true;
     }
-    const invocation = /^\/?([a-z][\w-]*)$/i.exec(command);
+    const invocation = (allowBareInvocation ? /^\/?([a-z][\w-]*)$/i : /^\/([a-z][\w-]*)$/i).exec(command);
     if (!invocation || !store.macros.some(macro => macro.name === invocation[1].toLowerCase())) return false;
     if (!canRun) { report('Enter the game before running a macro.'); return true; }
-    try { expandClientMacro(invocation[1], store.macros).forEach(execute); }
+    try { expandClientMacro(invocation[1], store.macros).forEach(command => execute(command)); }
     catch (error) { report(error instanceof Error ? error.message : 'Could not run macro.'); }
     return true;
 }, []);

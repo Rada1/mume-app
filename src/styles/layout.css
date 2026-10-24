@@ -3087,10 +3087,15 @@
 
     /* Outer stacks border styling handled in Drawers.css */
 
-    /* Keep the log edges available for explicit desktop resizing. */
-    .drawer-resize-handle--log-left,
-    .drawer-resize-handle--log-right {
+    /* The map divider owns the log's left boundary. */
+    .drawer-resize-handle--log-left {
+        display: none !important;
+    }
+
+    .message-log-container .drawer-resize-handle--log-right {
         display: block !important;
+        left: auto;
+        right: 0;
     }
 }
 

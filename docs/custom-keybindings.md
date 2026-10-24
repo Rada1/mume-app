@@ -21,6 +21,7 @@ Settings and command-bar definitions use the same persistent client macro store,
 - Settings: macro name, a command editor, and an optional keybinding. Show one command per line, with semicolon-separated input also accepted.
 - Command bar: for example, `/alias orc hit orc; examine orc` creates or updates a client macro named `orc`.
 - Invocation: typing `orc` or `/orc` runs the saved chain when the entire command line is that macro name.
+- Bare macro names are resolved only on command-bar submission. Commands issued by other client features require an explicit `/orc` invocation, so an ordinary command matching a macro name cannot silently expand it.
 - `/unalias orc` removes the client macro; `/macros` opens Actions/Macros settings.
 - Execute chain steps in their saved order through the shared command flow.
 - Treat `/alias` as a local client command. Parse its entire definition before splitting the macro body, so defining a chain never executes its commands.

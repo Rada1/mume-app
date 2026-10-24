@@ -113,7 +113,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
 
             {(!viewport.isMobile || viewport.isLandscape) && showMapDrawer && (
                 <div className="left-drawer-stack open">
-                    <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} />
+                    <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} label="Resize log left edge and map" />
                     <div  className={`map-drawer-desktop open${hideMapHeaderFooter ? ' hide-header-footer' : ''}`} style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                             {!hideMapHeaderFooter && <MapRoomInfoHeader />}
