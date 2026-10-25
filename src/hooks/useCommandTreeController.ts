@@ -98,7 +98,7 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         practice.setOpen(true);
     }, [practice.setOpen, practiceOpenRequest, selectContext]);
     const dismissOutputs = () => { shop.setOutputOpen(false); practice.setOutputOpen(false); };
-    const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
+    const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, requestCommandReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
     const { isHelpMode, toggleHelpMode, executeHelp } = useCommandHelpMode({ dismissOutputs, requestHelp });
     const targetContext = activeState.context || null;
     const finishActions = uiPerformance.startWork('Action catalog');
@@ -175,5 +175,5 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
     };
 const treeButtons = React.useMemo(() => [...menuButtons, ...communicationActionGroup.buttons], [menuButtons, communicationActionGroup.buttons]);
 finishController();
-return { shopOpenRequest, practiceOpenRequest, previewEntity, previewTargetContext, game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, actionGroups, menuButtons: treeButtons };
+return { shopOpenRequest, practiceOpenRequest, previewEntity, previewTargetContext, game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestCommandReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, actionGroups, menuButtons: treeButtons };
 };

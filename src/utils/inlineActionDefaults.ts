@@ -8,21 +8,31 @@ import { HERB_DESCRIPTIVE_KEYWORDS, MUME_HERB_KEYWORDS } from './herbKeywords';
 import { DOOR_BUTTONS, EXIT_BUTTONS } from '../constants/buttons/doors';
 import { SELF_STATE_BUTTON_IDS } from '../constants/buttons/state';
 import { SOCIAL_BUTTONS } from '../constants/buttons/socials';
-import { INLINE_ABILITY_BUTTON_IDS, INLINE_BASH_DISENGAGE_BUTTON_ID } from './inlineAbilityActions';
+import { INLINE_ABILITY_BUTTON_IDS, INLINE_BASH_DISENGAGE_BUTTON_ID, getInlineClassTargetButtonIds } from './inlineAbilityActions';
+import type { PracticeClassKey } from './practiceClassCatalog';
 
 // --- Default Model ---
 
+const INLINE_CLASS_TRAITS: Array<{ classKey: PracticeClassKey; label: string }> = [
+    { classKey: 'mage', label: 'Mage' },
+    { classKey: 'warrior', label: 'Warrior' },
+    { classKey: 'ranger', label: 'Ranger' },
+    { classKey: 'thief', label: 'Thief' },
+    { classKey: 'cleric', label: 'Cleric' }
+];
+const INLINE_CLASS_TRAIT_IDS = INLINE_CLASS_TRAITS.map(({ classKey }) => `trait-${classKey}`);
+
 export const DEFAULT_CATEGORY_CONFIGS: CategoryConfig[] = [
     { id: 'cat-mount-object', label: 'Mount Object', color: '#ababab', isLocationCategory: true, defaultTraitIds: ['trait-mount-object'] },
-    { id: 'cat-ally', label: 'Ally', color: '#61c290', isGmcpCategory: true, legacyIds: ['inline-ally', 'player', 'ally'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-communication', 'trait-social', 'trait-buffs', 'trait-healing', 'trait-support', 'trait-group', 'trait-follow', 'trait-identify', 'trait-observable', 'trait-retreat'] },
-    { id: 'cat-enemy', label: 'Enemy', color: '#f35353', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-offense', 'trait-retreat', 'trait-control', 'trait-buffs', 'trait-healing', 'trait-utility', 'trait-social', 'trait-communication', 'trait-identify', 'trait-observable'] },
-    { id: 'cat-neutral', label: 'Neutral', color: '#61c290', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-offense', 'trait-retreat', 'trait-control', 'trait-buffs', 'trait-healing', 'trait-support', 'trait-utility', 'trait-social', 'trait-communication', 'trait-observable'] },
+    { id: 'cat-ally', label: 'Ally', color: '#61c290', isGmcpCategory: true, legacyIds: ['inline-ally', 'player', 'ally'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-combat', ...INLINE_CLASS_TRAIT_IDS, 'trait-communication', 'trait-social', 'trait-group', 'trait-follow', 'trait-identify', 'trait-observable'] },
+    { id: 'cat-enemy', label: 'Enemy', color: '#f35353', isGmcpCategory: true, legacyIds: ['inline-enemy', 'enemy'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-combat', ...INLINE_CLASS_TRAIT_IDS, 'trait-social', 'trait-communication', 'trait-identify', 'trait-observable'] },
+    { id: 'cat-neutral', label: 'Neutral', color: '#61c290', isGmcpCategory: true, legacyIds: ['inline-neutral', 'neutral'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-combat', ...INLINE_CLASS_TRAIT_IDS, 'trait-social', 'trait-communication', 'trait-observable'] },
     { id: 'cat-ally-remote', label: 'Remote Ally', color: '#61c290', isLocationCategory: true, legacyIds: ['inline-ally-remote', 'ally-remote'], defaultTraitIds: ['trait-identify', 'trait-converse', 'trait-communication'] },
-    { id: 'cat-npc', label: 'NPC', color: '#ababab', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-offense', 'trait-retreat', 'trait-control', 'trait-buffs', 'trait-healing', 'trait-support', 'trait-group', 'trait-follow', 'trait-utility', 'trait-social', 'trait-communication', 'trait-observable'] },
+    { id: 'cat-npc', label: 'NPC', color: '#ababab', isGmcpCategory: true, legacyIds: ['inline-npc', 'npc'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-combat', ...INLINE_CLASS_TRAIT_IDS, 'trait-group', 'trait-follow', 'trait-social', 'trait-communication', 'trait-observable'] },
     { id: 'cat-mount', label: 'Mount', color: '#ffd700', isGmcpCategory: true, legacyIds: ['inline-mounts', 'mount', 'mounts'], defaultTraitIds: ['trait-mount', 'trait-retreat', 'trait-communication', 'trait-buffs', 'trait-healing'] },
     { id: 'cat-room-object', label: 'Room Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-in-room-obj', 'object-room', 'obj-room'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-room-object', 'trait-object-magic', 'trait-observable'] },
-    { id: 'cat-inventory-object', label: 'Inventory Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-inventory-object', 'trait-object-magic', 'trait-observable'] },
-    { id: 'cat-worn-object', label: 'Worn Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-worn-object', 'trait-object-magic', 'trait-observable'] },
+    { id: 'cat-inventory-object', label: 'Inventory Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-inventory', 'inventory', 'obj-char'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-inventory-object', 'trait-mage', 'trait-cleric', 'trait-observable'] },
+    { id: 'cat-worn-object', label: 'Worn Object', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-worn', 'worn', 'obj-worn'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-worn-object', 'trait-mage', 'trait-cleric', 'trait-observable'] },
     { id: 'cat-container-item', label: 'Container Item', color: '#ababab', isLocationCategory: true, legacyIds: ['inline-container-item'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-get-container-item', 'trait-object-magic', 'trait-observable'] },
     { id: 'cat-object', label: 'Object', color: '#ababab', legacyIds: ['inline-object', 'object', 'default'], defaultTraitIds: ['trait-examine', 'trait-consider', 'trait-object-magic', 'trait-observable'] },
     { id: 'cat-room', label: 'Room Name', color: '#59bd3d', legacyIds: ['room', 'roomname', 'room-name'], defaultTraitIds: ['trait-watchtower', 'trait-campable', 'trait-numenorean-camp', 'trait-room-water', 'trait-room-weather'] },
@@ -50,7 +60,14 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
         'command-communication-yell', 'command-communication-sing', 'command-communication-emote', 'command-communication-act',
         'command-communication-group', 'command-communication-pray'
     ] },
-    { id: 'trait-social', label: 'Social', legacySetIds: ['inline-neutral', 'inline-ally'], keywords: [], buttonIds: ['btn-social', 'btn-converse', ...targetedSocialButtonIds] },
+    { id: 'trait-social', label: 'Social', legacySetIds: ['inline-neutral', 'inline-ally'], keywords: [], buttonIds: ['btn-converse', ...targetedSocialButtonIds] },
+    { id: 'trait-combat', label: 'Combat', keywords: [], buttonIds: ['cat-default-kill', 'btn-hit', 'btn-disengage', 'btn-flee', 'btn-assist'] },
+    ...INLINE_CLASS_TRAITS.map(({ classKey, label }) => ({
+        id: `trait-${classKey}`,
+        label,
+        keywords: [],
+        buttonIds: getInlineClassTargetButtonIds(classKey)
+    })),
     { id: 'trait-offense', label: 'Offense', keywords: [], buttonIds: ['cat-default-kill', 'btn-hit', INLINE_BASH_DISENGAGE_BUTTON_ID, ...INLINE_ABILITY_BUTTON_IDS.offense] },
     { id: 'trait-retreat', label: 'Retreat', keywords: [], buttonIds: ['btn-disengage', 'btn-flee'] },
     { id: 'trait-control', label: 'Control', keywords: [], buttonIds: INLINE_ABILITY_BUTTON_IDS.control },
@@ -62,7 +79,7 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-object-magic', label: 'Item Magic', kind: 'object', keywords: [], buttonIds: INLINE_ABILITY_BUTTON_IDS['object-magic'] },
     { id: 'trait-resurrection', label: 'Resurrection', kind: 'object', keywords: ['corpse'], categoryIds: ['cat-room-object', 'cat-inventory-object'], buttonIds: INLINE_ABILITY_BUTTON_IDS.resurrection },
     { id: 'trait-converse', label: 'Converse', legacySetIds: ['inline-ally-remote'], keywords: [], buttonIds: ['btn-converse'] },
-    { id: 'trait-group', label: 'Group', legacySetIds: ['inline-ally', 'inline-npc'], keywords: [], buttonIds: ['btn-group', 'btn-ungroup', 'btn-group-transfer'] },
+    { id: 'trait-group', label: 'Group', legacySetIds: ['inline-ally', 'inline-npc'], keywords: [], buttonIds: ['btn-group', 'btn-ungroup'] },
     { id: 'trait-follow', label: 'Follow', legacySetIds: ['inline-ally', 'inline-npc'], keywords: [], buttonIds: ['btn-follow', 'btn-unfollow'] },
     { id: 'trait-shopkeeper', label: 'Shopkeeper', kind: 'npc', legacySetIds: ['inline-shopkeeper'], keywords: ['shopkeeper', 'dealer', 'keeper', 'merchant', 'weaponsmith', 'armourer', 'smith', 'trader', 'grocer', 'librarian', 'provisioner', 'alchemist', 'herbalist', 'tailor', 'blacksmith', 'vendor', 'cobbler', 'peddler'], buttonIds: ['btn-shopkeeper-shop'] },
     { id: 'trait-innkeeper', label: 'Innkeeper', kind: 'npc', legacySetIds: ['inline-innkeeper'], keywords: ['innkeeper', 'barman', 'tender', 'lodging', 'receptionist', 'tavern keeper', 'barliman', 'steward', 'vit', 'vubur'], buttonIds: ['btn-innkeeper-offer', 'btn-innkeeper-rent'] },
@@ -71,7 +88,7 @@ export const DEFAULT_TRAIT_CONFIGS: TraitConfig[] = [
     { id: 'trait-corpse', label: 'Corpse', kind: 'object', legacySetIds: ['inline-corpses'], keywords: ['corpse'], categoryIds: ['cat-room-object', 'cat-inventory-object'], buttonIds: ['btn-corpse-butcher', 'btn-corpse-drag', 'btn-corpse-look-in', 'btn-corpse-get-all'] },
     { id: 'trait-corpse-disposal', label: 'Corpse Disposal', kind: 'object', keywords: ['corpse'], categoryIds: ['cat-room-object', 'cat-inventory-object'], buttonIds: ['btn-corpse-burn', 'btn-corpse-bury'] },
     { id: 'trait-darkie-corpse', label: 'Orc/Troll Corpse', kind: 'object', keywords: ['corpse'], categoryIds: ['cat-room-object', 'cat-inventory-object'], requirement: { race: ['Orc', 'Troll'] }, buttonIds: ['btn-corpse-drain', 'btn-corpse-scalp', 'btn-corpse-hang', 'btn-corpse-decapitate'] },
-    { id: 'trait-container', label: 'Container', kind: 'object', legacySetIds: ['inline-containers'], keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box', 'case', 'wallet', 'crate', 'cabinet', 'bookshelf', 'jar', 'web', 'saddlebag', 'vase', 'pallet', 'rack', 'table', 'saddle', 'saddlecloth', 'moneybag', 'keyring'], buttonIds: ['btn-container-look-in', 'btn-container-open', 'btn-container-close', 'btn-container-get-all'] },
+    { id: 'trait-container', label: 'Container', kind: 'object', legacySetIds: ['inline-containers'], keywords: ['bag', 'pouch', 'sack', 'backpack', 'satchel', 'quiver', 'chest', 'box', 'case', 'wallet', 'crate', 'cabinet', 'bookshelf', 'jar', 'web', 'saddlebag', 'vase', 'pallet', 'rack', 'table', 'saddle', 'saddlecloth', 'moneybag', 'keyring'], buttonIds: ['btn-container-look-in', 'btn-container-open', 'btn-container-close', 'btn-get'] },
     { id: 'trait-food', label: 'Food', kind: 'object', legacySetIds: ['inline-food'], keywords: ['meat', 'mutton', 'bread', 'biscuit', 'lembas', 'mushroom', 'honey', 'wafer', 'cookie', 'candy', 'apple', 'grape', 'fruit', 'eg', 'dumpling', 'bannock', 'cheese', 'pastry', 'flour', 'cake', 'pie'], buttonIds: ['btn-food-eat', 'v2-taste'] },
     { id: 'trait-water', label: 'Water', kind: 'object', legacySetIds: ['inline-water'], keywords: ['water', 'fountain', 'pond', 'stream', 'well', 'spring', 'lake', 'river', 'sea', 'ocean', 'puddle', 'basin'], buttonIds: ['btn-water-drink'] },
     { id: 'trait-fluid-container', label: 'Fluid Container', kind: 'object', legacySetIds: ['inline-fluidcontainer'], keywords: ['flask', 'bottle', 'cup', 'skin', 'flagon', 'goblet', 'vial', 'keg', 'barrel', 'waterskin', 'pitcher', 'jug', 'mug', 'stein', 'pot', 'bowl', 'bucket', 'pail', 'calabash', 'gourd', 'glass', 'firebreather', 'tincture', 'pint', 'bladder'], buttonIds: ['btn-fluid-drink', 'btn-fluid-pour', 'btn-fluid-empty', 'btn-fluid-look-in', 'v2-sip'] },

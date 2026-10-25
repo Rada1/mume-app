@@ -7,20 +7,32 @@ import React from 'react';
 import type { CustomButton } from '../../../types';
 import type { InlineActionDeckGroup } from '../../../utils/inlineActionDeckModel';
 import { InlineTraitActionGroup } from './InlineTraitActionGroup';
+import type { InlineCommandDisplayParts } from './inlineCommandDisplay';
 
 // --- Logic Section ---
 
 interface InlineActionDeckProps {
     groups: InlineActionDeckGroup[];
-    requestInspection: (kind: 'look' | 'consider') => void;
-    renderButton: (button: CustomButton) => React.ReactNode;
+    requestInspection: (kind: 'look' | 'consider', lookIn?: boolean) => void;
+    lookInAvailable?: boolean;
+    lookInSelected?: boolean;
+    onToggleLookIn?: () => void;
+    targetContext?: string;
+    renderButton: (button: CustomButton, displayParts?: InlineCommandDisplayParts) => React.ReactNode;
 }
 
 export const InlineActionDeck: React.FC<InlineActionDeckProps> = ({
     groups,
     requestInspection,
+    lookInAvailable = false,
+    lookInSelected = false,
+    onToggleLookIn,
+    targetContext,
     renderButton
 }) => {
+    const [transferSelected, setTransferSelected] = React.useState(false);
+    React.useEffect(() => setTransferSelected(false), [targetContext]);
+
     const renderGroups = () => groups.map(group => (
         <InlineTraitActionGroup
             key={group.section.key}
@@ -28,6 +40,12 @@ export const InlineActionDeck: React.FC<InlineActionDeckProps> = ({
             buttons={group.buttons}
             inspectionCommands={group.inspectionCommands}
             requestInspection={requestInspection}
+            lookInAvailable={lookInAvailable && group.inspectionCommands.includes('look')}
+            lookInSelected={lookInSelected}
+            onToggleLookIn={onToggleLookIn}
+            transferSelected={transferSelected}
+            onToggleTransfer={() => setTransferSelected(selected => !selected)}
+            targetContext={targetContext}
             renderButton={renderButton}
         />
     ));

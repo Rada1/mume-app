@@ -62,6 +62,9 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         if (useCommandShopStore.getState().pendingCommand?.toLowerCase() === lowerCmd) captureType = 'shop_action';
         if (useCommandPracticeStore.getState().pendingCommand?.toLowerCase() === lowerCmd) captureType = 'practice_action';
         const pendingHelp = useUIStore.getState().popoverState;
+        const pendingCommandReport = pendingHelp?.isCapturingCommandReport &&
+            pendingHelp.commandReportCommand?.trim().toLowerCase() === lowerCmd;
+        if (pendingCommandReport && !captureType) captureType = 'command_report';
         if (
             !captureType &&
             pendingHelp?.isCapturingHelp &&

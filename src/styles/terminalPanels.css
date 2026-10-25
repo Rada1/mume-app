@@ -466,10 +466,6 @@ body:not(:has(.app-container.immersion-mode)).has-unified-command-chat-history .
     background: rgba(201, 168, 76, 0.19) !important;
 }
 
-.app-container.immersion-mode .terminal-inline-popover .terminal-inline-target-action:hover {
-    background: rgba(145, 201, 158, 0.2) !important;
-}
-
 .app-container.immersion-mode .popover-menu:has(.terminal-inline-popover) .popover-side-panel-close:hover,
 .app-container.immersion-mode .popover-menu:has(.terminal-inline-popover) .popover-side-panel-close:focus-visible,
 .app-container.immersion-mode .popover-inspection-panel-heading button:hover,

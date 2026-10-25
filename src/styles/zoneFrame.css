@@ -26,3 +26,24 @@
     box-shadow: var(--zone-frame-shadow);
     transition: --zone-frame-color 5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
+
+/* Performance Mode uses the rim to show the active light instead of the zone. */
+.app-container.performance-mode.immersion-mode::after {
+    --zone-frame-color: #667085;
+}
+
+.app-container.performance-mode.immersion-mode.lighting-sun::after {
+    --zone-frame-color: #66c2ff;
+}
+
+.app-container.performance-mode.immersion-mode.lighting-moon::after {
+    --zone-frame-color: #596a7d;
+}
+
+.app-container.performance-mode.immersion-mode.lighting-dark::after {
+    --zone-frame-color: #000000;
+}
+
+.app-container.performance-mode.immersion-mode.lighting-artificial::after {
+    --zone-frame-color: #ff7629;
+}

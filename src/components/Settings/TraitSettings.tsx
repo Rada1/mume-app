@@ -46,6 +46,7 @@ const TraitSettings: React.FC<TraitSettingsProps> = ({ customTraits: rawCustomTr
                 id: trait.id,
                 kind: trait.kind || 'object',
                 keywords: trait.keywords || [],
+                excludedKeywords: trait.excludedKeywords || [],
                 buttonIds: trait.buttonIds || []
             };
             return exists

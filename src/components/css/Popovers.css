@@ -958,6 +958,13 @@ body.has-popover .dial-menu-overlay {
     tab-size: 8;
 }
 
+.captured-equipment-slot {
+    color: var(--ansi-bright-black, #777);
+    font-family: var(--font-mono, monospace);
+    font-weight: 500;
+    white-space: nowrap;
+}
+
 .captured-assessment-list {
     display: grid;
     gap: 4px;
@@ -1671,10 +1678,76 @@ body.has-popover .dial-menu-overlay {
     color: #8f8374;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: right;
 }
 
 .terminal-inline-popover .terminal-inspect-row:hover {
     background: rgba(201, 168, 76, 0.08);
+}
+
+.terminal-inline-popover .inline-look-action-control {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.terminal-inline-popover .inline-group-action-control {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+.terminal-inline-popover .inline-look-action-control .terminal-inspect-row {
+    width: 100%;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-group-action-control .terminal-action-row {
+    width: 100%;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-look-action-control .terminal-inspect-row span:last-child {
+    padding-left: 48px;
+}
+
+.terminal-inline-popover .inline-group-action-control .terminal-action-command {
+    padding-left: 68px;
+}
+
+.terminal-inline-popover .inline-look-action-control .terminal-inspect-in-toggle,
+.terminal-inline-popover .inline-group-action-control .terminal-inspect-in-toggle {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #171717;
+}
+
+.terminal-inline-popover .terminal-inspect-in-toggle {
+    min-width: 48px;
+    padding: 4px 9px;
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 3px;
+    background: transparent;
+    color: #8f8374;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.terminal-inline-popover .terminal-inspect-in-toggle[aria-pressed="true"] {
+    border-color: rgba(201, 168, 76, 0.7);
+    background: rgba(201, 168, 76, 0.16);
+    color: #dfbf6c;
+}
+
+.terminal-inline-popover .terminal-inspect-in-toggle:hover,
+.terminal-inline-popover .terminal-inspect-in-toggle:focus-visible {
+    border-color: rgba(201, 168, 76, 0.7);
+    color: #fff1bd;
 }
 
 .terminal-inline-popover .inline-action-groups {
@@ -1775,41 +1848,35 @@ body.has-popover .dial-menu-overlay {
     text-transform: lowercase;
 }
 
+.terminal-inline-popover .inline-action-list .terminal-action-row.is-inline-command .inline-command-full {
+    grid-column: 1 / -1;
+    min-width: 0;
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+}
+
+.terminal-inline-popover .inline-action-list .terminal-action-row.has-inline-command-parts .inline-command-prefix {
+    grid-column: 1;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-action-list .terminal-action-row.has-inline-command-parts .terminal-action-command {
+    grid-column: 2;
+    min-width: 0;
+}
+
 .terminal-inline-popover .terminal-action-command {
+    min-width: 0;
     overflow: hidden;
     color: #8f8374;
     font-weight: 400;
     text-overflow: ellipsis;
+    text-align: right;
 }
 
 .terminal-inline-popover .inline-action-list .terminal-action-row > span:first-child {
     color: var(--inline-trait-color, #dfbf6c);
-}
-
-.terminal-inline-popover .terminal-inline-target-action {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    width: 100%;
-    margin-top: 6px;
-    padding: 8px 0 2px;
-    border: 0;
-    border-top: 1px solid rgba(201, 168, 76, 0.24);
-    background: transparent;
-    color: #91c99e;
-    font: inherit;
-    font-size: 0.72rem;
-    text-align: left;
-    cursor: pointer;
-}
-.terminal-inline-popover .terminal-inline-target-action span {
-    color: #8f8374;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.terminal-inline-popover .terminal-inline-target-action:hover {
-    color: #b6e1bf;
-    background: rgba(145, 201, 158, 0.08);
 }
 
 .terminal-inline-popover .terminal-action-demote > span:first-child {
@@ -1818,6 +1885,158 @@ body.has-popover .dial-menu-overlay {
 
 .terminal-inline-popover .terminal-action-promote > span:first-child {
     color: #91c99e;
+}
+
+.terminal-inline-popover .inline-container-get-action {
+    width: 100%;
+}
+
+.terminal-inline-popover .inline-container-get-row {
+    position: relative;
+    display: block;
+    align-items: center;
+    width: 100%;
+}
+
+.terminal-inline-popover .inline-container-get-row > .terminal-action-row {
+    width: 100%;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-container-get-row .terminal-action-command {
+    padding-left: 66px;
+}
+
+.terminal-inline-popover .inline-container-get-toggle {
+    position: absolute;
+    z-index: 1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 66px;
+    padding-inline: 7px;
+    font-size: 0.58rem;
+    background: #171717;
+}
+
+.terminal-inline-popover .inline-container-get-contents {
+    display: grid;
+    gap: 2px;
+    max-height: 180px;
+    margin: 2px 0 4px 94px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.terminal-inline-popover .inline-container-get-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-height: 30px;
+    padding: 5px 7px;
+    border: 1px solid rgba(201, 168, 76, 0.14);
+    border-radius: 3px;
+    background: rgba(201, 168, 76, 0.04);
+    color: #d8d0c0;
+    font: inherit;
+    font-size: 0.65rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.terminal-inline-popover .inline-container-get-item > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.terminal-inline-popover .inline-container-get-item > span:last-child {
+    flex-shrink: 0;
+    color: #8f8374;
+    font-size: 0.57rem;
+}
+
+.terminal-inline-popover .inline-container-get-item:hover,
+.terminal-inline-popover .inline-container-get-item[aria-selected="true"] {
+    border-color: rgba(201, 168, 76, 0.55);
+    background: rgba(201, 168, 76, 0.14);
+    color: #fff1bd;
+}
+
+.terminal-inline-popover .inline-container-get-status,
+.terminal-inline-popover .inline-container-get-selection {
+    padding: 5px 7px;
+    color: #8f8374;
+    font-size: 0.61rem;
+}
+
+.terminal-inline-popover .inline-container-get-selection {
+    border-top: 1px solid rgba(201, 168, 76, 0.16);
+    color: #b8aa8d;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-action {
+    flex: 1 0 100%;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-row {
+    position: relative;
+    display: block;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-row > .popover-action-chip {
+    flex: 1;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-toggle {
+    min-height: 32px;
+    padding: 4px 8px;
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.06);
+    color: #dfbf6c;
+    font: inherit;
+    font-size: 0.68rem;
+    cursor: pointer;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-contents {
+    display: grid;
+    gap: 2px;
+    max-height: 180px;
+    margin-top: 3px;
+    overflow-y: auto;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-toggle[aria-expanded="true"] {
+    background: rgba(201, 168, 76, 0.16);
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    border-radius: 4px;
+    background: rgba(201, 168, 76, 0.05);
+    color: #d8d0c0;
+    font: inherit;
+    font-size: 0.72rem;
+    text-align: left;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-item[aria-selected="true"] {
+    border-color: rgba(201, 168, 76, 0.55);
+    color: #fff1bd;
+}
+
+.standard-menu-popover.inline-action-compact .inline-container-get-status,
+.standard-menu-popover.inline-action-compact .inline-container-get-selection {
+    padding: 5px 7px;
+    color: #8f8374;
+    font-size: 0.66rem;
 }
 
 .terminal-inline-popover .inline-action-list .terminal-action-row:hover {

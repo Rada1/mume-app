@@ -261,7 +261,21 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         // Desktop entity menus use their native click handlers; skip only legacy drag selection.
         if (!popoverState || isDesktopEntityPopover || isMobileCommandPanelMenu || popoverState.menuDisplay === 'dial' || popoverState.type === 'help-card') return;
 
+        const clearDragSelection = () => {
+            if (scrollIntervalRef.current) {
+                cancelAnimationFrame(scrollIntervalRef.current);
+                scrollIntervalRef.current = null;
+            }
+            document.querySelectorAll('.popover-item[data-menu-item="true"].active-drag')
+                .forEach(item => item.classList.remove('active-drag'));
+            lastHoveredIndex.current = null;
+        };
+
         const handlePointerMove = (e: PointerEvent) => {
+            if (document.body.classList.contains('global-dragging')) {
+                clearDragSelection();
+                return;
+            }
             // Touch pointers need native vertical panning so mobile users can scroll menus.
             if (e.pointerType === 'touch') return;
 
@@ -341,6 +355,10 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         };
 
         const handlePointerUp = (e: PointerEvent) => {
+            if (document.body.classList.contains('global-dragging')) {
+                clearDragSelection();
+                return;
+            }
             // Mobile taps are handled by the menu's click handlers; don't treat scroll release as drag-select.
             if (e.pointerType === 'touch') return;
 

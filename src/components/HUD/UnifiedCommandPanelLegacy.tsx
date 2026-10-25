@@ -1,6 +1,4 @@
-/**
- * @file UnifiedCommandPanel.tsx
- */
+/** @file UnifiedCommandPanelLegacy.tsx — Legacy command workspace. */
 import React from 'react';
 import { LegacyCommandOutputs } from './LegacyCommandOutputs';
 import { HelpCircle, MessageCircle, Tag, X } from 'lucide-react';
@@ -103,7 +101,7 @@ export const UnifiedCommandPanelLegacy: React.FC<UnifiedCommandPanelProps> = ({ 
         practice.setOpen(true);
     }, [practice.setOpen, practiceOpenRequest, selectContext]);
     const dismissOutputs = () => { shop.setOutputOpen(false); practice.setOutputOpen(false); };
-    const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
+    const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, requestCommandReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
     const { isHelpMode, toggleHelpMode, executeHelp } = useCommandHelpMode({ dismissOutputs, requestHelp });
     const targetContext = activeState.context || null;
     const { actionGroups, communicationActionGroup } = useUnifiedCommandActions(activeState, activeScope, targetContext, communication.commands, communication.chatCommands);
@@ -248,6 +246,7 @@ export const UnifiedCommandPanelLegacy: React.FC<UnifiedCommandPanelProps> = ({ 
                                 onRequestRoomReport={activeScope === 'room' ? kind => { dismissOutputs(); if (isHelpMode) { executeHelp(kind); } else { requestRoomReport(kind); } } : undefined}
                                 onRequestWeatherReport={kind => { dismissOutputs(); if (isHelpMode) { executeHelp(`weather ${kind}`); } else { requestWeatherReport(kind); } }}
                                 onRequestPersonalReport={activeScope === 'self' ? kind => { dismissOutputs(); if (isHelpMode) { executeHelp(kind); } else { requestPersonalReport(kind); } } : undefined}
+                                onRequestCommandReport={(command, label) => { dismissOutputs(); if (command.trim().toLowerCase() === 'where' && activeScope === 'room') requestRoomReport('where'); else requestCommandReport(command, label); return true; }}
                                 onRequestExamine={command => { dismissOutputs(); if (isHelpMode) { executeHelp('examine'); } else { requestExamine(command); } }}
                                 onRequestLook={activeScope === 'room' ? () => { dismissOutputs(); if (isHelpMode) { executeHelp('look'); } else { setInspecting('look'); } } : undefined}
                                 isHelpMode={isHelpMode} onRequestHelp={executeHelp} compact terminal glowDelay="0s" />;

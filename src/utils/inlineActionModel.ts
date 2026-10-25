@@ -5,7 +5,6 @@
 
 import { CategoryOverride, CustomButton, CustomTraitConfig, EntityKind, InlineCategoryConfig } from '../types';
 import { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
-import { LinkedColorTheme, toThemeLinkedColor } from './themeLinkedColors';
 
 export { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
 
@@ -46,6 +45,7 @@ export interface TraitConfig {
     label: string;
     buttonIds: string[];
     keywords: string[];
+    excludedKeywords?: string[];
     legacySetIds?: string[];
     kind?: EntityKind;
     requirement?: CustomButton['requirement'];
@@ -145,20 +145,33 @@ export const getTraitsForName = (
 ): TraitConfig[] => {
     if (!name) return [];
     const lowerName = name.toLowerCase();
-    const defaults = DEFAULT_TRAIT_CONFIGS.filter(trait => trait.keywords.some(keyword => matchesKeyword(lowerName, keyword)));
     const custom = customTraits
         .filter(isTraitConfigRecord)
-        .filter(config => ('keywords' in config ? config.keywords || [] : []).some(keyword => matchesKeyword(lowerName, keyword)))
         .map(config => inlineConfigToTrait(config));
-    return dedupeTraits([...custom, ...defaults]);
+    const overriddenTraitIds = new Set(custom.map(trait => trait.id));
+    const matchingCustom = custom.filter(trait => trait.keywords.some(keyword => matchesKeyword(lowerName, keyword)));
+    const matchingDefaults = DEFAULT_TRAIT_CONFIGS.filter(trait => (
+        !overriddenTraitIds.has(trait.id) && trait.keywords.some(keyword => matchesKeyword(lowerName, keyword))
+    ));
+    const excludedTraitIds = getExcludedTraitIdsForName(lowerName, customTraits);
+    return dedupeTraits([...matchingCustom, ...matchingDefaults]).filter(trait => !excludedTraitIds.has(trait.id));
 };
+
+const getExcludedTraitIdsForName = (lowerName: string, customTraits: InlineActionConfigRecord[]): Set<string> => new Set(
+    customTraits
+        .filter(isTraitConfigRecord)
+        .filter(config => ('excludedKeywords' in config ? config.excludedKeywords || [] : []).some(keyword => matchesKeyword(lowerName, keyword)))
+        .map(config => toTraitId(config.id) || config.id)
+);
 
 export const getResolvedTraitSections = (
     categoryId: string | null | undefined,
     name: string | null | undefined,
     customTraits: InlineActionConfigRecord[] = []
 ): ResolvedTraitSection[] => {
-    const categoryTraits = getTraitsForCategoryWithOverrides(categoryId, customTraits);
+    const excludedTraitIds = name ? getExcludedTraitIdsForName(name.toLowerCase(), customTraits) : new Set<string>();
+    const categoryTraits = getTraitsForCategoryWithOverrides(categoryId, customTraits)
+        .filter(trait => !excludedTraitIds.has(trait.id));
     const isMountObject = toCategoryId(categoryId) === 'cat-mount-object';
     const keywordTraits = (name ? getTraitsForName(name, customTraits) : [])
         .filter(trait => !trait.categoryIds || (categoryId != null && trait.categoryIds.includes(categoryId)))
@@ -200,80 +213,7 @@ export const findCategoryOverride = (
     ))
 );
 
-/**
- * Resolves the display color for a category or trait, in priority order:
- *   1. Per-category user override stored in inlineCategories
- *   2. Caller-supplied per-kind color (user's global settings: npcColor, objectColor, etc.)
- *   3. Category's own hardcoded default color (e.g. #22c55e for allies)
- */
-export const getInlineGlowColor = (
-    id: string | null | undefined,
-    configs: InlineActionConfigRecord[] = [],
-    entityColors: EntityColorMap = {},
-    theme: LinkedColorTheme = 'dark'
-): string | null => {
-    const themeColor = (color: string | null | undefined): string | null => toThemeLinkedColor(color, theme);
-    if (!id) return null;
-    const category = getCategoryConfig(id);
-    const trait = getTraitConfig(id);
-    const canonicalId = category?.id || trait?.id || toCategoryId(id) || toTraitId(id) || id;
-
-    // 1. Per-category user override
-    const override = configs.find(config => {
-        const configId = toCategoryId(config.id) || toTraitId(config.id) || config.id;
-        return configId === canonicalId && !!toCategoryId(config.id) && 'color' in config && !!config.color;
-    });
-    if (override && 'color' in override && override.color) return themeColor(override.color);
-
-    if (canonicalId === 'cat-ally' && entityColors.player) return themeColor(entityColors.player);
-
-    // Mounts have a dedicated gold identity instead of inheriting the generic NPC color.
-    if (canonicalId === 'cat-mount' && category?.color) return themeColor(category.color);
-
-    // 2. User's global kind-level setting (enemyColor, npcColor, objectColor, etc.)
-    const entityKind: EntityKind | undefined = CATEGORY_KIND_MAP[canonicalId] ?? trait?.kind ?? undefined;
-    if (entityKind) {
-        const kindColor = entityColors[entityKind];
-        if (kindColor) return themeColor(kindColor);
-    }
-
-    // 3. Category's hardcoded default color
-    if (category?.color) return themeColor(category.color);
-
-    return null;
-};
-
-/** Thin wrapper around getInlineGlowColor that always returns a string. */
-export const getCategoryColorWithOverrides = (
-    id: string | null | undefined,
-    configs: InlineActionConfigRecord[] = [],
-    fallback: string,
-    entityColors: EntityColorMap = {},
-    theme: LinkedColorTheme = 'dark'
-): string => getInlineGlowColor(id, configs, entityColors, theme) || (toThemeLinkedColor(fallback, theme) || fallback);
-
-export const upsertCategoryColorOverride = (
-    id: string,
-    kind: EntityKind,
-    color: string,
-    configs: InlineCategoryConfig[]
-): InlineCategoryConfig[] => {
-    const category = getCategoryConfig(id);
-    const categoryId = category?.id || toCategoryId(id) || id;
-    const existing = configs.find(config => (toCategoryId(config.id) || config.id) === categoryId);
-    const override: InlineCategoryConfig = {
-        ...(existing || {
-            id: category?.id || categoryId,
-            kind,
-            keywords: []
-        }),
-        color
-    };
-
-    return existing
-        ? configs.map(config => config === existing ? override : config)
-        : [...configs, override];
-};
+export { getCategoryColorWithOverrides, getInlineGlowColor, upsertCategoryColorOverride } from './inlineActionColors';
 
 // --- Legacy Config Bridge ---
 
@@ -285,7 +225,10 @@ export const inlineConfigToTrait = (config: InlineActionConfigRecord): TraitConf
         return {
             ...known,
             keywords: 'keywords' in config ? config.keywords || known.keywords : known.keywords,
-            buttonIds: customButtonIds || known.buttonIds,
+            excludedKeywords: 'excludedKeywords' in config ? config.excludedKeywords || [] : [],
+            buttonIds: (customButtonIds || known.buttonIds).filter(buttonId => (
+                known.id !== 'trait-container' || buttonId !== 'btn-container-get-all'
+            )),
             categoryIds: explicitKeywords ? undefined : known.categoryIds,
         };
     }
@@ -295,6 +238,7 @@ export const inlineConfigToTrait = (config: InlineActionConfigRecord): TraitConf
         label: config.id.replace(/^(inline|trait)-/, '').replace(/-/g, ' '),
         buttonIds: customButtonIds || [],
         keywords: 'keywords' in config ? config.keywords || [] : [],
+        excludedKeywords: 'excludedKeywords' in config ? config.excludedKeywords || [] : [],
         legacySetIds: 'buttonSetId' in config && config.buttonSetId ? [config.buttonSetId] : [config.id],
         kind: config.kind
     };
@@ -324,4 +268,11 @@ export const matchesKeyword = (lowerName: string, keyword: string): boolean => {
         .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         .replace(/-/g, '[-\\s]');
     return new RegExp(`(^|[^a-z])${regexPattern}([^a-z]|$)`, 'i').test(lowerName);
+};
+
+export const toggleTraitKeywords = (keywords: string[], name: string, isActive: boolean): string[] => {
+    const lowerName = name.toLowerCase();
+    if (isActive) return keywords.filter(keyword => !matchesKeyword(lowerName, keyword));
+    if (keywords.some(keyword => matchesKeyword(lowerName, keyword))) return keywords;
+    return [...keywords, lowerName];
 };

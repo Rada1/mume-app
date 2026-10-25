@@ -123,6 +123,10 @@ export interface PopoverState {
     capturedPersonalActionLines?: string[];
     personalActionKind?: 'info' | 'stat' | 'score';
     isCapturingPersonalAction?: boolean;
+    capturedCommandReportLines?: string[];
+    commandReportLabel?: string;
+    commandReportCommand?: string;
+    isCapturingCommandReport?: boolean;
     // Keep the details surface open while an information command is active.
     hasInspectionCard?: boolean;
     openedByHover?: boolean;
@@ -216,6 +220,7 @@ export interface CustomButton {
     rebindCenterSetId?: string;
     rebindSets?: Partial<Record<SwipeDirection, string>>;
     inlineSubgroup?: string;
+    inlineTargetKinds?: Array<'character' | 'object' | 'exit'>;
 
     // Dynamic triggers
     trigger?: {

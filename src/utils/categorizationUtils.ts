@@ -124,6 +124,7 @@ function traitToInlineConfig(trait: TraitConfig): InlineCategoryConfig {
         id: trait.id,
         kind: trait.kind || getKindForCategory(trait.legacySetIds?.[0]) || 'object',
         keywords: trait.keywords,
+        excludedKeywords: trait.excludedKeywords,
         buttonSetId: trait.legacySetIds?.[0]
     };
 }

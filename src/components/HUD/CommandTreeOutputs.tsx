@@ -4,14 +4,16 @@ import { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import { CapturedDetailsSidePanel } from '../Popovers/StandardMenu/CapturedDetailsSidePanel';
 import { CommandShopOutputPanel } from './CommandShopOutputPanel';
 import { CommandPracticeOutputPanel } from './CommandPracticeOutputPanel';
+import { isInlineActionPopover } from '../../utils/popoverPanelUtils';
 
 // --- Render Section ---
 export const CommandTreeOutputs = ({controller}: {controller: ReturnType<typeof useCommandTreeController>}) => {
     const { hasCapturedDetails, capture, closeDetails, shop, practice } = controller;
     if (shop.outputVisible) return <CommandShopOutputPanel shop={shop} />;
     if (practice.outputVisible) return <CommandPracticeOutputPanel practice={practice} />;
+    const showCapturedDetails = hasCapturedDetails && !isInlineActionPopover(capture);
     return <>
-        {hasCapturedDetails && <CapturedDetailsSidePanel
+        {showCapturedDetails && <CapturedDetailsSidePanel
             examineLines={capture?.capturedExamineLines}
             examineMode={capture?.examineMode}
             considerLines={capture?.capturedConsiderLines}
@@ -32,6 +34,9 @@ export const CommandTreeOutputs = ({controller}: {controller: ReturnType<typeof 
             personalActionLines={capture?.capturedPersonalActionLines}
             personalActionKind={capture?.personalActionKind}
             isCapturingPersonalAction={capture?.isCapturingPersonalAction}
+            commandReportLines={capture?.capturedCommandReportLines}
+            commandReportLabel={capture?.commandReportLabel}
+            isCapturingCommandReport={capture?.isCapturingCommandReport}
             onClose={closeDetails}
         />}
     </>;

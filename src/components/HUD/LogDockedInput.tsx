@@ -31,6 +31,7 @@ import { TacticalArgumentChips } from './TacticalArgumentChips';
 import { useTacticalArgumentChipStore } from '../../stores/useTacticalArgumentChipStore';
 import './LogDockedInput.css';
 import { ParleyChannelChip } from '../Messages/ParleyChannelChip';
+import { getCommandTextColor } from '../../utils/swipeCommandColors';
 
 interface LogDockedInputProps {
     handleSend: (e?: React.FormEvent) => void;
@@ -504,7 +505,9 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             {showTacticalArgumentChips ? (
                                 <TacticalArgumentChips />
                             ) : displayedCommandPreview && !input ? (
-                                <span className="docked-command-preview">{displayedCommandPreview}</span>
+                                <span className="docked-command-preview" style={{ color: getCommandTextColor(displayedCommandPreview) }}>
+                                    {displayedCommandPreview}
+                                </span>
                             ) : commandTextParts && (
                                 <>
                                     <span>{commandTextParts.leading}</span>

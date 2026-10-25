@@ -82,6 +82,10 @@ inline entity -> category -> traits -> buttons
 
 Categories classify entities and own default trait IDs. Traits own button IDs. Do not attach buttons or button sets directly to categories; legacy `inline-*` IDs are compatibility aliases during migration.
 
+`src/components/Popovers/StandardMenu/InlineContainerGetAction.tsx` adds an optional Contents selector to Get on container targets. It loads contents with a silent tracked `look in`, always offers All, maps that choice to `get all from <container>`, and maps item choices to `get <item> <container>`. Container targets use this selector instead of a separate G/All action; worn containers also expose Get.
+
+Inline container targets keep Look in the normal Examine trait. Its optional In toggle sends `look in <container>`; with the toggle off, Look sends `look <container>`.
+
 ## Shaper Mode
 Shaper Mode is a privileged concept-building workspace, not a normal player-facing client mode. Keep its domain model, validation, collaboration, and deploy logic under `src/shaper/` as headless logic with thin components. Its entry point must remain hidden unless `canAccessShaper()` allows access.
 

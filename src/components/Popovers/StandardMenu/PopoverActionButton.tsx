@@ -5,6 +5,9 @@ import { isDesktopInlineActionPanel } from '../../../utils/popoverPanelUtils';
 import { getCommandTextColor } from '../../../utils/swipeCommandColors';
 import { resolveHelpTopic } from '../../../utils/commandHelpUtils';
 import { getMovementDirectionLabel, normalizeMovementDirection } from '../../../utils/movementDirections';
+import { resolveButtonClickCommand } from '../../../hooks/interactions/resolveButtonClickCommand';
+import { commandTreeGroup } from '../../../utils/commandTreeGroups';
+import type { InlineCommandDisplayParts } from './inlineCommandDisplay';
 
 
 interface PopoverActionButtonProps {
@@ -17,6 +20,8 @@ interface PopoverActionButtonProps {
     isSubButton?: boolean;
     compact?: boolean;
     terminal?: boolean;
+    inlineCommandOnly?: boolean;
+    inlineCommandParts?: InlineCommandDisplayParts;
     showFavorite?: boolean;
     glowDelay?: string;
     favorites: string[];
@@ -42,6 +47,7 @@ interface PopoverActionButtonProps {
     onRequestRoomReport?: (kind: 'who' | 'where' | 'exits' | 'map' | 'weather local') => void;
     onRequestWeatherReport?: (scope: 'global' | 'fog') => void;
     onRequestPersonalReport?: (kind: 'info' | 'stat' | 'score') => void;
+    onRequestCommandReport?: (command: string, label: string) => boolean;
     onRequestExamine?: (command: string) => void;
     onRequestLook?: () => void;
     isHelpMode?: boolean;
@@ -49,7 +55,7 @@ interface PopoverActionButtonProps {
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, displayLabel, displayContent, displayColor, treeRow = false, depth = 0, isSubButton = false, compact = false, terminal = false, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction, onRequestShop, onRequestPractice, onRequestSelfState, onRequestCommunication, onRequestWhois, onRequestRoomReport, onRequestWeatherReport, onRequestPersonalReport, onRequestExamine, onRequestLook, isHelpMode = false, onRequestHelp
+    button, displayLabel, displayContent, displayColor, treeRow = false, depth = 0, isSubButton = false, compact = false, terminal = false, inlineCommandOnly = false, inlineCommandParts, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction, onRequestShop, onRequestPractice, onRequestSelfState, onRequestCommunication, onRequestWhois, onRequestRoomReport, onRequestWeatherReport, onRequestPersonalReport, onRequestCommandReport, onRequestExamine, onRequestLook, isHelpMode = false, onRequestHelp
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -71,6 +77,23 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
             setPopoverState(null);
             addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+        } else if (commandTreeGroup(button) === 5 && onRequestCommandReport?.(
+            resolveButtonClickCommand({
+                button,
+                context: popoverState.context,
+                parentNoun: popoverState.parentNoun,
+                direction,
+                target: null,
+                keywordOverrides: keywordOverrides || {},
+                popoverCategory: popoverState.category,
+                popoverSetId: popoverState.setId,
+                isTrackpadModifierActive: false,
+                joystickDirection: null,
+                joystickTargetModifierActive: false
+            }).finalCmd,
+            button.label.replace(/%n/g, popoverState.context || '').replace(/%p/g, popoverState.parentNoun || '')
+        )) {
+            return;
         } else if (button.setId === 'trait-state' && onRequestSelfState) {
             onRequestSelfState(button);
         } else if (button.id === 'btn-exit-go') {
@@ -133,6 +156,13 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
         ? getMovementDirectionLabel(rawCommandContext.replace(/^exit\s+/i, '').trim())
         : rawCommandContext;
     const commandPreview = button.command.replace(/%n(?:\|[^\s]+)?/g, commandContext).replace(/%p/g, popoverState.parentNoun || '');
+    const resolvedInlineCommandParts = inlineCommandParts || (() => {
+        const target = commandContext.trim();
+        const targetStart = target ? commandPreview.toLowerCase().lastIndexOf(target.toLowerCase()) : -1;
+        if (targetStart < 0 || targetStart + target.length !== commandPreview.length) return undefined;
+        const prefix = commandPreview.slice(0, targetStart).trimEnd();
+        return prefix ? { prefix, suffix: commandPreview.slice(targetStart) } : undefined;
+    })();
 
     if (treeRow) {
         return <button type="button" className={`command-tree-row${isHelpMode ? ' is-help-mode' : ''}`}
@@ -145,7 +175,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
     if (compact) {
         return (
             <div
-                className={terminal ? `terminal-action-row${terminalTone}${isHelpMode ? ' is-help-mode' : ''}` : `popover-action-chip${isHelpMode ? ' is-help-mode' : ''}`}
+                className={terminal ? `terminal-action-row${terminalTone}${inlineCommandOnly ? ' is-inline-command' : ''}${resolvedInlineCommandParts ? ' has-inline-command-parts' : ''}${isHelpMode ? ' is-help-mode' : ''}` : `popover-action-chip${isHelpMode ? ' is-help-mode' : ''}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.currentTarget.click(); } }}
@@ -175,8 +205,14 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                     '--set-accent': 'var(--accent)'
                 } as any}
             >
-                <span style={{ pointerEvents: 'none', color: terminal ? getCommandTextColor(button.command, button.setId) : undefined }}>{label}</span>
-                {terminal && <span className="terminal-action-command">&lt;{commandPreview}&gt;</span>}
+                {terminal && inlineCommandOnly ? resolvedInlineCommandParts ? <>
+                    <span className="inline-command-prefix" style={{ pointerEvents: 'none', color: getCommandTextColor(button.command, button.setId) }}>{resolvedInlineCommandParts.prefix}</span>
+                    <span className="terminal-action-command" style={{ pointerEvents: 'none' }}>{resolvedInlineCommandParts.suffix}</span>
+                </> : <span className="inline-command-full" style={{ pointerEvents: 'none', color: getCommandTextColor(button.command, button.setId) }}>{commandPreview}</span>
+                    : <>
+                        <span style={{ pointerEvents: 'none', color: terminal ? getCommandTextColor(button.command, button.setId) : undefined }}>{label}</span>
+                        {terminal && <span className="terminal-action-command">&lt;{commandPreview}&gt;</span>}
+                    </>}
                 {!terminal && showFavorite && <span
                     onClick={(e) => toggleFavorite(e, button.command)}
                     style={{

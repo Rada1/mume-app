@@ -121,7 +121,8 @@
     margin: 0 auto;
     position: relative;
     width: 100%;
-    z-index: 5000;
+    /* Keep the log above atmosphere layers even when target actions are closed. */
+    z-index: 65000;
     overflow: visible; /* Show tactical buttons on the right */
     padding: var(--drawer-margin) 10px;
     padding-bottom: calc(var(--drawer-margin) + env(safe-area-inset-bottom, 0px));
@@ -2983,7 +2984,8 @@
         margin: 0 !important;
         padding: 8px !important;
         box-sizing: border-box !important;
-        z-index: 5000 !important;
+        /* Match the open-panel layer so selecting a target cannot change log brightness. */
+        z-index: 65000 !important;
     }
 
     /* The account deck spans the viewport, including the map column. */

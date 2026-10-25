@@ -58,6 +58,13 @@ const displayContent = targetGearRow && targetState?.category
 
                                 onRequestPersonalReport={kind => { dismissOutputs(); if (isHelpMode) { executeHelp(kind); } else { requestPersonalReport(kind); } }}
 
+                                onRequestCommandReport={(command, label) => {
+                                    dismissOutputs();
+                                    if (command.trim().toLowerCase() === 'where' && activeScope === 'room') requestRoomReport('where');
+                                    else controller.requestCommandReport(command, label);
+                                    return true;
+                                }}
+
                                 onRequestExamine={command => { dismissOutputs(); if (isHelpMode) { executeHelp('examine'); } else { requestExamine(command); } }}
 
                                 onRequestLook={() => { dismissOutputs(); if (isHelpMode) { executeHelp('look'); } else { setInspecting('look'); } }}

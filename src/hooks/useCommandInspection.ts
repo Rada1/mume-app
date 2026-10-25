@@ -11,7 +11,18 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
     const targetContext = activeState.context || null;
     const setActivePopoverState = React.useCallback((update: React.SetStateAction<PopoverState | null>) => {
         const current = activeState;
-        ui.setPopoverState(typeof update === 'function' ? update(current) : update);
+        const next = typeof update === 'function' ? update(current) : update;
+        if (next && !next.isCapturingCommandReport) {
+            ui.setPopoverState({
+                ...next,
+                isCapturingCommandReport: false,
+                commandReportCommand: undefined,
+                commandReportLabel: undefined,
+                capturedCommandReportLines: undefined
+            });
+            return;
+        }
+        ui.setPopoverState(next);
     }, [activeState, ui.setPopoverState]);
     const setInspecting = (kind: 'look' | 'consider' | 'examine') => {
         const capturesExamine = kind === 'look' || kind === 'examine';
@@ -219,6 +230,35 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
         }));
         game.executeCommand(kind, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
+    const requestCommandReport = (command: string, label: string) => {
+        const normalizedCommand = command.trim();
+        if (!normalizedCommand) return;
+        setActivePopoverState(current => ({
+            ...current,
+            hasInspectionCard: true,
+            isCapturingCommandReport: true,
+            commandReportCommand: normalizedCommand,
+            commandReportLabel: label,
+            capturedCommandReportLines: undefined,
+            isCapturingExamine: false,
+            isCapturingConsider: false,
+            isCapturingHelp: false,
+            isCapturingWhois: false,
+            isCapturingWho: false,
+            isCapturingWhere: false,
+            isCapturingRoomAction: false,
+            isCapturingPersonalAction: false,
+            capturedExamineLines: undefined,
+            capturedConsiderLines: undefined,
+            capturedHelpLines: undefined,
+            capturedWhoisLines: undefined,
+            capturedWhoLines: undefined,
+            capturedWhereLines: undefined,
+            capturedRoomActionLines: undefined,
+            capturedPersonalActionLines: undefined
+        }));
+        game.executeCommand(normalizedCommand, false, false, false, false, { shouldFocus: false, fromUi: true });
+    };
     const closeDetails = () => setActivePopoverState(current => ({
         ...current,
         hasInspectionCard: false,
@@ -241,13 +281,17 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
         isCapturingPersonalAction: false,
         personalActionKind: undefined,
         capturedPersonalActionLines: undefined,
+        isCapturingCommandReport: false,
+        commandReportCommand: undefined,
+        commandReportLabel: undefined,
+        capturedCommandReportLines: undefined,
         whoisTarget: undefined
     }));
     const capture = ui.popoverState?.entityId === activeState.entityId ? ui.popoverState : null;
-    const hasCapturedDetails = isVisible && !!(capture?.hasInspectionCard || capture?.isCapturingExamine || capture?.isCapturingConsider || capture?.isCapturingHelp || capture?.isCapturingWhois || capture?.isCapturingWho || capture?.isCapturingWhere || capture?.isCapturingRoomAction || capture?.isCapturingPersonalAction || capture?.capturedExamineLines || capture?.capturedConsiderLines || capture?.capturedHelpLines || capture?.capturedWhoisLines || capture?.capturedWhoLines || capture?.capturedWhereLines || capture?.capturedRoomActionLines || capture?.capturedPersonalActionLines);
+    const hasCapturedDetails = isVisible && !!(capture?.hasInspectionCard || capture?.isCapturingExamine || capture?.isCapturingConsider || capture?.isCapturingHelp || capture?.isCapturingWhois || capture?.isCapturingWho || capture?.isCapturingWhere || capture?.isCapturingRoomAction || capture?.isCapturingPersonalAction || capture?.isCapturingCommandReport || capture?.capturedExamineLines || capture?.capturedConsiderLines || capture?.capturedHelpLines || capture?.capturedWhoisLines || capture?.capturedWhoLines || capture?.capturedWhereLines || capture?.capturedRoomActionLines || capture?.capturedPersonalActionLines || capture?.capturedCommandReportLines);
     React.useEffect(() => {
         document.body.classList.toggle('has-unified-command-details', hasCapturedDetails);
         return () => document.body.classList.remove('has-unified-command-details');
     }, [hasCapturedDetails]);
-    return { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, closeDetails, capture, hasCapturedDetails };
+    return { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, requestCommandReport, closeDetails, capture, hasCapturedDetails };
 };

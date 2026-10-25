@@ -51,6 +51,10 @@ export function isButtonValidForEntity(
     // Resolved traits are authoritative for inline actions.
     if (!traitButtons.has(button.id)) return false;
     if (!isButtonEligibleForCharacter(button.requirement, deps.characterInfo)) return false;
+    if (button.inlineTargetKinds) {
+        const targetKind = axes.isCharacter ? 'character' : axes.isObject ? 'object' : axes.family === 'exit' ? 'exit' : null;
+        if (!targetKind || !button.inlineTargetKinds.includes(targetKind)) return false;
+    }
 
     // --- STEP 3: MUME Specific Rule Overrides ---
     if (button.id === 'btn-saddle-mount' && resolvedCategoryId !== 'cat-inventory-object') return false;
@@ -59,14 +63,18 @@ export function isButtonValidForEntity(
     
     const location = axes.location;
     const isPosessed = location === 'carried' || location === 'worn';
+    const isWornContainer = resolvedCategoryId === 'cat-worn-object'
+        && traitButtons.has('btn-get')
+        && traitButtons.has('btn-container-open');
 
     // Butchering targets corpses on the ground in the current room only.
     if (/^butcher(?:\s|$)/i.test(button.command.trim()) && location !== 'room') {
         return false;
     }
 
-    // 1. Block 'Get' for items already in possession (unless getting a container item)
-    if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed && resolvedCategoryId !== 'cat-container-item') {
+    // 1. Block 'Get' for possessed items except contents of a worn container.
+    if (button.command.startsWith('get ') && !button.command.includes('all') && isPosessed
+        && resolvedCategoryId !== 'cat-container-item' && !isWornContainer) {
         return false;
     }
 

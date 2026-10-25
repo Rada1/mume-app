@@ -89,6 +89,9 @@ export type InlineAbilityFamily = keyof typeof INLINE_ABILITY_FAMILIES;
 export const INLINE_BASH_DISENGAGE_BUTTON_ID = 'inline-ability-offense-warrior-bash-disengage';
 
 const CLASS_ORDER: PracticeClassKey[] = ['warrior', 'mage', 'cleric', 'ranger', 'thief'];
+const CLASS_TARGET_FAMILIES: InlineAbilityFamily[] = ['offense', 'buffs', 'healing', 'control', 'support', 'utility', 'object-magic'];
+const CLASS_TARGET_EXCLUDED_ABILITIES = new Set(['raise dead']);
+const OBJECT_TARGETED_ABILITIES = new Set(['bless', 'identify', 'enchant']);
 
 const normalizeAbility = (name: string): string => name.trim().toLowerCase().replace(/\s+/g, ' ');
 
@@ -116,6 +119,24 @@ const familyAbilityNames = (family: InlineAbilityFamily, classKey: PracticeClass
 export const getInlineAbilityButtonIds = (family: InlineAbilityFamily): string[] => (
     CLASS_ORDER.flatMap(classKey => familyAbilityNames(family, classKey).map(name => getAbilityId(family, classKey, name)))
 );
+
+/** Button IDs for learned, targetable abilities shown in a class trait. */
+export const getInlineClassTargetButtonIds = (classKey: PracticeClassKey): string[] => [
+    ...CLASS_TARGET_FAMILIES.flatMap(family => familyAbilityNames(family, classKey)
+        .filter(name => TARGETED_SKILLS.has(normalizeAbility(name)))
+        .filter(name => !SELF_ONLY_SPELLS.has(normalizeAbility(name)))
+        .filter(name => !CLASS_TARGET_EXCLUDED_ABILITIES.has(normalizeAbility(name)))
+        .map(name => getAbilityId(family, classKey, name))),
+    ...(classKey === 'warrior' ? [INLINE_BASH_DISENGAGE_BUTTON_ID] : [])
+];
+
+const getInlineTargetKinds = (ability: string, family: InlineAbilityFamily): Array<'character' | 'object' | 'exit'> => {
+    if (family === 'doors') return ['exit'];
+    const normalized = normalizeAbility(ability);
+    if (normalized === 'bless') return ['character', 'object'];
+    if (OBJECT_TARGETED_ABILITIES.has(normalized)) return ['object'];
+    return ['character'];
+};
 
 const getLearnedProficiency = (
     ability: string,
@@ -154,7 +175,13 @@ const createInlineAbilityButton = (
         width: 160,
         height: 32
     });
-    return { ...button, inlineSubgroup: classLabel };
+    return {
+        ...button,
+        inlineSubgroup: classLabel,
+        ...(TARGETED_SKILLS.has(normalizeAbility(ability)) || family === 'doors'
+            ? { inlineTargetKinds: getInlineTargetKinds(ability, family) }
+            : {})
+    };
 };
 
 /** Creates only learned abilities that accept the selected entity as a target. */
@@ -182,7 +209,7 @@ export const createLearnedInlineAbilityButtons = (
             width: 160,
             height: 32
         });
-        buttons.push({ ...button, inlineSubgroup: 'Warrior' });
+        buttons.push({ ...button, inlineSubgroup: 'Warrior', inlineTargetKinds: ['character'] });
     }
     return buttons;
 };

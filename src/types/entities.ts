@@ -30,6 +30,7 @@ export interface InlineCategoryConfig {
     kind: EntityKind;
     parent?: string;             // canonical ID of parent
     keywords: string[];
+    excludedKeywords?: string[]; // names that explicitly suppress this trait
     color?: string;              // optional; defaults to kind's color
     defaultTraitIds?: string[];   // migration bridge: category -> trait selections
     categoryType?: EntityKind | 'account' | 'target' | 'quest' | 'none'; // legacy support
@@ -49,6 +50,7 @@ export interface CustomTraitConfig {
     id: string;
     kind: EntityKind;
     keywords: string[];
+    excludedKeywords?: string[];
     buttonIds?: string[];
 }
 

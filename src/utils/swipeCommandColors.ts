@@ -35,6 +35,7 @@ const SWIPE_COMMAND_TEXT_COLORS: Record<string, string> = {
     gsay: MOBILE_COMMAND_COLORS.green,
     protect: MOBILE_COMMAND_COLORS.cyan,
     rescue: MOBILE_COMMAND_COLORS.cyan,
+    disengage: MOBILE_COMMAND_COLORS.cyan,
     bandage: MOBILE_COMMAND_COLORS.cyan,
     hide: MOBILE_COMMAND_COLORS.magenta,
     sneak: MOBILE_COMMAND_COLORS.magenta,
@@ -123,6 +124,12 @@ const ORANGE_SWIPE_COMMANDS = ['block door', 'break door'];
 const GREEN_SWIPE_COMMANDS = ['teleport', 'word of recall', 'portal', 'transfer', 'summon', 'flee', 'escape'];
 
 const INLINE_TRAIT_COLORS: Record<string, string> = {
+    'trait-combat': MOBILE_COMMAND_COLORS.red,
+    'trait-mage': MOBILE_COMMAND_COLORS.magenta,
+    'trait-warrior': MOBILE_COMMAND_COLORS.red,
+    'trait-ranger': MOBILE_COMMAND_COLORS.green,
+    'trait-thief': MOBILE_COMMAND_COLORS.yellow,
+    'trait-cleric': MOBILE_COMMAND_COLORS.cyan,
     'trait-offense': MOBILE_COMMAND_COLORS.red,
     'trait-retreat': MOBILE_COMMAND_COLORS.red,
     'trait-control': MOBILE_COMMAND_COLORS.red,

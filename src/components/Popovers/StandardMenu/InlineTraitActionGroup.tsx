@@ -6,6 +6,9 @@
 import React from 'react';
 import { CustomButton } from '../../../types';
 import { getInlineTraitTextColor, getSwipeCommandTextColor } from '../../../utils/swipeCommandColors';
+import { InlineLookAction } from './InlineLookAction';
+import { InlineGroupAction } from './InlineGroupAction';
+import type { InlineCommandDisplayParts } from './inlineCommandDisplay';
 
 // --- Logic Section ---
 
@@ -13,20 +16,34 @@ interface InlineTraitActionGroupProps {
     section: { key: string; label: string };
     buttons: CustomButton[];
     inspectionCommands: Array<'look' | 'consider'>;
-    requestInspection: (kind: 'look' | 'consider') => void;
-    renderButton: (button: CustomButton) => React.ReactNode;
+    requestInspection: (kind: 'look' | 'consider', lookIn?: boolean) => void;
+    lookInAvailable?: boolean;
+    lookInSelected?: boolean;
+    onToggleLookIn?: () => void;
+    transferSelected?: boolean;
+    onToggleTransfer?: () => void;
+    targetContext?: string;
+    renderButton: (button: CustomButton, displayParts?: InlineCommandDisplayParts) => React.ReactNode;
 }
 
 const FAMILY_TRAITS = new Set([
+    'trait-combat', 'trait-mage', 'trait-warrior', 'trait-ranger', 'trait-thief', 'trait-cleric',
     'trait-offense', 'trait-retreat', 'trait-control', 'trait-buffs', 'trait-healing',
     'trait-support', 'trait-utility', 'trait-door-actions', 'trait-object-magic', 'trait-resurrection', 'trait-mount', 'trait-social', 'trait-communication'
 ]);
+const CLASS_TRAITS = new Set(['trait-mage', 'trait-warrior', 'trait-ranger', 'trait-thief', 'trait-cleric']);
 
 export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
     section,
     buttons,
     inspectionCommands,
     requestInspection,
+    lookInAvailable = false,
+    lookInSelected = false,
+    onToggleLookIn,
+    transferSelected = false,
+    onToggleTransfer,
+    targetContext,
     renderButton
 }) => {
     const actionCount = buttons.length + inspectionCommands.length;
@@ -35,7 +52,8 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
     const hasUserToggledCollapse = React.useRef(false);
     const contentId = `inline-trait-actions-${React.useId().replace(/:/g, '')}`;
     const traitColor = getInlineTraitTextColor(section.key);
-    const hasSubgroups = buttons.some(button => button.inlineSubgroup);
+    const hasSubgroups = !CLASS_TRAITS.has(section.key) && buttons.some(button => button.inlineSubgroup);
+    const groupButton = section.key === 'trait-group' ? buttons.find(button => button.id === 'btn-group') : undefined;
     const subgroupMap = new Map<string, CustomButton[]>();
 
     React.useEffect(() => {
@@ -43,6 +61,7 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
     }, [shouldStartCollapsed]);
 
     buttons.forEach(button => {
+        if (section.key === 'trait-group' && (button.id === 'btn-group' || button.id === 'btn-group-transfer')) return;
         const label = hasSubgroups ? button.inlineSubgroup || 'General' : '';
         subgroupMap.set(label, [...(subgroupMap.get(label) || []), button]);
     });
@@ -69,23 +88,30 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
                 <span className={`inline-action-group-chevron${isCollapsed ? ' is-collapsed' : ''}`} aria-hidden="true">⌄</span>
             </button>
             <div className="inline-action-list" id={contentId} hidden={isCollapsed}>
-                {inspectionCommands.length > 0 && <div className="inline-action-subgroup inline-action-inspection-subgroup">
+                {groupButton && targetContext && onToggleTransfer && <div className="inline-action-subgroup">
+                    <InlineGroupAction button={groupButton} transferSelected={transferSelected}
+                        targetContext={targetContext} onToggleTransfer={onToggleTransfer}
+                        renderButton={renderButton} />
+                </div>}
+                {inspectionCommands.length > 0 && <div className={`inline-action-subgroup inline-action-inspection-subgroup${lookInAvailable ? ' has-look-modifier' : ''}`}>
                     {inspectionCommands.map(kind => (
-                        <button
-                            key={`inspect-${kind}`}
-                            type="button"
-                            className="terminal-inspect-row"
-                            onPointerDown={event => event.stopPropagation()}
-                            onClick={() => requestInspection(kind)}
-                        >
-                            <span style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
-                        </button>
+                        kind === 'look' && lookInAvailable && targetContext && onToggleLookIn
+                            ? <InlineLookAction key={`inspect-${kind}`} targetContext={targetContext}
+                                lookInSelected={lookInSelected} onToggleLookIn={onToggleLookIn}
+                                onLook={lookIn => requestInspection('look', lookIn)} />
+                            : <button key={`inspect-${kind}`} type="button" className="terminal-inspect-row"
+                                title={`${kind} ${targetContext || ''}`.trim()}
+                                onPointerDown={event => event.stopPropagation()}
+                                onClick={event => { event.stopPropagation(); requestInspection(kind); }}>
+                                <span style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
+                                {targetContext && <span>{targetContext}</span>}
+                            </button>
                     ))}
                 </div>}
                 {Array.from(subgroupMap.entries()).map(([label, groupButtons]) => (
                     <div className="inline-action-subgroup" key={label || section.key}>
                         {hasSubgroups && <span className="inline-action-subgroup-label">{label}</span>}
-                        {groupButtons.map(renderButton)}
+                        {groupButtons.map(button => renderButton(button))}
                     </div>
                 ))}
             </div>

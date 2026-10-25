@@ -23,19 +23,16 @@
         font-size: 0.82rem !important;
     }
 
-    .terminal-inline-popover .terminal-inline-target-action {
-        box-sizing: border-box;
-        min-height: 44px;
-        padding: 8px 0 !important;
-        align-items: center;
-        font-size: 0.85rem !important;
-    }
-
     .popover-menu:has(.inline-action-compact) .inline-action-compact .popover-action-chip {
         box-sizing: border-box;
         min-height: 44px;
         padding: 10px 12px !important;
         font-size: 0.85rem !important;
+    }
+
+    .popover-menu:has(.inline-action-compact) .inline-action-compact .inline-container-get-toggle {
+        min-height: 44px;
+        font-size: 0.78rem;
     }
 }
 
@@ -51,6 +48,74 @@
 
     .terminal-inline-popover .inline-action-subgroup-label {
         grid-column: 1 / -1;
+    }
+
+    .terminal-inline-popover .inline-action-inspection-subgroup.has-look-modifier {
+        display: flex !important;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .inline-container-get-action {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .terminal-inline-popover .inline-container-get-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .terminal-inline-popover .inline-container-get-row > .terminal-action-row,
+    .terminal-inline-popover .inline-container-get-row > .popover-action-chip {
+        display: flex !important;
+        justify-content: flex-start;
+        flex: 0 0 auto;
+        box-sizing: border-box;
+        width: auto !important;
+        min-width: 0;
+        padding: 8px !important;
+        text-align: left;
+    }
+
+    .terminal-inline-popover .inline-container-get-row > .terminal-action-row > span:first-child {
+        text-align: left !important;
+    }
+
+    .terminal-inline-popover .inline-container-get-toggle {
+        position: static;
+        transform: none;
+        min-width: 72px;
+        padding-inline: 6px;
+        font-size: 0.68rem;
+    }
+
+    .terminal-inline-popover .inline-container-get-contents {
+        max-height: 35vh;
+        margin-left: 0;
+    }
+
+    .terminal-inline-popover .inline-container-get-item {
+        min-height: 42px;
+        padding-inline: 10px;
+        font-size: 0.75rem;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .terminal-inspect-row {
+        display: grid !important;
+        grid-template-columns: 44px minmax(0, 1fr);
+        min-height: 48px !important;
+        width: 100%;
+        justify-content: initial;
+        padding: 8px !important;
+        text-align: left;
+    }
+
+    .terminal-inline-popover .terminal-inspect-in-toggle {
+        min-height: 48px;
+        min-width: 54px;
+        font-size: 0.78rem;
     }
 
     .terminal-inline-popover .inline-action-subgroup :is(.terminal-action-row, .terminal-inspect-row) {
@@ -72,8 +137,92 @@
         display: none !important;
     }
 
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command {
+        justify-content: flex-start !important;
+        text-align: left !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command .inline-command-full {
+        display: block;
+        width: 100%;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command.has-inline-command-parts > .terminal-action-command {
+        display: inline !important;
+        margin-left: auto;
+        text-align: right;
+    }
+
     .terminal-inline-popover .inline-action-subgroup .terminal-action-row > span:first-child {
         overflow-wrap: anywhere;
         text-align: center;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .inline-look-action-control .terminal-inspect-row {
+        display: grid !important;
+        grid-template-columns: 44px minmax(0, 1fr);
+        flex: 1;
+        width: 100%;
+        justify-content: initial;
+        padding: 8px !important;
+        text-align: left;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .terminal-inspect-row span:last-child {
+        padding-left: 58px;
+        box-sizing: border-box;
+        min-width: 0;
+        text-align: right;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .terminal-inspect-in-toggle {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .inline-group-action-control,
+    .terminal-inline-popover .inline-action-subgroup .inline-container-get-row {
+        position: relative;
+        display: block !important;
+        width: 100%;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .inline-group-action-control .terminal-action-row.has-inline-command-parts,
+    .terminal-inline-popover .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts {
+        display: grid !important;
+        grid-template-columns: 56px minmax(0, 1fr);
+        gap: 0 !important;
+        flex: 1 1 auto;
+        width: 100% !important;
+        justify-content: initial !important;
+        padding: 8px !important;
+        text-align: left !important;
+    }
+
+    .terminal-inline-popover .inline-group-action-control .inline-command-prefix,
+    .terminal-inline-popover .inline-container-get-row .inline-command-prefix {
+        grid-column: 1;
+        text-align: left !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .inline-group-action-control .terminal-action-row.has-inline-command-parts .terminal-action-command,
+    .terminal-inline-popover .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts .terminal-action-command {
+        display: block !important;
+        grid-column: 2;
+        padding-left: 72px !important;
+        box-sizing: border-box;
+        text-align: right;
+    }
+
+    .terminal-inline-popover .inline-group-action-control .terminal-inspect-in-toggle,
+    .terminal-inline-popover .inline-container-get-row .inline-container-get-toggle {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        min-width: 66px;
     }
 }

@@ -20,31 +20,14 @@
   animation-delay: 0s !important;
 }
 
-/* Completely hide atmospheric containers to save DOM rendering/paint overhead */
+/* Hide atmospheric lighting, sky and weather layers in Performance Mode. */
 .performance-mode .environment-root,
 .performance-mode .terrain-tint-layer,
 .performance-mode .overlay-layer {
   display: none !important;
 }
 
-/* Keep the static immersion vignette and lighting gradients available in
-   Performance Mode while the animated weather and atmospheric layers stay hidden. */
-.performance-mode.immersion-mode .environment-root.front {
-  display: block !important;
-}
-
-.performance-mode.immersion-mode .environment-root.front > * {
-  display: none !important;
-}
-
-.performance-mode.immersion-mode .environment-root.front > .environment-vignette-layers,
-.performance-mode.immersion-mode .environment-root.front > .client-star-veil,
-.performance-mode.immersion-mode .environment-root.front > .environment-weather-layers {
-  display: block !important;
-}
-
-/* Keep the mapper transparent in immersion mode so the atmospheric sky remains
-   visible through empty map space, including in Performance Mode. */
+/* Keep the mapper transparent in immersion mode when atmospheric layers are hidden. */
 .app-container.performance-mode.immersion-mode .mapper-container {
   background: transparent !important;
   backdrop-filter: none !important;

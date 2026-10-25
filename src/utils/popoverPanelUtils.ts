@@ -15,3 +15,10 @@ export const isDesktopInlineActionPanel = (
     (!popoverState.type || popoverState.type === 'menu') &&
     viewportWidth >= 1025
 );
+
+export const isInlineActionPopover = (popoverState: PopoverState | null): boolean => Boolean(
+    popoverState?.entityId &&
+    popoverState.sourceRect &&
+    (!popoverState.type || popoverState.type === 'menu') &&
+    popoverState.menuDisplay !== 'dial'
+);

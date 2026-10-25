@@ -21,6 +21,7 @@ export const EXPECTED_CAPTURE_BOOTSTRAP_TYPES: CaptureType[] = [
     'examine',
     'consider',
     'whois',
+    'command_report',
     'room_action',
     'shop_action',
     'practice_action',

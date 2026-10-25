@@ -6,8 +6,8 @@
 import React from 'react';
 import { CharacterInfo, CustomButton, MessageType, PopoverState, InlineCategoryConfig, GameEntity, ParleyState, GmcpOccupant, CharacterEntry, CustomTraitConfig, PracticeData } from '../../types';
 import { isButtonValidForEntity } from '../../utils/actionUtils';
-import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
-import { canSetTargetChipFromCategory, getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
+import { getButtonIdsForTraits, getCategoryConfig, getResolvedTraitSections, getTraitsForCategoryWithOverrides, getTraitsForName as getInlineActionTraits } from '../../utils/inlineActionModel';
+import { getInlineCategoryAxes, getInlineCategoryLabel, normalizeInlineCategoryId } from '../../utils/inlineCategoryAxes';
 import { formatMumeTarget, sanitizeGameTarget } from '../../utils/gameUtils';
 import { User, Users, Skull, GraduationCap, Store, Coins, Sword, Trash2, Package, Utensils, Droplets, Flame, BookOpen, Shield, Box, Pencil, Settings } from 'lucide-react';
 
@@ -20,6 +20,8 @@ import { CapturedDetailsSidePanel } from './StandardMenu/CapturedDetailsSidePane
 import { AccountCharacterCard } from './StandardMenu/AccountCharacterCard';
 import { AccountStatPopover } from './StandardMenu/AccountStatPopover';
 import { InlineActionDeck } from './StandardMenu/InlineActionDeck';
+import { InlineLookAction } from './StandardMenu/InlineLookAction';
+import { InlineContainerGetAction } from './StandardMenu/InlineContainerGetAction';
 import { RoomEntityPicker } from './StandardMenu/RoomEntityPicker';
 import { useRoomEntityMenu } from '../../hooks/useRoomEntityMenu';
 import { createLearnedInlineAbilityButtons } from '../../utils/inlineAbilityActions';
@@ -92,6 +94,10 @@ const isInformationButton = (button: CustomButton): boolean => {
     const verb = (button.command || button.label || '').trim().toLowerCase().split(/\s+/)[0];
     return ['look', 'examine', 'consider', 'con', 'whois', 'compare', 'scan', 'search', 'read', 'listen', 'smell', 'identify'].includes(verb);
 };
+
+const isContainerLookInButton = (button: CustomButton): boolean => (
+    button.id === 'btn-container-look-in' || button.id === 'btn-fluid-look-in'
+);
 
 const resolveEntityCategoryIcon = (categoryId: string, resolvedTraitIds: string[]) => {
     // Look at traits first as they are more specific (e.g. guildmaster, weapon)
@@ -170,9 +176,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         popoverState.context || null,
         inlineCategories || []
     );
-    const keywordTraitIds = popoverState.context
-        ? getInlineActionTraits(popoverState.context, inlineCategories || []).map(trait => trait.id)
+    const defaultKeywordTraitIds = popoverState.context
+        ? getInlineActionTraits(popoverState.context, (inlineCategories || []).map(config => ({ ...config, excludedKeywords: [] }))).map(trait => trait.id)
         : [];
+    const defaultCategoryTraitIds = getTraitsForCategoryWithOverrides(categoryId, inlineCategories || []).map(trait => trait.id);
+    const defaultTraitIds = Array.from(new Set([...defaultCategoryTraitIds, ...defaultKeywordTraitIds]));
     const resolvedTraitIds = resolvedTraitSections.map(section => section.trait.id);
     const resolvedTraitButtonIds = new Set(getButtonIdsForTraits(resolvedTraitSections.map(section => section.trait)));
     const canObserve = resolvedTraitIds.includes('trait-observable');
@@ -198,9 +206,30 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
     }, [resolvedTraitSections]);
     const isTacticalSet = ['warriorskilllist', 'rangerskilllist', 'clericspelllist', 'thiefskilllist', 'magespelllist', 'doors'].includes(safeSetId);
     const targetContext = formatMumeTarget(popoverState.context) || popoverState.context || null;
+    const containerLookTraitKey = sectionDefs.find(section => (
+        section.key === 'trait-container' || section.key === 'trait-fluid-container'
+    ))?.key;
+    const hasContainerLook = Boolean(containerLookTraitKey && targetContext);
+    const lookStateKey = `${popoverState.entityId || ''}:${targetContext || ''}`;
+    const [lookInSelection, setLookInSelection] = React.useState<{key: string; selected: boolean}>({key: '', selected: false});
+    const lookInSelected = lookInSelection.key === lookStateKey && lookInSelection.selected;
+    const toggleLookIn = () => setLookInSelection({key: lookStateKey, selected: !lookInSelected});
     const toggleFavorite = (e: React.MouseEvent, command: string) => {
         e.stopPropagation();
         setFavorites(prev => prev.includes(command) ? prev.filter(id => id !== command) : [...prev, command]);
+    };
+
+    const renderContainerGet = (
+        button: CustomButton,
+        renderButton: (button: CustomButton, displayParts?: { prefix: string; suffix: string }) => React.ReactNode,
+        displayParts?: { prefix: string; suffix: string }
+    ) => {
+        if (!hasContainerLook || !targetContext || button.id !== 'btn-get'
+            || !/^get\s+%n(?:\|[^\s]+)?$/i.test(button.command.trim()) || popoverState.assignSourceId) {
+            return renderButton(button, displayParts);
+        }
+        return <InlineContainerGetAction key={`container-get-${button.id}`} button={button}
+            entityId={popoverState.entityId || ''} targetContext={targetContext} renderGet={renderButton} />;
     };
 
     let seenCommandsSize = 0;
@@ -350,20 +379,25 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         if (isCompactInline) {
             return (
                 <div className="inline-action-chips" data-inline-action-chips="true">
+                    {hasContainerLook && <InlineLookAction targetContext={targetContext!} lookInSelected={lookInSelected}
+                        onToggleLookIn={toggleLookIn}
+                        onLook={lookIn => requestInspection('look', lookIn ? `look in ${targetContext}` : undefined)} />}
                     {inlineMenuButtons.map(button => {
+                        if (hasContainerLook && isContainerLookInButton(button)) return null;
                         if (favorites.includes(button.command) || seenCommands.has(button.command)) return null;
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
+                        return renderContainerGet(button, actionButton => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />);
                     })}
                     {favorites.map(command => {
                         const button = inlineMenuButtons.find(candidate => candidate.command === command);
+                        if (hasContainerLook && button && isContainerLookInButton(button)) return null;
                         if (!button || seenCommands.has(button.command)) return null;
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return <PopoverActionButton key={button.id} button={button} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />;
+                        return renderContainerGet(button, actionButton => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />);
                     })}
                     <button
                         type="button"
@@ -395,14 +429,17 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             const groupedCommands = new Set<string>();
             const lookTraitKey = sectionDefs.some(section => section.key === 'trait-examine')
                 ? 'trait-examine'
-                : 'trait-observable';
+                : sectionDefs.some(section => section.key === 'trait-observable')
+                    ? 'trait-observable'
+                    : containerLookTraitKey;
             const actionGroups = sectionDefs.map(section => {
                 const sectionButtons = manipulationButtons.filter(button =>
                     section.buttonIds.includes(button.id) && !groupedCommands.has(button.command)
+                    && !(hasContainerLook && isContainerLookInButton(button))
                 );
                 sectionButtons.forEach(button => groupedCommands.add(button.command));
                 const inspectionCommands: Array<'look' | 'consider'> = [];
-                if (canObserve && targetContext && section.key === lookTraitKey) inspectionCommands.push('look');
+                if ((canObserve || hasContainerLook) && targetContext && section.key === lookTraitKey) inspectionCommands.push('look');
                 if (canObserve && targetContext && section.key === 'trait-consider') inspectionCommands.push('consider');
                 return { section, buttons: sectionButtons, inspectionCommands };
             }).filter(group => group.buttons.length > 0 || group.inspectionCommands.length > 0)
@@ -414,11 +451,16 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                 <InlineActionDeck
                     key={`${popoverState.entityId || ''}:${targetContext || ''}`}
                     groups={actionGroups}
-                    requestInspection={kind => requestInspection(kind)}
-                    renderButton={button => (
+                    requestInspection={(kind, lookIn) => requestInspection(kind,
+                        lookIn && targetContext ? `look in ${targetContext}` : undefined)}
+                    lookInAvailable={hasContainerLook}
+                    lookInSelected={lookInSelected}
+                    onToggleLookIn={toggleLookIn}
+                    targetContext={targetContext || undefined}
+                    renderButton={(button, displayParts) => renderContainerGet(button, (actionButton, actionDisplayParts) => (
                         <PopoverActionButton
-                            key={button.id}
-                            button={button}
+                            key={actionButton.id}
+                            button={actionButton}
                             {...props}
                             toggleFavorite={toggleFavorite}
                             onRequestWhois={requestWhois}
@@ -426,9 +468,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             onRequestExamine={requestInlineExamine}
                             compact
                             terminal
+                            inlineCommandOnly
+                            inlineCommandParts={actionDisplayParts}
                             glowDelay="0s"
                         />
-                    )}
+                    ), displayParts)}
                 />
             );
         }
@@ -609,7 +653,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
             )}
 
             {!isCompactInline && isChoosingCategory && setCustomTraits && (
-                <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} keywordTraits={keywordTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} characterInfo={characterInfo} />
+                <TraitToggleSection popoverState={popoverState} customTraits={customTraits || []} setCustomTraits={setCustomTraits} activeTraits={resolvedTraitIds} defaultTraitIds={defaultTraitIds} triggerHaptic={triggerHaptic} addMessage={addMessage} refreshLogHighlights={refreshLogHighlights} characterInfo={characterInfo} />
             )}
 
             {isSetManager ? (
@@ -659,16 +703,6 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                 />
                             )}
                             {renderActionButtons()}
-                            {isInlineMenu && targetContext && canSetTargetChipFromCategory(categoryId) && (
-                                <button type="button" className="terminal-inline-target-action"
-                                    onPointerDown={event => event.stopPropagation()}
-                                    onClick={event => {
-                                        event.stopPropagation();
-                                        setTarget(targetContext);
-                                        triggerHaptic?.(20);
-                                        setPopoverState(null);
-                                    }}>target <span>/{targetContext}</span></button>
-                            )}
                             {!isCompactInline && seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
                                 <div className="popover-empty" style={{ padding: '8px', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>No buttons available for this category</div>
                             )}

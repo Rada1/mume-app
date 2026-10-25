@@ -40,6 +40,7 @@ export type CaptureType =
   | 'examine'
   | 'consider'
   | 'whois'
+  | 'command_report'
   | 'self_title'
   | 'none';
 

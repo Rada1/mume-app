@@ -20,6 +20,7 @@ import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
 import { reconcileObjectSnapshot } from '../../objects/objectTargetModel';
 import { usePanelDataStore } from '../../stores/usePanelDataStore';
+import { formatCapturedLookLine } from '../../utils/lookTextUtils';
 
 // --- Personal Report Capture ---
 const publishPersonalReport = (kind: 'info' | 'stat' | 'score', lines: DrawerLine[], entityId?: string) => {
@@ -98,6 +99,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         // Keep the current line in the trigger input so unrelated attached text
         // cannot hide a capture header that is present in the line itself.
         const clean = line.trim();
+        if (captureStage.current === 'command_report') {
+            const commandEcho = pendingFlagsRef.current.command?.trim().toLowerCase();
+            const output = clean.replace(/\x1b\[[0-9;]*m/g, '').replace(/^>+\s*/, '').trim().toLowerCase();
+            return commandEcho && output === commandEcho ? null : 'command_report';
+        }
         const triggerText = [clean, attachedText?.trim()]
             .filter((value): value is string => Boolean(value))
             .join('\n');
@@ -188,6 +194,15 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                         ? { command: pendingFlagsRef.current.command }
                         : undefined
         };
+        const activePopover = useUIStore.getState().popoverState;
+        const reportCommand = activePopover?.commandReportCommand?.trim();
+        if (activePopover?.isCapturingCommandReport && reportCommand?.toLowerCase() === pendingFlagsRef.current.command?.trim().toLowerCase()) {
+            newSession.metadata = {
+                ...newSession.metadata,
+                commandReportCommand: reportCommand,
+                commandReportLabel: activePopover.commandReportLabel
+            };
+        }
         if (type === 'container') {
             lastRequestedContainerIdRef.current = null;
         }
@@ -206,6 +221,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             'practice': 'practice',
             'help_action': 'help_action',
             'info': 'info',
+            'command_report': 'command_report',
             'score': 'score',
             'achievement': 'achievement',
             'board_list': 'board_list',
@@ -420,7 +436,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     if (currentPopover?.isCapturingExamine) {
                         store.setPopoverState({
                             ...currentPopover,
-                            capturedExamineLines: lines.map(l => l.html || l.text),
+                            capturedExamineLines: lines.map(formatCapturedLookLine),
                             isCapturingExamine: false
                         });
                     }
@@ -502,6 +518,8 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     setCharacterInfo?.({ title: /^none$/i.test(title) ? '' : title });
                     break;
                 }
+                case 'command_report':
+                    break;
                 case 'container': {
                     const containerId = session.metadata?.containerId;
                     if (containerId && setContainerContents) {
@@ -509,6 +527,18 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                             ...prev,
                             [containerId]: reconcileObjectSnapshot(prev[containerId] || [], lines)
                         }));
+                    }
+                    const command = session.metadata?.command || '';
+                    if (!session.isSilent && /^look\s+(?:in|inside)\s+/i.test(command)) {
+                        const store = useUIStore.getState();
+                        const currentPopover = store.popoverState;
+                        if (currentPopover?.isCapturingExamine && currentPopover.examineMode === 'look') {
+                            store.setPopoverState({
+                                ...currentPopover,
+                                capturedExamineLines: lines.map(formatCapturedLookLine),
+                                isCapturingExamine: false
+                            });
+                        }
                     }
                     break;
                 }
@@ -787,6 +817,19 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             }
         } catch (err) {
             console.error(`[Capture] Error updating ${session.type} lines:`, err);
+        }
+
+        if (session.metadata?.commandReportCommand) {
+            const store = useUIStore.getState();
+            const currentPopover = store.popoverState;
+            if (currentPopover?.isCapturingCommandReport &&
+                currentPopover.commandReportCommand?.trim().toLowerCase() === String(session.metadata.commandReportCommand).toLowerCase()) {
+                store.setPopoverState({
+                    ...currentPopover,
+                    capturedCommandReportLines: lines.map(line => line.html || line.text),
+                    isCapturingCommandReport: false
+                });
+            }
         }
 
         const endedSilentCapture = !!session.isSilent;

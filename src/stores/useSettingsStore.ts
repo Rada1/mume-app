@@ -239,6 +239,16 @@ interface InlineActionBuckets {
     customTraits: CustomTraitConfig[];
 }
 
+const normalizeCustomTrait = (trait: CustomTraitConfig): CustomTraitConfig => {
+    if ((toTraitId(trait.id) || trait.id) !== 'trait-container' || !Array.isArray(trait.buttonIds)) return trait;
+    const buttonIds = trait.buttonIds.filter(buttonId => buttonId !== 'btn-container-get-all');
+    return buttonIds.length === trait.buttonIds.length ? trait : { ...trait, buttonIds };
+};
+
+const normalizeCustomTraits = (traits: CustomTraitConfig[] = []): CustomTraitConfig[] => (
+    traits.map(normalizeCustomTrait)
+);
+
 const splitInlineActionConfigs = (configs: InlineCategoryConfig[] = []): InlineActionBuckets => {
     const categoryOverrides: CategoryOverride[] = [];
     const customTraits: CustomTraitConfig[] = [];
@@ -265,13 +275,14 @@ const splitInlineActionConfigs = (configs: InlineCategoryConfig[] = []): InlineA
             id: traitId || (config.id.startsWith('trait-') ? config.id : `trait-${config.id.replace(/^inline-/, '')}`),
             kind: config.kind || 'object',
             keywords: config.keywords || [],
+            excludedKeywords: config.excludedKeywords || [],
             buttonIds: (config as InlineCategoryConfig & { buttonIds?: string[] }).buttonIds
         });
     });
 
     return {
         categoryOverrides: dedupeById(categoryOverrides),
-        customTraits: dedupeById(customTraits)
+        customTraits: dedupeById(normalizeCustomTraits(customTraits))
     };
 };
 
@@ -290,6 +301,7 @@ const combineInlineActionConfigs = (
         id: toTraitId(trait.id) || trait.id,
         kind: trait.kind || getTraitConfig(trait.id)?.kind || 'object',
         keywords: trait.keywords || [],
+        excludedKeywords: trait.excludedKeywords || [],
         buttonIds: trait.buttonIds
     }))
 ];
@@ -480,7 +492,7 @@ export const useSettingsStore = create<SettingsState>()(
                 };
             }),
             setCustomTraits: (val) => set((state) => {
-                const customTraits = typeof val === 'function' ? val(state.customTraits) : val;
+                const customTraits = normalizeCustomTraits(typeof val === 'function' ? val(state.customTraits) : val);
                 return {
                     customTraits,
                     inlineCategories: combineInlineActionConfigs(state.categoryOverrides, customTraits)
@@ -860,6 +872,7 @@ export const useSettingsStore = create<SettingsState>()(
             },
             merge: (persistedState: any, currentState) => {
                 const merged = { ...currentState, ...(persistedState || {}) } as SettingsState;
+                merged.customTraits = normalizeCustomTraits(merged.customTraits || []);
                 if (typeof persistedState?.uiVolume !== 'number') {
                     merged.uiVolume = typeof persistedState?.sfxVolume === 'number'
                         ? persistedState.sfxVolume

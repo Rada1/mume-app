@@ -1,7 +1,7 @@
 import React from 'react';
 import { CharacterInfo, CustomTraitConfig, PopoverState, MessageType } from '../../../types';
 import { useButtonStore } from '../../../stores/useButtonStore';
-import { DEFAULT_TRAIT_CONFIGS, TraitConfig, inlineConfigToTrait, isTraitConfigRecord, toTraitId } from '../../../utils/inlineActionModel';
+import { DEFAULT_TRAIT_CONFIGS, TraitConfig, inlineConfigToTrait, isTraitConfigRecord, matchesKeyword, toggleTraitKeywords, toTraitId } from '../../../utils/inlineActionModel';
 import { isButtonEligibleForCharacter } from '../../../utils/characterEligibility';
 
 interface TraitToggleSectionProps {
@@ -9,7 +9,7 @@ interface TraitToggleSectionProps {
     customTraits: CustomTraitConfig[];
     setCustomTraits: (val: CustomTraitConfig[] | ((prev: CustomTraitConfig[]) => CustomTraitConfig[])) => void;
     activeTraits: string[];
-    keywordTraits: string[];
+    defaultTraitIds: string[];
     triggerHaptic?: (ms: number) => void;
     addMessage?: (type: MessageType, content: string) => void;
     refreshLogHighlights?: () => void;
@@ -21,7 +21,7 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     customTraits,
     setCustomTraits,
     activeTraits,
-    keywordTraits,
+    defaultTraitIds,
     triggerHaptic,
     addMessage,
     refreshLogHighlights,
@@ -33,7 +33,7 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
     // --- Derived Data ---
     const buttonLabelById = React.useMemo(() => new Map(rawButtons.map(button => [button.id, button.label])), [rawButtons]);
     const activeTraitIds = React.useMemo(() => new Set(activeTraits.map(id => toTraitId(id) || id)), [activeTraits]);
-    const keywordTraitIds = React.useMemo(() => new Set(keywordTraits.map(id => toTraitId(id) || id)), [keywordTraits]);
+    const defaultedTraitIds = React.useMemo(() => new Set(defaultTraitIds.map(id => toTraitId(id) || id)), [defaultTraitIds]);
     const allPotentialTraits = React.useMemo(() => {
         const userTraits = (Array.isArray(customTraits) ? customTraits : [])
             .filter(isTraitConfigRecord)
@@ -51,31 +51,29 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
         
         triggerHaptic?.(30);
         const keyword = popoverState.context.toLowerCase();
-        const isTraitActive = keywordTraitIds.has(trait.id);
+        const isTraitActive = activeTraitIds.has(trait.id);
         
         setCustomTraits(prev => {
             const traits = Array.isArray(prev) ? [...prev] : [];
             const traitIndex = traits.findIndex(c => isTraitConfigRecord(c) && (toTraitId(c.id) || c.id) === trait.id);
-            
-            if (traitIndex === -1) {
-                return [...traits, {
+
+            const targetTrait = traitIndex === -1 ? null : traits[traitIndex];
+            const keywords = targetTrait?.keywords || trait.keywords || [];
+            const nextKeywords = toggleTraitKeywords(keywords, keyword, isTraitActive);
+            const excludedKeywords = targetTrait?.excludedKeywords || [];
+            const nextExcludedKeywords = isTraitActive
+                ? [...excludedKeywords.filter(existing => !matchesKeyword(keyword, existing)), keyword]
+                : excludedKeywords.filter(existing => !matchesKeyword(keyword, existing));
+            const updatedTrait = {
+                ...(targetTrait || {
                     id: trait.id,
                     kind: trait.kind || 'object',
-                    keywords: [keyword],
                     buttonIds: trait.buttonIds || []
-                }];
-            }
-            
-            const targetTrait = traits[traitIndex];
-            const keywords = targetTrait.keywords || [];
-            const keywordIndex = keywords.findIndex(k => k.toLowerCase() === keyword);
-            
-            if (keywordIndex === -1) {
-                const updatedTrait = { ...targetTrait, keywords: [...keywords, keyword] };
-                return traits.map((c, i) => i === traitIndex ? updatedTrait : c);
-            }
-
-            const updatedTrait = { ...targetTrait, keywords: keywords.filter((_, i) => i !== keywordIndex) };
+                }),
+                keywords: nextKeywords,
+                excludedKeywords: nextExcludedKeywords
+            };
+            if (traitIndex === -1) return [...traits, updatedTrait];
             return traits.map((c, i) => i === traitIndex ? updatedTrait : c);
         });
         
@@ -124,7 +122,7 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '4px', marginBottom: '8px' }}>
                 {allPotentialTraits.map(trait => {
                     const isTraitActive = activeTraitIds.has(trait.id);
-                    const isKeywordTrait = keywordTraitIds.has(trait.id);
+                    const isDefaultTrait = defaultedTraitIds.has(trait.id);
                     const buttonLabels = trait.buttonIds
                         .map(buttonId => buttonLabelById.get(buttonId) || buttonId.replace(/^btn-/, ''))
                         .join(', ');
@@ -141,12 +139,12 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
                                 padding: '6px 7px',
                                 fontSize: '0.7rem',
                                 textAlign: 'left',
-                                background: isTraitActive ? 'var(--accent)' : 'rgba(255,255,255,0.05)',
-                                border: '1px solid rgba(255,255,255,0.2)',
-                                color: isTraitActive ? '#000' : '#fff',
+                                background: isTraitActive ? 'var(--accent)' : isDefaultTrait ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.05)',
+                                border: isDefaultTrait && !isTraitActive ? '1px dashed rgba(210,201,182,0.45)' : '1px solid rgba(255,255,255,0.2)',
+                                color: isTraitActive ? '#000' : isDefaultTrait ? '#aaa397' : '#fff',
                                 borderRadius: '4px',
                                 transition: 'all 0.1s ease',
-                                opacity: isTraitActive ? 1 : 0.7,
+                                opacity: isTraitActive ? 1 : isDefaultTrait ? 0.88 : 0.7,
                                 cursor: 'pointer',
                                 minHeight: '44px'
                             }}
@@ -157,8 +155,10 @@ export const TraitToggleSection: React.FC<TraitToggleSectionProps> = ({
                         >
                             <span style={{ pointerEvents: 'none', fontWeight: 700 }}>
                                 {trait.label.toUpperCase()}
-                                {isTraitActive && !isKeywordTrait ? (
-                                    <span style={{ opacity: 0.55, marginLeft: '4px', fontSize: '0.55rem' }}>DEFAULT</span>
+                                {isDefaultTrait ? (
+                                    <span style={{ opacity: isTraitActive ? 0.55 : 0.8, marginLeft: '4px', fontSize: '0.55rem' }}>
+                                        {isTraitActive ? 'DEFAULT' : 'DEFAULT · OFF'}
+                                    </span>
                                 ) : null}
                             </span>
                             <span style={{ pointerEvents: 'none', fontSize: '0.58rem', opacity: 0.68, marginTop: '2px', lineHeight: 1.2 }}>

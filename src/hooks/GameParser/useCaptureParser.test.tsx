@@ -32,6 +32,39 @@ const createDeps = (): CaptureParserDeps => ({
 });
 
 describe('inline inspection capture', () => {
+    it('captures generic Info command output into the Details report', () => {
+        const deps = createDeps();
+        const reply = 'It is a clear, starry night.';
+        useUIStore.getState().setPopoverState({
+            x: 0,
+            y: 0,
+            setId: 'trait-personal-information',
+            isCapturingCommandReport: true,
+            commandReportCommand: 'time',
+            commandReportLabel: 'Time'
+        });
+        deps.captureStage.current = 'command_report';
+        const { result } = renderHook(() => useCaptureParser(deps));
+
+        act(() => {
+            result.current.setPendingFlags(false, false, 'time');
+            expect(result.current.checkTriggers('> time')).toBeNull();
+            const type = result.current.checkTriggers(reply);
+            expect(type).toBe('command_report');
+            if (type) {
+                result.current.startSession(type);
+                result.current.accumulateLine(reply);
+                result.current.finalizeSession();
+            }
+        });
+
+        expect(useUIStore.getState().popoverState).toMatchObject({
+            isCapturingCommandReport: false,
+            commandReportLabel: 'Time',
+            capturedCommandReportLines: [reply]
+        });
+    });
+
     it.each([
         ['whois', 'isCapturingWhois', 'capturedWhoisLines', 'Ryon is a Man Adventurer.'],
         ['examine', 'isCapturingExamine', 'capturedExamineLines', 'You see a gatekeeper.'],

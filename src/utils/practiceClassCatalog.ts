@@ -55,9 +55,9 @@ export const TARGETED_SKILLS = new Set([
     'attack', 'backstab', 'envenom', 'steal',
     'bash', 'charge', 'kick', 'rescue',
     // mage
-    'magic missile', 'armour', 'chill touch', 'burning hands', 'locate', 'shocking grasp',
+    'magic missile', 'chill touch', 'burning hands', 'locate', 'shocking grasp',
     'teleport', 'lightning bolt', 'colour spray', 'locate life', 'call lightning', 'enchant',
-    'scry', 'shield', 'charm', 'sleep', 'fireball', 'magic blast', 'dispel magic', 'silence',
+    'scry', 'charm', 'sleep', 'fireball', 'magic blast', 'dispel magic', 'silence',
     'identify', 'portal', 'shroud',
     // cleric
     'cure light', 'smother', 'cure blindness', 'protection from evil', 'bless', 'cure serious',

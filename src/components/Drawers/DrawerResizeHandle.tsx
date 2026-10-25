@@ -36,12 +36,16 @@ export const DrawerResizeHandle: React.FC<Props> = ({
     const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(true);
 
         const drawer = (e.currentTarget as HTMLElement).closest(
             '.unified-command-column, .popover-inspection-panel, .map-drawer-desktop, .character-drawer-desktop, .log-card-drawer, .message-log-container, .chat-window-panel, .client-panels-stack, .docked-panel, .help-panel, .mume-editor-panel, .mume-archive-panel, .right-drawer-stack, .left-drawer-stack, .right-action-panel'
         ) as HTMLElement | null;
         if (!drawer) return;
+
+        const resizeHandle = e.currentTarget;
+        const pointerId = e.pointerId;
+        resizeHandle.setPointerCapture(pointerId);
+        setIsDragging(true);
 
         const startWidth = (drawer.offsetWidth / window.innerWidth) * 100;
         const startHeight = (drawer.offsetHeight / window.innerHeight) * 100;
@@ -69,6 +73,7 @@ export const DrawerResizeHandle: React.FC<Props> = ({
         const minWidthVw = minWidthPx === undefined ? minWidth : (minWidthPx / window.innerWidth) * 100;
 
         const onMove = (me: PointerEvent) => {
+            if (me.pointerId !== pointerId) return;
             const dxVw = ((me.clientX - startX) / window.innerWidth) * 100;
             const dyVh = ((me.clientY - startY) / window.innerHeight) * 100;
 
@@ -122,7 +127,8 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             }
         };
 
-        const onUp = () => {
+        const onUp = (endEvent: PointerEvent) => {
+            if (endEvent.pointerId !== pointerId) return;
             const stored = JSON.parse(localStorage.getItem('mume-desktop-layout-v2') || '{}');
             
             if (handleType.includes('left') || handleType.includes('right') || handleType === 'left' || handleType === 'right' || handleType === 'log-left' || handleType === 'log-right') {
@@ -155,13 +161,16 @@ export const DrawerResizeHandle: React.FC<Props> = ({
             localStorage.setItem('mume-desktop-layout-v2', JSON.stringify(stored));
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onUp);
             document.body.classList.remove('global-dragging');
             setIsDragging(false);
+            if (resizeHandle.hasPointerCapture(pointerId)) resizeHandle.releasePointerCapture(pointerId);
         };
 
         document.body.classList.add('global-dragging');
         window.addEventListener('pointermove', onMove);
         window.addEventListener('pointerup', onUp);
+        window.addEventListener('pointercancel', onUp);
     };
 
     return (

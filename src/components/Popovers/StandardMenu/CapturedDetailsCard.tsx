@@ -30,8 +30,12 @@ interface CapturedDetailsCardProps {
     personalActionLines?: string[];
     personalActionKind?: 'info' | 'stat' | 'score';
     isCapturingPersonalAction?: boolean;
+    commandReportLines?: string[];
+    commandReportLabel?: string;
+    isCapturingCommandReport?: boolean;
     shopLines?: Array<{ id: string | number; text: string; html?: string }>;
     shopTitle?: string;
+    isShopPending?: boolean;
     practiceLines?: Array<{ id: string | number; text: string; html?: string }> | string[];
     practiceSkillName?: string;
     isPracticePending?: boolean;
@@ -128,6 +132,9 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     personalActionLines,
     personalActionKind,
     isCapturingPersonalAction,
+    commandReportLines,
+    commandReportLabel,
+    isCapturingCommandReport,
     shopLines,
     shopTitle,
     isShopPending,
@@ -210,6 +217,10 @@ export const CapturedDetailsCard: React.FC<CapturedDetailsCardProps> = ({
     if (isCapturingPersonalAction || personalActionLines !== undefined) {
         const title = (personalActionKind || 'info').replace(/^./, letter => letter.toUpperCase());
         return renderCapturedReport(title, personalActionLines, !!isCapturingPersonalAction, `Loading ${title.toLowerCase()}...`, `No ${title.toLowerCase()} information returned.`);
+    }
+    if (isCapturingCommandReport || commandReportLines !== undefined) {
+        const title = commandReportLabel || 'Command';
+        return renderCapturedReport(title, commandReportLines, !!isCapturingCommandReport, `Loading ${title.toLowerCase()}...`, `No ${title.toLowerCase()} information returned.`);
     }
 
     const look = splitLookLines(examineLines);

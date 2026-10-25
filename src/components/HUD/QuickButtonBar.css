@@ -31,8 +31,7 @@
     min-height: 34px;
     border-radius: 0;
     border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(6px);
+    background: #000;
     color: rgba(255, 255, 255, 0.85);
     font-size: 0.7rem;
     font-weight: 700;
@@ -49,7 +48,7 @@
 
 .quick-chip:active,
 .quick-chip.is-key-pressed {
-    background: rgba(201, 168, 76, 0.22);
+    background: #423515;
     border-color: rgba(201, 168, 76, 0.6);
     color: #f0dfa8;
     transform: scale(0.95);
@@ -65,8 +64,7 @@
     height: 34px;
     border-radius: 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(6px);
+    background: #000;
     color: rgba(255, 255, 255, 0.6);
     cursor: pointer;
     transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
@@ -75,7 +73,7 @@
 
 .quick-add-btn:active,
 .quick-add-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #292929;
     border-color: rgba(255, 255, 255, 0.4);
     color: rgba(255, 255, 255, 0.9);
 }

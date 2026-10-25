@@ -3,7 +3,16 @@
  * @description Shared parsing for "look"-style captured output (condition/equipment/description split).
  */
 
-import { sanitizeMumeHtml } from './securityUtils';
+import { escapeHtml, sanitizeMumeHtml } from './securityUtils';
+
+// --- Capture Formatting ---
+
+export const formatCapturedLookLine = (line: { prefix?: string; html?: string; text: string }): string => {
+    const content = line.html || escapeHtml(line.text);
+    const prefix = line.prefix?.trim();
+    if (!prefix || !/^(?:<worn\b[^>]*>|<wielded>|<held\b[^>]*>)$/i.test(prefix)) return content;
+    return `<span class="captured-equipment-slot">${escapeHtml(prefix)}</span> ${content}`;
+};
 
 export const stripHtml = (html: string): string => (
     html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()

@@ -42,7 +42,6 @@ export const WORLD_BUTTONS = [
     // --- CONTAINERS ---
     createButton({ id: 'btn-container-open', label: 'Open', command: 'open %n', setId: 'inline-containers', color: '#3b82f6' }),
     createButton({ id: 'btn-container-close', label: 'Close', command: 'close %n', setId: 'inline-containers', color: '#4b5563' }),
-    createButton({ id: 'btn-container-get-all', label: 'G/All', command: 'get all from %n', setId: 'inline-containers', color: '#f59e0b' }),
     createButton({ id: 'btn-container-look-in', label: 'Look In', command: 'look in %n', setId: 'inline-containers', color: '#3b82f6' }),
 
     // --- EXITS ---
