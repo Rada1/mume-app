@@ -4,6 +4,7 @@ import type { KeyboardEvent } from 'react';
 import type { ClientMacro } from '../types';
 import { useClientMacroStore } from '../stores/useClientMacroStore';
 import { macroHotkeyFor, splitMacroCommands } from '../utils/clientMacros';
+import { macroKeyCodeFor } from '../utils/clientMacroHotkeys';
 
 // --- Editor Actions ---
 export const useClientMacroEditor = () => {
@@ -27,8 +28,10 @@ export const useClientMacroEditor = () => {
     const record = (event: KeyboardEvent<HTMLInputElement>) => {
         if (!recording) return;
         event.preventDefault(); event.stopPropagation();
-        if (event.key === 'Escape') { setRecording(false); return; }
-        if (event.key === 'Tab' || event.key === 'Enter') return;
+        if (event.repeat || event.nativeEvent.isComposing) return;
+        const modified = event.ctrlKey || event.altKey || event.shiftKey || event.metaKey;
+        if (event.key === 'Escape' && !modified) { setRecording(false); return; }
+        if (!modified && (event.key === 'Tab' || (event.key === 'Enter' && macroKeyCodeFor(event.nativeEvent) !== 'NumpadEnter'))) return;
         const key = macroHotkeyFor(event.nativeEvent);
         if (key) { setHotkey(key); setRecording(false); setError(''); }
     };

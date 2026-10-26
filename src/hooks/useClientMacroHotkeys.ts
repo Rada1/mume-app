@@ -2,6 +2,7 @@
 import { useEffect, useRef } from 'react';
 import { useClientMacroStore } from '../stores/useClientMacroStore';
 import { macroHotkeyFor } from '../utils/clientMacros';
+import { macroKeyCodeFor } from '../utils/clientMacroHotkeys';
 
 // --- Keyboard Dispatch ---
 export const useClientMacroHotkeys = (execute: (command: string) => void, enabled: boolean) => {
@@ -16,7 +17,8 @@ export const useClientMacroHotkeys = (execute: (command: string) => void, enable
             if (target?.closest('.modal, [role="dialog"], .mapper-room-info-panel')) return;
             const editing = target?.closest('input, textarea, select, [contenteditable="true"]');
             const commandInput = target?.classList.contains('input-field');
-            if (editing && (!commandInput || (!event.code.startsWith('Numpad') && !event.ctrlKey && !event.altKey && !event.metaKey && !/^F\d+$/.test(event.code)))) return;
+            const code = macroKeyCodeFor(event) || '';
+            if (editing && (!commandInput || (!code.startsWith('Numpad') && !event.ctrlKey && !event.altKey && !event.metaKey && !/^F\d+$/.test(code)))) return;
             const hotkey = macroHotkeyFor(event);
             if (!hotkey) return;
             const macro = useClientMacroStore.getState().macros.find(item => item.hotkey === hotkey);

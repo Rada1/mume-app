@@ -31,8 +31,5 @@ export const expandClientMacro = (name: string, macros: readonly ClientMacro[], 
     return result;
 };
 
-// --- Physical Key Identity ---
-export const macroHotkeyFor = (event: Pick<KeyboardEvent, 'code' | 'ctrlKey' | 'altKey' | 'shiftKey' | 'metaKey'>): string | null => {
-    if (!event.code || /^(?:Control|Shift|Alt|Meta)(?:Left|Right)$/.test(event.code)) return null;
-    return [event.ctrlKey && 'Ctrl', event.altKey && 'Alt', event.shiftKey && 'Shift', event.metaKey && 'Meta', event.code].filter(Boolean).join('+');
-};
+// --- Shared Physical Key Identity ---
+export { macroHotkeyFor } from './clientMacroHotkeys';

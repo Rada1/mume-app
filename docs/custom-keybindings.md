@@ -27,12 +27,15 @@ Settings and command-bar definitions use the same persistent client macro store,
 - Treat `/alias` as a local client command. Parse its entire definition before splitting the macro body, so defining a chain never executes its commands.
 - Commands send in order without waiting for responses. Semicolons and newlines separate steps; quoting/escaping literal semicolons and response waits remain future work.
 - Keybindings record physical key codes with Ctrl/Alt/Shift/Meta modifiers, preserving numpad identity with Num Lock on or off. Duplicate macro bindings are rejected, and assigned numpad keys take precedence over defaults.
+- In Settings → Actions/Macros, focus Optional keybinding, hold the desired modifiers, then press the main key. Modifier-only presses keep recording; bare Escape cancels. Numpad Enter is distinct from regular Enter. Re-record shortcuts previously saved without their intended modifiers.
 - Default numpad directions and Look are regular macro records. Players can edit their names, command chains, and bindings or delete them like any other macro.
 - Macro expansion resolves nested named macros before sending, rejecting cycles and chains exceeding 100 commands.
 
 ## Implementation
 
 `useClientMacroStore.ts` owns persistence. `useClientMacroCommands.ts` intercepts definitions and invocations in `useCommandController.ts` before normal command handling. `useClientMacroHotkeys.ts` registers before the existing numpad/F-key handlers and uses the same execution route. `useClientMacroEditor.ts` owns settings drafts and key recording; `ClientMacroSettings.tsx` is the settings view.
+
+`src/utils/clientMacroHotkeys.ts` supplies the shared physical-key and modifier resolver for recording and dispatch, re-exported through `clientMacros.ts`. It normalizes navigation-style numpad events by keypad location and restores Windows Shift combinations when the reported digit/navigation key reverses the current Num Lock mode. Alt/Ctrl/Meta events are not subject to that inference, preventing Alt-code navigation from becoming a false Shift binding. Non-keypad navigation and number-row keys remain separate. Keep macro handling ahead of the default Alt+numpad door handler so a bound combination executes only its macro.
 
 ## Implementation considerations
 

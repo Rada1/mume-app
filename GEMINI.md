@@ -58,7 +58,7 @@ To minimize token usage and skip "whole codebase" searches, use this map:
 - **Tokenization & Highlighting:** `src/services/parser/Tokenizer.ts` (Keyword-focused entity extraction)
 - **Audio & Atmosphere:** `useAtmosphereAudio.ts`, `useSoundSystem.ts`, `useZoneMusic.ts`, `useWeatherSounds.ts`, `useTerrainSounds.ts`
 - **Sound editors:** `SoundSettings.tsx` contains Zone Music / Sound Effects / UI Sounds tabs, using `useSoundSettingsSections.ts`, `useZoneMusicSettings.ts`, and `useSoundEffectEditor.ts`.
-- **Client macros:** `docs/custom-keybindings.md`, `useClientMacroStore.ts`, `useClientMacroCommands.ts`, `useClientMacroHotkeys.ts`, and `ClientMacroSettings.tsx` (Settings → Actions/Macros).
+- **Client macros:** `docs/custom-keybindings.md`, `useClientMacroStore.ts`, `useClientMacroCommands.ts`, `useClientMacroHotkeys.ts`, `useClientMacroEditor.ts`, `src/utils/clientMacroHotkeys.ts`, and `ClientMacroSettings.tsx` (Settings → Actions/Macros). The shared hotkey resolver preserves modifier combinations and physical keypad identity, including Windows Shift/Num Lock inversion, in both recording and playback.
 
 ## 🛠️ Common Tasks Cheat Sheet
 

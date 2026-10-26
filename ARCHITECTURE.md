@@ -88,6 +88,8 @@ The pencil beside attribute badges opens the compact room/exit editor underneath
 
 Client macro definitions and invocations are intercepted in `useCommandController.ts` before command splitting. Settings, `/alias`, `/unalias`, and hotkeys share `useClientMacroStore.ts`. Definition commands save without executing their bodies. Resolve nested macros before dispatch, rejecting recursive or oversized chains, and execute each step through the normal command controller. Register macro keyboard handling before default numpad/F-key handling. See `docs/custom-keybindings.md`.
 
+Recording and dispatch share `src/utils/clientMacroHotkeys.ts` for Ctrl/Alt/Shift/Meta combinations and physical numpad identity. Normalize keypad navigation by location, preserve Numpad Enter, and recover Windows Shift/Num Lock inversion only for identifiable digit/navigation events without Alt/Ctrl/Meta. Bound combinations consume the event before default movement/door handlers; settings inputs and ordinary command-line typing keep their existing isolation.
+
 ## 10. Shaper Access Boundary
 Shaper Mode is a privileged building surface, not a normal player feature.
 - **Fail Closed:** Shaper must stay hidden unless `canAccessShaper()` returns true.

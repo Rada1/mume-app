@@ -27,7 +27,7 @@ export const ClientMacroSettings = () => {
             <label>Optional keybinding<input className="setting-input" readOnly value={editor.recording ? '' : editor.hotkey ?? ''}
                 placeholder={editor.recording ? 'Press a key combination… Escape cancels' : 'Click here to record a keybinding'}
                 onFocus={() => editor.setRecording(true)} onClick={() => editor.setRecording(true)} onBlur={() => editor.setRecording(false)} onKeyDown={editor.record} /></label>
-            <small>Assigned keys run the bound macro. Macros send commands in order without waiting for replies.</small>
+            <small>Hold Ctrl, Alt, Shift, or Meta, then press a key to record a combination, including numpad keys. Assigned keys run the bound macro. Macros send commands in order without waiting for replies.</small>
             {editor.error && <p role="alert">{editor.error}</p>}
             <div className="client-macro-controls"><button type="submit" className="btn-primary">{editor.editing ? 'Save changes' : 'Add macro'}</button>
                 <button type="button" onClick={() => editor.setHotkey(null)}>Clear keybinding</button>
