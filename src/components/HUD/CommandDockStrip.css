@@ -181,7 +181,7 @@
     gap:0;
 }
 .command-dock-shell .command-tree-dock-controls-inner .command-tree-gear-controls {
-    flex:2 1 0;
+    flex:3 1 0;
     width:0;
     gap:0;
 }
@@ -196,7 +196,7 @@
 .command-dock-shell .command-tree-you-combat-stats > button { background:var(--command-tree-value-surface); }
 
 /* --- Shared Submenu Surfaces --- */
-.command-tree-v2 :is(
+.command-tree-v2:not(.desktop-target-workspace) :is(
     .command-tree-branch,
     .command-tree-header,
     .command-tree-quick-options,

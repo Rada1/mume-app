@@ -54,7 +54,7 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
 
             <ToggleRow
                 label="Mobile Readability Mode"
-                description="On mobile, keep a corner minimap. Horizontal log panning follows the one-line text setting."
+                description="On mobile, the minimap appears with Movement. Horizontal log panning follows the one-line text setting."
                 value={isReadabilityMode}
                 onToggle={() => setIsReadabilityMode(!isReadabilityMode)}
             />

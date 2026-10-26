@@ -20,6 +20,7 @@ type ShopItemGroupProps = {
     compareNum: number | null;
     targeting: boolean;
     selectOnRelease?: boolean;
+    selectOnClick?: boolean;
     compact?: boolean;
     objectColorTargets?: boolean;
     onSelect: (item: ShopItem) => void;
@@ -30,7 +31,7 @@ type ShopItemGroupProps = {
 // --- Render Section ---
 export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
     item, variants, expanded, loading, selectedNum, compareNum, targeting, selectOnRelease = false, compact = false, objectColorTargets = false,
-    onSelect, onToggle, onInspect
+    onSelect, onToggle, onInspect, selectOnClick = false
 }) => {
     const count = getShopProductCount(item.name);
     const stock = variants?.length || count;
@@ -39,13 +40,17 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
     return (
         <div className={`shop-product-group${expanded ? ' expanded' : ''}`}>
             <div className={`shop-item-row${selectedNum === item.num ? ' selected' : ''}${targeting ? ' targeting' : ''}${compareNum === item.num ? ' compare-selected' : ''}`}
+                data-menu-item={selectOnClick ? 'true' : undefined} role={selectOnClick ? 'button' : undefined} tabIndex={selectOnClick ? 0 : undefined}
+                onClick={selectOnClick ? () => onSelect(item) : undefined}
+                onKeyDown={event => { if (selectOnClick && event.target === event.currentTarget && ['Enter', ' '].includes(event.key)) { event.preventDefault(); event.currentTarget.click(); } }}
                 data-shop-target-value={selectOnRelease ? item.num : undefined}
                 onPointerDown={event => {
+                    if (selectOnClick) return;
                     if (selectOnRelease) event.stopPropagation();
                     else onSelect(item);
                 }}
                 onPointerUp={event => {
-                    if (!selectOnRelease) return;
+                    if (selectOnClick || !selectOnRelease) return;
                     event.stopPropagation();
                     onSelect(item);
                 }}>
@@ -75,13 +80,17 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                     : variants?.length ? variants.map((variant, index) => {
                         const variantItem: ShopItem = { num: variant.num, name: variant.condition ? `${variantName} (${variant.condition})` : variantName, price: variant.price };
                         return <div key={`${variant.num}-${index}`} className={`shop-variant-row${selectedNum === variant.num ? ' selected' : ''}`}
+                            data-menu-item={selectOnClick ? 'true' : undefined} role={selectOnClick ? 'button' : undefined} tabIndex={selectOnClick ? 0 : undefined}
+                            onClick={selectOnClick ? () => onSelect(variantItem) : undefined}
+                            onKeyDown={event => { if (selectOnClick && event.target === event.currentTarget && ['Enter', ' '].includes(event.key)) { event.preventDefault(); event.currentTarget.click(); } }}
                             data-shop-target-value={selectOnRelease ? variant.num : undefined}
                             onPointerDown={event => {
+                                if (selectOnClick) return;
                                 if (selectOnRelease) event.stopPropagation();
                                 else onSelect(variantItem);
                             }}
                             onPointerUp={event => {
-                                if (!selectOnRelease) return;
+                                if (selectOnClick || !selectOnRelease) return;
                                 event.stopPropagation();
                                 onSelect(variantItem);
                             }}>
@@ -91,7 +100,7 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                                 : variant.condition || variantName}</span>
                             <span className="shop-item-price" title={variant.price}>{formatMumePrice(variant.price)}</span>
                             <button type="button" className="shop-variant-inspect" onPointerDown={event => event.stopPropagation()}
-                                onClick={() => onInspect(variant.num)}>Inspect</button>
+                                onClick={event => { if (selectOnClick) event.stopPropagation(); onInspect(variant.num); }}>Inspect</button>
                         </div>;
                     }) : <div className="shop-variant-empty">No individual items returned.</div>}
             </div>}

@@ -22,6 +22,7 @@ interface UseUnifiedCommandContextOptions {
     roomContextColor?: string;
     contextColor: (category: string, fallback?: string) => string | undefined;
     setPanelOpen: (open: boolean) => void;
+    retainPreview?: boolean;
 }
 
 export const useUnifiedCommandContext = ({
@@ -29,7 +30,8 @@ export const useUnifiedCommandContext = ({
     roomLabel,
     roomContextColor,
     contextColor,
-    setPanelOpen
+    setPanelOpen,
+    retainPreview = false
 }: UseUnifiedCommandContextOptions) => {
     const game = useGame();
     const ui = useUI();
@@ -59,7 +61,7 @@ export const useUnifiedCommandContext = ({
     }, []);
 
     React.useEffect(() => {
-        if (!previewEntry && !previewContext) return;
+        if (retainPreview || (!previewEntry && !previewContext)) return;
         let clearTimer: number | null = null;
         const handlePointerMove = (event: PointerEvent) => {
             const target = event.target;
@@ -82,7 +84,7 @@ export const useUnifiedCommandContext = ({
             document.removeEventListener('pointermove', handlePointerMove);
             if (clearTimer !== null) window.clearTimeout(clearTimer);
         };
-    }, [previewContext, previewEntry]);
+    }, [previewContext, previewEntry, retainPreview]);
 
     const previewState: PopoverState | null = React.useMemo(() => {
         if (previewEntry) {

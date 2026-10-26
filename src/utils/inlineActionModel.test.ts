@@ -31,6 +31,8 @@ describe('container trait actions', () => {
     });
 
     it('uses saved trait keywords instead of re-adding built-in keyword matches', () => {
+        // Warm default-name caching before applying the saved configuration.
+        expect(getTraitsForName('leather backpack').some(trait => trait.id === 'trait-container')).toBe(true);
         expect(getTraitsForName('leather backpack', [{
             id: 'trait-container',
             kind: 'object',

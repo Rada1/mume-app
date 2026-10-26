@@ -58,7 +58,7 @@ export const MapperCluster: React.FC<MapperClusterProps> = ({
         inlineCategories, gameState, currentTerrain, accountState, setAccountState,
     } = useGame() as GameContextType;
     const { target, activePrompt } = useVitals();
-    const movementMapSlot = useMobileMovementMapSlot(isMobile && viewport.isLandscape);
+    const movementMapSlot = useMobileMovementMapSlot(isMobile);
     const {
         ui, setUI, setPopoverState,
         handleTabClick, toggleMap

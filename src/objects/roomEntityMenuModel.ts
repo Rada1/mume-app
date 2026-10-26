@@ -3,13 +3,15 @@
  * @description Projects the current room into selectable character and object menu entries.
  */
 
-import type { GmcpOccupant } from '../types';
+import type { DrawerLine, GmcpOccupant } from '../types';
 import { classifyOccupant } from '../services/classification/classifyOccupant';
 import { getRoomTargetSuggestions } from './roomTargetSuggestions';
 import { getRoomObjectCandidates } from './objectTargetModel';
 import { getCategoryIdForKindLocation, toCategoryId } from '../utils/inlineActionModel';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
 import { getOccupantCommandKeyword } from '../utils/occupantKeywordUtils';
+import { isCurrentCommandTarget } from '../utils/currentCommandTarget';
+import { getGearTargetSuggestions } from './gearTargetSuggestions';
 
 export interface RoomEntityMenuEntry {
     id: string;
@@ -17,7 +19,10 @@ export interface RoomEntityMenuEntry {
     keyword: string;
     context: string;
     category: string;
-    group: 'characters' | 'objects' | 'players' | 'npcs';
+    group: 'characters' | 'objects' | 'players' | 'npcs' | 'self' | 'inventory' | 'equipment';
+    isCurrentTarget?: boolean;
+    isOutOfRoom?: boolean;
+    isContext?: boolean;
 }
 
 export type RoomEntityMenuEntryByKind = Omit<RoomEntityMenuEntry, 'group'> & {
@@ -83,14 +88,92 @@ const createObjectEntries = (sources: RoomSource[]): RoomObjectMenuEntry[] => {
     });
 };
 
+const includeCurrentTarget = (entries: RoomEntityMenuEntry[], currentTarget?: string | null): RoomEntityMenuEntry[] => {
+    const normalizedTarget = currentTarget?.trim();
+    if (!normalizedTarget) return entries;
+
+    const currentEntry = entries.find(entry => isCurrentCommandTarget(entry, normalizedTarget));
+    if (currentEntry) {
+        currentEntry.isCurrentTarget = true;
+        const currentIndex = entries.indexOf(currentEntry);
+        const firstGroupIndex = entries.findIndex(entry => entry.group === currentEntry.group);
+        if (currentIndex !== firstGroupIndex && firstGroupIndex >= 0) {
+            entries.splice(currentIndex, 1);
+            entries.splice(firstGroupIndex, 0, currentEntry);
+        }
+        return entries;
+    }
+
+    if (normalizedTarget.toLowerCase() === 'self') return entries;
+    const targetEntry: RoomEntityMenuEntry = {
+        id: `command-current-target:${normalizedTarget.toLowerCase().replace(/\s+/g, '-')}`,
+        label: normalizedTarget,
+        keyword: normalizedTarget,
+        context: normalizedTarget,
+        category: 'cat-enemy',
+        group: 'characters',
+        isCurrentTarget: true,
+        isOutOfRoom: true
+    };
+    const firstCharacterIndex = entries.findIndex(entry => entry.group === 'characters');
+    entries.splice(firstCharacterIndex < 0 ? 0 : firstCharacterIndex, 0, targetEntry);
+    return entries;
+};
+
+const createPersonalTargetEntries = (
+    characterName: string,
+    inventoryLines: DrawerLine[],
+    equipmentLines: DrawerLine[]
+): RoomEntityMenuEntry[] => [
+    {
+        id: 'inline-target-self',
+        label: characterName || 'Self',
+        keyword: 'self',
+        context: 'self',
+        category: 'cat-ally',
+        group: 'self',
+        isContext: true
+    },
+    ...getGearTargetSuggestions(inventoryLines, 'inventory').map(suggestion => ({
+        id: suggestion.objectId || suggestion.key,
+        label: suggestion.label,
+        keyword: suggestion.keyword || suggestion.value,
+        context: suggestion.value,
+        category: 'cat-inventory-object',
+        group: 'inventory' as const
+    })),
+    ...getGearTargetSuggestions(equipmentLines, 'worn').map(suggestion => ({
+        id: suggestion.objectId || suggestion.key,
+        label: suggestion.label,
+        keyword: suggestion.keyword || suggestion.value,
+        context: suggestion.value,
+        category: 'cat-worn-object',
+        group: 'equipment' as const
+    }))
+];
+
 export const getRoomEntityMenuEntries = (
     players: RoomSource[],
     npcs: RoomSource[],
-    objects: RoomSource[]
-): RoomEntityMenuEntry[] => [
-    ...createCharacterEntries([...players, ...npcs]),
-    ...createObjectEntries(objects)
-];
+    objects: RoomSource[],
+    currentTarget?: string | null
+): RoomEntityMenuEntry[] => {
+    const characters = createCharacterEntries([...players, ...npcs]);
+    return includeCurrentTarget([...characters, ...createObjectEntries(objects)], currentTarget);
+};
+
+export const getInlineTargetMenuEntries = (
+    players: RoomSource[],
+    npcs: RoomSource[],
+    objects: RoomSource[],
+    characterName: string,
+    inventoryLines: DrawerLine[],
+    equipmentLines: DrawerLine[],
+    currentTarget?: string | null
+): RoomEntityMenuEntry[] => includeCurrentTarget([
+    ...getRoomEntityMenuEntries(players, npcs, objects),
+    ...createPersonalTargetEntries(characterName, inventoryLines, equipmentLines)
+], currentTarget);
 
 export const getRoomEntityMenuEntriesByKind = (
     players: RoomSource[],

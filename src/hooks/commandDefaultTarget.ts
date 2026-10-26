@@ -8,8 +8,13 @@ import { isCommandTreeObservation } from '../utils/commandTreeObservation';
 import { executeCommandTreeObservation } from './useCommandTreeObservation';
 import { isFriendlyTargetCommand } from '../utils/friendlyTargetCommand';
 // --- Default Execution Section ---
+export function executeUntargetedTransferCommand(controller: ReturnType<typeof useCommandTreeController>, button: CustomButton, event: MouseEvent) {
+    // A short tap sends the verb; object/recipient selection belongs to the held cascade.
+    controller.game.handleButtonClick({...button, command: button.command.trim().split(/\s+/)[0], actionType: 'command'}, event);
+}
+
 export function getDefaultCommandTarget(controller: ReturnType<typeof useCommandTreeController>, targets: CommandActionTargetEntry[], button: CustomButton) {
-    if (isFriendlyTargetCommand(button)) return null;
+    if (isFriendlyTargetCommand(button) || /^(?:assist|ass)(?:\s|$)/i.test(button.command.trim())) return null;
     if (controller.isHelpMode || controller.game?.gameState !== 'playing' || controller.game?.isSpectateMode) return null;
     return targets.find(candidate => isCurrentCommandTarget(candidate, controller.vitals?.target)) || null;
 }
@@ -22,7 +27,12 @@ export function executeDefaultCommandTarget(controller: ReturnType<typeof useCom
     } else if (button.setId === 'trait-communication') {
         controller.communication.handleCommand(button.command.replace(/%n/g, entry.context));
     } else {
-        controller.game.handleButtonClick(button, event, entry.context, undefined, entry.parentNoun);
+        const isBashExit = entry.category === 'cat-exit' && /^bash\s+%n(?:\|exit)?$/i.test(button.command.trim());
+        const commandButton = isBashExit
+            ? {...button, command:button.command.replace(/%n(?:\|exit)?/i, 'exit %n')}
+            : button;
+        const context = isBashExit ? entry.context.replace(/^exit\s+/i, '').trim() || entry.keyword : entry.context;
+        controller.game.handleButtonClick(commandButton, event, context, undefined, entry.parentNoun);
     }
     return true;
 }

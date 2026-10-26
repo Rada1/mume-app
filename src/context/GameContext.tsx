@@ -8,6 +8,7 @@ import { useButtons } from '../hooks/useButtons';
 import { useJoystick } from '../hooks/useJoystick';
 import { useButtonEditor } from '../hooks/useButtonEditor';
 import { useViewport } from '../hooks/useViewport';
+import { useMobileReadabilityDefault } from '../hooks/useMobileReadabilityDefault';
 import { useEnvironment } from '../hooks/useEnvironment';
 import { useTelnet } from '../hooks/useTelnet';
 import { ProtocolHandler } from '../utils/telnet/ProtocolHandler';
@@ -205,6 +206,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const nextCommandIsSilent = useRef(false);
 
     const viewport = useViewport(s.uiMode, s.disableSmoothScroll, s.isImmersionMode, s.fontFamily, s.isTimestampEnabled, s.isNewbieMode);
+    useMobileReadabilityDefault(viewport.isMobile);
     const mode = useModeStore();
     const session = useSessionStore();
     const { sessionMode, setSessionMode, replayHUDState, setReplayHUDState, isSilentReplay } = session;
@@ -484,7 +486,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 s.setAccountState(prev => ({
                     ...prev,
                     stage: 'login',
-                    currentPrompt: 'By what name do you wish to be known?',
+                    currentPrompt: undefined,
                     creationPrompt: undefined,
                     selectedCharacter: null,
                     charCapture: null

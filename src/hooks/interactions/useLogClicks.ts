@@ -10,6 +10,7 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { handleLogHelpClick } from '../../utils/logHelpUtils';
+import { useDesktopTargetWorkspaceStore } from '../../stores/useDesktopTargetWorkspaceStore';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) return false;
@@ -147,8 +148,10 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             lastBtnClickRef.current = now;
         } else {
             if (isLogBlankTapTarget(e.target)) {
-                clearObjectSelection();
-                setPopoverState(null);
+                if (viewport.isMobile || !useDesktopTargetWorkspaceStore.getState().request) {
+                    clearObjectSelection();
+                    setPopoverState(null);
+                }
                 useAccountTargetStore.getState().closeMenu();
                 lastLogClickRef.current = now;
                 return;
@@ -350,7 +353,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const accentColor = getComputedStyle(targetEl).color || glowColor || targetEl.style.color || undefined;
             const isAlreadySelected = shopStore.selectedTarget?.id === entityId;
             const isSameOpenMenu = isAlreadySelected && popoverState?.entityId === entityId;
-            if (isSameOpenMenu) {
+            if (isSameOpenMenu && viewport.isMobile) {
                 setPopoverState(null);
                 triggerHaptic(10);
                 return;
@@ -402,7 +405,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             const isTargetHighlight = targetEl.classList.contains('target-highlighter') || targetEl.classList.contains('is-target');
 
             // Toggle logic: If clicking the same non-highlight button, close the popover
-            if (!isTargetHighlight && popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {
+            if (viewport.isMobile && !isTargetHighlight && popoverState && popoverState.entityId === entityId && popoverState.setId === (cmd || 'selection')) {
                 setPopoverState(null);
                 triggerHaptic(10);
                 return;

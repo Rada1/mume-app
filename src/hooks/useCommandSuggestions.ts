@@ -69,6 +69,14 @@ export interface UseCommandSuggestionsReturn {
     handleSuggestionKeyDown: (e: KeyboardEvent) => boolean;
 }
 
+const getCommandArgumentLabel = (suggestion: CommandTargetSuggestion): string => {
+    if (suggestion.meta === 'magic-key' || suggestion.meta === 'shop-item'
+        || suggestion.value === '__room__' || suggestion.value === BLANK_TARGET_VALUE) {
+        return suggestion.customLabel || suggestion.label;
+    }
+    return suggestion.keyword || suggestion.value;
+};
+
 export const useCommandSuggestions = ({
     input,
     setInput,
@@ -230,7 +238,8 @@ export const useCommandSuggestions = ({
         });
     }, [abilities, aliasCommand, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, isAliasInput, keyedSpellInput, practiceSkills, reverseCommandTargets, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
 
-    const canSuggestLockedTarget = Boolean(preferredTarget?.trim()) && !keyedSpellInput && (
+    const canSuggestLockedTarget = Boolean(preferredTarget?.trim()) && !keyedSpellInput
+        && !/^(?:assist|ass)(?:\s|$)/i.test(suggestionInput.trim()) && (
         Boolean(targetSuggestionResolution.isActionDerived)
         || (hasCommandArgumentSpace && ['room', 'bash', 'room-spell', 'room-spell-with-extras'].includes(targetMenuKind || ''))
     );
@@ -346,7 +355,7 @@ export const useCommandSuggestions = ({
             nextCaretChipKey = key;
             setSelectedCommandArguments(current => [...current, {
                 key,
-                label: chosenSuggestion.label,
+                label: getCommandArgumentLabel(chosenSuggestion),
                 value,
                 start: chipStart,
                 end: chipStart + value.length,
@@ -387,7 +396,7 @@ export const useCommandSuggestions = ({
             setSelectedCommandArguments(current => current.map(argument => argument.key === key
                 ? {
                     ...argument,
-                    label: suggestion.label,
+                    label: getCommandArgumentLabel(suggestion),
                     value,
                     start: chip.start,
                     end: value === '__room__' ? chip.start : chip.start + value.length,

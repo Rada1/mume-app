@@ -22,12 +22,14 @@ import { AccountStatPopover } from './StandardMenu/AccountStatPopover';
 import { InlineActionDeck } from './StandardMenu/InlineActionDeck';
 import { InlineLookAction } from './StandardMenu/InlineLookAction';
 import { InlineContainerGetAction } from './StandardMenu/InlineContainerGetAction';
+import type { InlineCommandDisplayParts } from './StandardMenu/inlineCommandDisplay';
 import { RoomEntityPicker } from './StandardMenu/RoomEntityPicker';
 import { useRoomEntityMenu } from '../../hooks/useRoomEntityMenu';
 import { createLearnedInlineAbilityButtons } from '../../utils/inlineAbilityActions';
 import { SOCIAL_BUTTONS } from '../../constants/buttons/socials';
 import { DOOR_BUTTONS } from '../../constants/buttons/doors';
 import type { SelectedTargetInfo } from '../../stores/useUIStore';
+import { useVitals } from '../../context/GameContext';
 
 interface StandardMenuProps {
     popoverState: PopoverState;
@@ -61,6 +63,8 @@ interface StandardMenuProps {
     roomPlayers?: (string | GmcpOccupant)[];
     roomNpcs?: (string | GmcpOccupant)[];
     roomItems?: (string | GmcpOccupant)[];
+    inventoryLines?: import('../../types').DrawerLine[];
+    equipmentLines?: import('../../types').DrawerLine[];
     entities: Record<string, GameEntity>;
     registerEntity: (id: string, name: string, location: import('../../types').EntityLocation, category?: string) => import('../../types').GameEntity;
     selectedObjectIds: Set<string>;
@@ -130,10 +134,11 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         popoverState, buttons, availableSets, setPopoverState, setButtons, handleButtonClick, setTarget, addMessage, favorites,
         setFavorites, keywordOverrides, parley, setParley, whoList, executeCommand, inlineCategories, customTraits, setCustomTraits,
         handleTabClick, setGearTab, setCharTab,
-        refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems,
+        refreshLogHighlights, triggerHaptic, openKeywordEdit, roomPlayers, roomNpcs, roomItems, inventoryLines, equipmentLines,
         entities, selectedObjectIds, toggleObjectSelection, clearObjectSelection, accountCharacters, accountState, setAccountState, direction, characterInfo,
         themeColor
     } = props;
+    const { target: currentTarget } = useVitals();
     const learnedInlineAbilityButtons = React.useMemo(
         () => createLearnedInlineAbilityButtons(props.abilities || {}, props.practiceData || null),
         [props.abilities, props.practiceData]
@@ -154,10 +159,14 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
         players: roomPlayers || [],
         npcs: roomNpcs || [],
         objects: roomItems || [],
+        characterName: characterInfo?.name || '',
+        inventoryLines: inventoryLines || [],
+        equipmentLines: equipmentLines || [],
         selectedObjectIds,
         toggleObjectSelection,
         setTarget,
         setPopoverState,
+        currentTarget,
         triggerHaptic
     });
 
@@ -221,8 +230,8 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
 
     const renderContainerGet = (
         button: CustomButton,
-        renderButton: (button: CustomButton, displayParts?: { prefix: string; suffix: string }) => React.ReactNode,
-        displayParts?: { prefix: string; suffix: string }
+        renderButton: (button: CustomButton, displayParts?: InlineCommandDisplayParts) => React.ReactNode,
+        displayParts?: InlineCommandDisplayParts
     ) => {
         if (!hasContainerLook || !targetContext || button.id !== 'btn-get'
             || !/^get\s+%n(?:\|[^\s]+)?$/i.test(button.command.trim()) || popoverState.assignSourceId) {
@@ -388,7 +397,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return renderContainerGet(button, actionButton => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />);
+                        return renderContainerGet(button, (actionButton, displayParts) => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact terminal={hasContainerLook && actionButton.id === 'btn-get'} inlineCommandOnly={hasContainerLook && actionButton.id === 'btn-get'} inlineCommandParts={displayParts} showFavorite={false} glowDelay="0s" />);
                     })}
                     {favorites.map(command => {
                         const button = inlineMenuButtons.find(candidate => candidate.command === command);
@@ -397,7 +406,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         const isValid = isButtonValidForEntity(button, popoverState.entityId || '', categoryId, filterDeps, safeSetId, popoverState.context);
                         if (!isValid || !resolvedTraitButtonIds.has(button.id)) return null;
                         seenCommands.add(button.command);
-                        return renderContainerGet(button, actionButton => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact showFavorite={false} glowDelay="0s" />);
+                        return renderContainerGet(button, (actionButton, displayParts) => <PopoverActionButton key={actionButton.id} button={actionButton} {...props} toggleFavorite={toggleFavorite} onRequestWhois={requestWhois} onRequestRoomReport={requestRoomReport} onRequestExamine={requestInlineExamine} compact terminal={hasContainerLook && actionButton.id === 'btn-get'} inlineCommandOnly={hasContainerLook && actionButton.id === 'btn-get'} inlineCommandParts={displayParts} showFavorite={false} glowDelay="0s" />);
                     })}
                     <button
                         type="button"
@@ -630,13 +639,9 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                         {CategoryIcon && <CategoryIcon className="popover-category-icon" size={16} style={{ flexShrink: 0, opacity: 0.8 }} />}
                         <div style={{ display: 'flex', flexDirection: 'column', overflow: isInlineMenu ? 'visible' : 'hidden', flex: 1 }}>
                             {isInlineMenu ? (
-                                <RoomEntityPicker
-                                    entries={roomEntityEntries}
-                                    currentEntityId={popoverState.entityId}
-                                    currentContext={popoverState.context}
-                                    currentLabel={cleanDisplayName || cleanHeaderContext || formatSetLabel(safeSetId).toUpperCase()}
-                                    onSelect={selectRoomEntity}
-                                />
+                                <span className="inline-action-target-title">
+                                    {cleanDisplayName || cleanHeaderContext || formatSetLabel(safeSetId).toUpperCase()}
+                                </span>
                             ) : (
                                 <span style={{ fontSize: '0.78rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                     {isSetManager ? 'Main Menu' : (cleanDisplayName ? cleanDisplayName : (popoverState.direction ? `${formatSetLabel(safeSetId).toUpperCase()} (${popoverState.direction.toUpperCase()})` : formatSetLabel(safeSetId).toUpperCase()))}
@@ -665,7 +670,7 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                             {!isTacticalSet && popoverState.assignSourceId && (
                                 <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderBottom: '1px solid var(--border-color, rgba(255, 255, 255, 0.1))', color: 'var(--accent)', fontWeight: 'bold' }} onClick={() => { const setName = safeSetId; const dir = popoverState.assignSwipeDir; setButtons(prev => prev.map(b => b.id === popoverState.assignSourceId ? (dir ? { ...b, swipeCommands: { ...b.swipeCommands, [dir]: setName }, swipeActionTypes: { ...b.swipeActionTypes, [dir]: 'menu' } } : { ...b, command: setName, label: setName, actionType: 'menu' }) : b)); setPopoverState(null); addMessage('system', `Assigned sub-menu '${setName}'${dir ? ` to swipe ${dir}` : ''}.`); }}>Assign {safeSetId.toUpperCase()} as Menu</div>
                             )}
-                            {!isCompactInline && (!isInlineMenu || hasCapturedDetails) && (
+                            {!isCompactInline && !isInlineMenu && (
                                 <CapturedDetailsCard
                                     examineLines={popoverState.capturedExamineLines}
                                     examineMode={popoverState.examineMode}
@@ -702,12 +707,36 @@ export const StandardMenuPopover: React.FC<StandardMenuProps> = (props) => {
                                     onClose={closeCapturedDetails}
                                 />
                             )}
-                            {renderActionButtons()}
-                            {!isCompactInline && seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
-                                <div className="popover-empty" style={{ padding: '8px', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>No buttons available for this category</div>
-                            )}
-                            {!isCompactInline && openKeywordEdit && isInlineMenu && popoverState.context && (
-                                <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, cleanDisplayName || popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{stripAnsiCodes(popoverState.context)}"</div>
+                            {isInlineMenu && !isCompactInline ? (
+                                <div className="inline-command-target-layout">
+                                    <section className="inline-command-pane" aria-label={`Commands for ${cleanDisplayName || targetContext || 'target'}`}>
+                                        {renderActionButtons()}
+                                        {seenCommandsSize === 0 && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
+                                            <div className="popover-empty inline-command-empty">No commands available</div>
+                                        )}
+                                        {openKeywordEdit && popoverState.context && (
+                                            <div className="popover-item inline-keyword-edit" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, cleanDisplayName || popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{stripAnsiCodes(popoverState.context)}"</div>
+                                        )}
+                                    </section>
+                                    <RoomEntityPicker
+                                        entries={roomEntityEntries}
+                                        currentEntityId={popoverState.entityId}
+                                        currentContext={popoverState.context}
+                                        currentCategory={categoryId}
+                                        currentTarget={currentTarget}
+                                        onSelect={selectRoomEntity}
+                                    />
+                                </div>
+                            ) : (
+                                <>
+                                    {renderActionButtons()}
+                                    {!isCompactInline && seenCommandsSize === 0 && isInlineMenu && !/sack|satchel|pouch|pack|quiver/i.test(popoverState.context || '') && popoverState.setId !== 'npc-shopkeeper' && (
+                                        <div className="popover-empty" style={{ padding: '8px', textAlign: 'center', opacity: 0.5, fontSize: '0.75rem' }}>No buttons available for this category</div>
+                                    )}
+                                    {!isCompactInline && openKeywordEdit && isInlineMenu && popoverState.context && (
+                                        <div className="popover-item" data-menu-item="true" onPointerDown={(e) => { e.stopPropagation(); }} style={{ borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 4, opacity: 0.6, fontSize: '0.82rem' }} onClick={() => { triggerHaptic?.(20); openKeywordEdit(popoverState.context!, cleanDisplayName || popoverState.context!); setPopoverState(null); }}>✏ Edit keyword "{stripAnsiCodes(popoverState.context)}"</div>
+                                    )}
+                                </>
                             )}
                         </>
                     ) : (popoverState.type === 'select-parley-command' || popoverState.type === 'select-parley-target') ? (

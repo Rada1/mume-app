@@ -1,7 +1,7 @@
 import React from 'react';
 import { CustomButton, PopoverState, MessageType, GameEntity } from '../../../types';
 import { sanitizeGameTarget } from '../../../utils/gameUtils';
-import { isDesktopInlineActionPanel } from '../../../utils/popoverPanelUtils';
+import { shouldKeepInlineActionPopoverOpen } from '../../../utils/popoverPanelUtils';
 import { getCommandTextColor } from '../../../utils/swipeCommandColors';
 import { resolveHelpTopic } from '../../../utils/commandHelpUtils';
 import { getMovementDirectionLabel, normalizeMovementDirection } from '../../../utils/movementDirections';
@@ -16,6 +16,7 @@ interface PopoverActionButtonProps {
     displayContent?: React.ReactNode;
     displayColor?: string;
     treeRow?: boolean;
+    selected?: boolean;
     depth?: number;
     isSubButton?: boolean;
     compact?: boolean;
@@ -50,12 +51,14 @@ interface PopoverActionButtonProps {
     onRequestCommandReport?: (command: string, label: string) => boolean;
     onRequestExamine?: (command: string) => void;
     onRequestLook?: () => void;
+    onRequestPut?: (button: CustomButton, event: React.MouseEvent) => boolean;
+    directObservation?: boolean;
     isHelpMode?: boolean;
     onRequestHelp?: (topic: string) => void;
 }
 
 export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
-    button, displayLabel, displayContent, displayColor, treeRow = false, depth = 0, isSubButton = false, compact = false, terminal = false, inlineCommandOnly = false, inlineCommandParts, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction, onRequestShop, onRequestPractice, onRequestSelfState, onRequestCommunication, onRequestWhois, onRequestRoomReport, onRequestWeatherReport, onRequestPersonalReport, onRequestCommandReport, onRequestExamine, onRequestLook, isHelpMode = false, onRequestHelp
+    button, displayLabel, displayContent, displayColor, treeRow = false, selected, depth = 0, isSubButton = false, compact = false, terminal = false, inlineCommandOnly = false, inlineCommandParts, showFavorite = true, glowDelay, favorites, toggleFavorite, popoverState, setPopoverState, setButtons, handleButtonClick, executeCommand, addMessage, handleTabClick, setGearTab, selectedObjectIds, clearObjectSelection, entities, keywordOverrides, direction, onRequestShop, onRequestPractice, onRequestSelfState, onRequestCommunication, onRequestWhois, onRequestRoomReport, onRequestWeatherReport, onRequestPersonalReport, onRequestCommandReport, onRequestExamine, onRequestLook, onRequestPut, directObservation = false, isHelpMode = false, onRequestHelp
 }) => {
     const isFav = favorites.includes(button.command);
     
@@ -64,6 +67,29 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             e.preventDefault();
             e.stopPropagation();
             onRequestHelp(resolveHelpTopic(button.command, button.label));
+            return;
+        }
+        if (onRequestPut?.(button, e)) return;
+        if (directObservation && /^(?:look|examine|consider|con)(?:\s|$)/i.test(button.command.trim())) {
+            e.preventDefault();
+            e.stopPropagation();
+            const resolved = resolveButtonClickCommand({
+                button,
+                context: popoverState.context,
+                parentNoun: popoverState.parentNoun,
+                direction,
+                target: null,
+                keywordOverrides: keywordOverrides || {},
+                popoverCategory: popoverState.category,
+                popoverSetId: popoverState.setId,
+                isTrackpadModifierActive: false,
+                joystickDirection: null,
+                joystickTargetModifierActive: false
+            });
+            const command = /^look$/i.test(button.command.trim()) && resolved.finalContext
+                ? `look ${resolved.finalContext}`
+                : resolved.finalCmd;
+            executeCommand(command, false, false, false, false, { shouldFocus: false, fromUi: true });
             return;
         }
         if (popoverState.assignSourceId) {
@@ -77,7 +103,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
             setPopoverState(null);
             addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
-        } else if (commandTreeGroup(button) === 5 && onRequestCommandReport?.(
+        } else if ([2, 5].includes(commandTreeGroup(button) ?? -1) && onRequestCommandReport?.(
             resolveButtonClickCommand({
                 button,
                 context: popoverState.context,
@@ -131,7 +157,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                 shouldFocus: !!inputEl && document.activeElement === inputEl,
                 fromUi: true
             });
-            if (!isDesktopInlineActionPanel(popoverState, window.innerWidth)) setPopoverState(null);
+            if (!shouldKeepInlineActionPopoverOpen(popoverState, window.innerWidth)) setPopoverState(null);
         } else if (button.label === 'Browse Shop...') {
             setPopoverState({ ...popoverState, type: 'shop-search' });
         } else if (button.command === 'shop-mend') {
@@ -156,7 +182,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
         ? getMovementDirectionLabel(rawCommandContext.replace(/^exit\s+/i, '').trim())
         : rawCommandContext;
     const commandPreview = button.command.replace(/%n(?:\|[^\s]+)?/g, commandContext).replace(/%p/g, popoverState.parentNoun || '');
-    const resolvedInlineCommandParts = inlineCommandParts || (() => {
+    const resolvedInlineCommandParts: InlineCommandDisplayParts | undefined = inlineCommandParts || (() => {
         const target = commandContext.trim();
         const targetStart = target ? commandPreview.toLowerCase().lastIndexOf(target.toLowerCase()) : -1;
         if (targetStart < 0 || targetStart + target.length !== commandPreview.length) return undefined;
@@ -166,6 +192,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
 
     if (treeRow) {
         return <button type="button" className={`command-tree-row${isHelpMode ? ' is-help-mode' : ''}`}
+            aria-pressed={selected}
             title={`${label}\n${commandPreview}`} data-menu-item="true" data-help-mode={isHelpMode || undefined}
             onPointerDown={event => event.stopPropagation()} onClick={handleClick}>
             <span className={`command-tree-row-label${displayContent ? ' is-gear-target' : ''}`} style={{color:displayColor || (displayLabel || displayContent ? undefined : getCommandTextColor(button.command, button.setId))}}>{displayContent ?? label}</span>
@@ -175,7 +202,7 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
     if (compact) {
         return (
             <div
-                className={terminal ? `terminal-action-row${terminalTone}${inlineCommandOnly ? ' is-inline-command' : ''}${resolvedInlineCommandParts ? ' has-inline-command-parts' : ''}${isHelpMode ? ' is-help-mode' : ''}` : `popover-action-chip${isHelpMode ? ' is-help-mode' : ''}`}
+                className={terminal ? `terminal-action-row${terminalTone}${inlineCommandOnly ? ' is-inline-command' : ''}${resolvedInlineCommandParts ? ' has-inline-command-parts' : ''}${resolvedInlineCommandParts?.middle != null ? ' has-inline-command-middle' : ''}${isHelpMode ? ' is-help-mode' : ''}` : `popover-action-chip${isHelpMode ? ' is-help-mode' : ''}`}
                 role="button"
                 tabIndex={0}
                 onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); event.currentTarget.click(); } }}
@@ -188,10 +215,12 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                     if (inputEl && document.activeElement === inputEl) e.preventDefault();
                 }}
                 onClick={handleClick}
+                title={inlineCommandOnly ? commandPreview : undefined}
+                aria-label={inlineCommandOnly ? commandPreview : undefined}
                 style={{
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '3px',
+                    gap: '0.65em',
                     padding: '4px 8px',
                     fontSize: '0.78rem',
                     borderRadius: '4px',
@@ -205,14 +234,19 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
                     '--set-accent': 'var(--accent)'
                 } as any}
             >
-                {terminal && inlineCommandOnly ? resolvedInlineCommandParts ? <>
-                    <span className="inline-command-prefix" style={{ pointerEvents: 'none', color: getCommandTextColor(button.command, button.setId) }}>{resolvedInlineCommandParts.prefix}</span>
-                    <span className="terminal-action-command" style={{ pointerEvents: 'none' }}>{resolvedInlineCommandParts.suffix}</span>
-                </> : <span className="inline-command-full" style={{ pointerEvents: 'none', color: getCommandTextColor(button.command, button.setId) }}>{commandPreview}</span>
-                    : <>
+                {terminal && inlineCommandOnly ? (
+                    <>
+                        <span className="inline-command-prefix" style={{ pointerEvents: 'none', color: getCommandTextColor(button.command, button.setId) }}>
+                            {resolvedInlineCommandParts?.prefix || label}
+                        </span>
+                        {resolvedInlineCommandParts?.middle != null && <span className="inline-command-middle">{resolvedInlineCommandParts.middle}</span>}
+                    </>
+                ) : (
+                    <>
                         <span style={{ pointerEvents: 'none', color: terminal ? getCommandTextColor(button.command, button.setId) : undefined }}>{label}</span>
                         {terminal && <span className="terminal-action-command">&lt;{commandPreview}&gt;</span>}
-                    </>}
+                    </>
+                )}
                 {!terminal && showFavorite && <span
                     onClick={(e) => toggleFavorite(e, button.command)}
                     style={{

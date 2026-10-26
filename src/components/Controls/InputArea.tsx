@@ -67,7 +67,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const { ui, setUI, displayInventoryLines, displayEqLines } = useUI();
     const { viewport } = useBaseGame();
     const { stats } = useVitals();
-    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, env, popoverState, abilities = {}, characterClass = 'none', characterName, practice } = useGame() as any;
+    const { inCombat, triggerHaptic, playClickSound, isSoundEnabled, initAudio, isPasswordMode, accountState, status, env, popoverState, abilities = {}, characterClass = 'none', characterName, practice } = useGame() as any;
     const isClassicMode = useSettingsStore(s => s.isClassicMode);
     const rememberLogin = useSettingsStore(s => s.rememberLogin);
     const setRememberLogin = useSettingsStore(s => s.setRememberLogin);
@@ -419,6 +419,9 @@ const InputArea: React.FC<InputAreaProps> = ({
         accountState?.currentPrompt?.toLowerCase().includes('password') ||
         accountState?.currentPrompt?.toLowerCase().includes('verify')
     );
+    const isLoginReady = isLoginStage && status === 'connected' && Boolean(accountState?.currentPrompt?.trim());
+    const loginWaitingLabel = status === 'connected' ? 'Waiting for server response…'
+        : status === 'connecting' ? 'Connecting to MUME…' : 'Connect to MUME to begin.';
     const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
 
     const {
@@ -481,9 +484,13 @@ const InputArea: React.FC<InputAreaProps> = ({
             
             inputRef.current.focus();
         }
-    }, [isLoginStage, isMobile, gameState, accountState?.stage]);
+    }, [isLoginReady, isLoginStage, isMobile, gameState, accountState?.stage]);
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
+        if (isLoginStage && !isLoginReady) {
+            e?.preventDefault();
+            return;
+        }
         if (isLoginStage && rememberLogin && input.trim()) {
             if (isPasswordPrompt) {
                 setLoginPassword(input.trim());
@@ -492,7 +499,7 @@ const InputArea: React.FC<InputAreaProps> = ({
             }
         }
         onSend(e);
-    }, [input, isLoginStage, isPasswordPrompt, onSend, rememberLogin, setLoginName, setLoginPassword]);
+    }, [input, isLoginReady, isLoginStage, isPasswordPrompt, onSend, rememberLogin, setLoginName, setLoginPassword]);
 
     const handleCardClick = useCallback((e: React.MouseEvent) => {
         const target = e.target as HTMLElement;
@@ -507,7 +514,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                 <div className="login-card" onClick={handleCardClick}>
                     <h2 className="login-card-title">MUME</h2>
                     <div className="login-prompt-text">
-                        {accountState?.currentPrompt || "By what name do you wish to be known?"}
+                        {isLoginReady ? accountState?.currentPrompt : loginWaitingLabel}
                     </div>
                     <form onSubmit={handleSubmit}>
                         <div className="login-input-wrapper">
@@ -516,6 +523,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                                 id="mud-input"
                                 name="mud-input"
                                 className="login-input-field"
+                                disabled={!isLoginReady}
                                 autoComplete="off"
                                 autoCapitalize="none"
                                 autoCorrect="off"
@@ -552,9 +560,10 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <button
                                 type="submit"
                                 className="login-btn"
+                                disabled={!isLoginReady || !input.trim()}
                                 onClick={() => { triggerHaptic?.(40); }}
                             >
-                                Login
+                                {isLoginReady ? 'Login' : status === 'connected' ? 'Waiting…' : status === 'connecting' ? 'Connecting…' : 'Offline'}
                             </button>
                         </div>
                         <div
@@ -566,6 +575,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             <button
                                 type="button"
                                 className="login-new-acc-btn"
+                                disabled={!isLoginReady}
                                 onClick={() => { triggerHaptic?.(30); executeCommand('new'); }}
                             >
                                 New Account

@@ -1,4 +1,4 @@
-/** @file useMobileMovementMapSlot.ts — Finds the landscape Movement menu's minimap slot. */
+/** @file useMobileMovementMapSlot.ts — Finds the mobile Movement menu's minimap slot. */
 
 import { useEffect, useState } from 'react';
 
@@ -22,7 +22,7 @@ export const useMobileMovementMapSlot = (enabled: boolean): HTMLElement | null =
 
         updateSlot();
         const observer = new MutationObserver(updateSlot);
-        observer.observe(app, { childList: true });
+        observer.observe(app, { childList: true, subtree: true });
         return () => observer.disconnect();
     }, [enabled]);
 

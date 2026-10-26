@@ -39,3 +39,11 @@ export const SPELL_SPEED_OPTIONS: StateOption[] = [
     { label: 'Careful', value: 'careful', command: 'change spell careful' },
     { label: 'Thorough', value: 'thorough', command: 'change spell thorough' }
 ];
+
+// --- Current State Selection ---
+export const getSelectedStateCommand = (group: string | null, value: string | undefined): string | undefined => {
+    const options = {Position: POSITION_OPTIONS, Mood: MOOD_OPTIONS, 'Cast Speed': SPELL_SPEED_OPTIONS, Alertness: ALERTNESS_OPTIONS};
+    const normalized = (value || '').trim().toLowerCase();
+    const selected = group === 'Position' && ['mounted', 'riding'].includes(normalized) ? 'standing' : normalized;
+    return options[group as keyof typeof options]?.find(option => option.value === selected)?.command;
+};

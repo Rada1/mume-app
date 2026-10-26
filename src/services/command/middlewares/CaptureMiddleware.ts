@@ -9,6 +9,7 @@ import { useArchiveStore } from '../../../stores/useArchiveStore';
 import { useCommandShopStore } from '../../../stores/useCommandShopStore';
 import { useCommandPracticeStore } from '../../../stores/useCommandPracticeStore';
 import { useUIStore } from '../../../stores/useUIStore';
+import { BOARD_MAIL_INTERFACE_ENABLED } from '../../../utils/archiveInterface';
 
 const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
     eq: 'equipment',
@@ -129,7 +130,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         const isPopoverInspect = silent && isSystem && !fromDrawer;
 
         // Match "look ... board", "look ... b", "look ... bulletin", "tail ...", "tail"
-        const isBoardListCommand = !isPopoverInspect && (
+        const isBoardListCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
             (isLook && isBoardNoun) ||
             lowerCmd === 'look threads' ||
             lowerCmd === 'look all threads' ||
@@ -145,7 +146,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
             captureType = 'board_list';
         }
 
-        const isBoardReadCommand = !isPopoverInspect && (
+        const isBoardReadCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
             /^(?:read|view)\s+\d+$/i.test(lowerCmd) ||
             /^(?:read|view)\s+\d+\s+(?:board|b)$/i.test(lowerCmd) ||
             /^read\s+thread\s+\d+(?:\s+(?:next|whole))?$/i.test(lowerCmd)
@@ -156,7 +157,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         }
         const isSentMailListCommand = /^look\s+(?:sent\s+mail|mail\s+sent)(?:\s+seen)?$/i.test(lowerCmd) ||
             /^look\s+(?:seen\s+sent\s+mail|sent\s+seen\s+mail|mail\s+sent\s+seen)$/i.test(lowerCmd);
-        const isMailListCommand = !isPopoverInspect && (
+        const isMailListCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
             lowerCmd === 'look mail' || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(lowerCmd) ||
             lowerCmd === 'look seen mail' || isSentMailListCommand ||
             lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ')
@@ -174,7 +175,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         if (!captureType && isLook && (words.length > 1 || (roomInspection?.isRoomDescription && roomInspection.isCapturingExamine))) {
             captureType = 'examine';
         }
-        const isMailReadCommand = !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);
+        const isMailReadCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);
         if (!captureType && isMailReadCommand) {
             useArchiveStore.getState().setPanelMode('mail');
             useArchiveStore.getState().setActiveView('mail-sent');

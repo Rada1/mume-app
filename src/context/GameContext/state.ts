@@ -59,8 +59,7 @@ export const useGameProviderState = (audioTriggers?: {
     const [accountState, setAccountState] = useState<import('../../types').AccountState>({
         stage: 'login',
         characters: [],
-        selectedCharacter: null,
-        currentPrompt: 'By what name do you wish to be known?'
+        selectedCharacter: null
     });
     const accountStageRef = useRef<import('../../types').AccountStage>('login');
     React.useEffect(() => { accountStageRef.current = accountState.stage; }, [accountState.stage]);

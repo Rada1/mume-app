@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { MovementPad } from './MovementPad';
 import { useRoomStore } from '../../stores/useRoomStore';
 
@@ -148,5 +148,22 @@ describe('MovementPad Component', () => {
 
         act(() => westBtn.click());
         expect(westBtn.classList.contains('is-key-pressed')).toBe(true);
+    });
+    it('does not publish a hover preview when a touch leaves after tapping a movement button', () => {
+        const preview = vi.fn();
+        const command = vi.fn();
+        render(<MovementPad layout="menu" onPreviewDirection={preview} onCommand={command}/>);
+        const north = screen.getByRole('button', {name: /North/i});
+        const out = (pointerType: string) => {
+            const event = new MouseEvent('pointerout', {bubbles: true, relatedTarget: document.body});
+            Object.defineProperty(event, 'pointerType', {value: pointerType});
+            fireEvent(north, event);
+        };
+        act(() => north.click());
+        act(() => out('touch'));
+        expect(command).toHaveBeenCalledTimes(1);
+        expect(preview).not.toHaveBeenCalled();
+        act(() => out('mouse'));
+        expect(preview).toHaveBeenCalledExactlyOnceWith(null);
     });
 });

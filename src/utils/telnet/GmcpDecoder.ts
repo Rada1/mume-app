@@ -1,43 +1,14 @@
-import { GameStats, WeatherType, GmcpCharVitals, GmcpRoomInfo, GmcpRoomPlayers, GmcpOccupant, GmcpExitInfo, GmcpUpdateExits, GmcpRoomNpcs, GmcpCharInfo } from '../../types';
-import { isGmcpCharVitals, isGmcpRoomInfo, isGmcpRoomPlayers, isGmcpExitInfoMap } from '../../utils/gmcpValidation';
+/** @file GmcpDecoder.ts — Authoritative package routing for each received GMCP packet. */
+import type { GameStats, GmcpHandlers, GmcpVitalsState, GmcpUpdateExits } from '../../types';
+import { updateGmcpVitals } from './gmcpVitals';
+import { handleCommChannel, handleCommChannelList } from './gmcpCommunication';
+export type { GmcpHandlers } from '../../types';
+import { isGmcpCharVitals, isGmcpRoomInfo } from '../../utils/gmcpValidation';
 import { normalizeGmcpWeather } from '../weatherUtils';
 
-export interface GmcpHandlers {
-    setStats: React.Dispatch<React.SetStateAction<GameStats>>;
-    setWeather: React.Dispatch<React.SetStateAction<WeatherType>>;
-    setIsFoggy: React.Dispatch<React.SetStateAction<boolean>>;
-    setInCombat: (inCombat: boolean, force?: boolean) => void;
-    detectLighting: (light: string) => void;
-    onOpponentChange?: (opponent: string | null) => void;
-    onBufferChange?: (buffer: string | null) => void;
-    onAddChar?: (data: any) => void;
-    onUpdateChar?: (data: any) => void;
-    onRemoveChar?: (data: any) => void;
-    onRoomChars?: (data: any) => void;
-    onRoomInfo?: (data: GmcpRoomInfo) => void;
-    onRoomUpdateExits?: (data: GmcpUpdateExits) => void;
-    onCharVitals?: (data: GmcpCharVitals) => void;
-    onCharNameChange?: (name: string | null) => void;
-    onCharInfo?: (data: GmcpCharInfo) => void;
-    onPositionChange?: (position: string) => void;
-    onComm?: (sender: string, chan: string, msg: string) => void;
-    onGroupAdd?: (data: any) => void;
-    onGroupUpdate?: (data: any) => void;
-    onGroupRemove?: (data: any) => void;
-    onGroupSet?: (data: any) => void;
-    onMumeEdit?: (data: import('../../types').GmcpMumeEdit) => void;
-    onMumeView?: (data: import('../../types').GmcpMumeView) => void;
-    onRoomCharsCombat?: (data: any[]) => void;
-    onCharRide?: (data: any) => void;
-    onCorePing?: () => void;
-    onCoreGoodbye?: () => void;
-    onDisconnect?: () => void;
-    onExternalEdit?: (data: string) => void;
-    onEvent?: (pkg: string, data: any) => void;
-}
-
+// --- Package Routing Section ---
 export class GmcpDecoder {
-    private charVitalsState: { position?: string, opponent?: string | null, buff?: string | null } = {};
+    private charVitalsState: GmcpVitalsState = {};
 
     constructor(private handlers: GmcpHandlers) { }
 
@@ -64,7 +35,8 @@ export class GmcpDecoder {
             this.handleCharName(json);
         } else if (pkgLower === 'char.status' || pkgLower === 'char.info' || pkgLower === 'char.statusvars') {
             this.handleCharStatus(json);
-            if (pkgLower === 'char.info' || pkgLower === 'char.statusvars') this.handleCharInfo(json);
+            if (pkgLower === 'char.statusvars') this.handleSimpleJson(json, handlers.onCharStatusVars ?? handlers.onCharInfo);
+            else this.handleCharInfo(json);
         } else if (pkgLower === 'group' || pkgLower === 'group.add') {
             // MUME sends 'Group' with either an array (full list) or single object (one member)
             this.handleGroupPacket(pkgLower, json);
@@ -83,9 +55,9 @@ export class GmcpDecoder {
         } else if (pkgLower.startsWith('group.')) {
             this.handleGroup(json);
         } else if (pkgLower === 'comm.channel.list') {
-            this.handleCommChannelList(json);
+            handleCommChannelList(json);
         } else if (pkgLower === 'comm.channel' || pkgLower === 'comm.channel.text') {
-            this.handleCommChannel(json);
+            handleCommChannel(json, handlers);
         } else if (pkgLower.startsWith('mume.client.')) {
             console.log('[GMCP] Mume.Client package detected:', pkg, json);
             if (pkgLower === 'mume.client.edit') {
@@ -129,36 +101,6 @@ export class GmcpDecoder {
             }
         } catch (e) {
             console.error('[GMCP] Parse error in handleEvent:', e, json);
-        }
-    }
-
-    private handleCommChannel(json: string) {
-        console.log('[GMCP] Received comm.channel:', json);
-        try {
-            const data = JSON.parse(json);
-            // Expected MUME format: { "chan": "tell", "msg": "hello", "player": "Someone" }
-            const chan = data.chan || data.channel;
-            const msg = data.msg || data.message;
-            const player = data.player || data.sender;
-
-            console.log('[GMCP] Parsed comm:', { chan, msg, player });
-
-            if (chan && player && this.handlers.onComm) {
-                this.handlers.onComm(player, chan, msg || "");
-            }
-        } catch (e) {
-            console.error('[GMCP] Parse error in Comm.Channel:', e, json);
-        }
-    }
-
-    private handleCommChannelList(json: string) {
-        try {
-            const channels = JSON.parse(json);
-            if (Array.isArray(channels)) {
-                console.log('[GMCP] Comm.Channel.List:', channels.map(channel => channel?.name || channel?.command).filter(Boolean));
-            }
-        } catch (e) {
-            console.error('[GMCP] Parse error in Comm.Channel.List:', e, json);
         }
     }
 
@@ -254,119 +196,9 @@ export class GmcpDecoder {
             const data = JSON.parse(json);
             if (isGmcpCharVitals(data)) {
                 if (this.handlers.onCharVitals) this.handlers.onCharVitals(data);
-                this.updateStatsFromVitals(data);
+                updateGmcpVitals(data, this.handlers, this.charVitalsState);
             }
         } catch (e) { console.error('[GMCP] Parse error in Char.Vitals:', e, json); }
-    }
-
-    private updateStatsFromVitals(data: any) {
-        const getField = (keys: string[]) => {
-            for (const k of keys) {
-                const found = Object.keys(data).find(dk => dk.toLowerCase() === k.toLowerCase());
-                if (found !== undefined) return data[found];
-            }
-            return undefined;
-        };
-
-        if (typeof this.handlers.setStats === 'function') {
-            this.handlers.setStats((prev: GameStats) => {
-                const next = { ...prev };
-                const hp = getField(['hp', 'hits', 'health', 'h']); if (hp !== undefined) next.hp = Number(hp);
-                const maxhp = getField(['maxhp', 'maxhits', 'maxhealth', 'H']); if (maxhp !== undefined) next.maxHp = Number(maxhp);
-                const mana = getField(['mana', 'sp', 'spirit', 's', 'm']); if (mana !== undefined) next.mana = Number(mana);
-                const maxmana = getField(['maxmana', 'maxsp', 'maxspirit', 'S', 'M']); if (maxmana !== undefined) next.maxMana = Number(maxmana);
-                const move = getField(['move', 'mv', 'mp', 'moves', 'stamina', 'st', 'v']); if (move !== undefined) next.move = Number(move);
-                const maxmove = getField(['maxmove', 'maxmv', 'maxmp', 'maxmoves', 'maxstamina', 'maxst', 'V']); if (maxmove !== undefined) next.maxMove = Number(maxmove);
-                const wimpy = getField(['wimpy', 'W']); if (wimpy !== undefined) next.wimpy = Number(wimpy);
-                const moveStatus = getField(['move_status', 'stamina_status', 'st_status']); if (moveStatus !== undefined) next.staminaStatus = String(moveStatus);
-                
-                // Hunger / Thirst (MUME fields)
-                const hungry = getField(['hungry', 'hunger']); if (hungry !== undefined) next.conditions = { ...next.conditions, hungry: !!hungry };
-                const thirsty = getField(['thirsty', 'thirst']); if (thirsty !== undefined) next.conditions = { ...next.conditions, thirsty: !!thirsty };
-                
-                return next;
-            });
-        }
-
-        const pos = getField(['position', 'pos', 'p']);
-        if (pos !== undefined) {
-            const p = pos.toLowerCase();
-            this.charVitalsState.position = p;
-            if (this.handlers.onPositionChange) this.handlers.onPositionChange(p);
-            
-            // NOTE: We no longer sync 'waiting' condition from position here.
-            // Spells can be cast while 'standing'.
-        }
-
-        const opp = getField(['opponent', 'opp', 'o']);
-        if (opp !== undefined) {
-            const newOpp = opp === "" ? null : opp;
-            this.charVitalsState.opponent = newOpp;
-            if (this.handlers.onOpponentChange) this.handlers.onOpponentChange(newOpp);
-            
-            // If opponent is explicitly cleared and we aren't fighting, help the transition
-            if (newOpp === null && this.charVitalsState.position && !this.charVitalsState.position.includes('fighting')) {
-                (this.handlers as any).setInCombat(false, true);
-            }
-        }
-
-        const buff = getField(['buff', 'b']);
-        if (buff !== undefined) {
-            this.charVitalsState.buff = buff === "" ? null : buff;
-            if (this.handlers.onBufferChange) this.handlers.onBufferChange(this.charVitalsState.buff);
-        }
-
-        if (this.handlers.onCharVitals) {
-            this.handlers.onCharVitals(data);
-        }
-
-        // Combat state is driven strictly by the position field in *this* Char.Vitals update.
-        // We intentionally ignore the opponent field — it can linger as stale cached state from
-        // a previous fight, and using it was causing combat mode to re-fire on unrelated vitals
-        // updates where position had already returned to 'standing' / 'resting' / etc.
-        const posRaw = getField(['position', 'pos', 'p']);
-        if (posRaw !== undefined) {
-            const posStr = String(posRaw).toLowerCase();
-            if (posStr.includes('fighting')) {
-                this.handlers.setInCombat(true);
-            } else {
-                // If position is explicitly a non-fighting state, force clear the UI latch
-                const isExplicitlyNotFighting = ['standing', 'resting', 'sitting', 'sleeping'].some(p => posStr === p || posStr.includes(p));
-                if (isExplicitlyNotFighting) {
-                    (this.handlers as any).setInCombat(false, true);
-                    // Also clear stale opponent if we are definitely not fighting
-                    this.charVitalsState.opponent = null;
-                } else {
-                    (this.handlers as any).setInCombat(false);
-                }
-            }
-        }
-
-        const weatherVal = getField(['weather', 'w']);
-        if (weatherVal !== undefined && typeof this.handlers.setWeather === 'function') {
-            const weather = normalizeGmcpWeather(weatherVal);
-            if (weather) this.handlers.setWeather(weather);
-        }
-
-        const fogVal = getField(['fog', 'f']); 
-        if (fogVal !== undefined && typeof this.handlers.setIsFoggy === 'function') {
-            this.handlers.setIsFoggy(fogVal === '-' || fogVal === '=');
-        }
-
-        const lightVal = getField(['light', 'l']);
-        if (lightVal !== undefined && typeof this.handlers.detectLighting === 'function') {
-            this.handlers.detectLighting(String(lightVal));
-        }
-
-        // Pass xp/tp to charInfo if present in vitals (MUME style)
-        const xp = getField(['xp']);
-        const tp = getField(['tp']);
-        if ((xp !== undefined || tp !== undefined) && this.handlers.onCharInfo) {
-            this.handlers.onCharInfo({ 
-                xp: xp !== undefined ? Number(xp) : undefined, 
-                tp: tp !== undefined ? Number(tp) : undefined 
-            });
-        }
     }
 
     private handleRoomInfo(json: string) {
@@ -430,7 +262,7 @@ export class GmcpDecoder {
         } catch (e) { }
     }
 
-    private handleSimpleJson(json: string, handler?: (data: any) => void) {
+    private handleSimpleJson<T>(json: string, handler?: (data: T) => void) {
         try {
             const data = JSON.parse(json);
             if (handler) handler(data);
@@ -453,7 +285,7 @@ export class GmcpDecoder {
         try {
             const data = JSON.parse(json);
             if (isGmcpCharVitals(data)) {
-                this.updateStatsFromVitals(data);
+                updateGmcpVitals(data, this.handlers, this.charVitalsState);
                 if (this.handlers.onCharVitals) this.handlers.onCharVitals(data);
             }
         } catch (e) { }

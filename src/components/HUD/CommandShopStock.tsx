@@ -14,9 +14,10 @@ interface CommandShopStockProps extends CommandShopProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     inline?: boolean;
+    selectOnClick?: boolean;
 }
 
-export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, onOpenChange, inline = false }) => {
+export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, onOpenChange, inline = false, selectOnClick = false }) => {
     const catalog = useCommandShopCatalog(shop);
     if (!shop.available) return null;
     const stockContent = <>
@@ -34,7 +35,7 @@ export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, 
         {catalog.items.length ? catalog.items.map(item => <ShopItemGroup key={item.num} item={item} objectColorTargets
             variants={shop.variants[item.num]} expanded={catalog.expanded === item.num} loading={catalog.variantLoading}
             selectedNum={shop.selectedStock?.num ?? null} compareNum={shop.compareFirst?.num ?? null}
-            targeting={Boolean(shop.compareFirst)} compact onSelect={shop.selectStock} onToggle={catalog.toggleProduct}
+            targeting={Boolean(shop.compareFirst)} compact selectOnClick={selectOnClick} onSelect={shop.selectStock} onToggle={catalog.toggleProduct}
             onInspect={num => shop.runShow(num)} />)
             : <p className="command-action-target-empty">No stock listed. Choose another shop category.</p>}
     </>;

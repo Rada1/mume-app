@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { useActiveDockedPanelStore } from './useActiveDockedPanelStore';
+import { BOARD_MAIL_INTERFACE_ENABLED } from '../utils/archiveInterface';
 
 export type ArchiveView = 'board' | 'board-threads' | 'mail-inbox' | 'mail-sent' | 'book';
 export type ArchiveSource = 'board' | 'mail' | 'book';
@@ -101,6 +102,7 @@ export const useArchiveStore = create<ArchiveStoreState>((set, get) => ({
     pendingEditorContext: null,
 
     setIsOpen: (isOpen) => {
+        if (isOpen && !BOARD_MAIL_INTERFACE_ENABLED && get().panelMode !== 'book') return;
         set({ isOpen });
         const activeStore = useActiveDockedPanelStore.getState();
         if (isOpen) activeStore.setActivePanel('archive');

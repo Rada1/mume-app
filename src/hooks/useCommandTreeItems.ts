@@ -5,20 +5,39 @@ import type { useCommandTreeController } from './useCommandTreeController';
 import { useGearPanelData } from './useGearPanelData';
 import { createButton } from '../utils/buttonFactory';
 // --- Logic Section ---
-export const useCommandTreeItems = (controller: ReturnType<typeof useCommandTreeController>, location: string | null, actionTarget?: CommandActionTargetEntry | null) => {
+export const useCommandTreeItems = (controller: ReturnType<typeof useCommandTreeController>, location: string | null, actionTarget?: CommandActionTargetEntry | null, retainSelectionWhenMissing = false) => {
  const [selectedId, setSelectedId] = useState<string | null>(null);
+ const [selectedSnapshot, setSelectedSnapshot] = useState<CommandActionTargetEntry | null>(null);
  const data = useGearPanelData(location === 'All' || location === 'Equipment', location === 'All' || location === 'Inventory');
  const locations = ['Equipment', 'Inventory', 'Room', ...((controller.shop.atShop ?? controller.shop.available) ? ['Shop'] : [])];
- const objects = useMemo(() => controller.entries.filter(entry =>
-  location === 'All' ? entry.group === 'worn' || entry.group === 'inventory' || (entry.group === 'objects' && entry.scope === 'room')
-   : location === 'Equipment' ? entry.group === 'worn' : location === 'Inventory' ? entry.group === 'inventory'
-   : location === 'Room' ? entry.group === 'objects' && entry.scope === 'room' : false
- ), [controller.entries, location]);
- const selected = objects.find(entry => entry.id === selectedId) || null;
- useEffect(() => {setSelectedId(null); controller.previewEntity(null);}, [location, controller.previewEntity]);
+ const objects = useMemo(() => {
+  const roomSelf: CommandActionTargetEntry = {
+   id: 'command-panel-self', label: controller.game.characterName || 'You', keyword: 'self', context: 'self',
+   category: 'cat-ally', group: 'players', scope: 'self'
+  };
+  const entries = controller.entries.filter(entry =>
+   location === 'All' ? entry.group === 'worn' || entry.group === 'inventory' || (entry.group === 'objects' && entry.scope === 'room')
+    : location === 'Equipment' ? entry.group === 'worn' : location === 'Inventory' ? entry.group === 'inventory'
+   : location === 'Room' ? entry.scope === 'room' && ['objects', 'players', 'npcs'].includes(entry.group) && entry.category !== 'cat-exit' : false
+  );
+  if (location === 'Room') entries.unshift(roomSelf);
+  if (!entries.length || !['Equipment', 'Inventory', 'Room'].includes(location || '')) return entries;
+  const isRoom = location === 'Room';
+  if (isRoom && !entries.some(entry => entry.group === 'objects')) return entries;
+  const isEquipment = location === 'Equipment';
+  return [{
+   id: `command-tree-${location?.toLowerCase()}-all`, label: 'All', keyword: 'all', context: 'all',
+   category: isRoom ? 'cat-room-object' : isEquipment ? 'cat-worn-object' : 'cat-inventory-object',
+   group: isRoom ? 'objects' as const : isEquipment ? 'worn' as const : 'inventory' as const,
+   scope: isRoom ? 'room' as const : 'self' as const
+  }, ...entries];
+ }, [controller.entries, controller.game.characterName, location]);
+ // Keep gear actions open if a command moves the selected item to another location.
+ const selected = objects.find(entry => entry.id === selectedId) || (retainSelectionWhenMissing ? selectedSnapshot : null);
+ useEffect(() => {setSelectedId(null); setSelectedSnapshot(null); controller.previewEntity(null);}, [location, controller.previewEntity]);
  const chooseObject = (entry: CommandActionTargetEntry) => {
   if (entry.id === selectedId && controller.activeState.entityId === entry.id) return;
-  setSelectedId(entry.id); controller.previewEntity(entry);
+  setSelectedId(entry.id); setSelectedSnapshot(entry); controller.previewEntity(entry);
  };
  const selectedActionTarget = actionTarget || selected;
  const actions = useMemo(() => {
@@ -31,7 +50,7 @@ export const useCommandTreeItems = (controller: ReturnType<typeof useCommandTree
  }, [selectedActionTarget, controller.activeState.entityId, controller.actionGroups]);
  const kind: 'equipment' | 'inventory' = location === 'Equipment' ? 'equipment' : 'inventory';
  const objectSections = ['Equipment', 'Inventory', 'Room'].map(label => ({label,
-  objects: objects.filter(entry => label === 'Equipment' ? entry.group === 'worn' : label === 'Inventory' ? entry.group === 'inventory' : entry.group === 'objects'),
+  objects: objects.filter(entry => label === 'Equipment' ? entry.group === 'worn' : label === 'Inventory' ? entry.group === 'inventory' : entry.scope === 'room' && entry.category !== 'cat-exit'),
   kind: (label === 'Equipment' ? 'equipment' : 'inventory') as 'equipment' | 'inventory',
   ready: label === 'Room' || data.status[label === 'Equipment' ? 'equipment' : 'inventory'] === 'ready'
  }));

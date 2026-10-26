@@ -16,6 +16,7 @@ import { useAutomaticTargetForRoom, useAutomaticTargetStore } from '../../stores
 import { getRoomIdentityKey } from '../../utils/roomIdentityUtils';
 import { getAutoRoomTarget } from '../../utils/commandAutoTarget';
 import { getRoomTargetSuggestions, makeCommandTargetSuggestion } from '../../utils/commandSuggestionUtils';
+import { getRoomNpcAndEnemyTargetSuggestions } from '../../objects/roomTargetSuggestions';
 import { getNonGroupmateRoomTargetSuggestions } from '../../utils/groupTargetSuggestions';
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
@@ -65,6 +66,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 }) => {
     const {
         viewport,
+        status,
         gameState,
         accountState,
         isPasswordMode,
@@ -93,10 +95,10 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const roomZone = useRoomStore(state => state.roomZone);
     const automaticTargetRoomKey = getRoomIdentityKey({ roomNum, roomName, roomZone, roomDesc });
     const roomOccupants = useMemo(() => Object.values(roomChars), [roomChars]);
-    const roomTargetSuggestions = useMemo(() => [
-        ...getRoomTargetSuggestions(roomOccupants, [], 'characters', characterName || ''),
-        ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
-    ], [characterName, roomItems, roomOccupants]);
+    const roomTargetSuggestions = useMemo(
+        () => getRoomNpcAndEnemyTargetSuggestions(roomOccupants, characterName || ''),
+        [characterName, roomOccupants]
+    );
     const automaticTargetSuggestions = useMemo(() => [
         ...getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName || ''),
         ...getRoomTargetSuggestions([], Object.values(roomItems), 'objects'),
@@ -267,6 +269,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     const showsStandaloneAccountInput = accountState?.stage === 'login' ||
         accountState?.stage === 'account-confirmation';
     const isLoginStage = gameState === 'account' && accountState?.stage === 'login';
+    const isLoginReady = isLoginStage && status === 'connected' && Boolean(accountState?.currentPrompt?.trim());
     const loginPrompt = accountState?.currentPrompt?.toLowerCase() || '';
     const isPasswordPrompt = isLoginStage && (isPasswordMode || loginPrompt.includes('password') || loginPrompt.includes('verify'));
     const isNamePrompt = isLoginStage && (loginPrompt.includes('by what name') || loginPrompt.includes('enter new account name'));
@@ -295,6 +298,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
 
     const handleSubmit = useCallback((e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        if (isLoginStage && !isLoginReady) return;
         const mapFindMatch = gameState === 'playing' && !isPasswordMode
             ? /^\/find(?:\s+(.*))?$/i.exec(input.trim())
             : null;
@@ -333,6 +337,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         setActiveMapFilter,
         setMapSearchQuery,
         isLoginStage,
+        isLoginReady,
         rememberLogin,
         isPasswordPrompt,
         isNamePrompt,
@@ -539,6 +544,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             type="password"
                             className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
                             value={input}
+                            disabled={isLoginStage && !isLoginReady}
                             onChange={handleInputChange}
                             onKeyDown={handleKeyDown}
                             onPointerDown={handleInputPointerDown}
@@ -557,6 +563,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             name="mud-input"
                             className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
                             value={input}
+                            disabled={isLoginStage && !isLoginReady}
                             rows={1}
                             wrap={viewport?.isMobile ? 'soft' : 'off'}
                             onChange={handleInputChange}
@@ -580,6 +587,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                 suggestions={roomTargetSuggestions}
                 commonTargets={commonPvpTargets}
                 currentTarget={target || displayedTarget}
+                title="NPCs & enemies"
                 autoTargetEnabled={autoTargetEnabled}
                 onToggleAutoTarget={toggleAutoTarget}
                 largeOnMobile
@@ -648,18 +656,19 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                         <input type="checkbox" checked={rememberLogin} onChange={event => setRememberLogin(event.target.checked)} />
                         Remember login
                     </label>
-                    {isNamePrompt && <button type="button" className="docked-send-btn" onClick={() => executeCommand('new')}>NEW ACCOUNT</button>}
+                    {isNamePrompt && <button type="button" className="docked-send-btn" disabled={!isLoginReady} onClick={() => executeCommand('new')}>NEW ACCOUNT</button>}
                 </div>
             )}
 
             <button
                 type="button"
                 className={`docked-send-btn${isLoginStage ? '' : ' is-send-icon'}`}
+                disabled={isLoginStage && (!isLoginReady || !input.trim())}
                 onClick={() => handleSubmit()}
                 aria-label={isLoginStage ? 'Login' : 'Send command'}
-                title={isLoginStage ? 'Login' : 'Send command'}
+                title={isLoginStage ? (isLoginReady ? 'Login' : 'Waiting for the server prompt') : 'Send command'}
             >
-                {isLoginStage ? 'LOGIN' : <Send size={15} strokeWidth={2.4} aria-hidden="true" />}
+                {isLoginStage ? (isLoginReady ? 'LOGIN' : status === 'connected' ? 'WAITING' : status === 'connecting' ? 'CONNECTING' : 'OFFLINE') : <Send size={15} strokeWidth={2.4} aria-hidden="true" />}
             </button>
             </div>
             {commandDockActive && <div id="command-dock-actions" className="command-dock-actions" />}

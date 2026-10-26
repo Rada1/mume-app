@@ -401,6 +401,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const shouldShowAccountInput = isAccountScreen;
 
     const isLandscapeCommandLayout = viewport.isMobile && viewport.isLandscape && !isAccountScreen;
+    const mobileDetailsLayout = viewport.isMobile && !viewport.isLandscape && !isAccountScreen;
     const shouldRenderDockedInput = !(isReplaying && gameState === 'account');
     const useMobileLogCommandSplit = viewport.isMobile && !isAccountScreen && shouldRenderDockedInput;
     const useCommandDockToolbar = isLandscapeCommandLayout || (!viewport.isRotatedLandscape && !isAccountScreen && (isCommandPanelOpen || (!viewport.isMobile && isSkillsPanelOpen)));
@@ -440,7 +441,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             className={`content-layer view-mode-${activeView}${hasDockedPanels ? ' has-docked-panels has-docked-panel-surface' : ''}${shouldBlurDockedPanels ? ' docked-panels-blurred' : ''}${viewport.isMobile && !isAccountScreen && (isHelpOpen || showChatWindow) ? ' has-client-panel-overlay' : ''}`}
             data-active-docked-panel={activeDockedPanels[0]}
             style={{
-                '--desktop-command-panel-width': isAccountScreen ? 'var(--desktop-character-width, 260px)' : undefined,
+                '--desktop-command-panel-width': isAccountScreen && !viewport.isMobile
+                    ? 'min(var(--desktop-character-width, 360px), calc(100vw - var(--desktop-log-width, clamp(600px, 38vw, 1000px)) - 32px))'
+                    : isAccountScreen ? 'var(--desktop-character-width, 260px)' : undefined,
                 '--terminal-pane-width': activeDockedPanels.length
                     ? 'clamp(150px, 15vw, 280px)'
                     : '0px',
@@ -537,6 +540,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 {isCharacterCardOpen && !isAccountScreen && viewport.isMobile && <CharacterCard />}
                 <div className="mobile-log-command-split">
+                {mobileDetailsLayout && <ClientPanelStack mobileDetailsOnly />}
                 <div
                     className="desktop-center-column"
                     style={{

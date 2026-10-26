@@ -16,7 +16,7 @@ export const ITEM_BUTTONS = [
 
     // --- FLUID CONTAINER ---
     createButton({ id: 'btn-fluid-drink', label: 'Drink', command: 'drink %n', setId: 'inline-fluidcontainer', color: '#3b82f6' }),
-    createButton({ id: 'btn-fluid-pour', label: 'Pour Water', command: 'pour water %n', setId: 'inline-fluidcontainer', color: '#60a5fa', width: 110 }),
+    createButton({ id: 'btn-fluid-pour', label: 'Pour', command: 'pour water %n', setId: 'inline-fluidcontainer', color: '#60a5fa' }),
     createButton({ id: 'btn-fluid-empty', label: 'Empty', command: 'empty %n', setId: 'inline-fluidcontainer', color: '#94a3b8' }),
     createButton({ id: 'btn-fluid-look-in', label: 'Look In', command: 'look in %n', setId: 'inline-fluidcontainer', color: '#3b82f6' }),
 

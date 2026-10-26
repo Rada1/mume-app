@@ -7,6 +7,7 @@ import { useModeStore } from '../../stores/useModeStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useSessionStore } from '../../stores/useSessionStore';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { BOARD_MAIL_INTERFACE_ENABLED } from '../../utils/archiveInterface';
 import { useActiveDockedPanelStore } from '../../stores/useActiveDockedPanelStore';
 import { useMobileHeaderTabs } from '../../hooks/useMobileHeaderTabs';
 import { useUIStore } from '../../stores/useUIStore';
@@ -382,7 +383,7 @@ const Header: React.FC<HeaderProps> = () => {
 
                 {!isAccountScreen && (
                     <>
-                        {hasMailLoadFlag && (
+                        {BOARD_MAIL_INTERFACE_ENABLED && hasMailLoadFlag && (
                             <button
                                 className={`menu-toggle-btn${isArchivePanelOpen && activeDockedPanel === 'archive' ? ' active' : ''}`}
                                 onClick={() => {
@@ -445,7 +446,7 @@ const Header: React.FC<HeaderProps> = () => {
                             <UsersRound size={17} />
                         </button>
 
-                        <DetailsPanelToggle />
+                        <DetailsPanelToggle onToggle={() => triggerHaptic?.(10)} />
 
                         <button
                             className={`menu-toggle-btn${isHelpOpen ? ' active' : ''}`}

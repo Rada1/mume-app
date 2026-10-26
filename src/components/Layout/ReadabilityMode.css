@@ -44,7 +44,7 @@
 
 @media (max-width:1024px) {
     /* While typing, collapse the split command workspace to its input row. */
-    .app-container.is-mobile.readability-mode.kb-open .message-log-container:has(.command-dock-shell-mobile) .command-dock-shell-mobile {
+    .app-container.is-mobile.readability-mode.kb-open .command-dock-shell-mobile {
         flex:0 0 auto !important;
         height:auto !important;
         min-height:0 !important;

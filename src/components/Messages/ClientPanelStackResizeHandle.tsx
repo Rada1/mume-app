@@ -20,7 +20,8 @@ const MIN_PANEL_HEIGHT = 80;
 export const ClientPanelStackResizeHandle: React.FC<{
     firstPanel: ClientPanelStackId;
     secondPanel?: ClientPanelStackId;
-}> = ({ firstPanel, secondPanel }) => {
+    mobileDetailsOnly?: boolean;
+}> = ({ firstPanel, secondPanel, mobileDetailsOnly = false }) => {
     const drag = useRef<ResizeStart | null>(null);
     const [isActive, setIsActive] = useState(false);
 
@@ -35,14 +36,18 @@ export const ClientPanelStackResizeHandle: React.FC<{
         const available = Math.max(MIN_PANEL_HEIGHT, stackHeight - 12);
         const clamped = Math.max(MIN_PANEL_HEIGHT, Math.min(available, nextHeight));
         const ratio = clamped >= available - 4 ? 1 : clamped / available;
-        useClientPanelStackStore.getState().setSingleHeight(firstPanel, ratio);
+        const store = useClientPanelStackStore.getState();
+        if (mobileDetailsOnly) store.setMobileDetailsHeight(ratio);
+        else store.setSingleHeight(firstPanel, ratio);
     };
 
     const pairGeometry = (handle: HTMLElement) => {
         const stack = handle.closest('.client-panels-stack');
         const first = stack?.querySelector<HTMLElement>(`[data-client-panel-id="${firstPanel}"]`);
         if (!first || !stack) return null;
-        const stackHeight = stack.getBoundingClientRect().height;
+        const stackHeight = mobileDetailsOnly
+            ? stack.closest<HTMLElement>('.app-container')?.getBoundingClientRect().height || window.innerHeight
+            : stack.getBoundingClientRect().height;
         const firstHeight = first.getBoundingClientRect().height;
         if (!secondPanel) {
             return { firstHeight, pairHeight: 0, pairWeight: 0, stackHeight, isSingle: true };

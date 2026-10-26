@@ -100,6 +100,10 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                     const isSelected = selectedTargetKey === entry.key;
                     const isMagicKey = entry.meta === 'magic-key';
                     const isShopItem = entry.meta === 'shop-item';
+                    const targetText = entry.value;
+                    const ariaLabel = isMagicKey || isShopItem
+                        ? `${entry.label} ${entry.value}${entry.isCurrentTarget ? ' Current target' : isSelected ? ' Tab' : ''}`
+                        : `${targetText}${entry.isCurrentTarget ? ' Current target' : ''}`;
                     const appearance = targetAppearance(entry);
                     const option = (
                         <button
@@ -107,7 +111,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                             className={`command-suggestion-option target-suggestion-option is-target-row${isSelected ? ' is-selected' : ''}${entry.isCurrentTarget ? ' is-current-target' : ''}`}
                             role="option"
                             aria-selected={isSelected}
-                            aria-label={`${entry.label} ${entry.value}${entry.isCurrentTarget ? ' Current target' : isSelected ? ' Tab' : ''}`}
+                            aria-label={ariaLabel}
                             data-target-kind={appearance.kind}
                             style={{ '--suggestion-target-color': appearance.color } as React.CSSProperties}
                             onPointerDown={event => {
@@ -116,16 +120,12 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                             }}
                         >
                             <span className={`command-suggestion-name ${getTargetItemTierClassName(entry.label)}`.trim()} title={isMagicKey ? entry.label : undefined}>
-                                {isMagicKey ? entry.customLabel || entry.label : isShopItem ? stripShopProductQuantity(entry.label) : entry.label}
+                                {isMagicKey ? entry.customLabel || entry.label : isShopItem ? stripShopProductQuantity(entry.label) : targetText}
                             </span>
                             {entry.isCurrentTarget && <span className="command-suggestion-current-target"><Crosshair size={12} strokeWidth={1.75} aria-hidden="true" /></span>}
-                            {!isMagicKey && !isShopItem && <span className="command-suggestion-keyword">&lt;{entry.value}&gt;</span>}
-                            <span className="command-suggestion-full">
-                                {isMagicKey
-                                    ? `key ${entry.value} · ${formatMagicKeyRemaining(entry.expiresAt, now)}`
-                                    : isShopItem ? `#${entry.value}`
-                                    : entry.isCurrentTarget ? null : isSelected ? 'Tab' : entry.meta}
-                            </span>
+                            {(isMagicKey || isShopItem) && <span className="command-suggestion-full">
+                                {isMagicKey ? `key ${entry.value} · ${formatMagicKeyRemaining(entry.expiresAt, now)}` : `#${entry.value}${isSelected ? ' · Tab' : ''}`}
+                            </span>}
                         </button>
                     );
 

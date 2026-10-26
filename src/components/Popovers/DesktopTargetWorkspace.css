@@ -1,0 +1,76 @@
+/** @file DesktopTargetWorkspace.css — Desktop target workspace with optional syntax-ordered arguments. */
+
+/* --- Persistent Panel --- */
+.desktop-target-workspace.command-tree-v2 {
+ box-sizing:border-box; width:100%; height:100%; min-height:0; min-width:0;
+ padding:10px 12px!important; overflow:hidden!important; background:transparent!important;
+ display:flex; flex-direction:column; pointer-events:auto;
+}
+.desktop-target-workspace.is-floating {
+ position:fixed; right:16px; bottom:100px; z-index:70000;
+ width:min(560px,calc(100vw - 32px)); height:min(480px,calc(100dvh - 160px)); box-shadow:0 8px 24px #0008;
+ background:rgba(var(--command-panel-surface-rgb,33,27,22),var(--client-panel-opacity,.75))!important;
+}
+.desktop-target-workspace-header { display:flex; flex:none; align-items:stretch; border-bottom:1px solid #c9a84c66; }
+.desktop-target-workspace-header nav { display:flex; flex:1; min-width:0; }
+.desktop-target-workspace-header button { padding:10px 6px; border:0; background:transparent; color:#b7ad96; cursor:pointer; font:inherit; }
+.desktop-target-workspace-header nav button { flex:1; min-width:0; border-bottom:2px solid transparent; }
+.desktop-target-workspace-header button[aria-pressed="true"] { color:#ffdf81; border-bottom-color:#c9a84c; }
+.desktop-target-workspace-header button:hover,.desktop-target-workspace-header button:focus-visible { background:var(--command-tree-surface-hover); }
+.desktop-target-workspace-header > button { flex:0 0 28px; font-size:18px; }
+
+/* --- Commands Left, Targets Right --- */
+.desktop-target-workspace .desktop-target-columns.command-tree-gear-quick-menu {
+ position:static; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
+ grid-template-rows:minmax(0,1fr) auto; align-items:stretch; flex:1; width:100%; max-width:100%; min-height:0;
+ box-shadow:none!important; overflow:hidden; background:transparent!important;
+}
+.desktop-target-workspace .command-tree-gear-quick-details {
+ display:block; grid-column:1; grid-row:1 / span 2; min-height:0; overflow:auto;
+ background:transparent; border-right:1px solid #c9a84c33;
+}
+.desktop-target-workspace .command-tree-gear-quick-list { grid-column:2; grid-row:1; min-height:0; }
+.desktop-target-workspace .command-tree-gear-quick-contents { grid-column:2; grid-row:2; max-height:180px!important; }
+.desktop-target-workspace .command-tree-gear-quick-put-targets { grid-column:3; grid-row:1 / span 2; overflow:auto; border-left:1px solid #c9a84c33; }
+.desktop-target-workspace .desktop-target-columns:has(> .command-tree-gear-quick-put-targets) { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.client-panels-stack:has(.desktop-target-columns > .command-tree-gear-quick-put-targets) {
+ flex-basis:max(var(--desktop-client-panels-width,26vw), min(600px,45vw));
+ width:max(var(--desktop-client-panels-width,26vw), min(600px,45vw));
+}
+.desktop-target-workspace :is(.command-tree-gear-quick-list,.command-tree-gear-quick-actions,.command-tree-gear-quick-contents,.command-tree-gear-quick-put-targets) {
+ width:100%!important; max-width:100%; max-height:100%; min-width:0; transform:none!important; background:transparent;
+}
+.desktop-target-workspace .command-tree-gear-quick-actions { overflow:visible; }
+.desktop-target-workspace .command-tree-section-commands { max-height:none; overflow:visible; }
+.desktop-target-workspace .command-tree-object { text-align:left; overflow-wrap:anywhere; }
+.desktop-target-workspace .command-tree-object[aria-expanded="true"] { box-shadow:none; }
+.desktop-target-workspace .command-tree-section-heading-label { white-space:normal; }
+.desktop-target-workspace .command-tree-gear-quick-list.is-equipment .command-tree-gear-empty-slot { background:transparent; }
+
+/* --- Match the Inline Log Selection Palette --- */
+.desktop-workspace-target[aria-expanded="true"] { background:rgba(201,168,76,.09)!important; }
+.desktop-workspace-target[data-target-kind="room"][aria-expanded="true"] { background:rgba(248,250,252,.1)!important; }
+.desktop-workspace-target[data-target-kind="enemy"][aria-expanded="true"] { background:var(--active-target-highlight-background,rgba(127,29,29,.24))!important; }
+.desktop-workspace-target[data-target-kind="ally"][aria-expanded="true"] { background:rgba(97,194,144,.12)!important; }
+.app-container.immersion-mode:not(.light-mode) .desktop-workspace-target[aria-expanded="true"] { background:rgba(201,168,76,.16)!important; }
+.app-container.immersion-mode:not(.light-mode) .desktop-workspace-target[data-target-kind="room"][aria-expanded="true"] { background:rgba(248,250,252,.16)!important; }
+.app-container.immersion-mode:not(.light-mode) .desktop-workspace-target[data-target-kind="enemy"][aria-expanded="true"] { background:var(--active-target-highlight-background,rgba(127,29,29,.24))!important; }
+.app-container.immersion-mode:not(.light-mode) .desktop-workspace-target[data-target-kind="ally"][aria-expanded="true"] { background:rgba(97,194,144,.18)!important; }
+
+/* --- Independent Container Selection and Expansion --- */
+.desktop-target-container-row { display:flex; align-items:stretch; min-width:0; }
+.desktop-target-container-row > .command-tree-object { flex:1; min-width:0; }
+.desktop-target-container-row > .desktop-target-container-toggle { display:flex; align-items:center; justify-content:center; flex:0 0 28px; padding:0; }
+.desktop-target-container-toggle[aria-expanded="true"] svg { transform:rotate(90deg); }
+.desktop-target-workspace .desktop-target-container-toggle[aria-expanded="true"]:not(:hover):not(:focus-visible) { background:transparent; }
+.desktop-target-container-contents { min-width:0; padding:4px; background:color-mix(in srgb,var(--command-panel-surface-raised,#2d271e) 55%,transparent); }
+.desktop-target-container-contents .command-tree-gear-content-items { display:grid; grid-template-columns:repeat(auto-fit,minmax(70px,1fr)); }
+.desktop-target-container-contents .command-tree-gear-content-item { min-width:0; padding:6px; }
+.desktop-target-container-contents .command-tree-section-empty { grid-column:1/-1; }
+
+/* --- Compact Commands Within Shared Subcategories --- */
+.desktop-target-workspace .desktop-workspace-command-grid { display:flex; flex-wrap:wrap; align-content:flex-start; gap:2px; }
+.desktop-workspace-command-grid > div { flex:0 1 auto; min-width:0; max-width:100%; }
+.desktop-target-workspace .desktop-workspace-command-grid .command-tree-row { width:auto; max-width:100%; padding:6px 8px; }
+.desktop-workspace-command-grid .command-tree-row-label { white-space:normal; }
+.desktop-workspace-subcategory > .command-tree-section-heading { margin-top:6px; font-size:9px; }

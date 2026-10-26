@@ -231,18 +231,20 @@ body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mo
 
 /* --- Movement Branch Minimap --- */
 @media (max-width: 1024px) and (orientation: portrait) {
-    .app-container.is-mobile.readability-mode:not(.kb-open):has(.command-tree-mobile-readability-popup) .mobile-map-panel {
+    .app-container.is-mobile.readability-mode:has(.command-tree-mobile-readability-popup) .mobile-map-panel {
         display: none !important;
     }
 
-    .app-container.is-mobile.readability-mode:not(.kb-open):has(.command-tree-mobile-readability-popup .is-movement-branch) .mobile-map-panel {
+    .app-container.is-mobile.readability-mode:has(.command-tree-mobile-readability-popup .is-movement-branch) .mobile-map-panel {
         display: flex !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
         z-index: 65001 !important;
         top: var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
         right: 4px !important;
         bottom: var(--mobile-readability-menu-bottom, 34px) !important;
         left: auto !important;
-        width: calc((100vw - 16px) / 3) !important;
+        width: calc((100vw - 12px) / 2) !important;
         height: auto !important;
         max-height: none !important;
         min-height: 0 !important;
@@ -252,8 +254,14 @@ body:has(.app-container.is-mobile.kb-open) .mapper-context-menu-backdrop[data-mo
     }
 }
 
-/* Keep the minimap hidden for other docked panels, but leave Movement's third column visible. */
+/* Keep the minimap hidden for other docked panels, but leave Movement's side column visible. */
 @media (max-width: 1024px) {
+    .app-container.is-mobile.readability-mode:not(:has(.command-tree-mobile-readability-popup .is-movement-branch)) .mobile-map-panel {
+        display: none !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
     .app-container.is-mobile:has(.content-layer.has-docked-panels):not(:has(.command-tree-mobile-readability-popup .is-movement-branch)) .mobile-map-panel {
         display: none !important;
         visibility: hidden !important;

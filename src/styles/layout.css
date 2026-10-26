@@ -2569,6 +2569,11 @@
     text-align: center;
 }
 
+.login-input-field:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
 .login-card-actions {
     display: flex;
     align-items: center;
@@ -2621,6 +2626,12 @@
 .login-new-acc-btn:active {
     transform: translateY(1px);
     background: rgba(30, 36, 49, 0.95);
+}
+
+.login-new-acc-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 /* Creation card option buttons */

@@ -82,9 +82,12 @@
 .movement-pad-map-item.pad-s .movement-pad-door-actions { bottom: calc(100% + 5px); left: 50%; transform: translateX(-50%); }
 .movement-pad-map-item.pad-d .movement-pad-door-actions { right: calc(100% + 5px); bottom: calc(100% + 5px); }
 
+@media (hover: hover) and (pointer: fine) {
+
 .movement-pad-door-actions button:not(:disabled):hover {
     border-color: rgba(229, 195, 104, 0.85);
     background: rgba(54, 43, 24, 0.98);
+}
 }
 
 .movement-pad-door-actions button:disabled {
@@ -95,8 +98,11 @@
     opacity: 0.48;
 }
 
+@media (hover: hover) and (pointer: fine) {
+
 .movement-pad-map .movement-pad-cell:hover {
     background: rgba(39, 33, 24, 0.95);
+}
 }
 
 .movement-pad-map .movement-pad-flee-group {
@@ -136,9 +142,12 @@
     cursor: pointer;
 }
 
+@media (hover: hover) and (pointer: fine) {
+
 .movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
     border-color: rgba(254, 202, 202, 0.9);
     background: rgba(127, 29, 29, 0.96);
+}
 }
 
 .movement-pad-map .movement-pad-wimpy:disabled {
@@ -150,14 +159,28 @@
     color: #ef7777;
 }
 
-.movement-pad-map .movement-pad-flee:hover,
+@media (hover: hover) and (pointer: fine) {
+
+.movement-pad-map .movement-pad-flee:hover {
+    border-color: rgba(239, 68, 68, 0.86);
+    background: rgba(127, 29, 29, 0.94);
+    color: #fecaca;
+}
+}
+
 .movement-pad-map .movement-pad-flee.is-key-pressed {
     border-color: rgba(239, 68, 68, 0.86);
     background: rgba(127, 29, 29, 0.94);
     color: #fecaca;
 }
 
-.movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+@media (hover: hover) and (pointer: fine) {
+
+.movement-pad-map .movement-pad-flee:hover .movement-pad-label {
+    color: #fecaca;
+}
+}
+
 .movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
     color: #fecaca;
 }
@@ -208,8 +231,11 @@
     border-color: rgba(138, 102, 32, 0.42);
 }
 
+@media (hover: hover) and (pointer: fine) {
+
 .light-mode .movement-pad-map .movement-pad-cell:hover {
     background: rgba(255, 252, 244, 0.98);
+}
 }
 
 .light-mode .movement-pad-map .movement-pad-flee {
@@ -224,22 +250,38 @@
     color: #991b1b;
 }
 
+@media (hover: hover) and (pointer: fine) {
+
 .light-mode .movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
     border-color: rgba(153, 27, 27, 0.8);
     background: rgba(254, 202, 202, 0.98);
+}
 }
 
 .light-mode .movement-pad-map .movement-pad-flee .movement-pad-label {
     color: #b91c1c;
 }
 
-.light-mode .movement-pad-map .movement-pad-flee:hover,
+@media (hover: hover) and (pointer: fine) {
+
+.light-mode .movement-pad-map .movement-pad-flee:hover {
+    background: rgba(254, 202, 202, 0.98);
+    color: #991b1b;
+}
+}
+
 .light-mode .movement-pad-map .movement-pad-flee.is-key-pressed {
     background: rgba(254, 202, 202, 0.98);
     color: #991b1b;
 }
 
-.light-mode .movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+@media (hover: hover) and (pointer: fine) {
+
+.light-mode .movement-pad-map .movement-pad-flee:hover .movement-pad-label {
+    color: #991b1b;
+}
+}
+
 .light-mode .movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
     color: #991b1b;
 }
@@ -272,14 +314,28 @@
     color: #dfbf6c;
 }
 
-.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed),
+@media (hover: hover) and (pointer: fine) {
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed) {
+    background: rgba(201, 168, 76, 0.14);
+    color: #f1cf6d;
+    outline: none;
+}
+}
+
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:focus-visible {
     background: rgba(201, 168, 76, 0.14);
     color: #f1cf6d;
     outline: none;
 }
 
-.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed) .movement-pad-label,
+@media (hover: hover) and (pointer: fine) {
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:hover:not(.is-dimmed) .movement-pad-label {
+    color: #f1cf6d;
+}
+}
+
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell:focus-visible .movement-pad-label {
     color: #f1cf6d;
 }
@@ -303,11 +359,14 @@
     box-shadow: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-door-actions button:not(:disabled):hover,
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-wimpy:hover:not(:disabled) {
     border: 0;
     background: rgba(201, 168, 76, 0.14);
     color: #f1cf6d;
+}
 }
 
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-door-actions button:disabled {
@@ -326,14 +385,28 @@
     color: #ef7777;
 }
 
-.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover,
+@media (hover: hover) and (pointer: fine) {
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover {
+    border: 0;
+    background: rgba(127, 29, 29, 0.2);
+    color: #fecaca;
+}
+}
+
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee.is-key-pressed {
     border: 0;
     background: rgba(127, 29, 29, 0.2);
     color: #fecaca;
 }
 
-.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover .movement-pad-label,
+@media (hover: hover) and (pointer: fine) {
+
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee:hover .movement-pad-label {
+    color: #fecaca;
+}
+}
+
 .app-container:not(.immersion-mode) .movement-pad-map .movement-pad-flee.is-key-pressed .movement-pad-label {
     color: #fecaca;
 }

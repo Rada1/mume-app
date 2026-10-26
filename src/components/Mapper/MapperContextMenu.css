@@ -69,9 +69,21 @@
 }
 
 .mapper-context-menu[data-mobile="true"] {
+    margin: 0;
+    right: auto;
+    bottom: auto;
     width: min(200px, calc(100vw - 16px));
     z-index: 2147483647;
     border-radius: 8px;
+}
+
+.mapper-context-menu[data-mobile="true"]::backdrop {
+    background: transparent;
+    pointer-events: none;
+}
+
+body:has(.app-container.classic-mode) > :is(.mapper-context-menu, .mapper-context-menu-backdrop) {
+    display: none !important;
 }
 
 .mapper-context-menu-backdrop[data-mobile="true"] {

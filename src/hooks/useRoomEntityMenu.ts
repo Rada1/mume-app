@@ -4,9 +4,9 @@
  */
 
 import React from 'react';
-import type { GmcpOccupant, PopoverState } from '../types';
+import type { DrawerLine, GmcpOccupant, PopoverState } from '../types';
 import type { SelectedTargetInfo } from '../stores/useUIStore';
-import { getRoomEntityMenuEntries } from '../objects/roomEntityMenuModel';
+import { getInlineTargetMenuEntries } from '../objects/roomEntityMenuModel';
 import { canSetTargetChipFromCategory } from '../utils/inlineCategoryAxes';
 
 // --- Logic Section ---
@@ -15,10 +15,14 @@ interface UseRoomEntityMenuOptions {
     players: Array<string | GmcpOccupant>;
     npcs: Array<string | GmcpOccupant>;
     objects: Array<string | GmcpOccupant>;
+    characterName: string;
+    inventoryLines: DrawerLine[];
+    equipmentLines: DrawerLine[];
     selectedObjectIds: Set<string>;
     toggleObjectSelection: (info: SelectedTargetInfo) => void;
     setTarget: (target: string | null) => void;
     setPopoverState: React.Dispatch<React.SetStateAction<PopoverState | null>>;
+    currentTarget?: string | null;
     triggerHaptic?: (ms: number) => void;
 }
 
@@ -26,19 +30,23 @@ export const useRoomEntityMenu = ({
     players,
     npcs,
     objects,
+    characterName,
+    inventoryLines,
+    equipmentLines,
     selectedObjectIds,
     toggleObjectSelection,
     setTarget,
     setPopoverState,
+    currentTarget,
     triggerHaptic
 }: UseRoomEntityMenuOptions) => {
     const entries = React.useMemo(
-        () => getRoomEntityMenuEntries(players, npcs, objects),
-        [npcs, objects, players]
+        () => getInlineTargetMenuEntries(players, npcs, objects, characterName, inventoryLines, equipmentLines, currentTarget),
+        [npcs, objects, players, characterName, inventoryLines, equipmentLines, currentTarget]
     );
 
-    const selectEntity = React.useCallback((entry: ReturnType<typeof getRoomEntityMenuEntries>[number]) => {
-        if (!selectedObjectIds.has(entry.id)) {
+    const selectEntity = React.useCallback((entry: ReturnType<typeof getInlineTargetMenuEntries>[number]) => {
+        if (!entry.isOutOfRoom && !entry.isContext && !selectedObjectIds.has(entry.id)) {
             toggleObjectSelection({
                 id: entry.id,
                 setId: entry.category,

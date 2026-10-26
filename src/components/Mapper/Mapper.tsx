@@ -525,6 +525,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 <MapperContextMenu
                     x={localContextMenu.x}
                     y={localContextMenu.y}
+                    anchor={localContextMenu.anchor}
                     roomId={localContextMenu.roomId}
                     isMobile={isMobile}
                     onClose={() => setLocalContextMenu(null)}

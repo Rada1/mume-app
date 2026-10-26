@@ -1,4 +1,5 @@
 /** @file useCommandTreeGetFrom.ts — Get targets from local containers and corpses. */
+import { executeCommandPanelInput } from './executeCommandPanelInput';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getGearTargetSuggestions } from '../objects/gearTargetSuggestions';
 import { getCommandTreeGetFromTargets } from '../utils/commandTreeGet';
@@ -72,7 +73,14 @@ export const useCommandTreeGetFrom = (controller: ReturnType<typeof useCommandTr
         const command = item.value === 'all'
             ? selected.category === 'corpse' ? `get all ${selected.value}` : `get all from ${selected.value}`
             : `get ${item.value} ${selected.value}`;
-        controller.game.executeCommand(command, false, false, false, false, {fromUi: true, shouldFocus: false});
+        executeCommandPanelInput(controller.game, command, false, false, false, false, {fromUi: true, shouldFocus: false});
+        controller.game.setCommandPreview?.(null);
+    };
+    const getContainer = (target: GetFromTarget) => {
+        if (controller.game.gameState !== 'playing' || controller.game.isSpectateMode) return;
+        if (controller.isHelpMode) { controller.executeHelp('get'); return; }
+        controller.dismissOutputs();
+        executeCommandPanelInput(controller.game, `get ${target.value}`, false, false, false, false, {fromUi: true, shouldFocus: false});
         controller.game.setCommandPreview?.(null);
     };
     const previewItem = (item: CommandTargetSuggestion) => {
@@ -83,10 +91,10 @@ export const useCommandTreeGetFrom = (controller: ReturnType<typeof useCommandTr
         controller.game.setCommandPreview?.(command);
     };
 
-    const allItems: CommandTargetSuggestion[] = items.length
+    const allItems: CommandTargetSuggestion[] = selected
         ? [{key: `get-all-from:${selected?.key || ''}`, label: 'All', value: 'all', meta: 'container'}, ...items]
         : items;
-    return {fromSections, selected, items: allItems, loading, selectContainer, getItem, previewItem,
+    return {fromSections, selected, items: allItems, loading, selectContainer, getContainer, getItem, previewItem,
         clearSelection: () => { setSelectedKey(null); controller.game.setCommandPreview?.('get'); },
         disabled: controller.game.gameState !== 'playing' || controller.game.isSpectateMode};
 };

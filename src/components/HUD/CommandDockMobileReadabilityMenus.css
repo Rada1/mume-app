@@ -1,4 +1,4 @@
-/** @file CommandDockMobileReadabilityMenus.css — Place quick state and gear menus in the readability menu lane. */
+/** @file CommandDockMobileReadabilityMenus.css — Compact state dropdowns and gear menus for readability mode. */
 
 /* --- Single Choice Sections --- */
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup :is(
@@ -10,7 +10,6 @@
 }
 
 /* --- Readability Menu Lane --- */
-.app-container.is-mobile.readability-mode .command-tree-quick-options,
 .app-container.is-mobile.readability-mode .command-tree-gear-quick-menu {
     position:fixed !important;
     top:var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
@@ -29,11 +28,10 @@
 
 /* --- Quick State Choices --- */
 .app-container.is-mobile.readability-mode .command-tree-quick-options {
-    display:grid !important;
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-    align-content:start;
-    gap:6px;
-    padding:8px;
+    display:flex !important;
+    flex-direction:column;
+    gap:2px;
+    padding:4px;
     overflow:auto;
 }
 .app-container.is-mobile.readability-mode .command-tree-quick-options > * { min-width:0; }
@@ -98,6 +96,15 @@
 }
 .app-container.is-mobile .command-tree-gear-quick-menu:has(.command-tree-gear-quick-contents) :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents, .command-tree-gear-quick-list) {
     grid-column:span 2;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-put-targets) {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.app-container.is-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-put-targets) :is(.command-tree-gear-quick-actions,.command-tree-gear-quick-contents,.command-tree-gear-quick-list,.command-tree-gear-quick-put-targets) {
+    grid-column:auto;
+}
+.app-container.is-mobile .command-tree-gear-quick-menu:has(.command-tree-gear-quick-contents):has(> .command-tree-gear-quick-put-targets) {
+    grid-template-columns:repeat(4,minmax(0,1fr));
 }
 .app-container.is-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-details:empty) .command-tree-gear-quick-list {
     grid-column:1 / -1;

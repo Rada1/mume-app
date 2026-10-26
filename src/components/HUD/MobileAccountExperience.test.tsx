@@ -28,6 +28,7 @@ const makeAccountState = (overrides: Partial<AccountState> = {}): AccountState =
 
 const renderAccount = (accountState: AccountState, isPasswordMode = false) => {
     mockUseGame.mockReturnValue({
+        status: 'connected',
         gameState: 'account',
         accountState,
         setAccountState: vi.fn(),
@@ -72,6 +73,7 @@ describe('MobileAccountExperience', () => {
         expect(screen.getByRole('button', { name: 'Create new account' })).toBeTruthy();
 
         mockUseGame.mockReturnValue({
+            status: 'connected',
             gameState: 'account',
             accountState: makeAccountState({ stage: 'login', currentPrompt: 'Account Password:' }),
             setAccountState: vi.fn(),

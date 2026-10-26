@@ -1,5 +1,6 @@
 /** @file useCommandInspection.ts — Runs and captures inspection commands for the command workspace. */
 import React from 'react';
+import { executeCommandPanelInput } from './executeCommandPanelInput';
 import type { CommandInspectionOptions, PopoverState } from '../types';
 import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
 import { useGame, useUI } from '../context/GameContext';
@@ -11,7 +12,8 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
     const targetContext = activeState.context || null;
     const setActivePopoverState = React.useCallback((update: React.SetStateAction<PopoverState | null>) => {
         const current = activeState;
-        const next = typeof update === 'function' ? update(current) : update;
+        const candidate = typeof update === 'function' ? update(current) : update;
+        const next = candidate?.hasInspectionCard ? { ...candidate, commandPanelCapture: true } : candidate;
         if (next && !next.isCapturingCommandReport) {
             ui.setPopoverState({
                 ...next,
@@ -52,7 +54,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             whoisTarget: undefined
         }));
         const command = activeScope === 'room' ? kind : kind === 'look' ? `look ${targetContext}` : `${kind === 'consider' ? 'con' : 'examine'} ${targetContext}`;
-        game.executeCommand(command, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, command, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestRoomReport = (kind: 'who' | 'where' | 'exits' | 'map' | 'weather local') => {
         if (activeScope !== 'room') return;
@@ -81,7 +83,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             personalActionKind: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(kind, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, kind, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestWeatherReport = (scope: 'global' | 'fog') => {
         const command = `weather ${scope}`;
@@ -109,7 +111,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             personalActionKind: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(command, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, command, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestWhois = (target?: CommandActionTargetEntry) => {
         const whoisContext = target?.context || targetContext;
@@ -140,7 +142,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             personalActionKind: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(`whois ${whoisContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, `whois ${whoisContext}`, true, true, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestExamine = (command: string) => {
         if (activeScope === 'room') { setInspecting('examine'); return; }
@@ -170,7 +172,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             personalActionKind: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(resolved || `examine ${targetContext || ''}`.trim(), false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, resolved || `examine ${targetContext || ''}`.trim(), false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestHelp = (topic: string) => {
         const helpTopic = topic.trim();
@@ -199,7 +201,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             personalActionKind: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(`help ${helpTopic.toLowerCase()}`, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, `help ${helpTopic.toLowerCase()}`, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestPersonalReport = (kind: 'info' | 'stat' | 'score') => {
         if (activeScope !== 'self') return;
@@ -228,7 +230,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             roomActionKind: undefined,
             capturedRoomActionLines: undefined
         }));
-        game.executeCommand(kind, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, kind, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const requestCommandReport = (command: string, label: string) => {
         const normalizedCommand = command.trim();
@@ -257,7 +259,7 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
             capturedRoomActionLines: undefined,
             capturedPersonalActionLines: undefined
         }));
-        game.executeCommand(normalizedCommand, false, false, false, false, { shouldFocus: false, fromUi: true });
+        executeCommandPanelInput(game, normalizedCommand, false, false, false, false, { shouldFocus: false, fromUi: true });
     };
     const closeDetails = () => setActivePopoverState(current => ({
         ...current,

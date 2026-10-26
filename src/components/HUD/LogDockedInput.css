@@ -257,7 +257,7 @@
     overflow: hidden;
     border: 0;
     border-radius: 0;
-    background: rgba(23,23,23,.88);
+    background: #171717;
     box-shadow: none;
     color: #e8dfc9;
     font: 11px var(--font-mono, 'JetBrains Mono', monospace);
@@ -550,6 +550,11 @@
     resize: none;
 }
 
+.docked-input-field:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
 .docked-input-field.command-highlight-source {
     color: transparent !important;
     caret-color: #f5f0e1;
@@ -679,16 +684,22 @@
     border-color: rgba(239, 68, 68, 0.65);
 }
 
-.docked-send-btn:hover {
+.docked-send-btn:hover:not(:disabled) {
     background: rgba(201, 168, 76, 0.32);
     border-color: rgba(201, 168, 76, 0.6);
     color: #fff;
     transform: translateY(-1px);
 }
 
-.docked-send-btn:active {
+.docked-send-btn:active:not(:disabled) {
     transform: translateY(0);
     background: rgba(201, 168, 76, 0.4);
+}
+
+.docked-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
 }
 
 .app-container.is-mobile .message-log-docked-input {

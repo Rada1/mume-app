@@ -12,6 +12,7 @@ export interface CommandTargetSuggestion {
     label: string;
     value: string;
     meta: string;
+    keyword?: string;
     category?: string;
     isCurrentTarget?: boolean;
     customLabel?: string;

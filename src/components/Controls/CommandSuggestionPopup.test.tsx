@@ -7,7 +7,7 @@ import { CommandSuggestionPopup } from './CommandSuggestionPopup';
 
 // --- Target Presentation Checks ---
 afterEach(cleanup);
-it('shows the entity name, keyword and current target even when another option is selected', () => {
+it('shows target keywords and current-target status even when another option is selected', () => {
     render(<CommandSuggestionPopup show style={{}} showSpellPopup={false} showTargetPopup
         spellSuggestions={[]} commandSuggestions={[]} selectedTargetKey="other"
         targetSuggestions={[
@@ -16,16 +16,16 @@ it('shows the entity name, keyword and current target even when another option i
         ]}
         onChooseSpell={vi.fn()} onChooseTarget={vi.fn()} onToggleMagicKeyFavorite={vi.fn()}
         onClearMagicKey={vi.fn()} onChooseCommand={vi.fn()} />);
-    const currentTarget = screen.getByRole('option', { name: /a Morgundul orc-guard guard Current target/ });
+    const currentTarget = screen.getByRole('option', { name: /guard Current target/ });
     expect(currentTarget.getAttribute('aria-selected')).toBe('false');
     expect(currentTarget.getAttribute('data-target-kind')).toBe('enemy');
-    expect(screen.getByRole('option', { name: /a second guard 2.guard Tab/ }).getAttribute('aria-selected')).toBe('true');
+    const selectedTarget = screen.getByRole('option', { name: '2.guard' });
+    expect(selectedTarget.getAttribute('aria-selected')).toBe('true');
     expect(screen.queryByText('Current target')).toBeNull();
     expect(currentTarget.querySelector('.command-suggestion-current-target svg')).not.toBeNull();
-    const currentTargetIcon = currentTarget.querySelector('.command-suggestion-current-target')!;
-    const currentTargetKeyword = currentTarget.querySelector('.command-suggestion-keyword')!;
-    expect(currentTargetIcon.compareDocumentPosition(currentTargetKeyword) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(currentTargetKeyword.textContent).toBe('<guard>');
+    expect(currentTarget.querySelector('.command-suggestion-name')?.textContent).toBe('guard');
+    expect(currentTarget.querySelector('.command-suggestion-keyword')).toBeNull();
+    expect(currentTarget.querySelector('.command-suggestion-full')).toBeNull();
 });
 
 it('applies offensive command colors to both commands and aliases', () => {

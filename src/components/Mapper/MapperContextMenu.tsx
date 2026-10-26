@@ -6,6 +6,8 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Search } from 'lucide-react';
 import { useMapMenuActivation } from '../../hooks/useMapMenuActivation';
+import { useMapContextMenuPlacement } from '../../hooks/useMapContextMenuPlacement';
+import type { MapContextMenuPosition } from '../../types';
 import './MapperContextMenu.css';
 import './MapPopupSurfaces.css';
 
@@ -13,6 +15,7 @@ import './MapPopupSurfaces.css';
 interface MapperContextMenuProps {
     x: number;
     y: number;
+    anchor?: MapContextMenuPosition['anchor'];
     roomId: string | null;
     onClose: () => void;
     onDelete: () => void;
@@ -32,6 +35,7 @@ interface MapperContextMenuProps {
 export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     x,
     y,
+    anchor,
     roomId,
     onClose,
     onDelete,
@@ -50,6 +54,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     const menuWidth = canUseViewport ? Math.min(200, window.innerWidth - 16) : 176;
     const boundedX = canUseViewport ? Math.min(Math.max(x, 8), Math.max(8, window.innerWidth - menuWidth - 8)) : x;
     const boundedY = canUseViewport ? Math.min(Math.max(y, 8), Math.max(8, window.innerHeight - menuHeight - 8)) : y;
+    const placement = useMapContextMenuPlacement(isMobile, anchor, boundedX, boundedY);
     const menu = (
     <>
         <div
@@ -61,12 +66,14 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
         <div
             className="mapper-context-menu map-popup-surface"
             role="menu"
+            ref={placement.menuRef}
+            popover={isMobile ? 'manual' : undefined}
             data-mobile={isMobile || undefined}
             {...activation}
             style={{
                 position: isMobile ? 'fixed' : undefined,
-                top: isMobile ? `${boundedY}px` : `clamp(8px, ${y}px, calc(100% - ${menuHeight}px))`,
-                left: isMobile ? `${boundedX}px` : `clamp(8px, ${x}px, calc(100% - 176px))`,
+                top: isMobile ? `${anchor ? placement.position.y : boundedY}px` : `clamp(8px, ${y}px, calc(100% - ${menuHeight}px))`,
+                left: isMobile ? `${anchor ? placement.position.x : boundedX}px` : `clamp(8px, ${x}px, calc(100% - 176px))`,
                 maxHeight: isMobile ? 'calc(100dvh - 16px)' : 'calc(100% - 16px)'
             }}
         >
@@ -157,7 +164,7 @@ export const MapperContextMenu: React.FC<MapperContextMenuProps> = ({
     );
 
     if (isMobile && typeof document !== 'undefined') {
-        return createPortal(menu, document.querySelector('.app-container') ?? document.body);
+        return createPortal(menu, document.body);
     }
     return menu;
 };

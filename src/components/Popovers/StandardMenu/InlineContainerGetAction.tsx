@@ -47,6 +47,7 @@ export const InlineContainerGetAction: React.FC<InlineContainerGetActionProps> =
     const isOpen = openState?.key === containerKey && openState.open;
     const contents = game.containerContents[containerId];
     const items = React.useMemo(() => [
+        { key: `inline-get-blank:${containerKey}`, label: '', value: '', meta: 'container' },
         { key: `inline-get-all:${containerKey}`, label: 'All', value: 'all', meta: 'container' },
         ...(contents ? getGearTargetSuggestions(contents.filter(line =>
             !isNothingLine(line.text) && !isNothingLine(line.rawText || '')
@@ -60,6 +61,7 @@ export const InlineContainerGetAction: React.FC<InlineContainerGetActionProps> =
             ? `get all from ${containerValue}`
             : `get ${selectedItem.value} ${containerValue}` }
         : button;
+    const displaySuffix = selectedItem?.value === 'all' ? `from ${containerValue}` : containerValue;
     const requestKey = `${game.roomNum}:${containerId}`;
 
     // --- Contents Capture Section ---
@@ -85,37 +87,42 @@ export const InlineContainerGetAction: React.FC<InlineContainerGetActionProps> =
     const toggleContents = (event: React.MouseEvent) => {
         event.stopPropagation();
         setOpenState({ key: containerKey, open: !isOpen });
-        if (isOpen) setSelection(null);
     };
 
     const selectItem = (event: React.MouseEvent, item: CommandTargetSuggestion) => {
         event.stopPropagation();
-        setSelection({ key: containerKey, itemKey: item.key });
+        setSelection(item.value ? { key: containerKey, itemKey: item.key } : null);
+        setOpenState({ key: containerKey, open: false });
     };
 
     return (
         <div className="inline-container-get-action">
             <div className="inline-container-get-row">
-                {renderGet(selectedGetButton, { prefix: 'get', suffix: containerValue })}
-                <button type="button" className="terminal-inspect-in-toggle inline-container-get-toggle"
-                    aria-expanded={isOpen} aria-controls={`container-contents-${containerId.replace(/[^a-zA-Z0-9_-]/g, '-')}`}
-                    title={`Choose an item inside ${containerValue}`}
-                    onPointerDown={event => event.stopPropagation()} onClick={toggleContents}>
-                    Contents
-                </button>
+                {renderGet(selectedGetButton, { prefix: 'get', middle: (
+                    <button type="button" className="inline-container-get-toggle"
+                        aria-label={`Choose a Get target from ${containerValue}`}
+                        aria-expanded={isOpen}
+                        aria-controls={`container-contents-${containerId.replace(/[^a-zA-Z0-9_-]/g, '-')}`}
+                        title={`Choose a blank target or an item inside ${containerValue}`}
+                        onPointerDown={event => event.stopPropagation()} onClick={toggleContents}>
+                        <span>{selectedItem?.value === 'all' ? 'All' : selectedItem?.keyword || ''}</span>
+                        <span className="inline-optional-argument-chevron" aria-hidden="true" />
+                    </button>
+                ), suffix: displaySuffix })}
             </div>
             {isOpen && <div className="inline-container-get-contents" id={`container-contents-${containerId.replace(/[^a-zA-Z0-9_-]/g, '-')}`}
                 role="listbox" aria-label={`Contents of ${containerValue}`} aria-busy={contents === undefined}>
                 {items.map(item => (
-                    <button type="button" role="option" aria-selected={selectedItem?.key === item.key}
+                    <button type="button" role="option" aria-selected={selectedItem?.key === item.key || (!selectedItem && item.value === '')}
                         className="inline-container-get-item" key={item.key}
+                        aria-label={item.value ? `Get ${item.label}` : 'Leave Get target blank'}
                         onPointerDown={event => event.stopPropagation()} onClick={event => selectItem(event, item)}>
                         <span>{item.label}</span>
                         <span>{item.value}</span>
                     </button>
                 ))}
                 {contents === undefined && <div className="inline-container-get-status">Loading contents…</div>}
-                {contents !== undefined && items.length === 1 && <div className="inline-container-get-status">Container is empty.</div>}
+                {contents !== undefined && items.length === 2 && <div className="inline-container-get-status">Container is empty.</div>}
                 {selectedItem && <div className="inline-container-get-selection">
                     {selectedItem.value === 'all'
                         ? `Get will take everything from ${containerValue}.`

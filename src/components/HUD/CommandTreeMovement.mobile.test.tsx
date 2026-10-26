@@ -1,4 +1,4 @@
-/** @file CommandTreeMovement.mobile.test.tsx — Unit tests for mobile Move command and directional submenu branch. */
+/** @file CommandTreeMovement.mobile.test.tsx — Go opens the directional submenu on desktop and mobile. */
 // @vitest-environment jsdom
 import React, { act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -18,7 +18,7 @@ vi.mock('./MovementPad', () => ({
     )
 }));
 
-it('renders inline MovementPad on desktop and omits Move button', async () => {
+it('opens Go on desktop without mounting an inline pad in the command list', async () => {
     const chooseCommand = vi.fn();
     const controller = {
         game: { viewport: { isMobile: false }, gameState: 'playing', isSpectateMode: false, executeCommand: vi.fn() },
@@ -39,17 +39,17 @@ it('renders inline MovementPad on desktop and omits Move button', async () => {
     const root = createRoot(host);
     try {
         await act(async () => root.render(<CommandTreeSections controller={controller} tree={tree} />));
-        // Inline MovementPad is present
-        expect(host.querySelector('[data-testid="mock-movement-pad"]')).not.toBeNull();
-        // Move button is filtered out of the list
-        const moveRow = Array.from(host.querySelectorAll('.command-tree-row')).find(btn => btn.textContent?.includes('Move'));
-        expect(moveRow).toBeUndefined();
+        expect(host.querySelector('[data-testid="mock-movement-pad"]')).toBeNull();
+        const moveRow = Array.from(host.querySelectorAll<HTMLButtonElement>('.command-tree-row')).find(btn => btn.textContent?.includes('Go'))!;
+        expect(moveRow).toBeDefined();
+        await act(async () => moveRow.click());
+        expect(chooseCommand).toHaveBeenCalledExactlyOnceWith(COMMAND_TREE_MOVE_BUTTON);
     } finally {
         await act(async () => root.unmount());
     }
 });
 
-it('omits inline MovementPad on mobile, lists Move command button, and clicking it selects Move', async () => {
+it('opens Go on mobile without mounting an inline pad in the command list', async () => {
     const chooseCommand = vi.fn();
     const controller = {
         game: { viewport: { isMobile: true }, gameState: 'playing', isSpectateMode: false, executeCommand: vi.fn() },
@@ -73,7 +73,7 @@ it('omits inline MovementPad on mobile, lists Move command button, and clicking 
         // Inline MovementPad is NOT present in main menu
         expect(host.querySelector('[data-testid="mock-movement-pad"]')).toBeNull();
         // Move command row is present with chevron
-        const moveRow = Array.from(host.querySelectorAll('.command-tree-row')).find(btn => btn.textContent?.includes('Move')) as HTMLButtonElement;
+        const moveRow = Array.from(host.querySelectorAll('.command-tree-row')).find(btn => btn.textContent?.includes('Go')) as HTMLButtonElement;
         expect(moveRow).toBeDefined();
         expect(moveRow.querySelector('.command-tree-row-chevron')).not.toBeNull();
 

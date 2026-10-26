@@ -1,0 +1,302 @@
+/* @file InlineActionSequence.css — Two-pane inline command and target menu. */
+
+/* --- Command and Target Columns --- */
+.terminal-inline-popover .inline-command-target-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 0.72fr);
+    align-items: stretch;
+    gap: 10px;
+    width: 100%;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-command-pane,
+.terminal-inline-popover .inline-target-pane {
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-command-pane {
+    overflow: visible;
+}
+
+.terminal-inline-popover .inline-action-target-title {
+    display: block;
+    overflow: hidden;
+    color: #dfbf6c;
+    font-size: 0.78rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --- Action Rows --- */
+.terminal-inline-popover .inline-command-target-layout .inline-action-list .terminal-action-row,
+.terminal-inline-popover .inline-command-target-layout .terminal-inspect-row {
+    display: flex !important;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    align-items: center;
+    justify-content: center !important;
+    gap: 8px !important;
+    padding: 6px 3px !important;
+    overflow: hidden;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .terminal-action-row.is-inline-command {
+    border: 0 !important;
+    background: transparent !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .terminal-action-row .inline-command-prefix,
+.terminal-inline-popover .inline-command-target-layout .terminal-inspect-row .inline-inspect-verb {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    color: inherit;
+    text-overflow: ellipsis;
+    text-align: center !important;
+    white-space: nowrap;
+}
+
+.terminal-inline-popover .inline-command-target-layout .terminal-action-row .inline-command-target,
+.terminal-inline-popover .inline-command-target-layout .terminal-action-row .terminal-action-command,
+.terminal-inline-popover .inline-command-target-layout .terminal-inspect-row .inline-inspect-target {
+    display: none !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-command-middle,
+.terminal-inline-popover .inline-command-target-layout .inline-optional-argument-control {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    grid-column: auto !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-look-action-control,
+.terminal-inline-popover .inline-command-target-layout .inline-group-action-control,
+.terminal-inline-popover .inline-command-target-layout .inline-container-get-action {
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-look-action-control .terminal-inspect-row {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-action-subgroup .inline-group-action-control .terminal-action-row.has-inline-command-parts,
+.terminal-inline-popover .inline-command-target-layout .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts {
+    display: flex !important;
+    grid-template-columns: none !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    width: 100% !important;
+    padding: 6px 3px !important;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-action-subgroup .inline-group-action-control,
+.terminal-inline-popover .inline-command-target-layout .inline-action-subgroup .inline-container-get-row,
+.terminal-inline-popover .inline-command-target-layout .inline-action-subgroup .inline-container-get-action {
+    grid-column: auto !important;
+    width: 100%;
+    min-width: 0;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-look-action-control .inline-look-action-part {
+    flex: 0 1 auto;
+    min-width: 0;
+    text-align: center;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-look-action-control .inline-optional-argument-control {
+    flex: 0 0 66px;
+    width: 66px;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-look-action-control .inline-look-modifier-select,
+.terminal-inline-popover .inline-command-target-layout .inline-container-get-toggle {
+    box-sizing: border-box;
+    width: 66px;
+    min-width: 66px;
+    max-width: min(15ch, 40vw);
+    min-height: 0;
+    height: 1.75em;
+    font: inherit;
+    line-height: 1.2;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-container-get-toggle {
+    gap: 6px;
+}
+
+.terminal-inline-popover .inline-command-target-layout .inline-container-get-toggle > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Persistent Target List --- */
+.terminal-inline-popover .inline-target-pane {
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid rgba(201, 168, 76, 0.2);
+    padding-left: 8px;
+}
+
+.terminal-inline-popover .inline-target-pane-heading,
+.terminal-inline-popover .inline-target-group-heading {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 6px;
+    color: #8f8374;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.terminal-inline-popover .inline-target-pane-heading {
+    justify-content: space-between;
+    padding: 3px 2px 6px;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.terminal-inline-popover .inline-target-pane-count {
+    color: #746958;
+    font-weight: 400;
+}
+
+.terminal-inline-popover .inline-target-list {
+    max-height: min(42vh, 420px);
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+}
+
+.terminal-inline-popover .inline-target-group + .inline-target-group {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+}
+
+.terminal-inline-popover .inline-target-group-heading {
+    padding: 5px 2px 3px;
+}
+
+.terminal-inline-popover .inline-target-group-toggle {
+    width: 100%;
+    justify-content: flex-start;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.terminal-inline-popover .inline-target-group-toggle span {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.terminal-inline-popover .inline-target-group-chevron {
+    flex: 0 0 auto;
+    transition: transform 120ms ease;
+}
+
+.terminal-inline-popover .inline-target-group-toggle[data-expanded="true"] .inline-target-group-chevron {
+    transform: rotate(180deg);
+}
+
+.terminal-inline-popover .inline-target-option {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 32px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    padding: 5px 4px;
+    border: 0;
+    border-left: 2px solid transparent;
+    background: transparent;
+    color: #cbbda4;
+    font: inherit;
+    font-size: 0.68rem;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.terminal-inline-popover .inline-target-option-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.terminal-inline-popover .inline-target-option:hover,
+.terminal-inline-popover .inline-target-option:focus-visible,
+.terminal-inline-popover .inline-target-option[data-active="true"] {
+    border-left-color: rgba(201, 168, 76, 0.58);
+    background: rgba(201, 168, 76, 0.08);
+    color: #fff1bd;
+}
+
+.terminal-inline-popover .inline-target-option[data-current-target="true"] {
+    border-left-color: #dfbf6c;
+    background: rgba(201, 168, 76, 0.14);
+    color: #ffe49b;
+}
+
+.terminal-inline-popover .inline-target-badge {
+    flex: 0 0 auto;
+    color: #dfbf6c;
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.terminal-inline-popover .inline-target-empty,
+.terminal-inline-popover .inline-command-empty {
+    padding: 8px 4px;
+    color: #8f8374;
+    font-size: 0.68rem;
+    text-align: center;
+}
+
+.terminal-inline-popover .inline-keyword-edit {
+    margin-top: 5px;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    opacity: 0.65;
+    font-size: 0.68rem;
+}
+
+@media (max-width: 380px) {
+    .terminal-inline-popover .inline-command-target-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(96px, 0.68fr);
+        gap: 7px;
+    }
+
+    .terminal-inline-popover .inline-target-pane {
+        padding-left: 6px;
+    }
+}
+
+@media (max-width: 720px) {
+    .terminal-inline-popover .inline-target-list {
+        max-height: 32vh;
+    }
+}

@@ -24,7 +24,11 @@
 .command-tree-v2 .movement-pad-menu .pad-e { grid-area: 2 / 3; }
 .command-tree-v2 .movement-pad-menu .pad-s { grid-area: 3 / 2; }
 .command-tree-v2 .movement-pad-menu .pad-d { grid-area: 3 / 3; }
+.command-tree-v2 .movement-pad-menu .pad-mount { grid-area: 1 / 3; }
+.command-tree-v2 .movement-pad-menu .pad-mount .movement-pad-label { font: 10px/14px monospace; }
+@media (hover: hover) and (pointer: fine) {
 .command-tree-v2 .movement-pad-menu .movement-pad-cell:hover:not(:disabled) { background: #383838; }
+}
 .command-tree-v2 .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d),
 .command-tree-v2 .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d) .movement-pad-label {
     color: var(--ansi-bright-green, #44ff70);
@@ -45,7 +49,128 @@
     text-overflow: clip;
     white-space: normal;
 }
-.command-tree-v2 .movement-pad-menu .pad-flee { grid-area: 2 / 2; color:var(--ansi-bright-green, #44ff70); background:#292929; }
+.command-tree-v2 .movement-pad-menu .pad-flee { grid-area: 3 / 1; color:var(--ansi-bright-green, #44ff70); background:#292929; }
 .command-tree-v2 .movement-pad-menu .pad-flee .movement-pad-label { color:var(--ansi-bright-green, #44ff70); }
+@media (hover: hover) and (pointer: fine) {
 .command-tree-v2 .movement-pad-menu .pad-flee:hover:not(:disabled) { color:#86efac; background:#24412d; }
+}
+@media (hover: hover) and (pointer: fine) {
 .command-tree-v2 .movement-pad-menu .pad-flee:hover:not(:disabled) .movement-pad-label { color:#86efac; }
+}
+
+/* --- Translucent movement controls over the mobile map --- */
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu {
+    position:relative;
+    z-index:2;
+    background:transparent;
+    pointer-events:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell {
+    border:1px solid rgba(201, 168, 76, 0.22);
+    border-radius:3px;
+    background:rgba(20, 17, 14, 0.2);
+    text-shadow:0 1px 2px #000, 0 0 4px #000;
+}
+@media (hover: hover) and (pointer: fine) {
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell:hover:not(:disabled) {
+    background:rgba(201, 168, 76, 0.25);
+}
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell:focus-visible {
+    background:rgba(201, 168, 76, 0.25);
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .pad-flee {
+    background:rgba(20, 17, 14, 0.2);
+}
+@media (hover: hover) and (pointer: fine) {
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .pad-flee:hover:not(:disabled) {
+    background:rgba(36, 65, 45, 0.3);
+}
+}
+
+/* --- Fill the Movement Column in Mobile Readability Mode --- */
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branch.is-movement-branch {
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    padding:0;
+    overflow:hidden !important;
+    pointer-events:none !important;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-pad {
+    display:flex;
+    flex:1 1 auto;
+    width:100%;
+    height:100%;
+    min-width:0;
+    min-height:0;
+    container:movement-pad / size;
+    pointer-events:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-menu {
+    flex:1 1 auto;
+    align-self:stretch;
+    width:100%;
+    height:100%;
+    min-width:0;
+    min-height:0;
+    box-sizing:border-box;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-rows:repeat(3, minmax(0, 1fr));
+    margin:0;
+    padding:0;
+    gap:0;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-menu .movement-pad-cell {
+    width:100%;
+    height:100%;
+    min-width:0;
+    min-height:0;
+    box-sizing:border-box;
+    pointer-events:auto;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-ability-movement-branch > .command-tree-movement-pad {
+    position:relative;
+    z-index:1;
+    flex:1 1 auto;
+    min-width:0;
+    min-height:0;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-cell.is-holdable-direction,
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-cell.is-holdable-mount {
+    touch-action:none;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-row.is-touch-hold-enabled {
+    touch-action:pan-y;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-ability-mode-commands .command-tree-row.is-touch-hold-enabled {
+    touch-action:pan-x;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-held-command-targets,
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-held-direction-actions,
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-held-mount-actions {
+    touch-action:pan-y;
+    overscroll-behavior-y:contain;
+    -webkit-overflow-scrolling:touch;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-cell.is-gesture-held {
+    z-index:3;
+    border-color:rgba(255, 215, 0, 0.88) !important;
+    background:rgba(201, 168, 76, 0.48) !important;
+    color:#ffd700 !important;
+    opacity:1 !important;
+    box-shadow:inset 0 0 0 2px rgba(255, 215, 0, 0.34);
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .movement-pad-cell.is-gesture-held .movement-pad-label {
+    color:#ffd700 !important;
+}
+@container movement-pad (max-height:180px) {
+    .movement-pad-menu .movement-pad-cell { padding:2px; gap:1px; }
+    .movement-pad-menu .movement-pad-cell svg { width:12px; height:12px; }
+    .movement-pad-menu .movement-pad-label { font-size:8px; line-height:1; }
+}
+@container movement-pad (max-height:120px) {
+    .movement-pad-menu .movement-pad-cell { padding:0; gap:0; }
+    .movement-pad-menu .movement-pad-cell svg { width:9px; height:9px; }
+    .movement-pad-menu .movement-pad-label { font-size:6px; line-height:1; }
+}

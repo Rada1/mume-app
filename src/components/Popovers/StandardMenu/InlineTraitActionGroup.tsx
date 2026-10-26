@@ -99,12 +99,12 @@ export const InlineTraitActionGroup: React.FC<InlineTraitActionGroupProps> = ({
                             ? <InlineLookAction key={`inspect-${kind}`} targetContext={targetContext}
                                 lookInSelected={lookInSelected} onToggleLookIn={onToggleLookIn}
                                 onLook={lookIn => requestInspection('look', lookIn)} />
-                            : <button key={`inspect-${kind}`} type="button" className="terminal-inspect-row"
+                            : <button key={`inspect-${kind}`} type="button" className="terminal-inspect-row has-inline-command-sequence"
                                 title={`${kind} ${targetContext || ''}`.trim()}
+                                aria-label={`${kind} ${targetContext || ''}`.trim()}
                                 onPointerDown={event => event.stopPropagation()}
                                 onClick={event => { event.stopPropagation(); requestInspection(kind); }}>
-                                <span style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
-                                {targetContext && <span>{targetContext}</span>}
+                                <span className="inline-inspect-verb" style={{ color: getSwipeCommandTextColor(kind) || traitColor }}>{kind}</span>
                             </button>
                     ))}
                 </div>}

@@ -10,6 +10,7 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { buildPlayerLineTokens, extractPlayerName } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
+import { BOARD_MAIL_INTERFACE_ENABLED, isBoardMailCapture } from '../../utils/archiveInterface';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
@@ -149,10 +150,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             }
         }
 
-        return type;
+        return !BOARD_MAIL_INTERFACE_ENABLED && isBoardMailCapture(type) ? null : type;
     }, [captureStage]);
 
     const startSession = useCallback((type: CaptureType) => {
+        if (!BOARD_MAIL_INTERFACE_ENABLED && isBoardMailCapture(type)) return;
         // console.log(`[Capture] Starting ${type} session`);
         if (sessionRef.current?.type === type && (Date.now() - sessionRef.current.startTime < 100)) {
             return;

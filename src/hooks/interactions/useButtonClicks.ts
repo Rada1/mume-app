@@ -2,7 +2,7 @@
 import React, { useCallback } from 'react';
 import { InteractionDeps } from '../useInteractionHandlers';
 import { CustomButton } from '../../types';
-import { isDesktopInlineActionPanel } from '../../utils/popoverPanelUtils';
+import { shouldKeepInlineActionPopoverOpen } from '../../utils/popoverPanelUtils';
 import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { perfMonitor } from '../../utils/perfMonitor';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
@@ -47,7 +47,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
         }
 
         const targetEl = (e.currentTarget as HTMLElement);
-        const keepInlinePanelOpen = isDesktopInlineActionPanel(popoverState, window.innerWidth);
+        const keepInlinePanelOpen = shouldKeepInlineActionPopoverOpen(popoverState, window.innerWidth);
         if (popoverState && !keepInlinePanelOpen && !['menu', 'assign', 'select-assign', 'select-recipient', 'select-container'].includes(button.actionType || '')) {
             setPopoverState(null);
         }
@@ -235,10 +235,11 @@ export const useButtonClicks = (deps: InteractionDeps) => {
             }
 
             setTimeout(() => setCommandPreview(null), 150);
-            if (button.setId === 'inventorylist' || button.setId === 'equipmentlist') {
+            if ((button.setId === 'inventorylist' || button.setId === 'equipmentlist') && remainder
+                && /^(?:get|take|drop|give|put|remove|wear|wield|hold|eat|drink|quaff|recite|pour|fill|empty|light|snuff|cover|uncover|sacrifice|junk|sell|mend)$/.test(firstWord)) {
                 setTimeout(() => {
-                    if (button.setId === 'inventorylist' || button.command.includes('remove')) executeCommand('inv', false, true, true, true, { fromUi: true });
-                    if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold')) executeCommand('eq', false, true, true, true, { fromUi: true });
+                    if (button.setId === 'inventorylist' || button.command.includes('remove')) executeCommand('inv', true, true, true, true, { fromUi: true, shouldFocus: false });
+                    if (button.setId === 'equipmentlist' || button.command.includes('wear') || button.command.includes('hold')) executeCommand('eq', true, true, true, true, { fromUi: true, shouldFocus: false });
 
                     // Refresh parent container if it was extracted from
                     if (parentNoun) {

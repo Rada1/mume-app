@@ -39,7 +39,8 @@ export const resolveButtonClickCommand = ({
     const effectiveContext = context && keywordOverrides[context] ? keywordOverrides[context] : context;
     const popoverAxes = getInlineCategoryAxes(popoverCategory || popoverSetId);
     const isNpcContext = popoverAxes.isCharacter || Boolean(popoverSetId?.startsWith('npc'));
-    const isBashDoorTarget = /^bash\s+%n(?:\||\s|$)/i.test(button.command.trim()) && popoverAxes.categoryId === 'cat-exit';
+    const isBashDoorTarget = /^bash\s+%n(?:\||\s|$)/i.test(button.command.trim())
+        && (popoverAxes.categoryId === 'cat-exit' || /^exit\s+/i.test(effectiveContext || ''));
     const bashDoorContext = (effectiveContext || '').replace(/^exit\s+/i, '').trim();
     let finalContext = isBashDoorTarget ? (bashDoorContext ? `exit ${bashDoorContext}` : 'exit')
         : ['cat-mount-object', 'cat-container-item'].includes(popoverAxes.categoryId || '') ? effectiveContext || '' : popoverAxes.isObject

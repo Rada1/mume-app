@@ -253,15 +253,15 @@ export class FastMapOverlays {
     gl.bindVertexArray(this.searchMesh.vao);
     gl.drawArrays(gl.TRIANGLES, range.first, range.count);
   }
-  drawGroupMembers(
-    view: import('./protocol').FastMapView,
-    player: { x: number; y: number; z: number } | null,
-    width: number,
-    height: number,
+  drawGroupMembers(view: import('./protocol').FastMapView,
+    player: { x: number; y: number; z: number } | null, width: number, height: number, projection: Float32Array,
   ): void {
     const vertices = buildGroupMemberGeometry(this.groupMembers, view, player, width, height);
     if (vertices.length === 0) return;
     const gl = this.gl;
+    // Other overlay passes can skip empty geometry, leaving their previous camera transform behind.
+    gl.useProgram(this.lineProgram.program);
+    gl.uniform4fv(this.lineProgram.uniforms.get('uView') ?? null, projection);
     gl.bindVertexArray(this.groupMesh.vao);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.groupMesh.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);

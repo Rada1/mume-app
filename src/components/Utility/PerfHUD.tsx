@@ -79,6 +79,7 @@ export const PerfHUD: React.FC = () => {
             </div>
 
             <Row label="isolated replies / overlaps skipped" value={`${snap.latency.count} / ${snap.latency.skipped}`}/>
+            <Row label="input → send last/max (incl bursts)" value={`${fmtMs(snap.latency.dispatch.lastMs)} / ${fmtMs(snap.latency.dispatch.maxMs)}`}/>
             <Row label="last press → send" value={fmtMs(snap.latency.last?.pressToSendMs)}/>
             <Row label="last send → first text" value={fmtMs(snap.latency.last?.sendToTextMs)}/>
             <Row label="last text → log commit" value={fmtMs(snap.latency.last?.textToCommitMs)}/>

@@ -5,6 +5,8 @@
 
 import { CategoryOverride, CustomButton, CustomTraitConfig, EntityKind, InlineCategoryConfig } from '../types';
 import { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
+import { matchesKeyword } from './inlineKeywordMatching';
+export { matchesKeyword } from './inlineKeywordMatching';
 
 export { DEFAULT_CATEGORY_CONFIGS, DEFAULT_TRAIT_CONFIGS } from './inlineActionDefaults';
 
@@ -139,6 +141,18 @@ export const getKindForCategory = (id: string | null | undefined): EntityKind | 
     return (canonicalId ? CATEGORY_KIND_MAP[canonicalId] : undefined) ?? null;
 };
 
+// Defaults depend only on the name. Apply live custom overrides/exclusions afterward.
+const defaultNameMatches = new Map<string, TraitConfig[]>();
+const getDefaultTraitsForName = (name: string): TraitConfig[] => {
+    let matches = defaultNameMatches.get(name);
+    if (!matches) {
+        matches = DEFAULT_TRAIT_CONFIGS.filter(trait => trait.keywords.some(keyword => matchesKeyword(name, keyword)));
+        if (defaultNameMatches.size >= 512) defaultNameMatches.delete(defaultNameMatches.keys().next().value!);
+        defaultNameMatches.set(name, matches);
+    }
+    return matches;
+};
+
 export const getTraitsForName = (
     name: string,
     customTraits: InlineActionConfigRecord[] = []
@@ -150,9 +164,7 @@ export const getTraitsForName = (
         .map(config => inlineConfigToTrait(config));
     const overriddenTraitIds = new Set(custom.map(trait => trait.id));
     const matchingCustom = custom.filter(trait => trait.keywords.some(keyword => matchesKeyword(lowerName, keyword)));
-    const matchingDefaults = DEFAULT_TRAIT_CONFIGS.filter(trait => (
-        !overriddenTraitIds.has(trait.id) && trait.keywords.some(keyword => matchesKeyword(lowerName, keyword))
-    ));
+    const matchingDefaults = getDefaultTraitsForName(lowerName).filter(trait => !overriddenTraitIds.has(trait.id));
     const excludedTraitIds = getExcludedTraitIdsForName(lowerName, customTraits);
     return dedupeTraits([...matchingCustom, ...matchingDefaults]).filter(trait => !excludedTraitIds.has(trait.id));
 };
@@ -260,14 +272,6 @@ const dedupeTraits = (traits: TraitConfig[]): TraitConfig[] => {
         seen.add(key);
         return true;
     });
-};
-
-export const matchesKeyword = (lowerName: string, keyword: string): boolean => {
-    const lowKey = keyword.toLowerCase();
-    const regexPattern = lowKey
-        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        .replace(/-/g, '[-\\s]');
-    return new RegExp(`(^|[^a-z])${regexPattern}([^a-z]|$)`, 'i').test(lowerName);
 };
 
 export const toggleTraitKeywords = (keywords: string[], name: string, isActive: boolean): string[] => {

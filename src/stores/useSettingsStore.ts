@@ -72,6 +72,7 @@ interface SettingsState {
     drawerZoom: number;
     isImmersionMode: boolean;
     isReadabilityMode: boolean;
+    hasCustomReadabilityMode: boolean;
     isImmersionWeatherEffectsEnabled: boolean;
     isImmersionTextAnimationsEnabled: boolean;
     isClassicMode: boolean;
@@ -158,6 +159,7 @@ interface SettingsState {
     setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
     setIsReadabilityMode: (val: boolean) => void;
+    setDefaultReadabilityMode: (val: boolean) => void;
     setIsImmersionWeatherEffectsEnabled: (val: boolean) => void;
     setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
@@ -326,6 +328,7 @@ export const useSettingsStore = create<SettingsState>()(
             drawerZoom: 1.0,
             isImmersionMode: false,
             isReadabilityMode: false,
+            hasCustomReadabilityMode: false,
             isImmersionWeatherEffectsEnabled: false,
             isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
@@ -422,7 +425,8 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
-            setIsReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode }),
+            setIsReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode, hasCustomReadabilityMode: true }),
+            setDefaultReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode }),
             setIsImmersionWeatherEffectsEnabled: (isImmersionWeatherEffectsEnabled) => set({ isImmersionWeatherEffectsEnabled }),
             setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),

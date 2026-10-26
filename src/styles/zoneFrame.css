@@ -30,6 +30,8 @@
 /* Performance Mode uses the rim to show the active light instead of the zone. */
 .app-container.performance-mode.immersion-mode::after {
     --zone-frame-color: #667085;
+    /* Keep the hue in the edge glow, while letting the rim fade into it. */
+    --zone-frame-rim: color-mix(in srgb, var(--zone-frame-color) 12%, transparent);
 }
 
 .app-container.performance-mode.immersion-mode.lighting-sun::after {

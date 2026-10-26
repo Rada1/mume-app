@@ -13,7 +13,7 @@ const GIVE_CURRENCIES = [
     {key: 'copper', label: 'Copper', value: 'copper'}
 ] as const;
 
-export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandTreeController>, command: CustomButton) => {
+export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandTreeController>, command: CustomButton, fixedSource?: CommandTargetSuggestion) => {
     const give = /^give\b/i.test(command.command);
     const verb = give ? 'give' : 'put';
     const label = give ? 'Give' : 'Put';
@@ -28,16 +28,16 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
         const items = getGearTargetSuggestions(inventory || [], 'inventory');
         return items.length ? [{key: 'command-tree-all-source', label: 'All', value: 'all', meta: 'inventory'}, ...items] : items;
     }, [inventory]);
-    const selected = sources.find(source => source.key === sourceId) || null;
+    const selected = fixedSource || sources.find(source => source.key === sourceId) || null;
     const currency = GIVE_CURRENCIES.find(option => option.key === currencyKey) || null;
     const amountValid = /^[1-9]\d*$/.test(amount);
     const containers = useMemo(() => getContainerTargetSuggestions(roomItems || [], inventory || [], equipment || [])
         .filter(container => container.meta !== 'exit'), [roomItems, inventory, equipment]);
     const containerSections = useMemo(() => [
-        {label: 'Worn containers', meta: 'worn'},
+        {label: 'Equipment containers', meta: 'worn'},
         {label: 'Inventory containers', meta: 'inventory'},
         {label: 'Room containers', meta: 'room'}
-    ].map(section => ({label: section.label, targets: containers.filter(container => container.meta === section.meta
+    ].map(section => ({...section, targets: containers.filter(container => container.meta === section.meta
         && container.objectId !== selected?.objectId && container.key !== selected?.key)}))
         .filter(section => section.targets.length > 0), [containers, selected]);
     const recipientSections = useMemo(() => getCommandRoomTargetGroups(controller.entries.filter(entry =>

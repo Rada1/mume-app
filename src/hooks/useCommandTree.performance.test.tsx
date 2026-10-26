@@ -69,8 +69,8 @@ it('reuses target eligibility when opening branches and on unrelated renders', a
   await act(async () => root.render(<Harness/>));
   expect(vi.mocked(isButtonValidForEntity).mock.calls.length).toBe(first);
   await act(async () => tree.chooseGroup(3));
-  expect(tree.grouped.map(group=>group.label)).toEqual(['Abilities','Movement','Vision','Objects','Social','Info']);
-  expect(tree.commandSections.map(section=>section.label)).toEqual(expect.arrayContaining(['Equipment','Move items']));
+  expect(tree.grouped.map(group=>group.label)).toEqual(['Abilities','Movement','Observation','Objects','Social','Info']);
+  expect(tree.commandSections.map(section=>section.label)).toEqual(expect.arrayContaining(['Move']));
   const itemCommands=tree.commandSections.flatMap(section=>section.buttons);
   expect(itemCommands.map(button=>button.label)).toEqual(expect.arrayContaining(['Remove','Wear','Drop','Get']));
   for (const [verb,id] of [['remove','boots'],['wear','coat'],['drop','coat'],['get','bag']]) {
@@ -133,7 +133,7 @@ it('reuses target eligibility when opening branches and on unrelated renders', a
  } finally {await act(async () => root.unmount());}
 });
 
-it('does no hidden-group eligibility work during Info and Vision replies, but refreshes targets when Abilities opens', async () => {
+it('does no hidden-group eligibility work during Info and Observation replies, but refreshes targets when Abilities opens', async () => {
  vi.mocked(isButtonValidForEntity).mockClear();
  vi.mocked(getEligibleActionButtonIds).mockClear();
  const hit = createButton({id:'test-hit',label:'Hit',command:'hit %n',setId:'trait-offense'});

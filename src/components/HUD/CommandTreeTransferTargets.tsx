@@ -10,21 +10,42 @@ import { useCommandTreeTransfer } from '../../hooks/useCommandTreeTransfer';
 import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
+import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 // --- Render Section ---
-export const CommandTreeTransferTargets = ({controller, tree, command}: {
-    controller: ReturnType<typeof useCommandTreeController>; tree: ReturnType<typeof useCommandTree>; command: CustomButton;
+export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu = false}: {
+    controller: ReturnType<typeof useCommandTreeController>; tree: ReturnType<typeof useCommandTree>; command: CustomButton; heldMenu?: boolean;
 }) => {
     const transfer = useCommandTreeTransfer(controller, command);
+    const touchActivation = useSecondaryTouchActivation();
+    const branchClass = `command-tree-branch terminal-inline-popover${heldMenu ? ' command-tree-held-command-targets' : ''}`;
+    const [putLocation, setPutLocation] = React.useState<'room' | 'inventory' | 'worn'>('room');
     const isTargetDestination = (value: string) => transfer.label === 'Give' && controller.entries.some(entry => entry.context === value && isCurrentCommandTarget(entry, controller.vitals.target));
+    const putLocationOptions = [
+        {key: 'room' as const, label: 'Room'},
+        {key: 'inventory' as const, label: 'Inventory'},
+        {key: 'worn' as const, label: 'Equipment'}
+    ];
+    const destinationSection = transfer.sections.find(section => 'meta' in section && section.meta === putLocation);
+    const renderDestinations = (section: (typeof transfer.sections)[number]) => <div className="command-tree-section-commands" role="group" aria-label={`${section.label} destinations`} tabIndex={0}>
+        {section.targets.map(destination => <button key={destination.key} type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
+            disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label}
+            onPointerEnter={event => { if (event.pointerType === 'mouse') transfer.previewDestination(destination); }} onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.previewDestination(destination); }}
+            onClick={event => transfer.transfer(destination, event)}>
+            <span className={`command-tree-row-label${transfer.label === 'Put' ? ' is-gear-target' : ''}`}>{transfer.label === 'Put'
+                ? <CommandTreeObjectTargetLabel label={destination.label} location={destination.meta}>{getCommandObjectTargetDisplayLabel(destination.value, destination.label)}</CommandTreeObjectTargetLabel>
+                : destination.label}</span>
+            {isTargetDestination(destination.value) && <Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/>}
+        </button>)}
+    </div>;
     return <>
-        <section className="command-tree-branch terminal-inline-popover" aria-label={`${transfer.label} objects`}>
+        <section className={branchClass} aria-label={`${transfer.label} objects`} {...touchActivation}>
             <CommandTreeTargetHeader/>
             <CommandTreeCollapsibleSection label="Inventory">
                 <div className="command-tree-section-commands" role="group" aria-label="Inventory objects" tabIndex={0}>
                     {transfer.sources.map(source => <button key={source.key} type="button" className="command-tree-row"
                         aria-expanded={transfer.selected?.key === source.key} title={source.label}
-                        onMouseEnter={() => tree.defer(() => transfer.chooseSource(source))} onMouseLeave={tree.cancelPreview}
-                        onFocus={() => transfer.chooseSource(source)} onClick={() => transfer.chooseSource(source)}>
+                        onPointerEnter={event => { if (event.pointerType === 'mouse') tree.defer(() => transfer.chooseSource(source)); }} onMouseLeave={tree.cancelPreview}
+                        onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.chooseSource(source); }} onClick={() => transfer.chooseSource(source)}>
                         <span className={`command-tree-row-label${source.value === 'all' ? '' : ' is-gear-target'}`}>{source.value === 'all'
                             ? source.label : <CommandTreeObjectTargetLabel label={source.label} location={source.meta}>{getCommandObjectTargetDisplayLabel(source.value, source.label)}</CommandTreeObjectTargetLabel>}</span><span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
                     </button>)}
@@ -34,8 +55,8 @@ export const CommandTreeTransferTargets = ({controller, tree, command}: {
                 <div className="command-tree-section-commands" role="group" aria-label="Currency">
                     {transfer.currencies.map(currency => <button key={currency.key} type="button" className="command-tree-row"
                         aria-expanded={transfer.currency?.key === currency.key}
-                        onMouseEnter={() => tree.defer(() => transfer.chooseCurrency(currency.key))}
-                        onFocus={() => transfer.chooseCurrency(currency.key)} onClick={() => transfer.chooseCurrency(currency.key)}>
+                        onPointerEnter={event => { if (event.pointerType === 'mouse') tree.defer(() => transfer.chooseCurrency(currency.key)); }}
+                        onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.chooseCurrency(currency.key); }} onClick={() => transfer.chooseCurrency(currency.key)}>
                         <span className="command-tree-row-label">{currency.label}</span>
                         <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
                     </button>)}
@@ -43,7 +64,7 @@ export const CommandTreeTransferTargets = ({controller, tree, command}: {
             </CommandTreeCollapsibleSection>}
             {!transfer.sources.length && <p className="command-tree-section-empty">No inventory objects available.</p>}
         </section>
-        {transfer.currency && !transfer.amountSelected && <section className="command-tree-branch terminal-inline-popover" aria-label={`Amount of ${transfer.currency.label}`} onMouseEnter={tree.cancelPreview}>
+        {transfer.currency && !transfer.amountSelected && <section className={branchClass} aria-label={`Amount of ${transfer.currency.label}`} onMouseEnter={tree.cancelPreview} {...touchActivation}>
             <CommandTreeCollapsibleSection label="Common amounts">
                 <div className="command-tree-money-presets" role="group" aria-label="Common amounts">
                     {[1, 5, 10, 20, 50, 100].map(amount => <button key={amount} type="button"
@@ -62,22 +83,18 @@ export const CommandTreeTransferTargets = ({controller, tree, command}: {
                     onClick={transfer.confirmAmount}>Use {transfer.amountValid ? transfer.amount : 'amount'}</button>
             </div>
         </section>}
-        {(transfer.selected || (transfer.currency && transfer.amountSelected)) && <section className="command-tree-branch terminal-inline-popover" aria-label={transfer.destinationLabel} onMouseEnter={tree.cancelPreview}>
+        {(transfer.selected || (transfer.currency && transfer.amountSelected)) && <section className={branchClass} aria-label={transfer.destinationLabel} onMouseEnter={tree.cancelPreview} {...touchActivation}>
             <CommandTreeTargetHeader/>
-            {transfer.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
-                <div className="command-tree-section-commands" role="group" aria-label={`${section.label} destinations`} tabIndex={0}>
-                    {section.targets.map(destination => <button key={destination.key} type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
-                        disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label}
-                        onMouseEnter={() => transfer.previewDestination(destination)} onFocus={() => transfer.previewDestination(destination)}
-                        onClick={event => transfer.transfer(destination, event)}>
-                        <span className={`command-tree-row-label${transfer.label === 'Put' ? ' is-gear-target' : ''}`}>{transfer.label === 'Put'
-                            ? <CommandTreeObjectTargetLabel label={destination.label} location={destination.meta}>{getCommandObjectTargetDisplayLabel(destination.value, destination.label)}</CommandTreeObjectTargetLabel>
-                            : destination.label}</span>
-                        {isTargetDestination(destination.value) && <Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/>}
-                    </button>)}
+            {transfer.label === 'Put' && controller.game.viewport?.isMobile ? <>
+                <div className="command-tree-location-selector" role="group" aria-label="Put into location">
+                    {putLocationOptions.map(option => <button key={option.key} type="button" className={putLocation === option.key ? 'is-selected' : ''}
+                        aria-pressed={putLocation === option.key} onClick={() => setPutLocation(option.key)}>{option.label}</button>)}
                 </div>
+                {destinationSection ? renderDestinations(destinationSection) : <p className="command-tree-section-empty">No containers available in this location.</p>}
+            </> : transfer.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
+                {renderDestinations(section)}
             </CommandTreeCollapsibleSection>)}
-            {!transfer.sections.length && <p className="command-tree-section-empty">{transfer.emptyLabel}</p>}
+            {transfer.label !== 'Put' && !transfer.sections.length && <p className="command-tree-section-empty">{transfer.emptyLabel}</p>}
         </section>}
     </>;
 };

@@ -74,7 +74,7 @@
     }
 
     .client-panel-stack-slot--actions {
-        background: var(--command-panel-surface, #211b16);
+        background: rgba(var(--command-panel-surface-rgb, 33, 27, 22), var(--client-panel-opacity));
     }
 
     .client-panel-stack-slot--actions > .popover-menu:has(.terminal-inline-popover) {

@@ -25,6 +25,7 @@ const targetedSkillSyntax = (button: CustomButton): string | null => {
 const classCategory = /^(?:ranger|warrior|thief|mage|cleric)(?:\s*(?:skills?|spells?)\s*(?:list)?)?$/;
 // Directed messaging and following always open the shared target picker in V2.
 export const normalizeCommandTreeButton = (button: CustomButton): CustomButton => {
+ if (/^pour\b/i.test(button.command.trim())) return {...button, label: 'Pour'};
  if (/^(?:tell\s+group|gtell|gsay)(?:\s+%n)?$/i.test(button.command.trim())) {
   return {...button, command:'tell %n', label:'Tell', setId:'trait-communication'};
  }

@@ -2721,7 +2721,7 @@
     },
     {
       "id": "cat-fluid-pour",
-      "label": "Pour Water",
+      "label": "Pour",
       "command": "pour water %n",
       "setId": "inline-fluidcontainer",
       "actionType": "command",

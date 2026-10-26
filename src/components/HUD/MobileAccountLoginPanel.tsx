@@ -12,7 +12,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import './MobileAccountLoginPanel.css';
 
 export const MobileAccountLoginPanel: FC = () => {
-    const { accountState, isPasswordMode, executeCommand, triggerHaptic } = useGame() as GameContextType;
+    const { accountState, isPasswordMode, status, executeCommand, triggerHaptic } = useGame() as GameContextType;
     const input = useInputStore(state => state.input);
     const setInput = useInputStore(state => state.setInput);
     const rememberLogin = useSettingsStore(state => state.rememberLogin);
@@ -27,6 +27,9 @@ export const MobileAccountLoginPanel: FC = () => {
     const loginPrompt = (accountState.currentPrompt ?? '').toLowerCase();
     const isLoginPassword = isPasswordMode || loginPrompt.includes('password') || loginPrompt.includes('verify');
     const isLoginName = loginPrompt.includes('by what name') || loginPrompt.includes('enter new account name');
+    const isLoginReady = status === 'connected' && Boolean(accountState.currentPrompt?.trim());
+    const waitingLabel = status === 'connected' ? 'Waiting for server response…'
+        : status === 'connecting' ? 'Connecting to MUME…' : 'Connect to MUME to begin.';
 
     useEffect(() => {
         if (!rememberLogin) {
@@ -42,6 +45,7 @@ export const MobileAccountLoginPanel: FC = () => {
 
     const submitLogin = (event: FormEvent) => {
         event.preventDefault();
+        if (!isLoginReady) return;
         const value = input.trim();
         if (!value) return;
         if (rememberLogin) {
@@ -63,7 +67,7 @@ export const MobileAccountLoginPanel: FC = () => {
                 <h1>MUME IX</h1>
                 <p className="mobile-account-tagline">Even the smallest hobbit can change the course of the world.</p>
                 <div className="mobile-account-login-prompt">
-                    {accountState.currentPrompt || 'By what name do you wish to be known?'}
+                    {isLoginReady ? accountState.currentPrompt : waitingLabel}
                 </div>
                 <form onSubmit={submitLogin} autoComplete="off">
                     <input
@@ -73,6 +77,7 @@ export const MobileAccountLoginPanel: FC = () => {
                         className="mobile-account-input"
                         type={isLoginPassword ? 'password' : 'text'}
                         value={input}
+                        disabled={!isLoginReady}
                         onChange={event => setInput(event.target.value)}
                         placeholder={isLoginPassword ? 'Enter password' : 'Enter username'}
                         autoComplete="off"
@@ -84,11 +89,16 @@ export const MobileAccountLoginPanel: FC = () => {
                         <input type="checkbox" checked={rememberLogin} onChange={event => setRememberLogin(event.target.checked)} />
                         <span>Remember login</span>
                     </label>
-                    <button className="mobile-account-action is-primary" type="submit" onClick={() => triggerHaptic?.(40)}>Login</button>
+                    <button
+                        className="mobile-account-action is-primary"
+                        type="submit"
+                        disabled={!isLoginReady || !input.trim()}
+                        onClick={() => triggerHaptic?.(40)}
+                    >{isLoginReady ? 'Login' : status === 'connected' ? 'Waiting…' : status === 'connecting' ? 'Connecting…' : 'Offline'}</button>
                     <button
                         className={`mobile-account-action${isLoginName ? '' : ' is-reserved-hidden'}`}
                         type="button"
-                        disabled={!isLoginName}
+                        disabled={!isLoginReady || !isLoginName}
                         aria-hidden={!isLoginName}
                         tabIndex={isLoginName ? 0 : -1}
                         onClick={() => { triggerHaptic?.(25); executeCommand('new'); }}

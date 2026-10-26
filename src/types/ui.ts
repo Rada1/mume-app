@@ -84,6 +84,7 @@ export interface PopoverState {
     displayName?: string; // Exact visible entity/object label from the log
     keyword?: string; // Resolved command keyword shown separately from displayName
     entityId?: string; // Unique registry ID
+    commandPanelCapture?: boolean; // Capture Details without opening an inline entity menu
     hasDoor?: boolean; // Door metadata for a selected room exit
     parentNoun?: string; // For things like "Orc corpse"
     accentColor?: string;

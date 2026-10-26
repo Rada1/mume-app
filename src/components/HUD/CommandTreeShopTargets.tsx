@@ -7,9 +7,11 @@ import { CommandShopStock } from './CommandShopStock';
 import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
+import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 // --- Render Section ---
-export const CommandTreeShopTargets=({controller,command,onCommandExecuted}:{controller:ReturnType<typeof useCommandTreeController>;command:CustomButton;onCommandExecuted?:()=>void})=>{
+export const CommandTreeShopTargets=({controller,command,onCommandExecuted,heldMenu=false}:{controller:ReturnType<typeof useCommandTreeController>;command:CustomButton;onCommandExecuted?:()=>void;heldMenu?:boolean})=>{
  const targets=useCommandTreeShopTargets(controller,command);
+ const touchActivation=useSecondaryTouchActivation();
  const {shop}=controller;
  const commandShop={...shop,
   selectStock:(item:Parameters<typeof shop.selectStock>[0])=>{
@@ -19,9 +21,9 @@ export const CommandTreeShopTargets=({controller,command,onCommandExecuted}:{con
   },
   runShow:(num:Parameters<typeof shop.runShow>[0])=>{shop.runShow(num);onCommandExecuted?.();}
  };
- return <section className="command-tree-branch command-tree-shop-stock-targets" aria-label={`Targets for ${command.label}`}>
+ return <section className={`command-tree-branch command-tree-shop-stock-targets${heldMenu?' command-tree-held-command-targets':''}`} aria-label={`Targets for ${command.label}`} {...touchActivation}>
   <CommandTreeTargetHeader/>
-  {targets.showStock&&<CommandShopStock shop={commandShop} open inline onOpenChange={()=>undefined}/>}
+  {targets.showStock&&<CommandShopStock shop={commandShop} open inline selectOnClick={heldMenu} onOpenChange={()=>undefined}/>}
   {targets.showInventory&&<CommandTreeCollapsibleSection label="Inventory">
    <div className="command-tree-section-commands" role="group" aria-label="Inventory item targets">
     {targets.inventory.map(entry=><button key={entry.id} type="button" data-menu-item="true" className="command-tree-row" disabled={targets.disabled} onClick={()=>{targets.selectInventory(entry);onCommandExecuted?.();}}><span className="command-tree-row-label is-gear-target"><CommandTreeObjectTargetLabel label={entry.label} row={entry.gearRow} category={entry.category}/></span></button>)}

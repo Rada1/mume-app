@@ -22,7 +22,7 @@ export const getLookInTargets = (entries: CommandActionTargetEntry[], entities: 
 export const getObservationTargets = (candidates: CommandActionTargetEntry[], button: CustomButton) => {
     const isConsider = /^consider\b/i.test(button.command.trim());
     const entries = candidates.filter(entry => entry.scope !== 'remote' && entry.scope !== 'global'
-        && (entry.id !== 'command-panel-room' || !isConsider));
+        && entry.id !== 'command-panel-room');
     const lookInTarget: CommandActionTargetEntry = {
         id: LOOK_IN_TARGET_ID, label: 'In', keyword: 'in', context: 'in', category: 'cat-container',
         group: 'objects', scope: 'room'
@@ -36,16 +36,13 @@ export const getObservationTargets = (candidates: CommandActionTargetEntry[], bu
         ...(isConsider ? [] : directions)];
 };
 export const getObservationTargetSections = (entries: CommandActionTargetEntry[]) => [
-    {label: 'Location', entries: entries.filter(entry => entry.id === 'command-panel-room')},
-    {label: 'Room Entities', entries: entries.filter(entry => entry.scope === 'room'
-        && entry.id !== 'command-panel-room' && entry.group !== 'objects' && entry.category !== 'cat-exit')},
-    {label: 'You', entries: entries.filter(entry => entry.id === 'command-panel-self')},
-    {label: 'Containers', entries: entries.filter(entry => entry.id === LOOK_IN_TARGET_ID)},
+    {label: 'Room', entries: entries.filter(entry => (entry.scope === 'room' || entry.id === 'command-panel-self')
+        && entry.id !== 'command-panel-room' && entry.id !== LOOK_IN_TARGET_ID && entry.category !== 'cat-exit'
+        && entry.group !== 'inventory' && entry.group !== 'worn')},
+    {label: 'Inventory', entries: entries.filter(entry => entry.group === 'inventory')},
+    {label: 'Equipment', entries: entries.filter(entry => entry.group === 'worn')},
     {label: 'Directions', entries: entries.filter(entry => entry.category === 'cat-exit')},
-    {label: 'Room objects', entries: entries.filter(entry => entry.scope === 'room'
-        && entry.group === 'objects' && entry.category !== 'cat-exit' && entry.id !== LOOK_IN_TARGET_ID)},
-    {label: 'Equipped Objects', entries: entries.filter(entry => entry.group === 'worn')},
-    {label: 'Inventory Objects', entries: entries.filter(entry => entry.group === 'inventory')}
+    {label: 'Containers', entries: entries.filter(entry => entry.id === LOOK_IN_TARGET_ID)}
 ].filter(section => section.entries.length > 0);
 
 export const getLookInTargetSections = (entries: CommandActionTargetEntry[]) => getAccessTargetSections(entries);

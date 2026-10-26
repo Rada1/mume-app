@@ -58,6 +58,11 @@
     width: 100%;
 }
 
+.mobile-account-login-card .mobile-account-input:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
 .mobile-account-login-card .mobile-account-action.is-reserved-hidden {
     visibility: hidden;
     pointer-events: none;

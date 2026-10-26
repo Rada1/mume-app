@@ -23,13 +23,14 @@ export const InlineGroupAction: React.FC<InlineGroupActionProps> = ({
         {renderButton({
             ...button,
             command: transferSelected ? 'group transfer %n' : button.command
-        }, { prefix: 'group', suffix: targetContext })}
-        <button type="button" className="terminal-inspect-in-toggle" aria-pressed={transferSelected}
-            title={transferSelected ? `Group ${targetContext} with transfer` : `Group ${targetContext}`}
-            aria-label="Use transfer with group"
-            onPointerDown={event => event.stopPropagation()}
-            onClick={event => { event.stopPropagation(); onToggleTransfer(); }}>
-            Transfer
-        </button>
+        }, { prefix: 'group', middle: (
+            <button type="button" className="terminal-inspect-in-toggle" aria-pressed={transferSelected}
+                title={transferSelected ? `Group ${targetContext} with transfer` : `Group ${targetContext}`}
+                aria-label="Use transfer with group"
+                onPointerDown={event => event.stopPropagation()}
+                onClick={event => { event.stopPropagation(); onToggleTransfer(); }}>
+                Transfer
+            </button>
+        ), suffix: targetContext })}
     </div>
 );

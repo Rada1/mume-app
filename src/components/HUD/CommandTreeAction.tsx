@@ -8,6 +8,7 @@ import { isFriendlyTargetCommand } from '../../utils/friendlyTargetCommand';
 import type { CustomButton, GearRow, PopoverState } from '../../types';
 
 import { useCommandTreeController } from '../../hooks/useCommandTreeController';
+import { executeCommandPanelInput } from '../../hooks/executeCommandPanelInput';
 
 import { PopoverActionButton } from '../Popovers/StandardMenu/PopoverActionButton';
 import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
@@ -17,7 +18,7 @@ import { COMMAND_TREE_SELF_COLOR, isCommandTreeSelfTarget } from '../../utils/co
 
 // --- Render Section ---
 
-export const CommandTreeAction = ({ controller, button, targetState, targetLabel, targetGearRow, targetShowSlot = false }: {controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targetState?: PopoverState; targetLabel?: string; targetGearRow?: GearRow; targetShowSlot?: boolean}) => {
+export const CommandTreeAction = ({ controller, button, selected, targetState, targetLabel, targetGearRow, targetShowSlot = false, directObservation = false, onRequestPut }: {controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; selected?: boolean; targetState?: PopoverState; targetLabel?: string; targetGearRow?: GearRow; targetShowSlot?: boolean; directObservation?: boolean; onRequestPut?: (button: CustomButton, event: React.MouseEvent) => boolean}) => {
 
 const { game, ui, vitals, entries, targetSelection, selectEntity, selectContext, activeState, activeScope, communication, shop, practice, dismissOutputs, setInspecting, requestWhois, requestRoomReport, requestWeatherReport, requestPersonalReport, requestExamine, setActivePopoverState, closeDetails, capture, hasCapturedDetails, isHelpMode, toggleHelpMode, executeHelp, handleSelfStateButton, isBerserkConfirmationPending, toggleFavorite, closePanel, menuButtons } = controller;
 const targetColor = targetLabel ? isCommandTreeSelfTarget({
@@ -36,13 +37,22 @@ const displayContent = targetGearRow && targetState?.category
 
                                 : button;
 
-                            const action = <PopoverActionButton treeRow displayLabel={targetLabel} displayContent={displayContent} displayColor={displayColor} key={button.id} button={stateButton} favorites={game.favorites} toggleFavorite={toggleFavorite}
+                            const isBashExitTarget = targetState?.category === 'cat-exit'
+                                && /^bash\s+%n(?:\|exit)?$/i.test(stateButton.command.trim());
+                            const actionButton = isBashExitTarget
+                                ? { ...stateButton, command: stateButton.command.replace(/%n(?:\|exit)?/i, 'exit %n') }
+                                : stateButton;
+                            const actionPopoverState = isBashExitTarget && targetState
+                                ? { ...targetState, context: targetState.context?.replace(/^exit\s+/i, '').trim() }
+                                : targetState;
 
-                                onRequestShop={shop.handleButton} onRequestPractice={practice.handleButton} onRequestCommunication={command => communication.handleCommand(command, false, targetState?.context)} popoverState={targetState || activeState} setPopoverState={setActivePopoverState} setButtons={game.btn.setButtons}
+                            const action = <PopoverActionButton treeRow selected={selected} displayLabel={targetLabel} displayContent={displayContent} displayColor={displayColor} key={button.id} button={actionButton} favorites={game.favorites} toggleFavorite={toggleFavorite}
+
+                                onRequestShop={shop.handleButton} onRequestPractice={practice.handleButton} onRequestCommunication={command => communication.handleCommand(command, false, targetState?.context)} popoverState={actionPopoverState || activeState} setPopoverState={setActivePopoverState} setButtons={game.btn.setButtons}
 
                                 onRequestSelfState={handleSelfStateButton}
 
-                                handleButtonClick={game.handleButtonClick} executeCommand={game.executeCommand} addMessage={game.addMessage}
+                                handleButtonClick={game.handleButtonClick} executeCommand={(...args) => executeCommandPanelInput(game, ...args)} addMessage={game.addMessage}
 
                                 handleTabClick={drawer => ui.handleTabClick(drawer)} setGearTab={ui.setGearTab} selectedObjectIds={game.selectedObjectIds}
 
@@ -67,9 +77,9 @@ const displayContent = targetGearRow && targetState?.category
 
                                 onRequestExamine={command => { dismissOutputs(); if (isHelpMode) { executeHelp('examine'); } else { requestExamine(command); } }}
 
-                                onRequestLook={() => { dismissOutputs(); if (isHelpMode) { executeHelp('look'); } else { setInspecting('look'); } }}
+                                onRequestLook={() => { dismissOutputs(); if (isHelpMode) { executeHelp('look'); } else { setInspecting('look'); } }} onRequestPut={onRequestPut}
 
-                                isHelpMode={isHelpMode} onRequestHelp={executeHelp} compact terminal glowDelay="0s" />;
+                                isHelpMode={isHelpMode} onRequestHelp={executeHelp} directObservation={directObservation} compact terminal glowDelay="0s" />;
 
                             const markedAction = targetLabel && !isFriendlyTargetCommand(button) && isCurrentCommandTarget(targetState || {}, controller.vitals.target)
                                 ? <div className="command-tree-current-target">{action}<Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/></div> : action;

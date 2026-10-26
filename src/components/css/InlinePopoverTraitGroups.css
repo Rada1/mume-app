@@ -40,3 +40,26 @@
 .terminal-inline-popover .inline-action-group-label::after {
     flex: 1 1 auto;
 }
+
+/* --- Mobile command columns --- */
+.terminal-inline-popover .inline-action-mobile-groups .inline-action-list {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 2px 4px;
+}
+
+.terminal-inline-popover .inline-action-mobile-groups .inline-action-subgroup {
+    display: contents !important;
+    margin: 0 !important;
+}
+
+.terminal-inline-popover .inline-action-mobile-groups .inline-action-subgroup-label {
+    grid-column: 1 / -1;
+}
+
+@media (min-width: 500px) and (max-width: 1024px) {
+    .terminal-inline-popover .inline-action-mobile-groups .inline-action-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

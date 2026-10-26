@@ -519,11 +519,9 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         },
         onGet: () => {
             deps.playEffect?.('get');
-            refreshEncumbrance();
         },
         onDrop: () => {
             deps.playEffect?.('drop');
-            refreshEncumbrance();
             setTimeout(() => deps.executeCommandRef.current?.('inventory', true, true, false, true), 0);
         },
         onSaddle: refreshEncumbrance,

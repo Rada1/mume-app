@@ -102,7 +102,9 @@
         display: none;
     }
 
-    .app-container.is-mobile.kb-open .mobile-command-column {
+    .app-container.is-mobile.kb-open:not(.state-account) .mobile-command-column,
+    .app-container.is-mobile.kb-open:not(.state-account) .mobile-command-column:has(.command-dock-shell-mobile) {
+        /* Override both the saved split size and the dock's 35dvh fallback. */
         flex: 0 0 auto;
         width: 100%;
     }

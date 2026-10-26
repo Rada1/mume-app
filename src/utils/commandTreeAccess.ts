@@ -9,13 +9,14 @@ import { createButton } from './buttonFactory';
 export const COMMAND_TREE_ACCESS_BUTTONS = ['open', 'close', 'lock', 'unlock', 'pick', 'knock'].map(verb => createButton({
     id: `v2-access-${verb}`, label: verb[0].toUpperCase() + verb.slice(1), command: `${verb} %n`, setId: 'trait-door-actions'
 }));
+export const COMMAND_TREE_EMPTY_BUTTON = createButton({id: 'v2-container-empty', label: 'Empty', command: 'empty %n', setId: 'trait-container'});
 export const COMMAND_TREE_CALL_BUTTON = createButton({
     id: 'v2-call-door', label: 'Call', command: 'call', setId: 'trait-door-actions'
 });
 export const isCommandTreeCallAction = (button: CustomButton | null) => button?.id === COMMAND_TREE_CALL_BUTTON.id;
 export const COMMAND_TREE_CONTAINER_BUTTONS = [...COMMAND_TREE_ACCESS_BUTTONS.filter(button => !/^knock\b/.test(button.command)).map(button => ({...button,
     id: button.id.replace('v2-access-', 'v2-container-'), setId: 'trait-container'
-})), createButton({id: 'v2-container-empty', label: 'Empty', command: 'empty %n', setId: 'trait-container'})];
+})), COMMAND_TREE_EMPTY_BUTTON];
 export const isCommandTreeAccess = (button: CustomButton | null) => Boolean(button && /^v2-(?:access|container)-/.test(button.id));
 export const isCommandTreeContainer = (button: CustomButton) => button.id.startsWith('v2-container-');
 export const isLegacyAccessCommand = (button: CustomButton) => /^(?:open|close|lock|unlock|pick|knock|empty)(?:\s+(?:exit(?:\s+%n)?|%n(?:\|exit)?|\$1))?$/i.test(button.command.trim());
@@ -28,11 +29,19 @@ export const getAccessTargets = (entries: CommandActionTargetEntry[], button: Cu
         if (!isContainerAction) return false;
         if (/^knock\b/.test(button.command)) return false;
         if (!['objects', 'worn', 'inventory'].includes(entry.group)) return false;
-        return Boolean(entry.gearRow?.isContainer || entities[entry.id]?.capabilities.some(capability =>
-                [EntityCapability.Container, EntityCapability.FluidContainer, EntityCapability.DrinkContainer].includes(capability))
-            || isFluidContainer(entry.gearRow?.name || entry.label)
-            || getResolvedTraitSections(entry.category, entry.gearRow?.name || entry.label, categories)
-                .some(section => ['trait-container', 'trait-fluid-container'].includes(section.trait.id)));
+        const objectName = [entry.gearRow?.name, entry.gearRow?.line.text, entry.label, entry.keyword, entry.context].filter(Boolean).join(' ');
+        const traits = getResolvedTraitSections(entry.category, objectName, categories);
+        const capabilities = entities[entry.id]?.capabilities || [];
+        const fluidContainer = capabilities.some(capability =>
+            [EntityCapability.FluidContainer, EntityCapability.DrinkContainer].includes(capability))
+            || isFluidContainer(objectName)
+            || traits.some(section => section.trait.id === 'trait-fluid-container');
+        const hasContainerTrait = Boolean(entry.gearRow?.isContainer
+            || capabilities.some(capability => [EntityCapability.Container, EntityCapability.FluidContainer, EntityCapability.DrinkContainer].includes(capability))
+            || traits.some(section => section.trait.id === 'trait-container' || section.trait.id === 'trait-fluid-container'));
+        const accessVerb = button.command.trim().split(/\s+/)[0].toLowerCase();
+        const cannotAccessFluidContainer = ['open', 'close', 'lock', 'unlock', 'pick'].includes(accessVerb);
+        return hasContainerTrait && !(cannotAccessFluidContainer && fluidContainer);
     });
 export const getAccessTargetSections = (entries: CommandActionTargetEntry[]) => [
     {label: 'Doors', entries: entries.filter(entry => entry.category === 'cat-exit')},

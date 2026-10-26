@@ -17,7 +17,8 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 import { applyTacticalCommandPrefix, useTacticalCommandPrefixStore } from '../stores/useTacticalCommandPrefixStore';
 import type { CustomButton } from '../types';
 // --- Logic Section ---
-export const useCommandTreeController = (initialScope: UnifiedCommandActionScope = "room", onClose?: () => void, includeActionGroups = true) => {
+export const useCommandTreeController = (initialScope: UnifiedCommandActionScope = "room", onClose?: () => void, includeActionGroups = true, options: {retainPreview?: boolean; followPanelRequests?: boolean} = {}) => {
+    const followPanelRequests = options.followPanelRequests !== false;
     const finishController = uiPerformance.startWork('Controller');
     const game = useGame();
     const roomLabel = stripAnsiCodes(game.roomName) || 'Room';
@@ -64,7 +65,8 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
         roomLabel,
         roomContextColor,
         contextColor,
-        setPanelOpen
+        setPanelOpen,
+        retainPreview: options.retainPreview
     });
     finishContext();
     const finishChat = uiPerformance.startWork('Chat model');
@@ -81,22 +83,22 @@ export const useCommandTreeController = (initialScope: UnifiedCommandActionScope
     });
     finishShop();
     React.useEffect(() => {
-        if (!shopOpenRequest) return;
+        if (!followPanelRequests || !shopOpenRequest) return;
         setCommandColumnOpen(true);
         selectContext('room');
         if (!shop.browsing) shop.browse();
         else shop.refreshBalance();
-    }, [selectContext, shop.browse, shop.browsing, shop.refreshBalance, shopOpenRequest]);
+    }, [followPanelRequests, selectContext, shop.browse, shop.browsing, shop.refreshBalance, shopOpenRequest]);
     const finishPractice = uiPerformance.startWork('Practice model');
     const practice = useCommandPractice(activeState, !shop.outputVisible,
         () => { setCommandColumnOpen(true); shop.setOutputOpen(false); });
     finishPractice();
     React.useEffect(() => {
-        if (!practiceOpenRequest) return;
+        if (!followPanelRequests || !practiceOpenRequest) return;
         setCommandColumnOpen(true);
         selectContext('room');
         practice.setOpen(true);
-    }, [practice.setOpen, practiceOpenRequest, selectContext]);
+    }, [followPanelRequests, practice.setOpen, practiceOpenRequest, selectContext]);
     const dismissOutputs = () => { shop.setOutputOpen(false); practice.setOutputOpen(false); };
     const { setActivePopoverState, setInspecting, requestRoomReport, requestWeatherReport, requestWhois, requestExamine, requestHelp, requestPersonalReport, requestCommandReport, closeDetails, capture, hasCapturedDetails } = useCommandInspection({ activeState, scope: activeScope, isVisible: !shop.outputVisible && !practice.outputVisible });
     const { isHelpMode, toggleHelpMode, executeHelp } = useCommandHelpMode({ dismissOutputs, requestHelp });

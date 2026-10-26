@@ -20,6 +20,7 @@ export interface DeletedMapMarker {
 export interface MapContextMenuPosition {
     x: number;
     y: number;
+    anchor?: { x: number; y: number; gap: number };
     wx: number;
     wy: number;
     roomId: string | null;

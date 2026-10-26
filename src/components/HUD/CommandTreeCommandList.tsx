@@ -6,33 +6,63 @@ import { useCommandTree } from '../../hooks/useCommandTree';
 import { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import { getCommandTextColor } from '../../utils/swipeCommandColors';
 import { isCommandTreeMoveAction } from '../../utils/commandTreeMovement';
+import { isCommandTreeObservationCommand } from '../../utils/commandTreeGroups';
 import { CommandTreeAction } from './CommandTreeAction';
-import { executeDefaultCommandTarget, getDefaultCommandTarget } from '../../hooks/commandDefaultTarget';
+import { executeDefaultCommandTarget, executeUntargetedTransferCommand, getDefaultCommandTarget } from '../../hooks/commandDefaultTarget';
+import { isCommandTreeTransfer } from '../../utils/commandTreeTransfer';
+import { usePressAndHold } from '../../hooks/usePressAndHold';
+import { isMobileCommandHoldGroup } from '../../utils/commandTreeMobileGestures';
 
 // --- Render Section ---
-export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExecuted, explicitTargetSelection}: {
+export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExecuted, explicitTargetSelection, onTouchHoldStart, onTouchHoldEnd}: {
     buttons: CustomButton[];
     tree: ReturnType<typeof useCommandTree>;
     controller: ReturnType<typeof useCommandTreeController>;
     onCommandExecuted?: () => void;
     explicitTargetSelection?: boolean;
+    onTouchHoldStart?: (button: CustomButton) => void;
+    onTouchHoldEnd?: (button: CustomButton) => void;
 }) => {
     const isMobile = controller.game?.viewport?.isMobile === true;
+    const touchHold = usePressAndHold(onTouchHoldStart ?? (() => undefined), onTouchHoldEnd ?? (() => undefined), Boolean(onTouchHoldStart && onTouchHoldEnd));
     return <>
         {buttons.map(button => {
             const targets = tree.targetsFor?.(button) ?? [];
-            const selectTargetOnTap = isMobile && explicitTargetSelection;
-            const usesTargetRow = Boolean(/%n/.test(button.command) || isCommandTreeMoveAction(button));
+            const isObservationCommand = isCommandTreeObservationCommand(button);
+            const hasHoldTargetMenu = Boolean(onTouchHoldStart && isMobileCommandHoldGroup(tree.group));
+            const selectTargetOnTap = isMobile && explicitTargetSelection && !hasHoldTargetMenu;
+            const usesTargetRow = Boolean(/%n/.test(button.command) || isCommandTreeMoveAction(button)
+                || (hasHoldTargetMenu && isObservationCommand));
 
             return usesTargetRow
-                ? <button className={`command-tree-row${controller.isHelpMode ? ' is-help-mode' : ''}`} title={button.command}
+                ? <button className={`command-tree-row${controller.isHelpMode ? ' is-help-mode' : ''}${hasHoldTargetMenu ? ' is-touch-hold-enabled' : ''}`} title={button.command}
                     key={button.id} data-menu-item="true" data-command-tree-selection="true"
                     data-help-mode={controller.isHelpMode || undefined}
                     aria-expanded={!controller.isHelpMode && tree.command?.id === button.id}
+                    onPointerDown={event => {if (hasHoldTargetMenu) touchHold.onPointerDown(button,event);}}
+                    onPointerMove={touchHold.onPointerMove}
+                    onPointerUp={touchHold.onPointerUp}
+                    onPointerCancel={touchHold.onPointerCancel}
                     onPointerEnter={event => {if (event.pointerType === 'mouse') tree.defer(() => tree.chooseCommand(button));}}
-                    onFocus={() => {if (!isMobile) tree.chooseCommand(button);}} onClick={event => {
+                    onFocus={event => {if (!isMobile && event.target.matches(':focus-visible')) tree.chooseCommand(button);}} onClick={event => {
+                        if (touchHold.shouldSuppressClick(button)) { event.preventDefault(); event.stopPropagation(); return; }
                         tree.cancelPreview();
                         if (controller.isHelpMode) controller.executeHelp(button.command, button.label);
+                        else if (hasHoldTargetMenu) {
+                            if (isCommandTreeTransfer(button)) executeUntargetedTransferCommand(controller, button, event);
+                            else if (isObservationCommand) {
+                                const command = button.command.replace(/%n(?:\|[^\s]+)?/g, '').replace(/\s+/g, ' ').trim();
+                                controller.game.handleButtonClick({...button, command}, event);
+                            } else if (/^(?:assist|ass)(?:\s|$)/i.test(button.command.trim())) {
+                                const command = button.command.replace(/%n(?:\|[^\s]+)?/g, '').replace(/\s+/g, ' ').trim();
+                                controller.game.handleButtonClick({...button, command}, event);
+                            } else if (!executeDefaultCommandTarget(controller, button, targets, event)) {
+                                if (button.setId === 'trait-communication') {
+                                    controller.communication.handleCommand(button.command.replace(/%n(?:\|[^\s]+)?/g, '').replace(/\s+/g, ' ').trim());
+                                } else controller.game.handleButtonClick(button, event);
+                            }
+                            onCommandExecuted?.();
+                        }
                         else if (selectTargetOnTap) tree.chooseCommand(button);
                         else if (executeDefaultCommandTarget(controller, button, targets, event)) onCommandExecuted?.();
                         else tree.chooseCommand(button);
@@ -45,7 +75,7 @@ export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExec
                     <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
                 </button>
                 : <div key={button.id} onPointerEnter={event => {if (event.pointerType === 'mouse') tree.chooseCommand(button);}}
-                    onFocus={() => {if (!isMobile) tree.chooseCommand(button);}}>
+                    onFocus={event => {if (!isMobile && event.target instanceof Element && event.target.matches(':focus-visible')) tree.chooseCommand(button);}}>
                     <CommandTreeAction controller={controller} button={button}/>
                 </div>;
         })}

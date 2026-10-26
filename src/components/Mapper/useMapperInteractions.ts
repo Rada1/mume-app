@@ -1103,6 +1103,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                                 depsRef.current.setContextMenu({
                                     ...position,
+                                    anchor: isMobile ? {x: e.clientX, y: e.clientY, gap: GRID_SIZE * cameraRef.current.zoom + 8} : undefined,
                                     wx: Math.round(world.x / GRID_SIZE),
                                     wy: Math.round(world.y / GRID_SIZE),
                                     roomId: clickedRoomId
@@ -1125,6 +1126,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
                             depsRef.current.setContextMenu({
                                 ...position,
+                                anchor: {x: e.clientX, y: e.clientY, gap: GRID_SIZE * cameraRef.current.zoom + 8},
                                 wx: Math.round(world.x / GRID_SIZE),
                                 wy: Math.round(world.y / GRID_SIZE),
                                 roomId: clickedRoomId
@@ -1365,6 +1367,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
             depsRef.current.setContextMenu({
                 ...position,
+                anchor: isMobile ? {x: e.clientX, y: e.clientY, gap: GRID_SIZE * cameraRef.current.zoom + 8} : undefined,
                 wx: Math.round(world.x / GRID_SIZE),
                 wy: Math.round(world.y / GRID_SIZE),
                 roomId: clickedRoomId,

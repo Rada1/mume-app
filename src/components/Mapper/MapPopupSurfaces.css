@@ -11,8 +11,10 @@
     font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace !important;
 }
 
-.app-container.immersion-mode .map-popup-surface { background: #000 !important; }
-.app-container.performance-mode .map-popup-surface { background: #171717 !important; }
+.app-container.immersion-mode .map-popup-surface,
+body:has(.app-container.immersion-mode) > .mapper-context-menu { background: #000 !important; }
+.app-container.performance-mode .map-popup-surface,
+body:has(.app-container.performance-mode) > .mapper-context-menu { background: #171717 !important; }
 
 .map-popup-surface * { font-family: inherit !important; }
 .map-popup-surface :is(button, input, select, textarea) {

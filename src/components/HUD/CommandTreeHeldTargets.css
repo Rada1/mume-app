@@ -1,0 +1,5 @@
+/** @file CommandTreeHeldTargets.css — Directional access targets inside a scrollable held pane. */
+/* --- Held Door Directions --- */
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-held-command-targets .movement-pad-menu {
+    min-height:210px;
+}

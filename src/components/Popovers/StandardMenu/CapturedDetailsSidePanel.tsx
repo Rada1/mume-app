@@ -23,7 +23,8 @@ export const CapturedDetailsSidePanel: React.FC<CapturedDetailsSidePanelProps> =
     const detailsEnabled = useClientPanelStackStore(state => state.detailsEnabled);
     const setDetailsEnabled = useClientPanelStackStore(state => state.setDetailsEnabled);
     const [stackTarget, setStackTarget] = useState<HTMLElement | null>(null);
-    const stacked = !viewport?.isMobile;
+    const mobileDetailsLayout = Boolean(viewport?.isMobile && !viewport?.isLandscape);
+    const stacked = !viewport?.isMobile || mobileDetailsLayout;
 
     useEffect(() => {
         if (typeof document === 'undefined') return;
@@ -34,20 +35,22 @@ export const CapturedDetailsSidePanel: React.FC<CapturedDetailsSidePanelProps> =
     }, []);
 
     useEffect(() => {
-        if (!detailsEnabled) setDetailsEnabled(true);
-    }, [stacked]);
-
-    useEffect(() => {
-        if (!detailsEnabled || viewport?.isMobile || typeof document === 'undefined') {
+        if (!detailsEnabled || !stacked || typeof document === 'undefined') {
             setStackTarget(null);
             setDetailsOpen(false);
             return;
         }
-        const target = document.getElementById('client-panel-details-slot');
+        const targetId = mobileDetailsLayout ? 'client-panel-mobile-details-slot' : 'client-panel-details-slot';
+        const target = document.getElementById(targetId);
+        if (!target) {
+            setStackTarget(null);
+            setDetailsOpen(false);
+            return;
+        }
         setStackTarget(target);
         setDetailsOpen(true);
         return () => setDetailsOpen(false);
-    }, [detailsEnabled, setDetailsOpen, viewport?.isMobile]);
+    }, [detailsEnabled, mobileDetailsLayout, setDetailsOpen, stacked]);
 
     if (!detailsEnabled || typeof document === 'undefined' || (stacked && !stackTarget)) return null;
     const portalTarget = stacked && stackTarget ? stackTarget : document.body;

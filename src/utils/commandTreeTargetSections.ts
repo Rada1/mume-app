@@ -25,6 +25,7 @@ export const getCommandActionTargetDisplayLabel = (entry: CommandActionTargetEnt
 
 export const getCommandTargetSections = (entries: CommandActionTargetEntry[]) => {
     const sections: { label: string; entries: CommandActionTargetEntry[] }[] = [
+        { label: 'Current Target', entries: entries.filter(entry => entry.scope === 'global') },
         { label: 'Room Entities', entries: entries.filter(entry => entry.scope === 'room' && ['players', 'npcs'].includes(entry.group) && entry.category !== 'cat-exit') },
         { label: 'Room Objects', entries: entries.filter(entry => entry.scope === 'room' && entry.group === 'objects') },
         { label: 'Doors', entries: entries.filter(entry => entry.scope === 'room' && entry.category === 'cat-exit' && entry.hasDoor === true) },

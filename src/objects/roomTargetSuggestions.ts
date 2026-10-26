@@ -121,6 +121,16 @@ export const getRoomTargetSuggestions = (
     });
 };
 
+export const getRoomNpcAndEnemyTargetSuggestions = (
+    characters: Array<string | GmcpOccupant>,
+    selfName = ''
+): CommandTargetSuggestion[] => getRoomTargetSuggestions(characters, [], 'characters', selfName)
+    .filter(suggestion => {
+        const meta = suggestion.meta.toLowerCase();
+        const category = suggestion.category?.toLowerCase();
+        return meta === 'npc' || meta === 'enemy' || category === 'cat-npc' || category === 'cat-enemy';
+    });
+
 export const getRoomInspectionTargetSuggestions = (
     characters: Array<string | GmcpOccupant>,
     roomObjects: Array<string | GmcpOccupant>,

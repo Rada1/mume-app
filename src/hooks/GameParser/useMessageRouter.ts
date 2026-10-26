@@ -47,7 +47,8 @@ export const shouldDetectRoomItemsFromLine = (
     const line = textOnly.trim();
     const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
     if (isObjectActionResult) return false;
-    const isRoomItemLine = isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
+    const hasRoomObjectToken = getRoomObjectEntityNames(options.tokens || []).length > 0;
+    const isRoomItemLine = hasRoomObjectToken || isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
     if (isEquipmentObjectContext(textOnly, cleanLine, options.expectedCaptureType) && !isRoomItemLine) return false;
     const foodAppearance = line.match(/^(?:a|an|some)\s+(.+?)\s+(?:suddenly\s+)?appears[.!]?$/i);
     if (foodAppearance && getTraitsForName(foodAppearance[1]).some(trait => trait.id === 'trait-food')) return true;
@@ -193,10 +194,10 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         const plainRoomObjectName = matchesCharacterEntity ? null : plainObjectCandidate;
         const appearanceMatch = textOnly.trim().match(/^(?:a|an|some)\s+(.+?)\s+(?:suddenly\s+)?appears[.!]?$/i);
         const isFoodAppearance = Boolean(appearanceMatch && getTraitsForName(appearanceMatch[1]).some(trait => trait.id === 'trait-food'));
-        const isRoomItemLine = isSurfaceContinuation || directSurfaceList !== null
+        const tokenObjects = getRoomObjectEntityNames(options.tokens || []);
+        const isRoomItemLine = isSurfaceContinuation || directSurfaceList !== null || tokenObjects.length > 0
             || isRoomItemPresenceLine(textOnly, cleanLine, options.isRoomContext);
         const taggedObjects = isRoomItemLine ? getTaggedRoomObjectNames(cleanLine) : [];
-        const tokenObjects = isRoomItemLine ? getRoomObjectEntityNames(options.tokens || []) : [];
         // A `look` response is commonly handled as a capture session. Corpses
         // are nevertheless loot sources, so retain them in roomItems even while
         // that response is being captured; otherwise `get <item> ` has no way

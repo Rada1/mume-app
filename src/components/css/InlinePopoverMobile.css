@@ -13,7 +13,7 @@
         min-height: 44px;
         padding: 8px 0;
         align-items: center;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
 
     .terminal-inline-popover .inline-action-list .terminal-action-row {
@@ -31,29 +31,72 @@
     }
 
     .popover-menu:has(.inline-action-compact) .inline-action-compact .inline-container-get-toggle {
-        min-height: 44px;
-        font-size: 0.78rem;
+        min-height: 0;
+        height: 1.75em;
+        font-size: inherit;
     }
+}
+
+/* --- Readability Command Menu Lane --- */
+.popover-menu.readability-inline-actions {
+    position: fixed !important;
+    inset: var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) 0 var(--mobile-readability-menu-bottom, 34px) 0 !important;
+    box-sizing: border-box;
+    width: 100vw !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    pointer-events: auto !important;
+    background: var(--command-tree-surface, var(--command-panel-surface, #211b16)) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    animation: none !important;
+    transform: none !important;
+}
+
+.popover-menu.readability-inline-actions.closing {
+    display: none !important;
+}
+
+.popover-menu.readability-inline-actions .popover-side-panel-close {
+    display: grid;
+    flex: 0 0 32px;
+    place-items: center;
+    align-self: flex-end;
+    width: 32px;
+    height: 32px;
+    margin: 0 0 2px;
+    padding: 0;
+    border: 1px solid rgba(201, 168, 76, 0.28);
+    border-radius: 4px;
+    background: var(--command-tree-surface-raised, #29231c);
+    color: #b7a88b;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
 }
 
 /* Inline popovers render in a body-level portal, so use the viewport breakpoint
    instead of an .app-container ancestor to keep the mobile layout rules active. */
 @media (max-width: 720px) {
     .terminal-inline-popover .inline-action-list .inline-action-subgroup {
-        display: grid !important;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 4px;
-        align-items: stretch;
+        display: block !important;
     }
 
     .terminal-inline-popover .inline-action-subgroup-label {
-        grid-column: 1 / -1;
+        display: block;
     }
 
     .terminal-inline-popover .inline-action-inspection-subgroup.has-look-modifier {
-        display: flex !important;
-        flex-direction: column;
-        gap: 4px;
+        display: block !important;
     }
 
     .terminal-inline-popover .inline-action-subgroup .inline-container-get-action {
@@ -62,32 +105,34 @@
     }
 
     .terminal-inline-popover .inline-container-get-row {
-        display: flex;
+        position: relative;
+        display: block !important;
+        width: 100%;
         align-items: center;
-        gap: 4px;
     }
 
     .terminal-inline-popover .inline-container-get-row > .terminal-action-row,
     .terminal-inline-popover .inline-container-get-row > .popover-action-chip {
-        display: flex !important;
-        justify-content: flex-start;
-        flex: 0 0 auto;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+        flex: 1 1 auto;
         box-sizing: border-box;
-        width: auto !important;
+        width: 100% !important;
         min-width: 0;
-        padding: 8px !important;
-        text-align: left;
+        padding: 8px 4px !important;
+        text-align: initial;
     }
 
-    .terminal-inline-popover .inline-container-get-row > .terminal-action-row > span:first-child {
+    .terminal-inline-popover .inline-container-get-row .inline-command-prefix {
+        grid-column: 1;
         text-align: left !important;
     }
 
     .terminal-inline-popover .inline-container-get-toggle {
-        position: static;
+        position: relative;
         transform: none;
         min-width: 72px;
-        padding-inline: 6px;
+        padding-inline: 1em;
         font-size: 0.68rem;
     }
 
@@ -104,17 +149,17 @@
 
     .terminal-inline-popover .inline-look-action-control .terminal-inspect-row {
         display: grid !important;
-        grid-template-columns: 44px minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
         min-height: 48px !important;
         width: 100%;
         justify-content: initial;
-        padding: 8px !important;
+        padding: 8px 4px !important;
         text-align: left;
     }
 
     .terminal-inline-popover .terminal-inspect-in-toggle {
         min-height: 48px;
-        min-width: 54px;
+        min-width: 66px;
         font-size: 0.78rem;
     }
 
@@ -138,21 +183,33 @@
     }
 
     .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command {
-        justify-content: flex-start !important;
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+        justify-content: initial !important;
         text-align: left !important;
     }
 
     .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command .inline-command-full {
         display: block;
+        grid-column: 1 / -1;
         width: 100%;
         white-space: normal;
         text-align: left;
     }
 
-    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command.has-inline-command-parts > .terminal-action-command {
-        display: inline !important;
-        margin-left: auto;
-        text-align: right;
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.has-inline-command-parts .inline-command-prefix {
+        grid-column: 1;
+        min-width: 0;
+        text-align: left !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.has-inline-command-parts .terminal-action-command {
+        display: block !important;
+        grid-column: 3;
+        min-width: 0;
+        margin: 0;
+        padding-left: 0 !important;
+        text-align: right !important;
     }
 
     .terminal-inline-popover .inline-action-subgroup .terminal-action-row > span:first-child {
@@ -162,19 +219,12 @@
 
     .terminal-inline-popover .inline-action-subgroup .inline-look-action-control .terminal-inspect-row {
         display: grid !important;
-        grid-template-columns: 44px minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
         flex: 1;
         width: 100%;
         justify-content: initial;
         padding: 8px !important;
         text-align: left;
-    }
-
-    .terminal-inline-popover .inline-look-action-control .terminal-inspect-row span:last-child {
-        padding-left: 58px;
-        box-sizing: border-box;
-        min-width: 0;
-        text-align: right;
     }
 
     .terminal-inline-popover .inline-look-action-control .terminal-inspect-in-toggle {
@@ -193,36 +243,169 @@
     .terminal-inline-popover .inline-action-subgroup .inline-group-action-control .terminal-action-row.has-inline-command-parts,
     .terminal-inline-popover .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts {
         display: grid !important;
-        grid-template-columns: 56px minmax(0, 1fr);
-        gap: 0 !important;
+        grid-template-columns: minmax(0, 1fr) 66px minmax(0, 1fr);
+        gap: 4px !important;
         flex: 1 1 auto;
         width: 100% !important;
         justify-content: initial !important;
-        padding: 8px !important;
+        padding: 8px 4px !important;
         text-align: left !important;
     }
 
     .terminal-inline-popover .inline-group-action-control .inline-command-prefix,
     .terminal-inline-popover .inline-container-get-row .inline-command-prefix {
         grid-column: 1;
+        min-width: 0;
         text-align: left !important;
     }
 
     .terminal-inline-popover .inline-action-subgroup .inline-group-action-control .terminal-action-row.has-inline-command-parts .terminal-action-command,
     .terminal-inline-popover .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts .terminal-action-command {
         display: block !important;
-        grid-column: 2;
-        padding-left: 72px !important;
+        grid-column: 3;
+        padding-left: 0 !important;
         box-sizing: border-box;
-        text-align: right;
+        min-width: 0;
+        text-align: right !important;
     }
 
-    .terminal-inline-popover .inline-group-action-control .terminal-inspect-in-toggle,
-    .terminal-inline-popover .inline-container-get-row .inline-container-get-toggle {
+    .terminal-inline-popover .inline-group-action-control .terminal-inspect-in-toggle {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         min-width: 66px;
+    }
+}
+
+/* Center each command and target as a single phrase on touch layouts too. */
+@media (max-width: 720px) {
+    .terminal-inline-popover .inline-action-inspection-subgroup > button.terminal-inspect-row,
+    .terminal-inline-popover .inline-action-list .terminal-action-row.has-inline-command-parts {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        white-space: nowrap !important;
+    }
+
+    .terminal-inline-popover .inline-action-inspection-subgroup > button.terminal-inspect-row > span,
+    .terminal-inline-popover .inline-action-list .terminal-action-row.has-inline-command-parts :is(.inline-command-prefix, .terminal-action-command) {
+        flex: 0 1 auto;
+        min-width: 0;
+        white-space: nowrap !important;
+    }
+
+    .terminal-inline-popover .inline-action-inspection-subgroup > button.terminal-inspect-row > span:last-child,
+    .terminal-inline-popover .inline-action-list .terminal-action-row.has-inline-command-parts .terminal-action-command {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup :is(.terminal-action-row, .terminal-inspect-row),
+    .terminal-inline-popover .inline-look-action-control .terminal-inspect-row,
+    .terminal-inline-popover .inline-group-action-control .terminal-action-row.has-inline-command-parts,
+    .terminal-inline-popover .inline-container-get-row > .terminal-action-row.has-inline-command-parts,
+    .terminal-inline-popover .inline-container-get-row > .popover-action-chip {
+        display: flex !important;
+        align-items: center;
+        justify-content: center !important;
+        gap: 0.65em;
+        text-align: center !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command {
+        grid-template-columns: none;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.has-inline-command-parts,
+    .terminal-inline-popover .inline-action-subgroup .inline-look-action-control .terminal-inspect-row,
+    .terminal-inline-popover .inline-action-subgroup .inline-container-get-row > .terminal-action-row.has-inline-command-parts {
+        grid-template-columns: none;
+        text-align: center !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.has-inline-command-parts .inline-command-prefix,
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.has-inline-command-parts .terminal-action-command,
+    .terminal-inline-popover .inline-action-subgroup .inline-look-action-control .terminal-inspect-row > span,
+    .terminal-inline-popover .inline-container-get-row .inline-command-prefix,
+    .terminal-inline-popover .inline-container-get-row .terminal-action-command {
+        display: inline !important;
+        grid-column: auto;
+        min-width: 0;
+        padding-left: 0 !important;
+        text-align: center !important;
+    }
+
+    .terminal-inline-popover .terminal-action-command {
+        display: inline !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row.is-inline-command .inline-command-full {
+        display: inline !important;
+        grid-column: auto;
+        width: auto;
+        max-width: 100%;
+        text-align: center !important;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .terminal-inspect-row {
+        flex-wrap: nowrap;
+        gap: 0.65em;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .inline-look-action-part {
+        box-sizing: border-box;
+        min-height: 40px;
+        max-width: calc(50% - 28px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .terminal-inline-popover .inline-look-action-control .inline-look-modifier-select {
+        flex-basis: 48px;
+        width: 48px;
+        min-height: 0;
+        height: 1.75em;
+    }
+
+    .terminal-inline-popover .inline-container-get-toggle {
+        flex: 0 0 auto;
+        width: auto;
+        min-width: 48px;
+        max-width: min(15ch, 40vw);
+        min-height: 0;
+        height: 1.75em;
+        white-space: nowrap;
+    }
+
+    .terminal-inline-popover .inline-group-action-control .terminal-action-row.has-inline-command-parts {
+        gap: 90px !important;
+    }
+
+    .terminal-inline-popover .inline-group-action-control .terminal-inspect-in-toggle {
+        box-sizing: border-box;
+        width: 80px;
+        min-width: 80px;
+        padding-inline: 2px;
+        white-space: nowrap;
+    }
+}
+
+/* Preserve centered command phrases after mobile no-wrap overrides. */
+@media (max-width: 720px) {
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row,
+    .terminal-inline-popover .inline-action-inspection-subgroup > button.terminal-inspect-row {
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .terminal-inline-popover .inline-action-subgroup .terminal-action-row > :is(
+        .inline-command-prefix,
+        .terminal-action-command,
+        .inline-command-full
+    ),
+    .terminal-inline-popover .inline-action-inspection-subgroup > button.terminal-inspect-row > span {
+        text-align: center !important;
     }
 }

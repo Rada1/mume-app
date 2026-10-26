@@ -8,8 +8,14 @@ export const COMMAND_TREE_DRINK_BUTTON = createButton({id: 'v2-drink', label: 'D
 export const isCommandTreeDrink = (button: CustomButton | null) => button?.id === COMMAND_TREE_DRINK_BUTTON.id;
 export const isLegacyDrinkCommand = (button: CustomButton) => /^drink(?:\s+(?:water|%n|\$1))?$/i.test(button.command.trim());
 // --- Target Projection Section ---
-export const getCommandTreeDrinkTargets = (inventory: DrawerLine[], equipment: DrawerLine[], roomWaterAvailable: boolean): CommandActionTargetEntry[] =>
-    getDrinkTargetSuggestions(inventory, equipment, roomWaterAvailable).map(target => {
+export const getCommandTreeDrinkTargets = (
+    inventory: DrawerLine[],
+    equipment: DrawerLine[],
+    roomWaterAvailable: boolean,
+    roomWaterTargets: CommandActionTargetEntry[] = []
+): CommandActionTargetEntry[] => [
+    ...roomWaterTargets,
+    ...getDrinkTargetSuggestions(inventory, equipment, roomWaterAvailable && roomWaterTargets.length === 0).map(target => {
         const water = target.meta === 'source';
         const worn = target.objectLocation === 'worn';
         return {
@@ -17,4 +23,5 @@ export const getCommandTreeDrinkTargets = (inventory: DrawerLine[], equipment: D
             category: water ? 'cat-room' : worn ? 'cat-worn-object' : 'cat-inventory-object',
             group: water ? 'objects' : worn ? 'worn' : 'inventory', scope: water ? 'room' : 'self'
         };
-    });
+    })
+];

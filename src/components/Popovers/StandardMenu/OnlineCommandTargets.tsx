@@ -67,7 +67,8 @@ export const OnlineCommandTargets: React.FC<OnlineCommandTargetsProps> = ({ onSe
         const line = findPlayerLine(online.whoLines, entry.label);
         return <button key={entry.id} type="button"
             className="command-action-target-option command-tree-row" aria-current={currentEntityId === entry.id ? 'true' : undefined}
-            onMouseEnter={() => onPreviewTarget?.(entry)}
+            onPointerEnter={event => { if (event.pointerType === 'mouse') onPreviewTarget?.(entry); }}
+            onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onPreviewTarget?.(entry); }}
             onClick={() => onSelect(entry)}>
             {namesOnly ? <span className="command-tree-row-label command-action-target-online-player-name" style={{ color: color || '#61c290' }}>{entry.label}</span>
                 : <span className="command-action-target-online-line">{renderOnlinePlayerLine(line, entry.label, color)}</span>}

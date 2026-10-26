@@ -210,7 +210,7 @@ export class FastMapRenderer {
     this.overlays.drawExitArrows(frame.view.layer, projection);
     this.overlays.drawPrediction(frame.view.layer, projection);
     this.overlays.drawSearch(frame.view.layer, projection);
-    this.overlays.drawGroupMembers(frame.view, frame.player, cssWidth, cssHeight);
+    this.overlays.drawGroupMembers(frame.view, frame.player, cssWidth, cssHeight, projection);
     if (frame.player && Math.round(frame.player.z) === frame.view.layer) {
       drawPlayerMarker(gl, this.roomProgram, this.playerVao, this.playerBuffer, this.textureArrays, frame.player);
       drawPlayerRoomTrail(this.overlays, this.roomLayerByRoom, frame.player, this.liveRoom, this.liveRoomMesh, this.textureArrays[TEX.A64], projection);

@@ -46,7 +46,9 @@
     position:static;
     display:grid;
     flex:0 0 auto;
-    grid-template-columns:repeat(6, minmax(0, 1fr));
+    grid-template-columns:none;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(0, 1fr);
     width:100%;
     min-height:44px;
     margin:0 0 8px;
@@ -218,7 +220,11 @@
     --mobile-command-menu-button-columns:2;
 }
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-movement-branch) {
-    grid-template-columns:repeat(3, minmax(0, 1fr));
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    --mobile-command-menu-button-columns:2;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) {
+    grid-template-columns:repeat(2, minmax(0, 1fr));
     --mobile-command-menu-button-columns:2;
 }
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch {
@@ -251,6 +257,30 @@
     background:var(--command-tree-surface) !important;
     box-shadow:none !important;
 }
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="true"] > .command-tree-branch.is-movement-branch:nth-child(n + 2) {
+    grid-column:2;
+    grid-row:1;
+    z-index:1;
+    overflow:hidden !important;
+    background:transparent !important;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) > .command-tree-main-branch:first-child {
+    grid-column:1;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) > .command-tree-branch.is-ability-side-branch:nth-child(n + 2) {
+    grid-column:2;
+    grid-row:1;
+    z-index:1;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-movement-branch) > .command-tree-branch.is-ability-movement-branch {
+    display:flex;
+    flex-direction:column;
+    overflow:hidden !important;
+    min-width:0;
+    min-height:0;
+    padding:0;
+    background:transparent !important;
+}
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches[data-has-main-branch="false"] > .command-tree-branch {
     grid-row:1;
     align-self:stretch;
@@ -258,8 +288,11 @@
     background:var(--command-tree-surface) !important;
     box-shadow:none !important;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands {
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands:not(.is-ability-mode-commands) {
     display:grid; grid-template-columns:var(--mobile-command-menu-grid); align-items:stretch; gap:4px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) > .command-tree-main-branch .command-tree-section-commands:not(.is-ability-mode-commands) {
+    grid-template-columns:repeat(3,minmax(0,1fr));
 }
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-main-branch .command-tree-section-commands > div {
     min-width:0;

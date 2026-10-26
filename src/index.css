@@ -698,6 +698,12 @@
     transform: translateY(1px);
 }
 
+.login-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
 
 
 

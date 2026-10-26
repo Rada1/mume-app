@@ -42,5 +42,23 @@ it('tracks silent commands for ordering but excludes them from user reply sample
     commandLatency.recordSend(true); commandLatency.recordText(); commandLatency.recordOutput('reply'); commandLatency.recordCommit('reply');
     expect(commandLatency.getSnapshot().last?.pressToCommitMs).toBeNull();
     commandLatency.reset();
-    expect(commandLatency.getSnapshot()).toEqual({last: null, count: 0, skipped: 0});
+    expect(commandLatency.getSnapshot()).toEqual({last: null, count: 0, skipped: 0,
+        dispatch: {lastMs: null, maxMs: null, count: 0}});
+});
+
+it('retains the slow first dispatch when later burst replies cannot be attributed', () => {
+    let now = 0;
+    vi.spyOn(performance, 'now').mockImplementation(() => now);
+    commandLatency.enabled = true;
+    commandLatency.recordInput();
+    now = 900; commandLatency.recordSend(true);
+    now = 910; commandLatency.recordInput();
+    now = 925; commandLatency.recordSend(true);
+    commandLatency.recordText(); commandLatency.recordOutput('burst'); commandLatency.recordCommit('burst');
+    expect(commandLatency.getSnapshot()).toMatchObject({count: 0, skipped: 1,
+        dispatch: {lastMs: 15, maxMs: 900, count: 2}});
+    commandLatency.recordInput();
+    now = 950; commandLatency.recordSend(false);
+    commandLatency.recordSend(true); // No fresh input: do not reuse an earlier tap.
+    expect(commandLatency.getSnapshot().dispatch).toEqual({lastMs: 15, maxMs: 900, count: 2});
 });
