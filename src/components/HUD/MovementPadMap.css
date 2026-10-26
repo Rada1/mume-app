@@ -185,12 +185,12 @@
     color: #fecaca;
 }
 
-.movement-pad-map .movement-pad-cell.is-open-door {
-    border-color: rgba(217, 119, 6, 0.72);
+.movement-pad-map .movement-pad-cell.is-closed-door {
+    border: 1px solid #d97706;
     background: rgba(217, 119, 6, 0.12);
 }
 
-.movement-pad-map .movement-pad-cell.is-open-door .movement-pad-label {
+.movement-pad-map .movement-pad-cell.is-closed-door .movement-pad-label {
     color: #d97706;
 }
 
@@ -346,8 +346,8 @@
     box-shadow: none;
 }
 
-.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.is-open-door {
-    border: 0;
+.app-container:not(.immersion-mode) .movement-pad-map .movement-pad-cell.is-closed-door {
+    border: 1px solid #d97706;
     background: rgba(217, 119, 6, 0.12);
 }
 

@@ -201,6 +201,7 @@
 .command-tree-ability-class-selector { grid-template-columns:none; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); }
 .command-tree-location-selector { grid-template-columns:repeat(3,minmax(0,1fr)); }
 .command-tree-ability-class-selector button,.command-tree-location-selector button,.command-tree-category-section-selector button { min-width:0; min-height:28px; padding:4px 2px; overflow:hidden; border:0; border-bottom:1px solid rgba(201,168,76,.22); background:transparent; color:#a39b8b; font:9px monospace; text-overflow:ellipsis; text-transform:uppercase; white-space:nowrap; }
+.command-tree-ability-class-selector button { text-align:center; }
 .command-tree-ability-class-selector button:hover,.command-tree-ability-class-selector button:focus-visible,.command-tree-location-selector button:hover,.command-tree-location-selector button:focus-visible,.command-tree-category-section-selector button:hover,.command-tree-category-section-selector button:focus-visible { color:#fff0bd; }
 .command-tree-ability-class-selector button.is-selected,.command-tree-location-selector button.is-selected,.command-tree-category-section-selector button.is-selected { border-bottom-color:#c9a84c; background:var(--command-tree-surface-hover); color:#ffdf81; }
 .command-tree-location-selector button:disabled { opacity:.38; cursor:default; }
@@ -209,11 +210,11 @@
 .command-tree-ability-class-area,.command-tree-category-section-area { display:flex; flex:1 1 auto; flex-direction:column; min-width:0; min-height:0; }
 .command-tree-category-section-selector { display:flex; flex:0 0 auto; gap:2px; margin:8px 8px 5px; overflow-x:auto; overscroll-behavior-x:contain; touch-action:pan-x; scrollbar-width:thin; }
 .command-tree-category-section-selector button { flex:1 0 auto; padding-inline:8px; }
-.command-tree-ability-mode-commands { box-sizing:border-box; display:block; flex:0 0 auto; width:calc(100% - 16px); max-width:calc(100% - 16px); min-width:0; margin:0 8px; overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; touch-action:pan-x; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
-.command-tree-ability-mode-commands > .command-tree-section-commands { display:flex; flex:0 0 auto; flex-wrap:nowrap; gap:2px; width:max-content; min-width:100%; }
-.command-tree-section-commands.is-ability-mode-commands > .command-tree-row { flex:0 0 auto; width:max-content; min-width:max-content; max-width:204px; }
-.command-tree-section-commands.is-ability-mode-commands > div { flex:0 0 auto; width:max-content; max-width:204px; }
-.command-tree-section-commands.is-ability-mode-commands > div .command-tree-row { width:max-content; min-width:max-content; max-width:204px; }
+.command-tree-ability-mode-commands { box-sizing:border-box; display:block; flex:0 0 auto; width:calc(100% - 16px); max-width:calc(100% - 16px); min-width:0; margin:0 8px; overflow-x:hidden; overflow-y:hidden; touch-action:pan-y; scrollbar-width:none; }
+.command-tree-ability-mode-commands > .command-tree-section-commands { display:flex; flex:0 0 auto; flex-wrap:nowrap; gap:2px; width:100%; min-width:0; }
+.command-tree-section-commands.is-ability-mode-commands > .command-tree-row,
+.command-tree-section-commands.is-ability-mode-commands > div > .command-tree-row { flex:1 1 0; width:auto; min-width:0; }
+.command-tree-section-commands.is-ability-mode-commands > div { display:contents; }
 .command-tree-ability-class-selector { flex:0 0 auto; }
 .command-tree-ability-class-commands,.command-tree-category-section-commands { box-sizing:border-box; flex:1 1 0; min-height:0; overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; scrollbar-width:thin; }
 .command-tree-money-amount { margin:4px 8px 8px; padding:8px; background:var(--command-tree-surface); }

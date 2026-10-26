@@ -23,7 +23,8 @@ export const CommandTreeSections = ({controller, tree, menuHeader, onCommandExec
  const isMobile = controller.game.viewport?.isMobile === true;
  const abilitiesMenu = isMobile && tree.grouped[tree.group]?.label === 'Abilities';
  const categoryMenu = isMobile && ['Info', 'Objects', 'Social'].includes(tree.grouped[tree.group]?.label);
- const selectedCategorySection = tree.commandSections.find(section => section.label === tree.categorySection) || tree.commandSections[0];
+ const selectedCategorySection = tree.commandSections.find(section => section.label === tree.categorySection)
+  || (tree.grouped[tree.group]?.label === 'Info' ? undefined : tree.commandSections[0]);
  const combatSection = tree.commandSections.find(section => section.label === 'Combat action');
  const classSections = tree.commandSections.filter(section => ABILITY_CLASS_ORDER.includes(section.label))
   .sort((left, right) => ABILITY_CLASS_ORDER.indexOf(left.label) - ABILITY_CLASS_ORDER.indexOf(right.label));
@@ -53,9 +54,9 @@ export const CommandTreeSections = ({controller, tree, menuHeader, onCommandExec
      aria-pressed={section.label === selectedCategorySection?.label}
      onClick={() => tree.chooseCategorySection(section.label)}>{section.label}</button>)}
    </div>
-   <div className="command-tree-category-section-commands">
-    {selectedCategorySection && renderCommands(selectedCategorySection.label, selectedCategorySection.buttons)}
-   </div>
+   {selectedCategorySection && <div className="command-tree-category-section-commands">
+    {renderCommands(selectedCategorySection.label, selectedCategorySection.buttons)}
+   </div>}
   </div> : tree.commandSections.map(renderSection)}
  </section>;
 };

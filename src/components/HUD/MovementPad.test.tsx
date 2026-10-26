@@ -74,13 +74,13 @@ describe('MovementPad Component', () => {
         expect(screen.queryByRole('button', { name: /Scan/i })).toBeNull();
     });
 
-    it('dims closed door exits with is-closed-door indicator', () => {
+    it('marks closed doors without dimming their direction', () => {
         // Room has North (closed door) and South (open exit)
         useRoomStore.setState({
             exits: ['n', 's'],
             rawExits: {
                 n: { closed: true, flags: ['closed', 'door'] },
-                s: 200
+                s: { closed: false, flags: ['door'] }
             }
         });
 
@@ -89,14 +89,15 @@ describe('MovementPad Component', () => {
         const northBtn = screen.getByRole('button', { name: /North/i });
         const southBtn = screen.getByRole('button', { name: /South/i });
 
-        // North is closed door -> dimmed + is-closed-door
-        expect(northBtn.classList.contains('is-dimmed')).toBe(true);
+        // Closed doors stay visible; missing exits alone are dimmed.
+        expect(northBtn.classList.contains('is-dimmed')).toBe(false);
         expect(northBtn.classList.contains('is-closed-door')).toBe(true);
         expect(northBtn.getAttribute('title')).toContain('Closed door');
 
         // South is open -> valid exit
         expect(southBtn.classList.contains('is-valid-exit')).toBe(true);
         expect(southBtn.classList.contains('is-dimmed')).toBe(false);
+        expect(southBtn.classList.contains('is-open-door')).toBe(true);
     });
 
     it('flashes visual feedback button when mume:movement-command-press event is dispatched', () => {

@@ -184,7 +184,7 @@ export const MovementPad: FC<{
                 const isMovement = MOVEMENT_DIRS.has(cell.cmd);
                 const hasExit = isMovement ? normalizedExitSet.has(cell.cmd) : true;
                 const isClosed = isMovement && hasExit && isExitClosed(cell.cmd);
-                const doorState = (layout === 'map' || layout === 'menu') && hasExit ? getDoorState(cell.cmd) : null;
+                const doorState = isMovement && hasExit ? getDoorState(cell.cmd) : null;
                 const doorName = doorNamesByDirection?.[cell.cmd];
                 const hasDoor = Boolean(doorState?.hasDoor || doorName);
                 const label = layout === 'map' ? MAP_LABELS[cell.cmd]
@@ -199,14 +199,14 @@ export const MovementPad: FC<{
                         stateClass = ' is-dimmed is-no-exit';
                         statusLabel = ' (No exit)';
                     } else if (isClosed) {
-                        stateClass = ' is-dimmed is-closed-door';
+                        stateClass = ' is-closed-door';
                         statusLabel = ' (Closed door)';
                     } else {
                         stateClass = ' is-valid-exit';
                     }
                     if (layout === 'menu' && hasDoor) stateClass += ' has-door';
                     if (doorSelectionOnly && hasDoor) stateClass += ' is-door-target';
-                    if (layout === 'map' && isOpenDoor) stateClass += ' is-open-door';
+                    if (isOpenDoor) stateClass += ' is-open-door';
                 }
 
                 const hotkeyLabel = cell.hotkey ? ` [${cell.hotkey}]` : '';

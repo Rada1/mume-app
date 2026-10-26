@@ -33,7 +33,7 @@
 .command-tree-v2 .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d) .movement-pad-label {
     color: var(--ansi-bright-green, #44ff70);
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.has-door {
+.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-closed-door {
     border: 1px solid #d97706;
 }
 .command-tree-v2 .movement-pad-menu .movement-pad-cell.is-door-target {
@@ -70,6 +70,9 @@
     border-radius:3px;
     background:rgba(20, 17, 14, 0.2);
     text-shadow:0 1px 2px #000, 0 0 4px #000;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell.is-closed-door {
+    border-color:#d97706;
 }
 @media (hover: hover) and (pointer: fine) {
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell:hover:not(:disabled) {

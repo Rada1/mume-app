@@ -45,8 +45,6 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const setShowCommandSuggestions = useSettingsStore(s => s.setShowCommandSuggestions);
     const isTimestampEnabled = useSettingsStore(s => s.isTimestampEnabled);
     const setIsTimestampEnabled = useSettingsStore(s => s.setIsTimestampEnabled);
-    const useTacticalPanelBlur = useSettingsStore(s => s.useTacticalPanelBlur);
-    const setUseTacticalPanelBlur = useSettingsStore(s => s.setUseTacticalPanelBlur);
 
     const screenWakeLockDescription = screenWakeLockStatus === 'insecure-context'
         ? 'Chrome supports this, but the app must be opened over HTTPS (localhost is also secure).'
@@ -122,13 +120,6 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     description="Disable heavy animations, shadows, transitions, and weather for smoother performance."
                     value={isPerformanceMode}
                     onToggle={() => setIsPerformanceMode(!isPerformanceMode)}
-                />
-
-                <ToggleRow
-                    label="Blur Panels"
-                    description="Blur the background behind the command wheel and docked panels. Off uses a solid background."
-                    value={useTacticalPanelBlur}
-                    onToggle={() => setUseTacticalPanelBlur(!useTacticalPanelBlur)}
                 />
 
                 <ToggleRow

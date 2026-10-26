@@ -277,7 +277,6 @@ export function useMessageLog(
             const isRoomArrival = !!roomArrivalDirection || !!pending[roomNameIdx].isRoomArrival;
             let markedContentsStart = false;
             let prevSection: RoomSection | null = null;
-            const contentIndices: number[] = [];
             for (let i = roomNameIdx + 1; i < pending.length; i++) {
                 const m = pending[i];
                 if (
@@ -319,31 +318,12 @@ export function useMessageLog(
                     roomSection,
                     isRoomSectionStart
                 };
-                if (isContents) {
-                    markedContentsStart = true;
-                    contentIndices.push(i);
-                }
+                if (isContents) markedContentsStart = true;
             }
-
-            const roomContentCount = contentIndices.length;
-            const totalDescLines = (pending[roomNameIdx].html?.match(/<div class="room-desc-line">/g) || []).length;
             pending[roomNameIdx] = {
                 ...pending[roomNameIdx],
-                isRoomArrival,
-                roomContentCount,
-                roomLineIndex: isRoomArrival ? (roomContentCount + totalDescLines) : undefined
+                isRoomArrival
             };
-
-            if (isRoomArrival) {
-                for (let k = 0; k < contentIndices.length; k++) {
-                    const idx = contentIndices[k];
-                    pending[idx] = {
-                        ...pending[idx],
-                        roomContentCount,
-                        roomLineIndex: contentIndices.length - 1 - k
-                    };
-                }
-            }
         }
 
         if (containsPrompt) {

@@ -141,7 +141,7 @@ Desktop log entity menus use `DesktopTargetWorkspace.tsx` and `useDesktopTargetW
 
 Workspace containers and corpses have independent target and chevron buttons: selecting the row keeps whole-object actions, while the chevron loads and expands keyword contents directly beneath that row via `CommandTreeGearContents.tsx`. Ordinary targets have no chevrons. Contained-item selection retains the parent argument for Get; the contents list includes All, and the redundant corpse G/All action is omitted.
 
-`src/utils/commandTreeSections.ts` owns shared subcategory assignment and ordering for the catalog, command panel, and target workspace. `CommandTreeGearActions.tsx` renders class/task sections (including Mage / Warrior / Cleric / Thief / Ranger) with wrapping command rows, omitting the overarching Abilities / Movement / Info / Objects / Social headings in the workspace; do not rebuild classification rules separately in the popover.
+`src/utils/commandTreeSections.ts` owns shared subcategory assignment and ordering for the catalog, command panel, and target workspace. `CommandTreeGearActions.tsx` renders class/task sections (including Warrior / Thief / Mage / Cleric / Ranger) with wrapping command rows, omitting the overarching Abilities / Movement / Info / Objects / Social headings in the workspace; do not rebuild classification rules separately in the popover.
 
 Desktop quick location controls are ordered Room / Equipped / Inventory. The Room menu includes local room entities and room objects in separate vertical sections; `useCommandTreeItems.ts` and `useCommandGearQuickMenu.ts` share the existing context-valid action cascade for both.
 
@@ -162,7 +162,7 @@ V2 uses `PopoverActionButton` with `treeRow` for native flat command rows; synta
 
 Command tree rows use `commandTreeIdentity.ts` to merge saved/generated spell variants by spell identity and ordinary commands by normalized syntax. Prefer generated ability buttons and union eligibility across their equivalent source variants; class-navigation buttons are excluded from the executable catalog.
 
-Abilities shows combat commands without a header, followed by the Mage / Warrior / Cleric / Thief / Ranger class selector and the selected class commands. Class ability metadata keeps learned skills together under that root. Each section command list shows up to five 33px rows before scrolling independently. Cascade height fills the dock down to the client bottom. V2 labels reuse `getSwipeCommandTextColor` and `getInlineTraitTextColor` for the shared offensive/buff/healing palette.
+Abilities shows combat commands without a header, followed by the Warrior / Thief / Mage / Cleric / Ranger class selector and the selected class commands. Class ability metadata keeps learned skills together under that root. Each section command list shows up to five 33px rows before scrolling independently. Cascade height fills the dock down to the client bottom. V2 labels reuse `getSwipeCommandTextColor` and `getInlineTraitTextColor` for the shared offensive/buff/healing palette.
 
 V2 Shop is a fixed five-command section: Buy, Sell, Value, Compare, Show. `commandTreeShop.ts` defines its entries; `useCommandTreeShopTargets.ts` routes stock/carried-item selection through the existing shop capture and transaction handlers. Buy retains explicit quantity and purchase confirmation. Compare selects a stock item first, then stock or carried/worn gear. Legacy browse/mend rows are excluded from the V2 command catalog.
 

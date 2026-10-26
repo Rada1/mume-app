@@ -22,7 +22,9 @@ import { getCommandTreeGetFromTargets, isCommandTreeGetAction } from '../utils/c
 import { useRoomDrinkWater } from './useRoomDrinkWater';
 import { normalizeInlineCategoryId } from '../utils/inlineCategoryAxes';
 import { getCommandTreeBasePreview } from '../utils/commandTreePreview';
+import { COMMAND_TREE_ABILITY_CLASS_ORDER } from '../utils/commandTreeSections';
 import { getCommandTreeCurrentTarget, isCommandTreeOffensiveTargetAction } from '../utils/commandTreeCurrentTarget';
+import { useCommandTreeAutomaticTarget } from './useCommandTreeAutomaticTarget';
 import { getGearObjectCandidates, getRoomObjectCandidates, hasObjectTrait } from '../objects/objectTargetModel';
 import { uiPerformance } from '../utils/uiPerformance';
 import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
@@ -33,6 +35,7 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
  const atShop = controller.shop.atShop ?? controller.shop.available;
  const isReadabilityMode = useSettingsStore(state => state.isReadabilityMode);
  const isMobileReadabilityMode = controller.game.viewport?.isMobile === true && isReadabilityMode;
+ const automaticTarget = useCommandTreeAutomaticTarget();
  const [group, setGroup] = useState<number | null>(() => isMobileReadabilityMode ? 0 : null);
  const previousMobileReadabilityMode = useRef(isMobileReadabilityMode);
  const [command, setCommand] = useState<CustomButton | null>(null);
@@ -177,7 +180,7 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
   }
   const variants = [button, ...(variantsByAction.get(key) || [])];
   const currentTarget = variants.some(isCommandTreeOffensiveTargetAction)
-   ? getCommandTreeCurrentTarget(candidates, controller.vitals.target)
+   ? getCommandTreeCurrentTarget(candidates, controller.vitals.target || automaticTarget)
    : null;
   const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
   const roomWaterMatches = ['sip','quaff'].includes(verb) ? roomWaterTargets() : [];
@@ -247,12 +250,12 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
  }, [preparedCatalog, variantsByAction, controller.entries, controller.menuButtons, controller.game.characterName, controller.game.inlineCategories,
      controller.game.roomNpcs, controller.game.entities, controller.vitals.characterInfo, controller.vitals.target,
      controller.game.currentTerrain, controller.game.roomItems, controller.game.roomNum, atShop, panelData.status.skills, roomWaterAvailable, controller.ui.displayInventoryLines, controller.ui.displayEqLines,
-     isMobileReadabilityMode]);
+     isMobileReadabilityMode, automaticTarget]);
  const commandSections = useMemo(() => {
   if (group === null) return [];
   const buttons = grouped[group].buttons;
   const labels = group === 0
-   ? ['Combat action','Mage','Warrior','Cleric','Thief','Ranger'].filter(label => buttons.some(button => sectionFor(button) === label))
+   ? ['Combat action', ...COMMAND_TREE_ABILITY_CLASS_ORDER].filter(label => buttons.some(button => sectionFor(button) === label))
    : [...new Set(buttons.map(sectionFor))].sort((a,b) => {
     if (group === 2) return Number(b === 'Observation') - Number(a === 'Observation');
     if (group === 3) {

@@ -61,7 +61,7 @@ it('reuses target eligibility when opening branches and on unrelated renders', a
   expect(tree.grouped[0].buttons.find(button=>button.label==='Hit')?.command).toBe('hit %n');
   expect(tree.grouped[0].buttons.filter(button=>button.label.toLowerCase()==='bless')).toHaveLength(1);
   expect(tree.grouped[0].buttons.some(button=>button.label==='Cleric')).toBe(false);
-  expect(tree.commandSections.map(section => section.label)).toEqual(['Combat action','Mage','Warrior','Cleric','Thief','Ranger','Training']);
+  expect(tree.commandSections.map(section => section.label)).toEqual(['Combat action','Warrior','Thief','Mage','Cleric','Ranger','Training']);
   expect(tree.commandSections.flatMap(section => section.buttons.map(button => button.id))).toEqual(expect.arrayContaining(['test-hit','test-cast']));
   await act(async () => tree.chooseCommand(tree.grouped[0].buttons.find(button=>button.id==='test-cast')!));
   expect(tree.targets.map(entry=>entry.id)).toContain('ally');

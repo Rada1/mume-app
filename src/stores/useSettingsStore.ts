@@ -164,7 +164,6 @@ interface SettingsState {
     setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
-    setUseTacticalPanelBlur: (val: boolean) => void;
     setKeepScreenAwake: (val: boolean) => void;
     setScreenWakeLockStatus: (val: SettingsState['screenWakeLockStatus']) => void;
     setAccentColor: (val: string) => void;
@@ -327,13 +326,13 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             drawerZoom: 1.0,
             isImmersionMode: false,
-            isReadabilityMode: false,
+            isReadabilityMode: !isDesktopViewport(),
             hasCustomReadabilityMode: false,
             isImmersionWeatherEffectsEnabled: false,
             isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
             isPerformanceMode: false,
-            useTacticalPanelBlur: isDesktopViewport(),
+            useTacticalPanelBlur: false,
             hasCustomTacticalPanelBlur: false,
             keepScreenAwake: false,
             screenWakeLockStatus: 'disabled',
@@ -431,7 +430,6 @@ export const useSettingsStore = create<SettingsState>()(
             setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
-            setUseTacticalPanelBlur: (useTacticalPanelBlur) => set({ useTacticalPanelBlur, hasCustomTacticalPanelBlur: true }),
             setKeepScreenAwake: (keepScreenAwake) => set({ keepScreenAwake }),
             setScreenWakeLockStatus: (screenWakeLockStatus) => set({ screenWakeLockStatus }),
             setAccentColor: (accentColor) => set({ accentColor }),
@@ -882,12 +880,8 @@ export const useSettingsStore = create<SettingsState>()(
                         ? persistedState.sfxVolume
                         : currentState.uiVolume;
                 }
-                const persistedBlurChoice = persistedState?.hasCustomTacticalPanelBlur === true ||
-                    (persistedState?.hasCustomTacticalPanelBlur === undefined && persistedState?.useTacticalPanelBlur === true);
-                merged.hasCustomTacticalPanelBlur = persistedBlurChoice;
-                merged.useTacticalPanelBlur = persistedBlurChoice
-                    ? Boolean(persistedState?.useTacticalPanelBlur)
-                    : isDesktopViewport();
+                merged.hasCustomTacticalPanelBlur = false;
+                merged.useTacticalPanelBlur = false;
                 merged.zoneMusic = (merged.zoneMusic || [])
                     .filter(mapping => {
                         const zone = mapping.zone.trim().toLowerCase().replace(/^the\s+/, '');

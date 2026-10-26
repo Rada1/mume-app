@@ -5,6 +5,7 @@ import { useGame } from '../context/GameContext';
 import { useChatPanel } from './useChatPanel';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { useChatComposerRequestStore } from '../stores/useChatComposerRequestStore';
+import { useInputStore } from '../stores/useInputStore';
 import { getInlineCategoryAxes } from '../utils/inlineCategoryAxes';
 import { getCommandCommunicationIntent, getCommunicationCommands } from '../utils/commandCommunication';
 import type { CommandCommunicationIntent } from '../types';
@@ -14,7 +15,7 @@ type PendingRecipientCommand = Extract<CommandCommunicationIntent['command'], 't
 
 export const useCommandPanelChat = (activeState: PopoverState) => {
     const chat = useChatPanel();
-    const { keywordOverrides, groupMembers, viewport } = useGame();
+    const { keywordOverrides, groupMembers, viewport, setParley } = useGame();
     const [historyPanelOpen, setHistoryPanelOpen] = useState(false);
     const [activeCommand, setActiveCommand] = useState<string | null>(null);
     const [pendingRecipientCommand, setPendingRecipientCommand] = useState<PendingRecipientCommand | null>(null);
@@ -36,9 +37,15 @@ export const useCommandPanelChat = (activeState: PopoverState) => {
     const chatCommands = useMemo(() => getCommunicationCommands(directedTarget, true, hasGroup, true), [directedTarget, hasGroup]);
     const focusComposer = () => setFocusRequest(value => value + 1);
     const openChatComposer = (command: CommandCommunicationIntent['command'], target: string | null, text: string) => {
-        useChatComposerRequestStore.getState().requestComposer(command, target, text);
         setHistoryPanelOpen(false);
         setActiveCommand(null);
+        if (viewport?.isMobile) {
+            useInputStore.getState().setInput(text);
+            setParley({ active: true, mode: 'parley', command, target, message: text });
+            if (typeof document !== 'undefined') document.getElementById('mud-input')?.focus();
+            return;
+        }
+        useChatComposerRequestStore.getState().requestComposer(command, target, text);
         useSettingsStore.getState().setShowChatWindow(true);
     };
     useEffect(() => {

@@ -10,7 +10,7 @@ import { isCommandTreeShopAction } from './commandTreeShop';
 import { isCommandTreePracticeAction } from './commandTreePractice';
 
 // --- Shared Subcategory Assignment ---
-export const COMMAND_TREE_ABILITY_CLASS_ORDER = ['Mage', 'Warrior', 'Cleric', 'Thief', 'Ranger'];
+export const COMMAND_TREE_ABILITY_CLASS_ORDER = ['Warrior', 'Thief', 'Mage', 'Cleric', 'Ranger'];
 export const getCommandTreeSection = (button: CustomButton) => {
   const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
   const mountSection = commandTreeMountSection(button);

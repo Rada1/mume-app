@@ -30,11 +30,8 @@ describe('MessageLog animations in Immersion Mode', () => {
         expect(tsxContent).not.toContain('focus-reveal-active');
     });
 
-    it('scopes account undulation wave and tier breathe to immersion-mode', () => {
-        expect(cssContent).toContain('.immersion-mode.state-account .message-content .log-text-word');
-        expect(cssContent).toContain('.immersion-mode .state-account .message-content .log-text-word');
-        // Unscoped .state-account should not undulate
-        expect(cssContent).not.toMatch(/^\.state-account\s+\.message-content\s+\.log-text-word\s*,/m);
+    it('does not apply a continuous undulating wave to immersion text', () => {
+        expect(cssContent).not.toContain('continuous-text-undulate');
     });
 
     it('gates runtime decorative animation states and layout effects by isImmersionMode in MessageLog.tsx', () => {
@@ -48,18 +45,17 @@ describe('MessageLog animations in Immersion Mode', () => {
     const hookPath = path.resolve(__dirname, '../../hooks/useMessageLog.ts');
     const hookContent = fs.readFileSync(hookPath, 'utf8');
 
-    it('keeps movement confirmations and room arrivals static in immersion mode', () => {
+    it('keeps room arrival grouping without text stagger metadata', () => {
         expect(cssContent).toContain('.immersion-mode .message.movement .message-content .log-text-word');
         expect(cssContent).not.toContain('room-jiggle-active');
         expect(cssContent).not.toContain('@keyframes room-line-jiggle');
         expect(tsxContent).not.toContain('isRoomJiggleActive');
-        expect(tsxContent).toContain('extractRoomDescription(msg.html, msg.roomContentCount ?? 0)');
-        expect(tsxContent).toContain('\'--room-line-delay\': `${(msg.roomLineIndex ?? (batchOffset || 0)) * 35}ms`');
+        expect(tsxContent).toContain('extractRoomDescription(msg.html)');
+        expect(tsxContent).not.toContain('roomLineIndex');
+        expect(tsxContent).not.toContain('roomContentCount');
 
-        // Hook assigns bottom-to-top indices in useMessageLog.ts
+        // Room arrival grouping remains available for the room card layout.
         expect(hookContent).toContain('isRoomArrival');
-        expect(hookContent).toContain('roomContentCount');
-        expect(hookContent).toContain('roomLineIndex');
     });
 
     it('ensures chat panel text does not receive ripple or undulation animations', () => {

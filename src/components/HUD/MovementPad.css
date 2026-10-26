@@ -138,14 +138,10 @@
     color: #e5c368;
 }
 
-.movement-pad-cell.is-open-door {
-    color: #d97706;
-    border-color: rgba(217, 119, 6, 0.62);
-    background: rgba(217, 119, 6, 0.1);
-}
-
+/* Open doors retain their orange labels without a door border. */
+.movement-pad-cell.is-open-door,
 .movement-pad-cell.is-open-door .movement-pad-label {
-    color: #d97706;
+    color: #d97706 !important;
 }
 
 /* Dimmed/non-valid movement directions */
@@ -187,17 +183,18 @@
 }
 
 /* Closed door on exit direction */
-.movement-pad-cell.is-dimmed.is-closed-door {
-    opacity: 0.45;
+.movement-pad-cell.is-closed-door {
+    opacity: 1;
+    border: 1px solid #d97706;
     color: #d97706 !important;
     background: transparent;
 }
 
-.movement-pad-cell.is-dimmed.is-closed-door .movement-pad-label {
+.movement-pad-cell.is-closed-door .movement-pad-label {
     color: #d97706;
 }
 
-.movement-pad-cell.is-dimmed.is-closed-door .movement-pad-key {
+.movement-pad-cell.is-closed-door .movement-pad-key {
     color: #b45309;
 }
 
@@ -249,12 +246,13 @@
 }
 }
 
-.light-mode .movement-pad-cell.is-dimmed.is-closed-door {
-    opacity: 0.55;
+.light-mode .movement-pad-cell.is-closed-door {
+    opacity: 1;
+    border-color: #b45309;
     color: #b45309 !important;
 }
 
-.light-mode .movement-pad-cell.is-dimmed.is-closed-door .movement-pad-label {
+.light-mode .movement-pad-cell.is-closed-door .movement-pad-label {
     color: #b45309;
 }
 

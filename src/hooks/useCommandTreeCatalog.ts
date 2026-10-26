@@ -22,6 +22,8 @@ const isLegacyCommandTreeGetAll = (button: CustomButton) => /^get\s+all(?:\s|$)/
 const isLegacyCommandTreeEatFood = (button: CustomButton) => /^eat\s+food$/i.test(button.command.trim());
 const isDeferredCommandTreeCampRent = (button: CustomButton) => /^camp\s+rent(?:\s|$)/i.test(button.command.trim());
 const isDuplicateKillAction = (button: CustomButton) => /^kill(?:\s|$)/i.test(button.command.trim());
+const isCommandTreeConverseButton = (button: CustomButton) => button.id === 'btn-converse'
+ || /^(?:__parley__|converse)$/i.test(button.command.trim());
 export const useCommandTreeCatalog = (controller: ReturnType<typeof useCommandTreeController>, atShop: boolean) => {
  const {catalog, variantsByAction} = useMemo(() => {
  const catalog = [...controller.menuButtons, ...ITEM_BUTTONS, ...COMMAND_TREE_LIGHT_CAMP_BUTTONS].map(normalizeCommandTreeButton);
@@ -37,7 +39,7 @@ export const useCommandTreeCatalog = (controller: ReturnType<typeof useCommandTr
   const extra = ['info', 'stat', 'score', 'history', 'quests', 'achievements', 'inventory', 'equipment', 'hints', 'help', 'time', 'look', 'examine', 'exits', 'map', 'who', 'where'].map(verb => createButton({id: `v2-${verb}`, label: verb[0].toUpperCase()+verb.slice(1), command: verb, setId: ['info','stat','score','history','quests','achievements','inventory','equipment'].includes(verb) ? 'trait-personal-information' : 'cat-room'}));
   const foodButtons = COMMAND_TREE_FOOD_BUTTONS.filter(button => button.id !== 'v2-forage'
    || isCommandTreeForageAvailable(controller.vitals.characterInfo?.race, controller.vitals.characterInfo?.subrace));
-  return deduplicateCommandTreeButtons([...catalog, ...SOCIAL_BUTTONS, ...extra, ...foodButtons].filter(button=>!isLegacyDrinkCommand(button) && !isLegacyAccessCommand(button) && !isLegacyObservationCommand(button) && !isLegacyCommandTreeShopAction(button) && !isLegacyCommandTreeGetAll(button) && !isLegacyCommandTreeEatFood(button) && !isDeferredCommandTreeCampRent(button) && !isDuplicateKillAction(button) && !/^call(?:\s|$)/i.test(button.command.trim()) && !/^practice(?:\s|$)/i.test(button.command) && !/^(?:move|north|south|east|west|up|down|n|s|e|w|u|d)$/i.test(button.command.trim())).concat(atShop ? COMMAND_TREE_SHOP_BUTTONS : [], [COMMAND_TREE_PRACTICE_BUTTON, COMMAND_TREE_MOVE_BUTTON, COMMAND_TREE_CALL_BUTTON, ...COMMAND_TREE_OBSERVATION_BUTTONS, ...COMMAND_TREE_ACCESS_BUTTONS, COMMAND_TREE_DRINK_BUTTON]).map(normalizeCommandTreeButton));
+  return deduplicateCommandTreeButtons([...catalog, ...SOCIAL_BUTTONS, ...extra, ...foodButtons].filter(button=>!isLegacyDrinkCommand(button) && !isLegacyAccessCommand(button) && !isLegacyObservationCommand(button) && !isLegacyCommandTreeShopAction(button) && !isLegacyCommandTreeGetAll(button) && !isLegacyCommandTreeEatFood(button) && !isDeferredCommandTreeCampRent(button) && !isDuplicateKillAction(button) && !isCommandTreeConverseButton(button) && !/^call(?:\s|$)/i.test(button.command.trim()) && !/^practice(?:\s|$)/i.test(button.command) && !/^(?:move|north|south|east|west|up|down|n|s|e|w|u|d)$/i.test(button.command.trim())).concat(atShop ? COMMAND_TREE_SHOP_BUTTONS : [], [COMMAND_TREE_PRACTICE_BUTTON, COMMAND_TREE_MOVE_BUTTON, COMMAND_TREE_CALL_BUTTON, ...COMMAND_TREE_OBSERVATION_BUTTONS, ...COMMAND_TREE_ACCESS_BUTTONS, COMMAND_TREE_DRINK_BUTTON]).map(normalizeCommandTreeButton));
  }, [catalog, atShop, controller.vitals.characterInfo?.race, controller.vitals.characterInfo?.subrace]);
  const preparedCatalog = useMemo(() => {
  const sectionCache = new Map<CustomButton, string>();

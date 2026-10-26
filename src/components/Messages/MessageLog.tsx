@@ -382,17 +382,12 @@ const MessageItem = React.memo(({
         <span className="message-timestamp">{formatTimestamp(msg.timestamp)}</span>
     ) : null;
 
-    const extractRoomDescription = (html: string, baseReverseIdx = 0) => {
+    const extractRoomDescription = (html: string) => {
         const startIdx = html.indexOf('<div class="room-desc-line">');
         if (startIdx === -1) return '';
         const raw = html.substring(startIdx);
-        const totalDescLines = (raw.match(/<div class="room-desc-line">/g) || []).length;
-        let lineIdx = 0;
         return raw.replace(/(<div class="room-desc-line">)([\s\S]*?)(<\/div>)/g, (_match, _open, inner, close) => {
             let wIdx = 0;
-            const reverseLineIdx = baseReverseIdx + (totalDescLines - 1 - lineIdx);
-            const currentLineDelay = reverseLineIdx * 35;
-            lineIdx++;
             const wrappedInner = inner.replace(/(>|^)([^<]+)(<|$)/g, (_m: string, before: string, text: string, after: string) => {
                 const words = text.replace(/(\S+)(\s*)/g, (_wm: string, word: string, space: string) => {
                     const span = `<span class="log-text-word" style="--word-idx:${wIdx};">${word}</span>${space}`;
@@ -401,7 +396,7 @@ const MessageItem = React.memo(({
                 });
                 return `${before}${words}${after}`;
             });
-            return `<div class="room-desc-line" style="--room-line-delay:${currentLineDelay}ms;">${wrappedInner}${close}`;
+            return `<div class="room-desc-line">${wrappedInner}${close}`;
         });
     };
 
@@ -414,11 +409,7 @@ const MessageItem = React.memo(({
             title={regenSlowTooltip}
             style={{ 
                 '--reveal-delay': `${batchOffset * 15}ms`,
-                '--room-line-delay': `${(msg.roomLineIndex ?? (batchOffset || 0)) * 35}ms`,
                 '--terrain-glow-color': msg.isRoomBlock && !msg.isRoomContentsLine ? getRoomTerrainGlowColor(msg.terrain) : undefined,
-                // A negative delay starts the infinite wave at a varied phase
-                // immediately, instead of holding freshly received text still.
-                '--msg-line-delay': `-${(((lineIndex ?? 0) % 16) * 0.22).toFixed(2)}s`
             } as React.CSSProperties}
         >
             {isClassicMode ? (
@@ -603,7 +594,7 @@ const MessageItem = React.memo(({
                                 {msg.isRoomName && msg.tokens && msg.html?.includes('room-desc-line') && (
                                     <div 
                                         className="room-description-merged" 
-                                        dangerouslySetInnerHTML={{ __html: extractRoomDescription(msg.html, msg.roomContentCount ?? 0) }}
+                                        dangerouslySetInnerHTML={{ __html: extractRoomDescription(msg.html) }}
                                     />
                                 )}
                             </div>

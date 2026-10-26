@@ -84,8 +84,6 @@ export interface Message {
     roomZone?: string | null; // Zone/area of the room at the time of entry
     roomArrivalDirection?: Direction; // Direction used to enter this freshly rendered room block
     isRoomArrival?: boolean; // True if this line arrived as part of a fresh room arrival
-    roomLineIndex?: number; // Sequential line offset within the room arrival for staggered animations
-    roomContentCount?: number; // Number of subsequent content lines in this room block, used for bottom-to-top stagger delays
 
     isCombatBlockStart?: boolean;
     isCommBlockStart?: boolean;

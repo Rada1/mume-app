@@ -21,5 +21,5 @@ it.each([
 it('keeps classes in the command-panel order without inventing unavailable classes', () => {
  const buttons=[['track %n','rangerskilllist'],["cast 'armour' %n",'magespelllist'],['bash %n','warriorskilllist']]
   .map(([command,setId])=>createButton({id:command,label:command,command,setId}));
- expect(getCommandTreeSectionLabels(buttons,0)).toEqual(['Mage','Warrior','Ranger']);
+ expect(getCommandTreeSectionLabels(buttons,0)).toEqual(['Warrior','Mage','Ranger']);
 });

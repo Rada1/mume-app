@@ -15,6 +15,7 @@ const targetedSkills = new Set([
   .map(normalize).filter(name => TARGETED_SKILLS.has(name)),
  'assist', 'shoot', 'hit', 'kill'
 ]);
+const communicationChannels = new Set(['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act', 'pray']);
 const targetedSkillSyntax = (button: CustomButton): string | null => {
  if (isCommandTreeSpell(button)) return null;
  const syntax = normalize(button.command);
@@ -26,6 +27,8 @@ const classCategory = /^(?:ranger|warrior|thief|mage|cleric)(?:\s*(?:skills?|spe
 // Directed messaging and following always open the shared target picker in V2.
 export const normalizeCommandTreeButton = (button: CustomButton): CustomButton => {
  if (/^pour\b/i.test(button.command.trim())) return {...button, label: 'Pour'};
+ const communicationVerb = button.command.trim().toLowerCase().split(/\s+/)[0];
+ if (communicationChannels.has(communicationVerb)) return {...button, setId: 'trait-communication'};
  if (/^(?:tell\s+group|gtell|gsay)(?:\s+%n)?$/i.test(button.command.trim())) {
   return {...button, command:'tell %n', label:'Tell', setId:'trait-communication'};
  }

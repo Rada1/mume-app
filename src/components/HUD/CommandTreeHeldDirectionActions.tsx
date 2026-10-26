@@ -25,7 +25,8 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction}: {
     const touchActivation = useSecondaryTouchActivation();
     const directionalObservationButtons = [COMMAND_TREE_OBSERVATION_BUTTONS[0], EXIT_BUTTONS[0]];
     const movementButtons = [
-        ...(tree.grouped[1]?.buttons ?? []).filter(button => tree.sectionFor(button) === 'Movement' && !isCommandTreeMoveAction(button)),
+        ...(tree.grouped[1]?.buttons ?? []).filter(button => tree.sectionFor(button) === 'Movement'
+            && !isCommandTreeMoveAction(button) && !/^flee(?:\s|$)/i.test(button.command.trim())),
         ...directionalObservationButtons
     ];
     const doorButtons = (tree.grouped[1]?.buttons ?? []).filter(button => tree.sectionFor(button) === 'Doors');
