@@ -25,6 +25,9 @@
     min-width:0;
     max-width:100%;
 }
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-ability-side-branch {
+    --mobile-command-menu-button-columns:4;
+}
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-commands:not(.is-ability-mode-commands) > div > .command-tree-row {
     width:100%;
     height:100%;

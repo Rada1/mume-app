@@ -1,3 +1,4 @@
+@import './CommandTreeGearQuickMenu.css';
 /** @file CommandPanelV2.css — Profile-driven command tree and contiguous branching columns. */
 /* --- Surface Section --- */
 .command-tree-v2 { --command-tree-surface:var(--command-panel-surface,#211b16); --command-tree-surface-rgb:var(--command-panel-surface-rgb,33,27,22); --command-tree-surface-deep:var(--command-panel-surface-deep,#17120f); --command-tree-surface-raised:var(--command-panel-surface-raised,#2d271e); --command-tree-surface-alt:var(--command-panel-surface-alt,#29221a); --command-tree-surface-hover:var(--command-panel-surface-hover,#3b3024); --command-tree-value-surface:var(--command-panel-value-surface,#342c22); pointer-events:auto!important; background:transparent!important; color:#c9c5bc; display:flex; flex-direction:column; max-height:100%; padding:14px!important; overflow:auto!important; font:11px monospace; }
@@ -70,28 +71,6 @@
 .command-tree-quick-options .command-tree-row[aria-pressed="true"] { background:var(--command-tree-surface-hover,#3b3024) !important; box-shadow:inset 3px 0 #c9a84c; }
 .command-tree-quick-options .command-tree-row[aria-pressed="true"] .command-tree-row-label { color:#ffdf81 !important; }
 .command-tree-quick-options .command-tree-row[aria-pressed="true"]::after { content:'\2713'; margin-left:auto; color:#ffdf81; }
-.command-tree-gear-quick-menu { position:absolute; top:auto; bottom:100%; right:0; z-index:30; display:flex; width:max-content; max-width:calc(100dvw - 24px); background:var(--command-tree-surface); box-shadow:0 8px 24px #0008; }
-.command-tree-gear-quick-details { display:contents; }
-.command-tree-gear-quick-list,.command-tree-gear-quick-actions { box-sizing:border-box; width:min(220px,calc(100dvw - 24px)); max-height:min(55dvh,480px); overflow:auto; padding:4px; background:var(--command-tree-surface); }
-.command-tree-gear-quick-list.is-equipment { width:min(290px,calc(100dvw - 24px)); }
-.command-tree-gear-quick-actions { width:min(190px,calc(100dvw - 24px)); background:var(--command-tree-surface-raised); }
-.command-tree-gear-quick-contents { box-sizing:border-box; flex:0 1 220px; width:min(220px,calc(100dvw - 24px)); min-width:0; max-height:min(55dvh,480px); overflow:auto; padding:4px; background:var(--command-tree-surface-alt); }
-.command-tree-gear-quick-put-targets { box-sizing:border-box; flex:0 1 190px; width:min(190px,calc(100dvw - 24px)); min-width:0; max-height:min(55dvh,480px); overflow:auto; padding:8px; background:var(--command-tree-surface-deep); }
-.command-tree-gear-quick-put-heading { padding:5px 4px 8px; color:#e6c96e; font-weight:700; }
-.command-tree-gear-quick-put-group-label { padding:7px 4px 3px; color:#9b927c; font-size:9px; text-transform:uppercase; }
-.command-tree-gear-quick-put-targets .command-tree-row { display:flex; align-items:center; width:100%; min-height:33px; padding:8px; }
-.command-tree-gear-content-item { box-sizing:border-box; min-height:33px; padding:8px; overflow:hidden; color:#c9c5bc; text-overflow:ellipsis; white-space:nowrap; }
-.command-tree-gear-quick-list .command-tree-object,.command-tree-gear-quick-actions .command-tree-row { box-sizing:border-box; display:flex; justify-content:space-between; align-items:center; width:100%; min-height:33px; padding:8px; gap:10px; }
-.command-tree-gear-quick-list.is-equipment .command-tree-object > span:first-child { display:flex; align-items:center; gap:6px; flex:1 1 auto; min-width:0; overflow:hidden; white-space:nowrap; }
-.command-tree-gear-quick-list.is-equipment .command-tree-object > span:last-child { flex:0 0 auto; }
-.command-tree-gear-quick-list.is-equipment .gear-item-text { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.command-tree-gear-quick-list.is-equipment .gear-slot { font-size:10px; text-transform:uppercase; }
-.command-tree-gear-quick-list.is-equipment .command-tree-gear-empty-slot span:first-child { flex:0 0 68px; font-size:10px; text-transform:uppercase; }
-.command-tree-gear-quick-list.is-equipment .command-tree-gear-empty-slot { background:var(--command-tree-surface-deep); }
-.command-tree-gear-quick-menu .command-tree-section-empty,.command-tree-gear-quick-menu .gear-empty { display:block; margin:8px; color:#958d7d; font-size:10px; }
-.command-tree-gear-quick-menu .command-action-target-empty { width:calc(100% - 16px); margin:8px; padding:7px; background:var(--command-tree-surface-raised); color:#c9a84c; }
-.command-tree-gear-empty-slot { box-sizing:border-box; display:flex; align-items:center; justify-content:flex-start; gap:6px; min-height:33px; padding:8px; color:#777268; font:10px/17px monospace; }
-.command-tree-gear-empty-slot span:last-child { flex:1 1 auto; color:#625f58; font-size:10px; text-transform:uppercase; }
 /* --- Horizontal Main Categories --- */
 .command-tree-category-bar { position:relative; width:100%; height:50px; flex:none; margin-bottom:4px; }
 .command-tree-categories {
@@ -187,6 +166,7 @@
     overflow-y:hidden;
 }
 /* --- Object Branch Section --- */
+.command-tree-landscape-target-lane { display:contents; }
 .command-tree-v2 .command-tree-object > span:first-child { min-width:0; overflow:hidden; text-overflow:ellipsis; }
 .command-tree-v2 .command-tree-object .gear-slot { display:block; color:#999; font-size:9px; }
 /* --- In-Menu Section Headers --- */
@@ -311,7 +291,3 @@
     .command-tree-quick-gear,.command-tree-quick-state { min-width:0; }
     .command-tree-quick-gear > button,.command-tree-quick-state > button { padding:7px 5px; font-size:10px; }
 }
-
-
-
-

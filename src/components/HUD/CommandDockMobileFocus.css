@@ -236,7 +236,7 @@
     height:100%;
     max-height:none;
     margin:0;
-    padding:6px 2px;
+    padding:2px 2px 6px;
     overflow-x:hidden;
     overflow-y:auto;
     scroll-snap-align:none;
@@ -314,6 +314,12 @@
 }
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-heading {
     gap:5px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup :is(.command-tree-ability-class-selector,.command-tree-category-section-selector) {
+    margin-top:3px;
+}
+.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section:first-child .command-tree-section-heading {
+    margin-top:3px;
 }
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-heading-label {
     flex:0 1 auto;

@@ -1,0 +1,175 @@
+/**
+ * @file MobileAccountCreationLandscape.css
+ * @description Content-sized creation steps and a vertical stat editor in landscape.
+ */
+
+/* --- Creation Step Composition --- */
+@media (orientation: landscape) {
+    .is-mobile.is-landscape .mobile-account-create {
+        display: flex;
+        flex-direction: column;
+        align-self: stretch;
+        flex: 0 1 auto;
+        gap: 16px;
+        width: min(100%, 520px);
+        margin: 0 auto;
+        min-width: 0;
+        overflow: auto;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.has-context:not(.is-stat-editing) {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        align-items: start;
+        gap: 24px;
+        width: min(100%, 900px);
+    }
+
+    .is-mobile.is-landscape .mobile-account-create-overview {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        min-width: 0;
+        min-height: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create-context {
+        flex: 0 0 auto;
+        max-height: none;
+        overflow: visible;
+        padding: 0 0 0 12px;
+        font-size: 0.82rem;
+        line-height: 1.5;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create-prompt {
+        font-size: 0.84rem;
+        line-height: 1.4;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create > .cmd-action-panel {
+        flex: 0 0 auto;
+        gap: 12px;
+        min-width: 0;
+        width: 100%;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create:not(.is-stat-editing) .creation-options-list {
+        flex: 0 0 auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-content: start;
+        gap: 8px;
+        padding: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .creation-options-list:empty {
+        display: none;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create :is(.creation-option-btn, .account-menu-btn) {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.82rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-creation-input-row :is(.account-input, .account-btn) {
+        min-height: 44px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-experience.is-creation .mobile-account-create .creation-nav-buttons {
+        position: static;
+        flex: 0 0 auto;
+        margin: 0;
+        padding: 8px 0 0 !important;
+        background: none !important;
+    }
+
+    .is-mobile.is-landscape .mobile-account-experience.is-creation .mobile-account-create .creation-nav-buttons .account-menu-btn {
+        min-width: 88px !important;
+        min-height: 40px !important;
+        padding: 6px 12px !important;
+    }
+
+    /* --- Vertical Stats with a Visible Footer --- */
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing {
+        flex: 1 1 auto;
+        overflow: hidden;
+        gap: 10px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing:not(.has-context) .mobile-account-create-overview {
+        display: none;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing > .cmd-action-panel {
+        display: grid;
+        flex: 1 1 auto;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        overflow: hidden;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing .cmd-action-header {
+        display: flex;
+        align-items: center;
+        grid-column: 1;
+        grid-row: 1;
+        padding: 0;
+        border: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .creation-points-header {
+        grid-column: 2;
+        grid-row: 1;
+        padding: 4px 0;
+        border: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing .creation-options-list {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        min-height: 0;
+        padding: 0;
+        overflow: auto;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-stat-editor {
+        gap: 10px;
+        padding: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-stat-list {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .stat-editor-row {
+        min-height: 40px;
+        padding: 3px 10px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-stat-step {
+        width: 34px;
+        height: 34px;
+        font-size: 1rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-stat-actions {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create .account-stat-actions .account-menu-btn {
+        flex: 1 1 100px;
+        width: auto;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing .creation-nav-buttons {
+        grid-column: 1 / -1;
+        grid-row: 3;
+    }
+}

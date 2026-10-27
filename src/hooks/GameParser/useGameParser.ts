@@ -6,6 +6,7 @@
 
 import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { commandLatency } from '../../utils/commandLatency';
+import { getPersonalContainerHeaderLocation } from '../../objects/containerInspectionContext';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { gmcpBus } from '../../events/gmcpBus';
 import { DrawerLine, EntityCapability, MessageType } from '../../types';
@@ -954,13 +955,13 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
                                  lowerLine.includes('<header>');
 
             const objectCaptureContext = activeCapture !== 'none' ? activeCapture : expectedCaptureBeforeTokenize;
-            const locationHint = objectCaptureContext === 'inventory'
+            const locationHint = getPersonalContainerHeaderLocation(lineToParse) ?? (objectCaptureContext === 'inventory'
                 ? 'carried'
                 : objectCaptureContext === 'equipment'
                     ? 'worn'
                     : (objectCaptureContext === 'container' && !isHeaderLine)
                         ? 'container'
-                        : undefined;
+                        : undefined);
             const effectiveTokens = isSnoop || locationHint ? null : tokens;
             derivedTokens = effectiveTokens || tokenizer.tokenize(lineToParse, tokenizerContext, locationHint);
             textOnly = derivedTokens.map((t: any) => t.content).join('');

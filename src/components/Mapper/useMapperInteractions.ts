@@ -1,3 +1,5 @@
+/** @file useMapperInteractions.ts — Map pointer gestures, room selection, and desktop target actions. */
+// --- Logic Section ---
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { ExecuteCommand } from '../../types';
 
@@ -323,6 +325,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
         if (fireMapLongPressAtLogTarget(e)) return true;
 
+        if (depsRef.current.isMobile && depsRef.current.mode === 'play') return false;
+
         const { screenToWorld, getExitAt, getOccupantAt } = hitTestRef.current;
         const world = screenToWorld(e.clientX, e.clientY);
         const exitHit = getExitAt?.(world.x, world.y);
@@ -537,7 +541,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 const world = screenToWorld(e.clientX, e.clientY);
 
                 const roomId = getRoomAt(world.x, world.y);
-                const markerId = getMarkerAt(world.x, world.y);
+                const markerId = depsRef.current.isMobile && mode === 'play' ? null : getMarkerAt(world.x, world.y);
                 if (markerId && mode === 'play') {
                     dragTypeRef.current = 'marker';
                     draggedMarkerRef.current = { id: markerId, offsetX: 0, offsetY: 0 };
@@ -933,8 +937,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         didHandleMapLongPressRelease = fireMapLongPressAtLogTarget(e);
                     }
 
-                    // Priority 1: Check for Exit/Door Click (on ANY tap)
-                    const exitHit = !didHandleMapLongPressRelease && isTap ? getExitAt?.(world.x, world.y) : null;
+                    // Mobile play taps select rooms even when a door or occupant covers the tile.
+                    const allowMapTargetTap = !depsRef.current.isMobile || mode !== 'play';
+                    const exitHit = allowMapTargetTap && !didHandleMapLongPressRelease && isTap ? getExitAt?.(world.x, world.y) : null;
 
                     if (exitHit) {
                         // Clean up joystick state just in case we intercepted its tap
@@ -1031,7 +1036,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                         }
                         if (isTap && !isMapLongPress) depsRef.current.triggerHaptic(40);
                     } else if (!didHandleMapLongPressRelease) {
-                        const occupantHit = isTap ? getOccupantAt?.(world.x, world.y) : null;
+                        const occupantHit = allowMapTargetTap && isTap ? getOccupantAt?.(world.x, world.y) : null;
                         if (occupantHit) {
                             if (dragTypeRef.current === 'joystick' && depsRef.current.joystick?.handleJoystickCancel) {
                                 depsRef.current.joystick.handleJoystickCancel(e as any);
@@ -1349,7 +1354,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
             const world = screenToWorld(e.clientX, e.clientY);
             const clickedRoomId = getRoomAt(world.x, world.y);
-            const clickedMarkerId = getMarkerAt(world.x, world.y);
+            const clickedMarkerId = depsRef.current.isMobile && depsRef.current.mode === 'play' ? null : getMarkerAt(world.x, world.y);
             if (clickedMarkerId) { depsRef.current.onEditMarker?.(clickedMarkerId); return; }
             if (!clickedRoomId && depsRef.current.mode !== 'edit') return;
 

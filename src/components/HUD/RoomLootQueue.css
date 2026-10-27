@@ -3,10 +3,10 @@
 @import './RoomLootPanel.css';
 
 .room-loot-root {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 84px);
-    right: 12px;
-    z-index: calc(var(--z-log, 100) + 30);
+    position: absolute;
+    top: calc(var(--client-chrome-height, 32px) + 12px);
+    right: 6px;
+    z-index: 70009;
     display: grid;
     justify-items: end;
     gap: 8px;
@@ -14,12 +14,7 @@
     font-family: var(--font-mono, monospace);
 }
 
-/* On desktop, anchor room chips to the log container instead of the full client. */
-.room-loot-root:not(.is-mobile) {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-}
+/* Room chips share the log's center column on desktop and mobile. */
 
 .room-loot-trigger-wrap {
     position: relative;
@@ -143,8 +138,8 @@
 
 /* Mobile responsive sizing */
 .room-loot-root.is-mobile {
-    top: calc(env(safe-area-inset-top, 0px) + 76px);
-    right: 8px;
+    top: calc(var(--client-chrome-height, 40px) + 12px);
+    right: 6px;
 }
 
 .room-loot-root.is-mobile .room-loot-trigger,

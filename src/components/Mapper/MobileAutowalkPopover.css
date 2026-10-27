@@ -1,0 +1,37 @@
+/** @file MobileAutowalkPopover.css — Touch sized room anchored autowalk control. */
+
+/* --- Top layer surface, independent of minimap and command clipping --- */
+.mobile-autowalk-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 3px 4px 3px 10px;
+    width: max-content;
+    max-width: calc(100vw - 16px);
+    box-sizing: border-box;
+    border: 1px solid rgba(201, 168, 76, 0.45);
+    border-radius: 0;
+    background: #211b16;
+    color: #d4cdb8;
+    font: 12px ui-monospace, SFMono-Regular, Consolas, monospace;
+    visibility: hidden;
+    pointer-events: auto;
+    touch-action: manipulation;
+    z-index: 2147483647;
+}
+.mobile-autowalk-popover:popover-open { display: flex; align-items: center; gap: 10px; }
+@supports not selector(:popover-open) {
+    .mobile-autowalk-popover { display: flex; align-items: center; gap: 10px; }
+}
+.mobile-autowalk-popover button {
+    min-height: 40px;
+    min-width: 64px;
+    padding: 0 8px;
+    border: 0;
+    border-radius: 0;
+    background: rgba(243, 139, 168, 0.12);
+    color: #f38ba8;
+    font: inherit;
+    cursor: pointer;
+}
+.mobile-autowalk-popover button:focus-visible { outline: 1px solid currentColor; }

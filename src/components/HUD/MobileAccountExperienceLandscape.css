@@ -1,0 +1,215 @@
+/**
+ * @file MobileAccountExperienceLandscape.css
+ * @description Landscape account shell, navigation rail, and character workspace.
+ */
+
+/* --- Account Shell and Navigation --- */
+@media (orientation: landscape) {
+    .app-container.is-mobile.is-landscape.state-account {
+        width: 100vw !important;
+        height: 100dvh !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        max-width: none !important;
+        overflow: hidden !important;
+    }
+
+    .app-container.is-mobile.is-landscape.state-account .app-viewport-shell {
+        flex-direction: column !important;
+        width: 100% !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .app-container.is-mobile.is-landscape.state-account .content-layer {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px) !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .app-container.is-mobile.is-landscape.state-account .header.mobile-header {
+        display: none !important;
+    }
+
+    .app-container.is-mobile.is-landscape.state-account :is(.message-log-wrapper, .mobile-log-command-split, .desktop-center-column) {
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .is-mobile.is-landscape .mobile-account-experience:not(.is-login) {
+        display: grid;
+        grid-template-columns: clamp(128px, 15vw, 168px) minmax(0, 1fr);
+        height: 100%;
+    }
+
+    .is-mobile.is-landscape .mobile-account-header {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+        padding: 18px 10px;
+        border-right: 1px solid var(--account-border);
+        border-bottom: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-brand {
+        padding: 0 6px;
+        font-size: 0.95rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-tabs {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-tabs button {
+        min-height: 44px;
+        padding: 8px 10px;
+        text-align: left;
+        font-size: 0.76rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-experience .mobile-account-body {
+        min-width: 0;
+        gap: 12px;
+        padding: 16px 18px max(12px, env(safe-area-inset-bottom, 0px));
+        overflow: hidden;
+    }
+
+    .is-mobile.is-landscape .mobile-account-experience .mobile-account-action {
+        min-height: 44px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+    }
+
+    /* --- Character Table and Optional Detail Pane --- */
+    .is-mobile.is-landscape .mobile-account-characters {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+        gap: 12px;
+        overflow: hidden;
+    }
+
+    .is-mobile.is-landscape .mobile-account-characters:has(.mobile-account-character-actions) {
+        grid-template-columns: minmax(0, 1fr) clamp(200px, 25vw, 280px);
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-list {
+        grid-column: 1;
+        grid-row: 1 / -1;
+        min-width: 0;
+    }
+
+    .is-mobile.is-landscape :is(.mobile-account-character-head, .mobile-account-character-row) {
+        width: 100%;
+        min-width: 550px;
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.74rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-terminal {
+        display: none;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-cells {
+        display: grid;
+        grid-template-columns: minmax(125px, 1.6fr) 40px 40px 34px minmax(70px, 0.9fr) minmax(80px, 1fr) 60px;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-cells > span {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-actions {
+        grid-column: 2;
+        grid-row: 1;
+        gap: 8px;
+    }
+
+    .is-mobile.is-landscape :is(.mobile-account-character-data, .mobile-account-character-summary) {
+        grid-column: 2;
+        grid-row: 2;
+        min-height: 0;
+        max-height: none;
+        overflow: auto;
+        padding: 12px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-summary {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        border: 1px solid var(--account-border);
+        background: var(--account-surface);
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-summary > strong {
+        color: var(--account-gold-bright);
+        font-size: 1rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px 10px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-summary-grid > span {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        overflow-wrap: anywhere;
+        font-size: 0.8rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-character-summary-grid small {
+        color: var(--account-text-muted);
+        font-size: 0.65rem;
+        text-transform: uppercase;
+    }
+
+    .is-mobile.is-landscape .mobile-account-characters:has(.mobile-account-character-data) .mobile-account-character-summary {
+        display: none;
+    }
+
+    /* --- Account Tools --- */
+    .is-mobile.is-landscape .mobile-account-menu {
+        width: min(100%, 680px);
+        margin: 0 auto;
+        overflow: auto;
+    }
+
+    .is-mobile.is-landscape .mobile-account-menu-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .is-mobile.is-landscape .mobile-account-data {
+        max-height: none;
+    }
+
+    @media (max-height: 340px) {
+        .is-mobile.is-landscape .mobile-account-header { padding-top: 10px; gap: 12px; }
+        .is-mobile.is-landscape .mobile-account-experience .mobile-account-body { padding-top: 10px; }
+    }
+}

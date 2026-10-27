@@ -34,6 +34,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
     const mapperDesktopRef = React.useRef<MapperRef>(null);
     const { ui, setUI } = useUI();
     const { mapDrawerOpacity, setMapDrawerOpacity, characterDrawerOpacity, setCharacterDrawerOpacity, hideMapHeaderFooter } = useSettingsStore();
+    const useMobileAccountPanels = useSettingsStore(state => state.useMobileAccountPanels ?? true);
     const showMapDrawer = gameState !== 'account' || sessionMode === 'replay';
 
     // Body classes for desktop layout
@@ -142,8 +143,8 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                 (between its bottom edge and the terrain strip) with its own explicit sizing. */}
 
 
-            {/* Account Drawer — mobile only; desktop uses the AccountDeck in the bottom bar. */}
-            {viewport.isMobile && (
+            {/* Keep the old account drawer out when the mobile account screen is active. */}
+            {viewport.isMobile && (gameState !== 'account' || !useMobileAccountPanels) && (
                 <DrawerShell id="account" side="right" title="Account">
                     <AccountDrawer />
                 </DrawerShell>

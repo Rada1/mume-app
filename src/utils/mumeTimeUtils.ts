@@ -40,6 +40,15 @@ export const MUME_MONTHS = [
     'Afterlithe', 'Wedmath', 'Halimath', 'Winterfilth', 'Blotmath', 'Foreyule'
 ];
 
+// --- Upcoming solar transition for compact clocks ---
+export const getNextSolarEventLabel = (month: string, hour: number, minute: number): string => {
+    const solar = SOLAR_HOURS[MUME_MONTHS.indexOf(month)] ?? { dawn: 7, dusk: 19 };
+    const details = MUME_MONTH_DETAILS[month];
+    const now = hour * 60 + minute;
+    const daylight = now >= solar.dawn * 60 && now < solar.dusk * 60;
+    return daylight ? `dusk ${details?.duskStr ?? '7 pm'}` : `dawn ${details?.dawnStr ?? '7 am'}`;
+};
+
 export const MUME_WEEKDAYS = [
     'Sunday', 'Monday', 'Trewsday', 'Hevenly Day', 'Mersday', 'Highday', 'Sterday'
 ];

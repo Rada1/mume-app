@@ -1,0 +1,115 @@
+/** @file MapLandscapePanels.css — Compact, scrollable mobile landscape map panels. */
+
+/* --- Bound overlays to the right side, above the command and map layers --- */
+.app-container.is-mobile.is-landscape :is(.mapper-room-info-panel, .map-filter-bar.floating-find-panel) {
+    position: fixed !important;
+    top: max(8px, env(safe-area-inset-top, 0px)) !important;
+    right: max(8px, env(safe-area-inset-right, 0px)) !important;
+    bottom: max(8px, env(safe-area-inset-bottom, 0px)) !important;
+    left: auto !important;
+    width: min(440px, calc(50vw - 16px)) !important;
+    height: auto !important;
+    min-height: 0;
+    max-height: none !important;
+    z-index: 2147483647 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+    overflow: hidden !important;
+    background: #211b16 !important;
+    border-left: 1px solid rgba(201, 168, 76, 0.3) !important;
+    box-sizing: border-box;
+    pointer-events: auto;
+    touch-action: pan-y;
+}
+
+/* --- Room actions stay visible while details, notes and exits scroll --- */
+.app-container.is-mobile.is-landscape .room-info-card-header {
+    flex: 0 0 auto;
+    margin: 0 !important;
+    padding-bottom: 6px;
+    min-height: 36px;
+}
+
+.app-container.is-mobile.is-landscape .room-info-card-header button {
+    min-height: 36px;
+}
+
+.app-container.is-mobile.is-landscape .room-info-card-body {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    gap: 6px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.app-container.is-mobile.is-landscape .room-info-card-body > * { flex-shrink: 0; }
+.app-container.is-mobile.is-landscape .room-info-card-ids { flex-wrap: wrap; gap: 4px 12px; }
+.app-container.is-mobile.is-landscape .room-info-card-name input { width: 100%; }
+.app-container.is-mobile.is-landscape .room-info-card-meta { flex-wrap: wrap; }
+.app-container.is-mobile.is-landscape .room-info-card-meta > div { flex-basis: 140px !important; }
+.app-container.is-mobile.is-landscape .room-info-card-notes textarea { min-height: 64px; height: 64px; }
+
+/* --- Find keeps search visible and uses the width for category choices --- */
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-top-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) 36px;
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 38px;
+    gap: 6px;
+}
+
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-search-input {
+    flex: 1 1 100px;
+    font-size: 16px;
+}
+
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-close-btn {
+    grid-column: 3;
+    grid-row: 1;
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+}
+
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-active-pill {
+    grid-column: 1 / 3;
+    grid-row: 2;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-clear-btn {
+    grid-column: 3;
+    grid-row: 2;
+    min-height: 32px;
+}
+
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-chips-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    align-content: start;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    gap: 4px 8px;
+    padding-top: 4px;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-category-group { min-width: 0; }
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-chip { padding: 0 4px; min-height: 40px; }
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-chip-main { min-width: 0; gap: 4px; }
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-chip-label { overflow-wrap: anywhere; }
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-dropup-inline {
+    max-height: none;
+    padding-left: 4px;
+}
+.app-container.is-mobile.is-landscape .floating-find-panel .map-filter-subflag { white-space: normal; }

@@ -16,6 +16,10 @@
     min-height: 0;
 }
 
+.mobile-account-create-overview {
+    display: contents;
+}
+
 .mobile-account-create-prompt {
     color: #ddd3be;
     font-size: 1rem;

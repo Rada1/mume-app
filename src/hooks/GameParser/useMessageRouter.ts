@@ -12,6 +12,7 @@ import { getTraitsForName } from '../../utils/inlineActionModel';
 import { getPlainRoomObjectDescription, getRoomObjectEntityNames, getTaggedRoomObjectNames, isRoomItemPresenceLine, parseRoomSurfaceItemList } from './roomItemDetection';
 import type { Token } from '../../types';
 import { isRoomCharacterDescription } from '../useRoomObjects';
+import { isContainerInspectionHeader } from '../../objects/containerInspectionContext';
 
 interface RoomItemDetectionOptions {
     isRoomContext?: boolean;
@@ -45,6 +46,7 @@ export const shouldDetectRoomItemsFromLine = (
     options: RoomItemDetectionOptions = {}
 ) => {
     const line = textOnly.trim();
+    if (isContainerInspectionHeader(line)) return false;
     const isObjectActionResult = /^(?:You|[A-Z][\w' -]+)\s+(?:drop|drops|get|gets|take|takes|pick up|picks up)\s+/i.test(line);
     if (isObjectActionResult) return false;
     const hasRoomObjectToken = getRoomObjectEntityNames(options.tokens || []).length > 0;
@@ -150,6 +152,10 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
     }, []);
 
     const detectItemsInRoom = useCallback((textOnly: string, cleanLine: string, isDrawerHiding: boolean, options: RoomItemDetectionOptions = {}) => {
+        if (isContainerInspectionHeader(textOnly)) {
+            pendingRoomSurfaceListRef.current = null;
+            return;
+        }
         const candidate = getPlainRoomObjectDescription(textOnly, cleanLine);
         const plainObjectCandidate = candidate && !isRoomCharacterDescription(candidate, deps.roomCharacters || []) ? candidate : null;
         const directSurfaceList = parseRoomSurfaceItemList(textOnly);

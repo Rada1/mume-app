@@ -61,6 +61,9 @@ import './styles/immersionDamagePulse.css';
 import './styles/classicMode.css';
 import './styles/classicModeLayout.css';
 import './styles/landscapeLayout.css';
+import './styles/landscapeCommandSplit.css';
+import './styles/landscapeCommandInfo.css';
+import './components/HUD/ClientChrome.css';
 
 
 // Note: numToWord, pluralize*, ARRIVE_REGEX etc. have been moved to src/hooks/useMessageLog.ts
@@ -171,6 +174,8 @@ const MudClient = () => {
             // Don't blur if the user is actually trying to type, click the prompt, or interact with an active button
             if (
                 target.tagName === 'INPUT' || 
+                target.tagName === 'TEXTAREA' ||
+                target.closest('.command-dock-input-main') ||
                 target.classList.contains('cmd-prompt') || 
                 target.closest('.input-form') ||
                 target.closest('.inline-btn') ||

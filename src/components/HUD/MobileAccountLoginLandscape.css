@@ -1,0 +1,95 @@
+/**
+ * @file MobileAccountLoginLandscape.css
+ * @description Bounded identity and login form columns for short landscape screens.
+ */
+
+/* --- Login Composition --- */
+@media (orientation: landscape) {
+    .is-mobile.is-landscape .mobile-account-experience.is-login {
+        display: flex;
+        justify-content: center;
+        padding: 16px 24px max(16px, env(safe-area-inset-bottom, 0px));
+        box-sizing: border-box;
+        overflow: auto;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.9fr) minmax(260px, 1.1fr);
+        grid-template-rows: auto auto;
+        align-items: center;
+        align-content: center;
+        gap: 12px 36px;
+        width: min(100%, 760px);
+        margin: auto;
+        padding: 24px;
+        box-sizing: border-box;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card h1 {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: end;
+        margin: 0;
+        font-size: clamp(1.8rem, 4vw, 2.4rem);
+        text-align: left;
+    }
+
+    .is-mobile.is-landscape .mobile-account-tagline {
+        grid-column: 1;
+        grid-row: 2;
+        align-self: start;
+        max-width: 29ch;
+        margin: 0;
+        font-size: 0.82rem;
+        line-height: 1.5;
+        text-align: left;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-prompt {
+        grid-column: 2;
+        grid-row: 1;
+        min-height: 0;
+        margin: 0;
+        font-size: 0.84rem;
+        line-height: 1.4;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card form {
+        grid-column: 2;
+        grid-row: 2;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card :is(.mobile-account-input, .mobile-account-action) {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.84rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card .mobile-account-remember {
+        min-height: 28px;
+        font-size: 0.76rem;
+    }
+
+    .is-mobile.is-landscape .mobile-account-login-card .mobile-account-action.is-reserved-hidden {
+        display: none;
+    }
+
+    @media (max-height: 340px) {
+        .is-mobile.is-landscape .mobile-account-experience.is-login {
+            justify-content: flex-start;
+            padding: 8px 16px;
+        }
+
+        .is-mobile.is-landscape .mobile-account-login-card {
+            margin: auto;
+            padding: 12px 20px;
+            gap: 8px 24px;
+        }
+
+        .is-mobile.is-landscape .mobile-account-login-card form { gap: 6px; }
+    }
+}

@@ -171,6 +171,7 @@
     max-height:none;
 }
 
+
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-movement-map-slot > .mobile-map-panel {
     display: flex !important;
     position: relative !important;

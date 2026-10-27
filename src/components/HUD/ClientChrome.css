@@ -1,0 +1,145 @@
+/** @file ClientChrome.css — Overlay controls replace reserved header space in every layout. */
+
+/* --- Reclaim the former header row --- */
+.app-container .content-layer {
+    padding-top: env(safe-area-inset-top, 0px) !important;
+    --shop-panel-top: 0px;
+}
+.app-container .app-header-glass-strip { display: none !important; }
+.app-container.is-mobile :is(.gear-panel, .help-panel, .chat-window-panel:not(.shop-panel)) {
+    top: env(safe-area-inset-top, 0px) !important;
+}
+
+/* --- Only the chip and menu button intercept log interaction --- */
+.client-chrome {
+    position: absolute;
+    inset: 4px 6px auto;
+    z-index: 70010;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: 8px;
+    pointer-events: none !important;
+    font: 12px var(--font-mono, monospace);
+}
+.client-chrome > * { pointer-events: auto; }
+.client-time-chip, .client-menu-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    padding: 4px 8px;
+    border: 0;
+    border-radius: 0;
+    background: #211b16;
+    color: #d4cdb8;
+    cursor: pointer;
+}
+.client-menu-trigger { width: 36px; flex: 0 0 36px; margin-left: 0; }
+.desktop-center-column { --client-chrome-height: 32px; }
+.client-time-chip .mobile-header-time { flex-direction: row; align-items: center; gap: 7px; }
+.client-time-chip .mobile-header-time-current { font-size: 12px; }
+.client-time-chip .mobile-header-time-solar { font-size: 10px; }
+.client-time-chip .mobile-header-time-weather { min-width: 0; max-width: 14ch; overflow: hidden; text-overflow: ellipsis; font-size: 10px; color: #a79d89; }
+.is-mobile .client-time-chip .mobile-header-time-solar { display: inline; }
+.is-mobile.is-landscape .client-time-chip .mobile-header-time-solar { display: inline; }
+@media (pointer: coarse) {
+    .desktop-center-column { --client-chrome-height: 40px; }
+    .client-menu-trigger, .client-time-chip { min-height: 40px; }
+    .client-menu-trigger { width: 40px; flex-basis: 40px; }
+}
+
+/* --- Native popovers escape log and panel clipping --- */
+.client-menu-popover {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 0;
+    background: #211b16;
+    color: #d4cdb8;
+    font: 13px var(--font-mono, monospace);
+    width: min(300px, calc(100vw - 16px));
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+.client-time-control { min-width: 0; max-width: calc(100% - 48px); background: #211b16; }
+.client-time-control[open] { width: min(360px, calc(100% - 48px)); }
+.client-time-control[open] .client-time-chip { position: relative; justify-content: center; width: 100%; padding: 14px 30px 4px; }
+.client-time-control[open] .client-time-chip .mobile-header-time-current { font-size: 22px; line-height: 1.25; }
+.client-time-control[open] .client-time-chip .mobile-header-time-solar { display: none; }
+.client-time-control[open] .client-time-chip .mobile-header-time-weather { display: none; }
+.client-time-chip { list-style: none; justify-content: flex-start; }
+.client-time-chip::-webkit-details-marker { display: none; }
+.client-time-chevron { flex: 0 0 12px; align-self: center; margin-left: 6px; color: #a99c86; }
+.client-time-control[open] .client-time-chevron { position: absolute; right: 10px; top: 17px; transform: rotate(180deg); }
+.client-time-expanded {
+    padding: 0 14px 14px;
+    text-align: center;
+    max-height: min(60dvh, 320px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+.client-time-expanded .header-environment-strip,
+.client-time-expanded .header-environment-card,
+.client-time-expanded .header-env-items {
+    display: flex !important;
+    position: static !important;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    flex-wrap: wrap;
+    overflow: visible;
+}
+.client-time-expanded .header-environment-strip { justify-content: center; padding-top: 12px; }
+.client-time-expanded .header-environment-card { gap: 6px; flex-direction: column; align-items: center; }
+.client-time-expanded .header-environment-card { opacity: 1; filter: none; white-space: normal; border: 0; border-radius: 0; box-shadow: none; background: transparent; padding: 0; }
+.client-time-expanded .header-env-item { font-size: 12px; }
+.client-time-expanded .header-room-name { font-size: 14px; white-space: normal; }
+.client-time-expanded .header-room-zone { font-size: 12px; white-space: normal; }
+.client-time-expanded .mobile-header-time { margin: 4px 0 0; gap: 5px; align-items: center; line-height: 1.4; }
+.client-time-expanded .mobile-header-time-current { font-size: 16px; }
+.client-time-expanded .mobile-header-time-solar { display: block; font-size: 11px; margin-top: 5px; }
+.client-time-calendar { color: #d4cdb8; font-size: 12px; white-space: normal; }
+.client-time-weekday { color: #a99c86; font-size: 11px; }
+.client-time-heading { display: flex; align-items: center; justify-content: space-between; }
+.client-time-heading button { min-width: 36px; min-height: 36px; border: 0; color: inherit; background: transparent; font-size: 22px; cursor: pointer; }
+.client-time-expanded .header-env-items { gap: 6px; justify-content: center; }
+.client-time-expanded .header-room-info { justify-content: center; flex-wrap: wrap; }
+.client-time-expanded .header-env-divider { display: none; }
+.client-menu-heading { position: sticky; top: -8px; z-index: 1; display: flex; align-items: center; justify-content: space-between; padding-left: 8px; background: #211b16; }
+.client-menu-heading button { min-width: 36px; min-height: 36px; font-size: 22px; }
+.client-menu-popover button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+.client-menu-heading button { width: 36px; justify-content: center; }
+.client-menu-popover button > span:first-of-type { flex: 1; }
+.client-menu-popover button:is(:hover, [aria-pressed="true"]) { background: rgba(201, 168, 76, 0.12); color: #dfbf6c; }
+.client-menu-section { border-top: 1px solid rgba(201, 168, 76, 0.2); margin-top: 6px; padding-top: 4px; }
+.client-menu-section h3 { display: flex; gap: 6px; font-size: 11px; color: #a99c86; margin: 6px 8px; }
+.client-menu-popover .client-exit-action { color: #f38ba8; }
+.client-chrome button:focus-visible, .client-menu-popover button:focus-visible { outline: 1px solid #dfbf6c; outline-offset: -2px; }
+.client-time-chip:focus-visible { outline: 1px solid #dfbf6c; outline-offset: -2px; }
+
+/* --- Wider screens trade menu width for fewer scrolling rows --- */
+@media (min-width: 650px) {
+    .client-menu-popover { width: min(420px, calc(100vw - 16px)); }
+    .client-menu-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .client-menu-section h3 { grid-column: 1 / -1; }
+}

@@ -16,6 +16,7 @@ import { MapCanvas } from './MapCanvas';
 import { MapFilterBar } from './MapFilterBar';
 import { MapperContextMenu } from './MapperContextMenu';
 import { RoomInfoCard } from './RoomInfoCard';
+import { MobileAutowalkPopover } from './MobileAutowalkPopover';
 import { useMapperInteractions } from './useMapperInteractions';
 import { useMapperController } from './useMapperController';
 import { useSmartWalk } from './hooks/useSmartWalk';
@@ -263,7 +264,8 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
     const setContextMenu = setLocalContextMenu;
     const { isOpen: isMapFindOpen, selectedRoomId: findRoomId, anchor: findAnchor, open: openMapFind, close: closeMapFind } = useMapperFindPanel();
     const mobileFindPanelHost = isMobile && typeof document !== 'undefined'
-        ? document.querySelector<HTMLElement>('.app-container.is-mobile .message-log-wrapper')
+        ? (document.querySelector<HTMLElement>('.app-container.is-mobile.is-landscape')
+            ?? document.querySelector<HTMLElement>('.app-container.is-mobile .message-log-wrapper'))
         : null;
 
     useEffect(() => {
@@ -418,7 +420,12 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
                 selectedRegionLabelId={selectedRegionLabelId}
                 joystickActive={joystick?.joystickActive}
             />
-            {isWalking && (
+            {isWalking && isMobile && (
+                <MobileAutowalkPopover canvasRef={canvasRef} cameraRef={cameraRef} playerPosRef={playerPosRef}
+                    room={rooms[currentRoomId ?? '']} currentRoomId={currentRoomId}
+                    performanceMap={performanceMapRef.current} roomsLeft={Math.max(0, walkPath.length - 1)} onStop={stopWalking} />
+            )}
+            {isWalking && !isMobile && (
                 <div className="map-autowalk-popup map-popup-surface" onPointerDown={event => event.stopPropagation()} onMouseDown={event => event.stopPropagation()}>
                     <div className="map-autowalk-info">
                         <span className="map-autowalk-pulse-dot" aria-hidden="true" />

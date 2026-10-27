@@ -1,9 +1,10 @@
 /** @file DesktopTargetWorkspace.tsx — Persistent desktop targets and commands using the quick gear menus. */
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useGame, useUI } from '../../context/GameContext';
 import { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import { useDesktopTargetWorkspace } from '../../hooks/useDesktopTargetWorkspace';
+import { useWorkspaceTargetReveal } from '../../hooks/useWorkspaceTargetReveal';
 import { useDesktopTargetWorkspaceStore } from '../../stores/useDesktopTargetWorkspaceStore';
 import { isDesktopTargetWorkspaceRequest } from '../../utils/popoverPanelUtils';
 import { CommandTreeGearQuickMenu } from '../HUD/CommandTreeGearQuickMenu';
@@ -16,8 +17,10 @@ const clickNavigation = {defer: (action: () => void) => action(), cancelPreview:
 const DesktopTargetWorkspace = ({request, close}: {request: PopoverState; close: () => void}) => {
  const controller = useCommandTreeController('selected', close, true, {retainPreview: true, followPanelRequests: false});
  const navigation = useDesktopTargetWorkspace(controller, request, close);
+ const workspaceRef = useRef<HTMLElement>(null);
+ useWorkspaceTargetReveal(workspaceRef, navigation.initialTarget?.id, request, navigation.kind);
  const slot = document.getElementById('client-panel-inline-actions-slot');
- const content = <section className={`desktop-target-workspace command-tree-v2${slot?'':' is-floating'}`} aria-label="Target commands">
+ const content = <section ref={workspaceRef} className={`desktop-target-workspace command-tree-v2${slot?'':' is-floating'}`} aria-label="Target commands">
   <header className="desktop-target-workspace-header">
    <nav aria-label="Target locations">
     {(['Room','Inventory','Equipment'] as const).map(kind => <button key={kind} type="button"

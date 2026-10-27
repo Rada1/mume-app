@@ -15,6 +15,7 @@ import {
 import { MapFilterSubflagsDropup } from './MapFilterSubflagsDropup';
 import './MapFilterBar.css';
 import './MapPopupSurfaces.css';
+import './MapLandscapePanels.css';
 
 // --- Props ---
 

@@ -239,15 +239,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const [headerHeight, setHeaderHeight] = React.useState(0);
 
     React.useLayoutEffect(() => {
-        const el = document.querySelector('.header') as HTMLElement | null;
-        if (!el) return;
-        const update = () => {
-            document.documentElement.style.setProperty('--shop-panel-top', `${el.getBoundingClientRect().height}px`);
-        };
-        const obs = new ResizeObserver(update);
-        obs.observe(el);
-        update();
-        return () => obs.disconnect();
+        document.documentElement.style.setProperty('--shop-panel-top', '0px');
     }, []);
 
 
@@ -530,10 +522,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     />
                 </div>
             )}
-            <Header
-                isLandscape={isLandscape}
-                getWeatherIcon={getWeatherIcon}
-            />
             {showGroupPanel && !isAccountScreen && viewport.isMobile && <GroupStatusWindow />}
             <ReplayHUD />
 
@@ -555,6 +543,16 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         margin: viewport.isMobile ? 0 : '0 auto'
                     }}
                 >
+                    <Header />
+                    {!isAccountScreen && (
+                        <RoomLootQueue
+                            isMobile={viewport.isMobile}
+                            executeCommand={executeCommand}
+                            roomNpcs={roomNpcs || []}
+                            parser={parser}
+                            triggerHaptic={triggerHaptic}
+                        />
+                    )}
                     {showMobileAccountExperience ? (
                         <MobileAccountExperience />
                     ) : <>
@@ -609,15 +607,6 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                             onPointerUp={handleLogPointerUp}
                         />
                         <TimerExpiryToast />
-                        {!isAccountScreen && (
-                            <RoomLootQueue
-                                isMobile={viewport.isMobile}
-                                executeCommand={executeCommand}
-                                roomNpcs={roomNpcs || []}
-                                parser={parser}
-                                triggerHaptic={triggerHaptic}
-                            />
-                        )}
                         {!isAccountScreen && <QuickButtonBar />}
                         {!useMobileLogCommandSplit && !isLandscapeCommandLayout && dockedInput}
                         </CounterRotatedContent>

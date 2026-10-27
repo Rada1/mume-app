@@ -70,7 +70,8 @@ export const HUDClustersLayer: React.FC<HUDClustersLayerProps> = ({
                     <>
                         {/* LineCluster is rendered beside the log in MainContentLayer on desktop.
                             Here we only render it for landscape/mobile overlay modes. */}
-                        {(isLandscape) && (
+                        {/* Account/login screens use their own controls, regardless of Pro mode. */}
+                        {isLandscape && (gameState !== 'account' || isReplaying) && (
                             <div className={`line-cluster-container ${(!showControls || isKeyboardOpen) && !btn.isEditMode ? 'hud-hidden' : ''}`}>
                                 <LineCluster
                                     isEditMode={btn.isEditMode}

@@ -5,17 +5,21 @@
 
 // --- Logic Section ---
 import React, { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { ChevronDown, RefreshCw } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import type { GameContextType } from '../../context/GameContext/types';
 import type { AccountState, CharacterEntry } from '../../types';
 import { useInputStore } from '../../stores/useInputStore';
 import { AccountAnsiLine } from '../Drawers/AccountAnsiLine';
-import { AccountCreationPanel } from '../Drawers/AccountCreationPanel';
 import { MobileAccountCharacterActionButton } from './MobileAccountCharacterActionButton';
+import { MobileAccountCharacterList } from './MobileAccountCharacterList';
+import { MobileAccountCreationView } from './MobileAccountCreationView';
 import { MobileAccountLoginPanel } from './MobileAccountLoginPanel';
 import './MobileAccountExperience.css';
 import './MobileAccountExperienceCreation.css';
+import './MobileAccountExperienceLandscape.css';
+import './MobileAccountCreationLandscape.css';
+import './MobileAccountLoginLandscape.css';
 
 type AccountTab = 'account' | 'characters' | 'create';
 type AccountAction = 'time' | 'link' | 'lag' | 'password' | null;
@@ -33,17 +37,6 @@ const lineForAction = (state: AccountState, action: AccountAction): string[] => 
     if (action === 'link') return state.linkLines ?? [];
     if (action === 'lag') return state.lagLines ?? [];
     return [];
-};
-
-const characterLine = (entry: CharacterEntry): React.ReactNode => {
-    const line = entry.rawLine
-        || [entry.name, entry.race, entry.sublevel, entry.level, entry.logon, entry.area, entry.rent].filter(Boolean).join('  ');
-    if (entry.logon.trim().toLowerCase() !== 'no link') return line;
-
-    const statusStart = line.toLowerCase().indexOf(entry.logon.toLowerCase());
-    if (statusStart < 0) return line;
-    const statusEnd = statusStart + entry.logon.length;
-    return <>{line.slice(0, statusStart)}<span className="mobile-account-character-no-link">{line.slice(statusStart, statusEnd)}</span>{line.slice(statusEnd)}</>;
 };
 
 export const MobileAccountExperience: FC = () => {
@@ -174,37 +167,6 @@ export const MobileAccountExperience: FC = () => {
     const characterInfoLines = accountState.charSelectTab === 'practice'
         ? accountState.charPracticeLines ?? []
         : accountState.charInfoLines ?? [];
-    const creationContextLines = (accountState.creationPrompt?.description ?? '').split('\n');
-    const creationContextAnsiLines = accountState.creationPrompt?.descriptionAnsiLines ?? creationContextLines;
-    const creationContext = creationContextLines
-        .filter((line, index) => line.trim() !== accountState.creationPrompt?.title.trim()
-            && line.trim() !== accountState.creationPrompt?.sectionTitle?.trim()
-            && Boolean(line.trim())
-            && Boolean(creationContextAnsiLines[index] ?? line))
-        .join('\n')
-        .trim();
-    const visibleCreationContextLines = creationContextLines
-        .map((line, index) => ({
-            line,
-            ansiLine: creationContextAnsiLines[index] ?? line
-        }))
-        .filter(({ line }) => Boolean(line.trim())
-            && line.trim() !== accountState.creationPrompt?.title.trim()
-            && line.trim() !== accountState.creationPrompt?.sectionTitle?.trim());
-    const statLabels: Record<string, string> = {
-        str: 'Strength', int: 'Intelligence', wis: 'Wisdom', dex: 'Dexterity',
-        con: 'Constitution', wil: 'Willpower', per: 'Perception'
-    };
-    const parsedStatContext = accountState.creationPrompt?.title.toLowerCase().includes('stat')
-        ? Object.entries(accountState.stats ?? {})
-            .map(([key, value]) => `${statLabels[key] ?? key}: ${value}`)
-            .join('  ·  ')
-        : '';
-    const hasStatValuesInContext = /(?:strength|str|intelligence|int|wisdom|wis|dexterity|dex|constitution|con|willpower|wil|perception|per)\s*[:=]?\s*\d+/i.test(creationContext ?? '');
-    const creationContextWithStats = parsedStatContext && !hasStatValuesInContext
-        ? [creationContext, parsedStatContext].filter(Boolean).join('\n')
-        : creationContext;
-
     return (
         <main className={`mobile-account-experience${isCreationStage || isAccountConfirmation ? ' is-creation' : ''}`}>
             <header className="mobile-account-header">
@@ -224,72 +186,17 @@ export const MobileAccountExperience: FC = () => {
 
             <section className="mobile-account-body">
                 {showCreation ? (
-                    <div className={`mobile-account-create${accountState.stage === 'stat-editing' ? ' is-stat-editing' : ''}`}>
-                        {isAccountConfirmation && (
-                            <div className="mobile-account-create-context" aria-label="Welcome to MUME account information">
-                                <AccountAnsiLine line="Welcome to MUME!" className="mobile-account-context-line" />
-                                <AccountAnsiLine line="" className="mobile-account-context-line" />
-                                <AccountAnsiLine line="Your first step here is to create an ACCOUNT." className="mobile-account-context-line" />
-                                <AccountAnsiLine line="" className="mobile-account-context-line" />
-                                <AccountAnsiLine line="MUME characters are organized into accounts. You can only have one account, and it cannot be shared with other players. You can create as many characters as you like, but they must all belong to this account." className="mobile-account-context-line" />
-                            </div>
-                        )}
-                        {(accountState.creationPrompt?.sectionTitle || creationContextWithStats) && (
-                            <div className="mobile-account-create-context" aria-label="Creation context">
-                                {accountState.creationPrompt?.sectionTitle && (
-                                    <AccountAnsiLine
-                                        line={accountState.creationPrompt.sectionTitleAnsi ?? accountState.creationPrompt.sectionTitle}
-                                        className="mobile-account-context-line"
-                                    />
-                                )}
-                                {parsedStatContext && !hasStatValuesInContext
-                                    ? <>{visibleCreationContextLines.map(({ ansiLine }, index) => <AccountAnsiLine key={`${index}-${ansiLine}`} line={ansiLine} className="mobile-account-context-line" />)}<div className="mobile-account-context-line">{parsedStatContext}</div></>
-                                    : visibleCreationContextLines.map(({ ansiLine }, index) => <AccountAnsiLine key={`${index}-${ansiLine}`} line={ansiLine} className="mobile-account-context-line" />)}
-                            </div>
-                        )}
-                        {accountState.stage !== 'stat-editing' && accountState.creationPrompt?.title && (
-                            <AccountAnsiLine
-                                line={accountState.creationPrompt.titleAnsi ?? accountState.creationPrompt.title}
-                                className="mobile-account-create-prompt"
-                            />
-                        )}
-                        {isAccountConfirmation && accountState.currentPrompt && (
-                            <AccountAnsiLine line={accountState.currentPrompt} className="mobile-account-create-prompt" />
-                        )}
-                        {accountState.stage === 'account-menu' && activeTab === 'create' ? (
-                            <div className="mobile-account-empty">Waiting for creation prompt…</div>
-                        ) : (
-                            <AccountCreationPanel
-                                accountState={accountState}
-                                executeCommand={executeCommand}
-                                triggerHaptic={triggerHaptic}
-                                compactMobileNavigation={isCreationStage}
-                            />
-                        )}
-                    </div>
+                    <MobileAccountCreationView
+                        accountState={accountState}
+                        executeCommand={executeCommand}
+                        triggerHaptic={triggerHaptic}
+                        isCreationStage={isCreationStage}
+                        isAccountConfirmation={isAccountConfirmation}
+                        waitingForPrompt={accountState.stage === 'account-menu' && activeTab === 'create'}
+                    />
                 ) : activeTab === 'characters' ? (
                     <div className="mobile-account-characters">
-                        <div className="mobile-account-character-list" role="listbox" aria-label="Characters">
-                            <div className="mobile-account-character-head" aria-hidden="true">Name　 Rce　 Sub　 Lvl　 Logon　 Area　 Rent</div>
-                            {accountState.characters.map(entry => (
-                                <button
-                                    key={entry.name}
-                                    type="button"
-                                    role="option"
-                                    aria-selected={selected?.name === entry.name}
-                                    className={`mobile-account-character-row${selected?.name === entry.name ? ' is-selected' : ''}`}
-                                    onClick={() => selectCharacter(entry)}
-                                >
-                                    {characterLine(entry)}
-                                </button>
-                            ))}
-                            {accountState.isGathering && accountState.characters.length === 0 && <div className="mobile-account-empty">Loading characters…</div>}
-                            {!accountState.isGathering && accountState.characters.length === 0 && (
-                                <button type="button" className="mobile-account-empty mobile-account-refresh" onClick={() => requestCharacters(true)}>
-                                    <RefreshCw size={16} /> Refresh list
-                                </button>
-                            )}
-                        </div>
+                        <MobileAccountCharacterList accountState={accountState} onSelect={selectCharacter} onRefresh={() => requestCharacters(true)} />
                         {selected && (
                             <div className="mobile-account-character-actions">
                                 <MobileAccountCharacterActionButton command="play" label="Play" primary onClick={() => executeCommand(`play ${selected.name}`)} />
@@ -303,6 +210,18 @@ export const MobileAccountExperience: FC = () => {
                                             <MobileAccountCharacterActionButton command="practice" label="Practice" onClick={() => requestCharacterData('practice')} />
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        )}
+                        {selected && (
+                            <div className="mobile-account-character-summary" aria-label={`${selected.name} character details`}>
+                                <strong>{selected.name}</strong>
+                                <div className="mobile-account-character-summary-grid">
+                                    <span><small>Race</small>{selected.race}</span>
+                                    <span><small>Level</small>{selected.level}{selected.sublevel ? ` · ${selected.sublevel}` : ''}</span>
+                                    <span><small>Logon</small>{selected.logon}</span>
+                                    <span><small>Area</small>{selected.area}</span>
+                                    <span><small>Rent</small>{selected.rent}</span>
                                 </div>
                             </div>
                         )}

@@ -97,7 +97,7 @@
 .room-loot-help { margin: 0; padding: 8px 11px; color: var(--room-loot-muted); font-size: 10px; }
 .room-loot-help code { color: var(--room-loot-accent); }
 
-.room-loot-overlay.is-mobile { position: fixed; inset: 0; z-index: 10020; display: block; padding: 0; pointer-events: none; }
+.room-loot-overlay.is-mobile { position: fixed; inset: 0; z-index: 2147483646; display: block; padding: 0; pointer-events: none; }
 .room-loot-overlay.is-mobile .room-loot-panel {
     position: fixed;
     top: var(--room-loot-panel-top, 120px);

@@ -17,7 +17,7 @@ import {
 } from './customPromptHelpers';
 import './HeaderEnvironmentStrip.css';
 
-export const HeaderEnvironmentStrip: FC = () => {
+export const HeaderEnvironmentStrip: FC<{ showTime?: boolean }> = ({ showTime = true }) => {
     const activeRoom = useActiveRoom();
     const { stats } = useVitals();
     const {
@@ -47,7 +47,7 @@ export const HeaderEnvironmentStrip: FC = () => {
         envItems.push({ id: 'weather', label: 'Fog', icon: getWeatherIcon('fog', true) });
     }
     if (lightingLabel) envItems.push({ id: 'lighting', label: lightingLabel, icon: getLightingIcon(lighting) });
-    if (timeLabel) envItems.push({ id: 'time', label: timeLabel, icon: getTimeIcon() });
+    if (showTime && timeLabel) envItems.push({ id: 'time', label: timeLabel, icon: getTimeIcon() });
 
     if (!roomName && envItems.length === 0) {
         return <div className="header-environment-spacer" />;

@@ -20,6 +20,12 @@ export interface CharacterEntry {
     rawLine?: string;
 }
 
+export interface MobileAccountCharacterListProps {
+    accountState: AccountState;
+    onSelect: (entry: CharacterEntry) => void;
+    onRefresh: () => void;
+}
+
 export interface CreationOption {
     id: string;
     label: string;

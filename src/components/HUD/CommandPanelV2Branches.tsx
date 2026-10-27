@@ -112,6 +112,51 @@ export const CommandPanelV2Branches = ({
         <CommandTreeAction targetLabel={displayLabel} targetGearRow={entry.gearRow}
             controller={controller} button={tree.command!} targetState={{x:0,y:0,type:'menu',setId:entry.category,category:entry.category,context:entry.context,keyword:entry.keyword,displayName:entry.group === 'objects' && entry.scope === 'room' ? entry.label : displayLabel,entityId:entry.id,parentNoun:entry.parentNoun,hasDoor:entry.hasDoor}}/>
     </div>;
+    const targetBranches = <>
+        {heldCommand && canUseTemporaryTargetMenu && <CommandTreeHeldTargets key={heldCommand.id} controller={controller}
+            tree={tree} button={heldCommand} onCommandExecuted={onCommandExecuted}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && !isCommandTreeTransfer(tree.command) && !isCommandTreeAccess(tree.command) && !isCommandTreeObservation(tree.command) && !isCommandTreeGetAction(tree.command) && !isCommandTreeShopAction(tree.command) && !isCommandTreePracticeAction(tree.command) && (/%n/.test(tree.command.command) || currentTargetEntries.length > 0 || (!mobileReadabilitySplit && tree.targets.length > 0)) && <section className={`command-tree-branch terminal-inline-popover${canUseTemporaryTargetMenu ? ' is-ability-side-branch' : ''}`} aria-label={`Targets for ${tree.command.label}`}>
+            <CommandTreeTargetHeader/>
+            {!isOnlinePlayerTargetCommand && (isBashTargetCommand ? bashTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
+                <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
+                    {section.entries.map(entry=>renderTarget(entry,entry.category==='cat-exit'?`${entry.doorName||'Door'} (${entry.label})`:entry.label))}
+                    {!section.entries.length&&<p className="command-tree-section-empty">{section.emptyLabel}</p>}
+                </div>
+            </CommandTreeCollapsibleSection>) : objectTargetSections.length ? objectTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
+                <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry => renderTarget(entry))}</div>
+            </CommandTreeCollapsibleSection>) : commandTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
+                <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry=>renderTarget(entry))}</div>
+            </CommandTreeCollapsibleSection>))}
+            {isTellTargetCommand && Boolean(game.groupMembers?.length) && <CommandTreeCollapsibleSection label="Group">
+                <button type="button" data-menu-item="true" className="command-tree-row" onClick={() => controller.communication.handleCommand('tell group')}>Group</button>
+            </CommandTreeCollapsibleSection>}
+            {isOnlinePlayerTargetCommand && <CommandTreeCollapsibleSection label="Online Players">
+                <OnlineCommandTargets hideHeader open namesOnly={isOnlinePlayerTargetCommand} excludedNames={isTellTargetCommand ? [game.characterName || ''] : []}
+                    onPreviewTarget={entry => {
+                        if (tree.command) controller.game.setCommandPreview?.(getCommandTreeTargetPreview(tree.command.command, entry.context));
+                        controller.previewEntity(entry);
+                    }}
+                    onSelect={entry => {
+                        if (isTellTargetCommand) {
+                            controller.communication.handleCommand(`tell ${entry.context}`);
+                            onCommandExecuted();
+                            return;
+                        }
+                        controller.dismissOutputs();
+                        controller.requestWhois(entry);
+                        onCommandExecuted();
+                    }}/>
+            </CommandTreeCollapsibleSection>}
+            {!tree.targets.length && !isBashTargetCommand && !isOnlinePlayerTargetCommand && <p>No available targets.</p>}
+        </section>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeTransfer(tree.command) && <CommandTreeTransferTargets key={tree.command.id} controller={controller} tree={tree} command={tree.command}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeGetAction(tree.command) && <CommandTreeGetTargets key={tree.command.id} controller={controller} button={tree.command} targets={tree.targets}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeAccess(tree.command) && <CommandTreeAccessTargets controller={controller} button={tree.command} targets={tree.targets} onCommandExecuted={onCommandExecuted}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeObservation(tree.command) && <CommandTreeObservationTargets controller={controller} button={tree.command} targets={tree.targets}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreePracticeAction(tree.command) && <CommandTreePracticeTargets controller={controller}/>}
+        {!heldCommand && !heldDirection && !heldMount && tree.command && atShop && isCommandTreeShopAction(tree.command) && <CommandTreeShopTargets controller={controller} command={tree.command} onCommandExecuted={onCommandExecuted}/>}
+    </>;
+    const useLandscapeTargetLane = mobileReadabilitySplit && isMobile && game.viewport?.isLandscape === true;
 
     return <CommandPanelViews communication={controller.communication}>
         {controller.isHelpMode && <p className="command-tree-hint">Choose an action to inspect its help.</p>}
@@ -125,48 +170,7 @@ export const CommandPanelV2Branches = ({
                     onCommandExecuted={onCommandExecuted} mobileReadabilitySplit={mobileReadabilitySplit}
                     onCommandTouchHoldStart={canUseTemporaryTargetMenu ? beginCommandHold : undefined}
                     onCommandTouchHoldEnd={canUseTemporaryTargetMenu ? endCommandHold : undefined}/>)}
-            {heldCommand && canUseTemporaryTargetMenu && <CommandTreeHeldTargets key={heldCommand.id} controller={controller}
-                tree={tree} button={heldCommand} onCommandExecuted={onCommandExecuted}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && !isCommandTreeTransfer(tree.command) && !isCommandTreeAccess(tree.command) && !isCommandTreeObservation(tree.command) && !isCommandTreeGetAction(tree.command) && !isCommandTreeShopAction(tree.command) && !isCommandTreePracticeAction(tree.command) && (/%n/.test(tree.command.command) || currentTargetEntries.length > 0 || (!mobileReadabilitySplit && tree.targets.length > 0)) && <section className={`command-tree-branch terminal-inline-popover${canUseTemporaryTargetMenu ? ' is-ability-side-branch' : ''}`} aria-label={`Targets for ${tree.command.label}`}>
-                <CommandTreeTargetHeader/>
-                {!isOnlinePlayerTargetCommand && (isBashTargetCommand ? bashTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-                    <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
-                        {section.entries.map(entry=>renderTarget(entry,entry.category==='cat-exit'?`${entry.doorName||'Door'} (${entry.label})`:entry.label))}
-                        {!section.entries.length&&<p className="command-tree-section-empty">{section.emptyLabel}</p>}
-                    </div>
-                </CommandTreeCollapsibleSection>) : objectTargetSections.length ? objectTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-                    <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry => renderTarget(entry))}</div>
-                </CommandTreeCollapsibleSection>) : commandTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
-                    <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>{section.entries.map(entry=>renderTarget(entry))}</div>
-                </CommandTreeCollapsibleSection>))}
-                {isTellTargetCommand && Boolean(game.groupMembers?.length) && <CommandTreeCollapsibleSection label="Group">
-                    <button type="button" data-menu-item="true" className="command-tree-row" onClick={() => controller.communication.handleCommand('tell group')}>Group</button>
-                </CommandTreeCollapsibleSection>}
-                {isOnlinePlayerTargetCommand && <CommandTreeCollapsibleSection label="Online Players">
-                    <OnlineCommandTargets hideHeader open namesOnly={isOnlinePlayerTargetCommand} excludedNames={isTellTargetCommand ? [game.characterName || ''] : []}
-                        onPreviewTarget={entry => {
-                            if (tree.command) controller.game.setCommandPreview?.(getCommandTreeTargetPreview(tree.command.command, entry.context));
-                            controller.previewEntity(entry);
-                        }}
-                        onSelect={entry => {
-                            if (isTellTargetCommand) {
-                                controller.communication.handleCommand(`tell ${entry.context}`);
-                                onCommandExecuted();
-                                return;
-                            }
-                            controller.dismissOutputs();
-                            controller.requestWhois(entry);
-                            onCommandExecuted();
-                        }}/>
-                </CommandTreeCollapsibleSection>}
-                {!tree.targets.length && !isBashTargetCommand && !isOnlinePlayerTargetCommand && <p>No available targets.</p>}
-            </section>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeTransfer(tree.command) && <CommandTreeTransferTargets key={tree.command.id} controller={controller} tree={tree} command={tree.command}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeGetAction(tree.command) && <CommandTreeGetTargets key={tree.command.id} controller={controller} button={tree.command} targets={tree.targets}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeAccess(tree.command) && <CommandTreeAccessTargets controller={controller} button={tree.command} targets={tree.targets} onCommandExecuted={onCommandExecuted}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreeObservation(tree.command) && <CommandTreeObservationTargets controller={controller} button={tree.command} targets={tree.targets}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && isCommandTreePracticeAction(tree.command) && <CommandTreePracticeTargets controller={controller}/>}
-            {!heldCommand && !heldDirection && !heldMount && tree.command && atShop && isCommandTreeShopAction(tree.command) && <CommandTreeShopTargets controller={controller} command={tree.command} onCommandExecuted={onCommandExecuted}/>}
+            {useLandscapeTargetLane ? <div className="command-tree-landscape-target-lane">{targetBranches}</div> : targetBranches}
             {showCommandMovement && <div className="command-tree-branch terminal-inline-popover is-movement-branch is-ability-movement-branch is-ability-side-branch" aria-label="Movement controls">
                 <CommandTreeMovement controller={controller} onCommandExecuted={onCommandExecuted} onDirectionHold={beginDirectionHold}
                     onDirectionRelease={endDirectionHold} heldDirection={heldDirection} showMountShortcut

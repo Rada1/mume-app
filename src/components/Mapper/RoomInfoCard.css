@@ -26,6 +26,9 @@
     border-radius: 0 !important;
 }
 
+/* --- Preserve the shared card flow outside landscape --- */
+.room-info-card-body { display: contents; }
+
 .app-container.immersion-mode .mapper-room-info-panel { background: #000 !important; }
 .app-container.performance-mode .mapper-room-info-panel { background: #171717 !important; }
 .mapper-room-info-panel button { border-color: transparent !important; }

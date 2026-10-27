@@ -1,3 +1,5 @@
+@import './MobileAccountCharacters.css';
+
 /**
  * @file MobileAccountExperience.css
  * @description Mobile account screens and large touch controls.
@@ -160,100 +162,6 @@
     cursor: default;
 }
 
-.mobile-account-characters {
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: column;
-    gap: 12px;
-    min-height: 0;
-}
-
-.mobile-account-character-list {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow: auto;
-    border: 1px solid var(--account-border);
-    border-radius: 6px;
-    background: var(--account-surface);
-}
-
-.mobile-account-character-head,
-.mobile-account-character-row {
-    display: block;
-    width: max-content;
-    min-width: 100%;
-    box-sizing: border-box;
-    padding: 12px 13px;
-    border: 0;
-    border-bottom: 1px solid var(--account-border);
-    color: var(--account-text);
-    font-family: inherit;
-    font-size: 0.82rem;
-    line-height: 1.35;
-    text-align: left;
-    white-space: pre;
-}
-
-.mobile-account-character-head {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background: var(--account-surface-raised);
-    color: var(--account-text-muted);
-    font-size: 0.72rem;
-}
-
-.mobile-account-character-row {
-    min-height: 48px;
-    background: transparent;
-    cursor: pointer;
-    touch-action: manipulation;
-}
-
-.mobile-account-character-row.is-selected {
-    background: var(--account-gold-wash);
-    color: var(--account-gold-bright);
-    box-shadow: inset 3px 0 var(--account-gold);
-}
-
-.mobile-account-character-no-link {
-    color: var(--ansi-bright-cyan, #55ffff) !important;
-}
-
-.mobile-account-character-actions {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 10px;
-}
-
-.mobile-account-more-wrap {
-    position: relative;
-}
-
-.mobile-account-more-wrap > .mobile-account-action {
-    width: 100%;
-    height: 100%;
-}
-
-.mobile-account-more-menu {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 6px);
-    z-index: 20;
-    display: grid;
-    width: min(220px, 70vw);
-    gap: 5px;
-    padding: 7px;
-    border: 1px solid var(--account-border-strong);
-    border-radius: 6px;
-    background: var(--account-surface-raised);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.32);
-}
-
-.mobile-account-more-menu .mobile-account-action {
-    min-height: 48px;
-}
-
 .mobile-account-character-data,
 .mobile-account-data {
     flex: 0 0 auto;
@@ -265,6 +173,14 @@
     background: var(--account-surface);
     font-size: 0.85rem;
     line-height: 1.45;
+}
+
+.mobile-account-character-summary {
+    display: none;
+}
+
+.mobile-account-character-cells {
+    display: none;
 }
 
 .mobile-account-data-line {

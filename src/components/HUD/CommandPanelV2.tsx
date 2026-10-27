@@ -27,6 +27,7 @@ import './CommandDockMobileReadabilityMenus.css';
 import { useCommandDockPosition } from '../../hooks/useCommandDockPosition';
 import { useQuickStateMenuPosition } from '../../hooks/useQuickStateMenuPosition';
 import { useUpwardCommandBranches } from '../../hooks/useUpwardCommandBranches';
+import { useMobileReadabilityMenuBounds } from '../../hooks/useMobileReadabilityMenuBounds';
 import type { PopoverState } from '../../types';
 // --- Render Section ---
 
@@ -133,6 +134,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  };
  const closeGearMenu = () => {setGearMenu(null); setGearMenuPosition(null); controller.previewEntity(null);};
  const isRotatedLandscape = game.viewport?.isRotatedLandscape === true;
+ const landscapeSummaryOverlay = Boolean(isMobile && game.viewport?.isLandscape && !isRotatedLandscape);
  const [dockSlots, setDockSlots] = React.useState<{summary:HTMLElement;controls:HTMLElement;actions:HTMLElement;menu:HTMLElement;app:HTMLElement}|null>(null);
  const mobileReadabilitySplit = Boolean(isMobile && isReadabilityMode && dockSlots && !isRotatedLandscape);
  const readabilityInlinePopoverOpen = mobileReadabilitySplit && isInlineEntityPopover(controller.ui.popoverState);
@@ -158,49 +160,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   if (summary && controls && actions && menu && app) setDockSlots({summary,controls,actions,menu,app});
   else setDockSlots(null);
  }, [isMobile, isRotatedLandscape]);
- React.useLayoutEffect(() => {
-  if (!mobileReadabilitySplit || !dockSlots) return;
-  const {app,controls,actions,summary} = dockSlots;
-  const updateRegion = () => {
-   const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
-   const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
-   const input = app.querySelector<HTMLElement>('.command-dock-input-main');
-   const controlsBottom = Math.max(
-    controlsContent?.getBoundingClientRect().bottom ?? controls.getBoundingClientRect().bottom,
-    actionsContent?.getBoundingClientRect().bottom ?? actions.getBoundingClientRect().bottom,
-    input?.getBoundingClientRect().bottom ?? 0,
-   );
-   const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
-   const summaryTop = (summaryContent ?? summary).getBoundingClientRect().top;
-   app.style.setProperty('--mobile-readability-menu-top', `${Math.ceil(controlsBottom + 4)}px`);
-   app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - summaryTop + 4))}px`);
-  };
-  updateRegion();
-  const observer = new ResizeObserver(updateRegion);
-  observer.observe(controls);
-  observer.observe(actions);
-  observer.observe(summary);
-  const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
-  const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
-  const input = app.querySelector<HTMLElement>('.command-dock-input-main');
-  const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
-  [controlsContent, actionsContent, input, summaryContent].forEach(element => {
-   if (element) observer.observe(element);
-  });
-  const commandColumn = app.querySelector<HTMLElement>('.mobile-command-column');
-  if (commandColumn) observer.observe(commandColumn);
-  window.addEventListener('resize', updateRegion);
-  window.visualViewport?.addEventListener('resize', updateRegion);
-  window.visualViewport?.addEventListener('scroll', updateRegion);
-  return () => {
-   observer.disconnect();
-   window.removeEventListener('resize', updateRegion);
-   window.visualViewport?.removeEventListener('resize', updateRegion);
-   window.visualViewport?.removeEventListener('scroll', updateRegion);
-   app.style.removeProperty('--mobile-readability-menu-top');
-   app.style.removeProperty('--mobile-readability-menu-bottom');
-  };
- }, [dockSlots, mobileReadabilitySplit]);
+ useMobileReadabilityMenuBounds(mobileReadabilitySplit || landscapeSummaryOverlay, dockSlots);
  React.useEffect(() => {
   if (!gearMenu) return;
   window.addEventListener('resize', updateGearMenuPosition);
@@ -254,6 +214,9 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  </div>;
  const characterSummary = <UiProfiler id="Character summary"><CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui?.scoreLines}
   executeCommand={game.executeCommand} scopeKey={summaryScopeKey}/></UiProfiler>;
+ const characterSummaryPortal = landscapeSummaryOverlay
+  ? <div className="command-tree-v2 landscape-character-summary-overlay">{characterSummary}</div>
+  : characterSummary;
  const characterControls = <div className="command-tree-dock-controls-inner">
     <nav className="command-tree-state-controls" aria-label="Quick state controls">
      {[['Position', stanceValue], ['Mood', game.mood], ['Cast Speed', game.spellSpeed], ['Alertness', game.alertness]].map(([label,value]) =>
@@ -303,7 +266,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   }
  }, [mobileCommandFocus, mobileReadabilitySplit, tree.command?.id, tree.command?.command, tree.targets.length]);
  if (dockSlots) return <>
-  {createPortal(characterSummary, dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
+  {createPortal(characterSummaryPortal, landscapeSummaryOverlay ? dockSlots.app : dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
   {(tree.group !== null || controller.isHelpMode) && !readabilityInlinePopoverOpen && createPortal(commandMenu, mobileCommandFocus ? dockSlots.app : dockSlots.menu)}
   <span className="command-tree-portal-host" aria-hidden="true" /><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </>;

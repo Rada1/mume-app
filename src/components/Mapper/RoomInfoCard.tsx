@@ -9,6 +9,7 @@ import { RoomInfoFlags } from './RoomInfoFlags';
 import { RoomInfoExits } from './RoomInfoExits';
 import { RoomMapFlagsEditor } from './RoomMapFlagsEditor';
 import './RoomInfoCard.css';
+import './MapLandscapePanels.css';
 
 // --- Room card presentation ---
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
@@ -68,6 +69,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
                 </div>
             </div>
 
+            <div className="room-info-card-body">
             <div className="room-info-card-ids" style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#a1a1aa' }}>
                 <span>Client ID: <span style={{ color: '#e4e4e7', fontWeight: '500' }}>{roomId}</span></span>
                 <span>GMCP ID: <span style={{ color: '#60a5fa' }}>{room.gmcpId || 'N/A'}</span></span>
@@ -159,6 +161,7 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
             <div className="room-info-card-divider" style={{ height: '1px', backgroundColor: '#27272a', margin: '4px 0' }} />
 
             <RoomInfoExits room={room} mode={mode} isDarkMode={isDarkMode} editExit={editExit} />
+            </div>
         </div>
     );
 

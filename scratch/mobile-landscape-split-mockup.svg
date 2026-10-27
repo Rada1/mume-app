@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 560" role="img" aria-labelledby="title description">
+  <title id="title">Mobile landscape split command layout</title>
+  <desc id="description">A landscape game client with quick controls and command entry on the left, a centered log, and command groups with character status on the right.</desc>
+  <defs>
+    <linearGradient id="screen" x2="0" y2="1">
+      <stop offset="0" stop-color="#111722" />
+      <stop offset="1" stop-color="#090c12" />
+    </linearGradient>
+    <linearGradient id="log" x2="0" y2="1">
+      <stop offset="0" stop-color="#111722" />
+      <stop offset="1" stop-color="#0b0e14" />
+    </linearGradient>
+    <linearGradient id="gold" x2="0" y2="1">
+      <stop offset="0" stop-color="#d4b965" />
+      <stop offset="1" stop-color="#ac8b37" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="5" stdDeviation="10" flood-color="#000" flood-opacity=".42" />
+    </filter>
+    <clipPath id="screen-clip">
+      <rect x="1" y="1" width="1278" height="558" rx="20" />
+    </clipPath>
+  </defs>
+
+  <rect width="1280" height="560" rx="21" fill="#05070b" />
+  <g clip-path="url(#screen-clip)">
+    <rect x="1" y="1" width="1278" height="558" fill="url(#screen)" />
+
+    <!-- App header -->
+    <rect x="1" y="1" width="1278" height="48" fill="#0b0f17" />
+    <path d="M1 48.5H1279" stroke="#c9a84c" stroke-opacity=".22" />
+    <circle cx="25" cy="24" r="4" fill="#8ebd75" />
+    <text x="40" y="29" fill="#d8cda9" font-family="ui-monospace, monospace" font-size="13" letter-spacing="1.2">MUME</text>
+    <text x="640" y="29" text-anchor="middle" fill="#9298a4" font-family="ui-monospace, monospace" font-size="11" letter-spacing="2">LANDSCAPE · SPLIT COMMANDS</text>
+    <text x="1253" y="29" text-anchor="end" fill="#8a909c" font-family="ui-monospace, monospace" font-size="11">12:48</text>
+
+    <!-- Side rails and center log -->
+    <rect x="1" y="49" width="296" height="510" fill="#0c1017" />
+    <rect x="297" y="49" width="686" height="510" fill="url(#log)" />
+    <rect x="983" y="49" width="296" height="510" fill="#0c1017" />
+    <path d="M297 49V559M983 49V559" stroke="#c9a84c" stroke-opacity=".3" />
+
+    <!-- Left rail: quick states -->
+    <text x="23" y="78" fill="#c9a84c" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.6">QUICK STATES</text>
+    <g filter="url(#shadow)" font-family="ui-monospace, monospace">
+      <rect x="18" y="94" width="124" height="58" rx="6" fill="#171d27" stroke="#c9a84c" stroke-opacity=".22" />
+      <text x="30" y="116" fill="#d5d8df" font-size="11">STANCE</text>
+      <text x="30" y="137" fill="#8ebd75" font-size="12">Standing</text>
+      <rect x="154" y="94" width="124" height="58" rx="6" fill="#171d27" stroke="#c9a84c" stroke-opacity=".22" />
+      <text x="166" y="116" fill="#d5d8df" font-size="11">MOOD</text>
+      <text x="166" y="137" fill="#8ebd75" font-size="12">Normal</text>
+      <rect x="18" y="162" width="124" height="58" rx="6" fill="#171d27" stroke="#c9a84c" stroke-opacity=".22" />
+      <text x="30" y="184" fill="#d5d8df" font-size="11">CAST SPEED</text>
+      <text x="30" y="205" fill="#8ebd75" font-size="12">Normal</text>
+      <rect x="154" y="162" width="124" height="58" rx="6" fill="#171d27" stroke="#c9a84c" stroke-opacity=".22" />
+      <text x="166" y="184" fill="#d5d8df" font-size="11">ALERTNESS</text>
+      <text x="166" y="205" fill="#8ebd75" font-size="12">Awake</text>
+    </g>
+
+    <!-- Left rail: command entry -->
+    <text x="23" y="466" fill="#c9a84c" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.6">COMMAND</text>
+    <rect x="17" y="478" width="262" height="60" rx="7" fill="#171d27" stroke="#c9a84c" stroke-opacity=".34" />
+    <text x="31" y="515" fill="#c9a84c" font-family="ui-monospace, monospace" font-size="16">&gt;</text>
+    <text x="53" y="515" fill="#7d8490" font-family="ui-monospace, monospace" font-size="13">Enter a command</text>
+    <rect x="237" y="492" width="30" height="32" rx="5" fill="url(#gold)" />
+    <path d="M247 507h10m-5-5 5 5-5 5" fill="none" stroke="#211a0c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Center log -->
+    <rect x="315" y="66" width="650" height="43" rx="5" fill="#171d27" stroke="#c9a84c" stroke-opacity=".18" />
+    <text x="333" y="84" fill="#ddc879" font-family="ui-monospace, monospace" font-size="11" letter-spacing="1.1">THE GREENWAY</text>
+    <text x="333" y="100" fill="#9ba2ae" font-family="ui-monospace, monospace" font-size="10">A quiet road beneath the trees</text>
+    <text x="948" y="91" text-anchor="end" fill="#7e8795" font-family="ui-monospace, monospace" font-size="10">ROOM 1842</text>
+    <g font-family="ui-monospace, monospace" font-size="13">
+      <text x="326" y="145" fill="#737c88">12:47</text>
+      <text x="378" y="145" fill="#d7dbe2">The old road winds north between moss-covered stones.</text>
+      <text x="326" y="177" fill="#737c88">12:47</text>
+      <text x="378" y="177" fill="#aeb7c4">A cool breeze stirs the high branches above you.</text>
+      <text x="326" y="209" fill="#737c88">12:47</text>
+      <text x="378" y="209" fill="#dfcf8c">You notice a trail leading east.</text>
+      <text x="326" y="241" fill="#737c88">12:48</text>
+      <text x="378" y="241" fill="#b6c5a9">Your movement is ready.</text>
+      <text x="326" y="273" fill="#737c88">12:48</text>
+      <text x="378" y="273" fill="#d7dbe2">The forest grows quiet around you.</text>
+    </g>
+    <path d="M325 296H950" stroke="#c9a84c" stroke-opacity=".12" stroke-dasharray="3 6" />
+    <text x="638" y="323" text-anchor="middle" fill="#5e6673" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.2">LOG STAYS CENTERED · BOTH THUMBS REACH THE CONTROLS</text>
+
+    <!-- Right rail: command groups -->
+    <text x="1004" y="78" fill="#c9a84c" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.6">COMMAND GROUPS</text>
+    <g font-family="ui-monospace, monospace" font-size="11" text-anchor="middle">
+      <rect x="1002" y="94" width="124" height="44" rx="6" fill="#1a202b" stroke="#c9a84c" stroke-opacity=".35" />
+      <text x="1064" y="121" fill="#e3d8b5">ABILITIES</text>
+      <rect x="1138" y="94" width="124" height="44" rx="6" fill="#1a202b" stroke="#c9a84c" stroke-opacity=".35" />
+      <text x="1200" y="121" fill="#e3d8b5">MOVEMENT</text>
+      <rect x="1002" y="148" width="124" height="44" rx="6" fill="#1a202b" stroke="#c9a84c" stroke-opacity=".35" />
+      <text x="1064" y="175" fill="#e3d8b5">INFO</text>
+      <rect x="1138" y="148" width="124" height="44" rx="6" fill="#1a202b" stroke="#c9a84c" stroke-opacity=".35" />
+      <text x="1200" y="175" fill="#e3d8b5">OBJECTS</text>
+      <rect x="1002" y="202" width="124" height="44" rx="6" fill="#1a202b" stroke="#c9a84c" stroke-opacity=".35" />
+      <text x="1064" y="229" fill="#e3d8b5">SOCIAL</text>
+    </g>
+
+    <!-- Right rail: compact character status -->
+    <rect x="1002" y="414" width="260" height="124" rx="7" fill="#171d27" stroke="#c9a84c" stroke-opacity=".2" />
+    <text x="1018" y="438" fill="#c9a84c" font-family="ui-monospace, monospace" font-size="10" letter-spacing="1.2">CHARACTER STATUS</text>
+    <text x="1018" y="461" fill="#e1d9c2" font-family="ui-monospace, monospace" font-size="12">Adventurer</text>
+    <text x="1018" y="483" fill="#9ba2ae" font-family="ui-monospace, monospace" font-size="10">HP</text>
+    <rect x="1050" y="474" width="194" height="11" rx="5" fill="#292f3a" />
+    <rect x="1050" y="474" width="148" height="11" rx="5" fill="#8c483e" />
+    <text x="1018" y="507" fill="#9ba2ae" font-family="ui-monospace, monospace" font-size="10">MANA</text>
+    <rect x="1050" y="498" width="194" height="11" rx="5" fill="#292f3a" />
+    <rect x="1050" y="498" width="168" height="11" rx="5" fill="#416a8b" />
+
+    <!-- Hairline frame -->
+    <rect x="1" y="1" width="1278" height="558" rx="20" fill="none" stroke="#c9a84c" stroke-opacity=".16" />
+  </g>
+</svg>
