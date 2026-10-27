@@ -159,7 +159,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   const app = document.querySelector<HTMLElement>('.app-container');
   if (summary && controls && actions && menu && app) setDockSlots({summary,controls,actions,menu,app});
   else setDockSlots(null);
- }, [isMobile, isRotatedLandscape]);
+ }, [isMobile, isRotatedLandscape, landscapeSummaryOverlay]);
  useMobileReadabilityMenuBounds(mobileReadabilitySplit || landscapeSummaryOverlay, dockSlots);
  React.useEffect(() => {
   if (!gearMenu) return;

@@ -13,13 +13,15 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
     useLayoutEffect(() => {
         if (!enabled || !slots) return;
         const { app, controls, actions, summary } = slots;
-        const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
-        const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
-        const input = app.querySelector<HTMLElement>('.command-dock-input-main');
-        const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
         let observedMapSlot: HTMLElement | null = null;
         let observedSummaryToggle: HTMLElement | null = null;
         const updateRegion = () => {
+            if (![app, controls, actions, summary].every(element => element.isConnected)) return;
+            // Rotation reparents/remounts the summary and input; never measure cached descendants.
+            const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
+            const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
+            const input = app.querySelector<HTMLElement>('.command-dock-input-main');
+            const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
             const isLandscape = app.classList.contains('is-landscape');
             if (isLandscape) {
                 const overlaySummary = app.querySelector<HTMLElement>('.landscape-character-summary-overlay .command-tree-you-summary');
@@ -79,7 +81,10 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
         observer.observe(controls);
         observer.observe(actions);
         observer.observe(summary);
-        [controlsContent, actionsContent, input, summaryContent].forEach(element => {
+        [controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner'),
+            actions.querySelector<HTMLElement>('.command-tree-dock-action-bar'),
+            app.querySelector<HTMLElement>('.command-dock-input-main'),
+            summary.querySelector<HTMLElement>('.command-tree-you-summary')].forEach(element => {
             if (element) observer.observe(element);
         });
         const commandColumn = app.querySelector<HTMLElement>('.mobile-command-column');
