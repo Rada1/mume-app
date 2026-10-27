@@ -12,6 +12,7 @@ import { useGame } from '../../context/GameContext';
 import { useActiveRoomExits } from '../../stores/useActiveGameState';
 import { useWimpyThresholdControl } from '../../hooks/useWimpyThresholdControl';
 import { usePressAndHold } from '../../hooks/usePressAndHold';
+import { useMovementPadExits } from '../../hooks/useMovementPadExits';
 import './MovementPad.css';
 import './MovementPadMap.css';
 
@@ -26,19 +27,6 @@ interface PadCell {
 type MovementPadLayout = 'panel' | 'map' | 'menu';
 
 const MOVEMENT_DIRS = new Set(['u', 'n', 'w', 'e', 's', 'd']);
-
-const normalizeDir = (d: string): string => {
-    const lower = d.toLowerCase();
-    const map: Record<string, string> = {
-        north: 'n', n: 'n',
-        south: 's', s: 's',
-        east: 'e', e: 'e',
-        west: 'w', w: 'w',
-        up: 'u', u: 'u',
-        down: 'd', d: 'd',
-    };
-    return map[lower] || lower;
-};
 
 const CELLS: PadCell[] = [
     { cmd: 'u', label: 'Up', icon: ChevronsUp, className: 'pad-u', hotkey: 'Num 7' },
@@ -88,40 +76,7 @@ export const MovementPad: FC<{
     const mountHold = usePressAndHold<string>(() => onMountHold?.(), () => onMountRelease?.(),
         layout === 'menu' && showMountButton && Boolean(onMountHold && onMountRelease));
 
-    const normalizedExitSet = React.useMemo(() => {
-        const set = new Set<string>();
-        if (Array.isArray(exits)) {
-            exits.forEach(e => set.add(normalizeDir(e)));
-        }
-        return set;
-    }, [exits]);
-
-    const isExitClosed = React.useCallback((cmd: string): boolean => {
-        const rawExit = rawExits?.[cmd] || rawExits?.[normalizeDir(cmd)];
-        if (!rawExit || typeof rawExit !== 'object') return false;
-        if (rawExit.closed === true) return true;
-        if (Array.isArray(rawExit.flags)) {
-            return rawExit.flags.some((f: unknown) => {
-                const lf = String(f).toLowerCase();
-                return lf === 'closed' || lf === 'locked';
-            });
-        }
-        return false;
-    }, [rawExits]);
-
-    const getDoorState = (cmd: string) => {
-        const rawExit = rawExits?.[cmd] || rawExits?.[normalizeDir(cmd)];
-        if (!rawExit || typeof rawExit !== 'object') return null;
-        const flags = Array.isArray(rawExit.flags) ? rawExit.flags.map((flag: unknown) => String(flag).toLowerCase()) : [];
-        const hasDoor = rawExit.hasDoor === true || rawExit.door === true
-            || (typeof rawExit.door === 'number' && rawExit.door > 0)
-            || Boolean(rawExit.doorName || rawExit.name)
-            || rawExit.closed === true
-            || flags.some((flag: string) => /door|gate|portcullis|closed|locked/i.test(flag));
-        const isLocked = rawExit.locked === true || flags.includes('locked');
-        const isClosed = rawExit.closed === true || flags.includes('closed') || isLocked;
-        return { hasDoor, isLocked, isClosed };
-    };
+    const { normalizedExitSet, getDoorState, isExitClosed } = useMovementPadExits(exits, rawExits);
 
     const getDoorActions = (cmd: string): Array<{ command: string; isApplicable: boolean }> => {
         const doorState = getDoorState(cmd);

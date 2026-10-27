@@ -18,8 +18,24 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
         const input = app.querySelector<HTMLElement>('.command-dock-input-main');
         const summaryContent = summary.querySelector<HTMLElement>('.command-tree-you-summary');
         let observedMapSlot: HTMLElement | null = null;
+        let observedSummaryToggle: HTMLElement | null = null;
         const updateRegion = () => {
             const isLandscape = app.classList.contains('is-landscape');
+            if (isLandscape) {
+                const overlaySummary = app.querySelector<HTMLElement>('.landscape-character-summary-overlay .command-tree-you-summary');
+                const identity = overlaySummary?.querySelector<HTMLElement>('.command-tree-you-toggle');
+                const rows = identity && Array.from(identity.querySelectorAll<HTMLElement>(':scope > strong, :scope > span'))
+                    .map(element => element.getBoundingClientRect()).filter(rect => rect.height > 0);
+                if (overlaySummary && rows?.length) {
+                    const padding = getComputedStyle(overlaySummary);
+                    const height = Math.ceil(Math.max(...rows.map(rect => rect.bottom)) - Math.min(...rows.map(rect => rect.top))
+                        + parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom) + 8);
+                    const value = `${height}px`;
+                    if (app.style.getPropertyValue('--landscape-summary-reserved-height') !== value) {
+                        app.style.setProperty('--landscape-summary-reserved-height', value);
+                    }
+                }
+            }
             const inputRect = input?.getBoundingClientRect();
             const controlsBottom = controlsContent?.getBoundingClientRect().bottom ?? controls.getBoundingClientRect().bottom;
             const actionsBottom = actionsContent?.getBoundingClientRect().bottom ?? actions.getBoundingClientRect().bottom;
@@ -33,6 +49,7 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
             app.style.setProperty('--mobile-readability-right-branch-offset', `${Math.max(0, Math.floor(controlsBottom - menuTop))}px`);
             app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - menuBottomBoundary + 4))}px`);
             app.style.setProperty('--mobile-readability-main-branch-bottom-inset', `${isLandscape && inputRect ? Math.max(0, Math.ceil(menuBottomBoundary - inputRect.top)) : 0}px`);
+            app.style.setProperty('--mobile-readability-right-branch-bottom-inset', `${isLandscape ? Math.max(0, Math.ceil(menuBottomBoundary - summaryTop)) : 0}px`);
             if (isLandscape) {
                 app.style.setProperty('--landscape-command-input-clearance', `${Math.max(4, Math.ceil(window.innerHeight - (inputRect?.top ?? window.innerHeight) + 4))}px`);
                 const mapSlotRect = app.querySelector<HTMLElement>('.command-tree-movement-map-slot')?.getBoundingClientRect();
@@ -49,10 +66,14 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
         const observer = new ResizeObserver(updateRegion);
         const observeMapSlot = () => {
             const nextMapSlot = app.querySelector<HTMLElement>('.command-tree-movement-map-slot');
-            if (nextMapSlot === observedMapSlot) return;
+            const nextSummaryToggle = app.querySelector<HTMLElement>('.landscape-character-summary-overlay .command-tree-you-toggle');
+            if (nextMapSlot === observedMapSlot && nextSummaryToggle === observedSummaryToggle) return;
             if (observedMapSlot) observer.unobserve(observedMapSlot);
             observedMapSlot = nextMapSlot;
             if (observedMapSlot) observer.observe(observedMapSlot);
+            if (observedSummaryToggle) observer.unobserve(observedSummaryToggle);
+            observedSummaryToggle = nextSummaryToggle;
+            if (observedSummaryToggle) observer.observe(observedSummaryToggle);
             updateRegion();
         };
         observer.observe(controls);
@@ -80,6 +101,8 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
             app.style.removeProperty('--mobile-readability-right-branch-offset');
             app.style.removeProperty('--mobile-readability-menu-bottom');
             app.style.removeProperty('--mobile-readability-main-branch-bottom-inset');
+            app.style.removeProperty('--mobile-readability-right-branch-bottom-inset');
+            app.style.removeProperty('--landscape-summary-reserved-height');
             app.style.removeProperty('--landscape-command-input-clearance');
             app.style.removeProperty('--landscape-character-summary-left');
             app.style.removeProperty('--landscape-character-summary-right');
