@@ -421,7 +421,8 @@ export function useCommandController(deps: CommandControllerDeps) {
             return;
         }
 
-        executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer);
+        executor.executeCommand(cmd, effectiveSilent, isSystem, isHistorical, fromDrawer,
+            !options?.fromInput && Boolean(options?.fromUi || fromDrawer));
 
         // if (!effectiveSilent && !isSystem) {
         //     useAtmosphereStore.getState().notifyCommandPulse();

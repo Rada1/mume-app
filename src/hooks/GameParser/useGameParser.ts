@@ -7,6 +7,7 @@
 import React, { useCallback, useRef, useMemo, useEffect } from 'react';
 import { commandLatency } from '../../utils/commandLatency';
 import { getPersonalContainerHeaderLocation } from '../../objects/containerInspectionContext';
+import { useGameplayPagerStore } from '../../stores/useGameplayPagerStore';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { gmcpBus } from '../../events/gmcpBus';
 import { DrawerLine, EntityCapability, MessageType } from '../../types';
@@ -709,6 +710,7 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         // Command feedback belongs to the reply, not the outgoing command. A MUME
         // prompt is the reliable boundary that marks that reply as complete.
         if (!isSnoop && isEndPromptLine) {
+            useGameplayPagerStore.setState({ active: false, autoAdvance: false });
             commandLatency.recordPrompt();
             const completionEffect = consumeCommandCompletionSound();
             if (completionEffect && deps.isSoundEnabledRef.current) deps.playEffect(completionEffect);

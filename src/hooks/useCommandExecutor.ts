@@ -19,6 +19,7 @@ import { recordEffectTimerCommand } from '../services/timers/effectTimerParser';
 import { decodeCommandEntities } from '../utils/commandTextUtils';
 import { recordCombatRechargeCommand } from '../stores/useCombatRechargeStore';
 import { recordActionTimerCommand } from '../services/timers/actionTimerParser';
+import { isGameplayPagerControl, useGameplayPagerStore } from '../stores/useGameplayPagerStore';
 
 export interface ExecutorDeps {
     telnet: { sendCommand: (cmd: string) => void };
@@ -96,7 +97,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
     const depsRef = useRef(deps);
     useEffect(() => { depsRef.current = deps; }, [deps]);
 
-    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false) => {
+    const executeCommand = useCallback((cmd: string, silent = false, isSystem = false, _isHistorical = false, fromDrawer = false, autoAdvancePager = false) => {
         const d = depsRef.current;
         const decodedCmd = decodeCommandEntities(cmd);
         const { telnet, addMessage, initAudio, navIntervalRef, status } = d;
@@ -121,7 +122,7 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
         if (result === null) return; // Command cancelled/intercepted by middleware
 
         if (Array.isArray(result)) {
-            result.forEach(subCmd => executeCommand(subCmd, silent, isSystem, _isHistorical, fromDrawer));
+            result.forEach(subCmd => executeCommand(subCmd, silent, isSystem, _isHistorical, fromDrawer, autoAdvancePager));
             return;
         }
 
@@ -131,6 +132,10 @@ export const useCommandExecutor = (deps: ExecutorDeps) => {
 
         // --- Send bytes ASAP; GMCP remains authoritative for mapper door state. ---
         if (status === 'connected') {
+            const pager = useGameplayPagerStore.getState();
+            if (!pager.active || !isGameplayPagerControl(finalCmd)) {
+                useGameplayPagerStore.setState({ autoAdvance: d.gameState === 'playing' && autoAdvancePager });
+            }
             if (d.gameState === 'playing') commandLatency.recordSend(!silent && !isSystem);
             if (typeof window !== 'undefined') {
                 if (!isSystem && /^scout(?:\s|$)/i.test(finalCmd.trim())) {

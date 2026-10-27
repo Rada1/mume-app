@@ -10,6 +10,7 @@ import { useCommandShopStore } from '../../../stores/useCommandShopStore';
 import { useCommandPracticeStore } from '../../../stores/useCommandPracticeStore';
 import { useUIStore } from '../../../stores/useUIStore';
 import { BOARD_MAIL_INTERFACE_ENABLED } from '../../../utils/archiveInterface';
+import { isGameplayPagerControl, useGameplayPagerStore } from '../../../stores/useGameplayPagerStore';
 
 const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
     eq: 'equipment',
@@ -43,6 +44,9 @@ const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').Cap
 };
 
 export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isSystem, fromDrawer }) => {
+    // A viewer Return/back/redisplay/quit continues the existing response.
+    // Preserve its buffered pages, pending flags and capture stage until the real prompt.
+    if (useGameplayPagerStore.getState().active && isGameplayPagerControl(cmd)) return undefined;
     const {
         captureStage, setStatsLines, setInfoLines, setAchievementLines, setScoreLines, finalizeCapture,
         setPendingFlags
