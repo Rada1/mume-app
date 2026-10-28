@@ -6,6 +6,15 @@
     --landscape-command-grid-columns: minmax(128px, 0.9fr) minmax(0, 1.9fr) minmax(128px, 0.9fr);
 }
 
+:fullscreen .app-container.is-mobile:not(.state-account) .content-layer,
+:fullscreen .app-container.is-mobile.is-landscape:not(.state-account) .content-layer {
+    padding-top: 0 !important;
+}
+:fullscreen .app-container.is-mobile.is-landscape:not(.state-account) .content-layer {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
 .app-container.is-mobile.is-landscape:not(.state-account) .mobile-log-command-split {
     display: grid !important;
     grid-template-columns: var(--landscape-command-grid-columns) !important;
@@ -219,6 +228,26 @@
     grid-auto-columns: unset !important;
     width: auto !important;
     padding: 0 !important;
+}
+
+/* Keep the command popup aligned with the full-width landscape layout. */
+:fullscreen .app-container.is-mobile.is-landscape:not(.state-account) .command-tree-mobile-focus-popup,
+:fullscreen .app-container.is-mobile.is-landscape:not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches {
+    left: 0 !important;
+}
+:fullscreen .app-container.is-mobile.is-landscape:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup,
+:fullscreen .app-container.is-mobile.is-landscape:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches {
+    right: 0 !important;
+}
+@media (display-mode: fullscreen) {
+    .app-container.is-mobile.is-landscape.display-standalone:not(.state-account) .command-tree-mobile-focus-popup,
+    .app-container.is-mobile.is-landscape.display-standalone:not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches {
+        left: 0 !important;
+    }
+    .app-container.is-mobile.is-landscape.display-standalone:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup,
+    .app-container.is-mobile.is-landscape.display-standalone:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches {
+        right: 0 !important;
+    }
 }
 
 .app-container.is-mobile.is-landscape:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-main-branch {

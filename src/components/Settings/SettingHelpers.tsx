@@ -12,7 +12,8 @@ export const ToggleRow: React.FC<{
     onToggle: () => void;
     badge?: string;
     first?: boolean;
-}> = ({ label, description, value, onToggle, badge, first }) => (
+    disabled?: boolean;
+}> = ({ label, description, value, onToggle, badge, first, disabled = false }) => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', ...(first ? {} : { marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }) }}>
         <div style={{ flex: '1 1 200px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -26,6 +27,7 @@ export const ToggleRow: React.FC<{
             <button
                 className={`setting-toggle ${value ? 'active' : ''}`}
                 onClick={onToggle}
+                type="button" role="switch" aria-label={label} aria-checked={value} disabled={disabled}
                 style={{ height: '24px', width: '45px', position: 'relative', border: 'none', backgroundColor: value ? 'var(--accent)' : 'var(--input-bg)', borderRadius: '12px', cursor: 'pointer', transition: 'all 0.3s' }}
             >
                 <div style={{ width: '20px', height: '20px', background: '#fff', borderRadius: '50%', position: 'absolute', top: '2px', left: value ? '22px' : '2px', transition: 'all 0.3s' }} />
