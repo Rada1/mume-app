@@ -27,11 +27,12 @@ import { isCommandTreeSocial } from '../../utils/commandTreeSocial';
 import { CommandTreeSocialTargets } from './CommandTreeSocialTargets';
 
 // --- Held Workflow Section ---
-const HeldTargetContents = ({controller, tree, button, onCommandExecuted}: {
+const HeldTargetContents = ({controller, tree, button, onCommandExecuted, heldSocialRelease}: {
     controller: ReturnType<typeof useCommandTreeController>;
     tree: ReturnType<typeof useCommandTree>;
     button: CustomButton;
     onCommandExecuted?: () => void;
+    heldSocialRelease?: React.MutableRefObject<(() => void) | null>;
 }) => {
     if (parseKeyedSpellCommand(button.command)) return <CommandTreeMagicKeyTargets controller={controller} button={button} heldMenu onCommandExecuted={onCommandExecuted}/>;
     if (isMobileCommandTargetless(button)) return null;
@@ -47,7 +48,7 @@ const HeldTargetContents = ({controller, tree, button, onCommandExecuted}: {
         : isCommandTreeAccess(button)
         ? <CommandTreeAccessTargets controller={controller} button={button} targets={targets} onCommandExecuted={onCommandExecuted} heldMenu/>
         : isCommandTreeSocial(button)
-        ? <CommandTreeSocialTargets controller={controller} button={button} targets={targets} onCommandExecuted={onCommandExecuted} heldMenu/>
+        ? <CommandTreeSocialTargets controller={controller} button={button} targets={targets} onCommandExecuted={onCommandExecuted} heldSocialRelease={heldSocialRelease} heldMenu/>
         : isCommandTreeShopAction(button)
         ? <CommandTreeShopTargets controller={controller} command={button} onCommandExecuted={onCommandExecuted} heldMenu/>
         : null;

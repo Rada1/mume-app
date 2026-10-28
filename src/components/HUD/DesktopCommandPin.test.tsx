@@ -70,6 +70,22 @@ it('pins required social options without sending a command', () => {
  expect(executeCommand).not.toHaveBeenCalled();
 });
 
+it('registers the selected held social for release and clears it when changing themes', () => {
+ const executeCommand=vi.fn();
+ const controller={game:{characterName:'Tester',executeCommand,initAudio:vi.fn()},entries:[]} as unknown as ReturnType<typeof useCommandTreeController>;
+ const release:{current:(() => void)|null}={current:null};
+ const view=render(<CommandTargetMenuContext.Provider value={true}>
+  <CommandTreeSocialTargets controller={controller} button={COMMAND_TREE_SOCIAL_BUTTON} targets={[]} heldMenu heldSocialRelease={release}/>
+ </CommandTargetMenuContext.Provider>);
+ fireEvent.click(view.getByRole('button',{name:'Happy'}));
+ fireEvent.click(view.getByRole('button',{name:'Smile'}));
+ expect(release.current).not.toBeNull();
+ act(() => release.current?.());
+ expect(executeCommand).toHaveBeenCalledWith('smile',undefined,undefined,undefined,undefined,{fromUi:true});
+ fireEvent.click(view.getByRole('button',{name:'Sad'}));
+ expect(release.current).toBeNull();
+});
+
 it('updates the desktop category label and executes the pinned command on click', () => {
  const hit=createButton({id:'hit',label:'Hit',command:'hit',setId:'combat'});
  const kick=createButton({id:'kick',label:'Kick',command:'kick',setId:'combat'});

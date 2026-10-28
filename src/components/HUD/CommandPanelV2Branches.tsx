@@ -64,6 +64,7 @@ export const CommandPanelV2Branches = ({
     const [mobileArranging,setMobileArranging] = React.useState(false);
     const [mobileCloseRequest,setMobileCloseRequest] = React.useState(0);
     const heldCommandSent = React.useRef(false);
+    const heldSocialRelease = React.useRef<(() => void) | null>(null);
     const targetFeedback = useHeldTargetFeedback(controller.game.triggerHaptic);
     const heldController = useHeldCommandExecution(controller,heldCommand,heldCommandSent,targetFeedback.sent);
     const followController = useHeldCommandExecution(controller, COMMAND_TREE_FOLLOW_BUTTON, heldCommandSent, alreadyHaptic => {
@@ -149,7 +150,7 @@ export const CommandPanelV2Branches = ({
         {!heldCommand && !heldDirection && tree.command && parseKeyedSpellCommand(tree.command.command)
             && <CommandTreeMagicKeyTargets controller={controller} button={tree.command} onCommandExecuted={onCommandExecuted}/>}
         {heldCommand && canUseTemporaryTargetMenu && <CommandTreeHeldTargets key={heldCommand.id} controller={heldController}
-            tree={tree} button={heldCommand} onCommandExecuted={() => {heldCommandSent.current=true;targetFeedback.sent();setMobileCloseRequest(value=>value+1);onCommandExecuted();}}/>}
+            tree={tree} button={heldCommand} heldSocialRelease={heldSocialRelease} onCommandExecuted={() => {heldCommandSent.current=true;targetFeedback.sent();setMobileCloseRequest(value=>value+1);onCommandExecuted();}}/>}
         {!heldCommand && !heldDirection && tree.command && !isCommandTreeSocial(tree.command) && !parseKeyedSpellCommand(tree.command.command) && !isCommandTreeTransfer(tree.command) && !isCommandTreeAccess(tree.command) && !isCommandTreeObservation(tree.command) && !isCommandTreeGetAction(tree.command) && !isCommandTreeShopAction(tree.command) && !isCommandTreePracticeAction(tree.command) && !isCommandTreeReciteAction(tree.command) && (/%n/.test(tree.command.command) || currentTargetEntries.length > 0 || (!mobileReadabilitySplit && tree.targets.length > 0)) && <section className={`command-tree-branch terminal-inline-popover${canUseTemporaryTargetMenu ? ' is-ability-side-branch' : ''}`} aria-label={`Targets for ${tree.command.label}`}>
             <CommandTreeTargetHeader/>
             {!isOnlinePlayerTargetCommand && (isBashTargetCommand ? bashTargetSections.map(section=><CommandTreeCollapsibleSection key={section.label} label={section.label}>
@@ -206,7 +207,7 @@ export const CommandPanelV2Branches = ({
                 ? <CommandTreeHeldDirectionActions controller={controller} tree={tree} direction={heldDirection}/>
                 : mobileShopOpen ? <MobileShopCommandMenu selected={tree.command!} onSelect={tree.chooseCommand}
                     onClose={()=>{tree.clearCommand();controller.shop.closeWorkspace();}}/>
-                : isMobile ? <MobileCommandTiles controller={controller} tree={tree} commandSent={heldCommandSent} onArrangeChange={setMobileArranging} closeRequest={mobileCloseRequest}
+                : isMobile ? <MobileCommandTiles controller={controller} tree={tree} commandSent={heldCommandSent} heldSocialRelease={heldSocialRelease} onArrangeChange={setMobileArranging} closeRequest={mobileCloseRequest}
                     onTargetCommand={setHeldCommand}/>
                 : desktopCategoryId === 'social' ? null
                 : <DesktopCommandCategoryCommands categoryId={desktopCategoryId} atShop={atShop} controller={controller} tree={tree} onCommandExecuted={onCommandExecuted} menuHeader={menuHeader}/>)}

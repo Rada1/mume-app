@@ -24,7 +24,9 @@ vi.mock('../../hooks/useCommandTreeTransfer', () => ({useCommandTreeTransfer: ()
     const [selected, setSelected] = React.useState(false);
     const source = {key: 'sword', label: 'a sharp sword', value: 'sword', meta: 'inventory'};
     return {label: 'Put', sources: [source], selected: selected ? source : null,
-        sections: [{label: 'Room containers', meta: 'room', targets: [{key: 'bag', label: 'a backpack', value: 'backpack', meta: 'room'}]}],
+        sections: [{label: 'Room containers', meta: 'room', targets: [{key: 'bag', label: 'a backpack', value: 'backpack', meta: 'room'}]},
+            {label: 'Inventory containers', meta: 'inventory', targets: [{key: 'sack', label: 'a sack', value: 'sack', meta: 'inventory'}]},
+            {label: 'Equipment containers', meta: 'worn', targets: [{key: 'pouch', label: 'a pouch', value: 'pouch', meta: 'worn'}]}],
         chooseSource: () => setSelected(true), currency: null, currencies: [], amountSelected: false,
         disabled: false, destinationLabel: 'Put destination containers', previewDestination: vi.fn(), transfer: actions.transfer};
 }}));
@@ -56,11 +58,28 @@ it.each(['Get', 'Put'])('%s adds its third target column only after choosing a c
             await act(async () => source.click());
             expect(columns()).toHaveLength(2);
         } else {
-            const destination = host.querySelector<HTMLButtonElement>('[aria-label="Room containers destinations"] button')!;
+            const destination = host.querySelector<HTMLButtonElement>('[aria-label="Containers destinations"] button')!;
             expect(actions.transfer).not.toHaveBeenCalled();
             await act(async () => destination.click());
             expect(actions.transfer).toHaveBeenCalledOnce();
         }
+    } finally { await act(async () => root.unmount()); }
+});
+
+it('shows Put containers from every location together in the mobile target menu', async () => {
+    const host = document.createElement('div');
+    const root = createRoot(host);
+    const controller = {game: {viewport: {isMobile: true}, setCommandPreview: vi.fn()}, entries: [], vitals: {target: null}} as unknown as ReturnType<typeof useCommandTreeController>;
+    const tree = {defer: vi.fn(), cancelPreview: vi.fn()} as unknown as ReturnType<typeof useCommandTree>;
+    const button = createButton({id: 'put', label: 'Put', command: 'put %n', setId: 'trait-container'});
+    try {
+        await act(async () => root.render(<CommandTreeTransferTargets controller={controller} tree={tree} command={button} heldMenu/>));
+        await act(async () => host.querySelector<HTMLButtonElement>('[aria-label="Inventory objects"] button')!.click());
+        const destinations = host.querySelector('[aria-label="Containers destinations"]')!;
+        expect(destinations.querySelectorAll('button')).toHaveLength(3);
+        expect(host.querySelector('.is-target-location-branch')).toBeNull();
+        await act(async () => destinations.querySelectorAll('button')[1].click());
+        expect(actions.transfer).toHaveBeenLastCalledWith(expect.objectContaining({key:'sack', meta:'inventory'}), expect.anything());
     } finally { await act(async () => root.unmount()); }
 });
 

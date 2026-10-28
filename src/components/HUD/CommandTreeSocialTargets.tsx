@@ -21,9 +21,10 @@ import './CommandTreeSocialTargets.css';
 const Chevron = () => <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>;
 const POINT_DIRECTIONS = ['north', 'east', 'south', 'west', 'up', 'down'];
 
-export const CommandTreeSocialTargets = ({controller, button, targets, onCommandExecuted, heldMenu = false, desktopPin = false}: {
+export const CommandTreeSocialTargets = ({controller, button, targets, onCommandExecuted, heldMenu = false, desktopPin = false, heldSocialRelease}: {
     controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[];
     onCommandExecuted?: () => void; heldMenu?: boolean; desktopPin?: boolean;
+    heldSocialRelease?: React.MutableRefObject<(() => void) | null>;
 }) => {
     const [themeId, setThemeId] = React.useState<string | null>(null);
     const [selected, setSelected] = React.useState<CommandTreeSocialEntry | null>(null);
@@ -37,11 +38,16 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
             && ['players', 'npcs', 'objects'].includes(entry.group))
         : targets.filter(entry => entry.id !== 'command-panel-self');
     const branchClass = `command-tree-branch terminal-inline-popover is-social-branch${heldMenu ? ' is-ability-side-branch command-tree-held-command-targets' : ''}`;
-    const chooseTheme = (id: string) => { setThemeId(id); setSelected(null); };
+    const chooseTheme = (id: string) => { if (heldSocialRelease) heldSocialRelease.current = null; setThemeId(id); setSelected(null); };
     const sendBare = (entry: CommandTreeSocialEntry) => {
         executeCommandPanelInput(controller.game, entry.command);
         onCommandExecuted?.();
     };
+    const chooseSocial = (entry: CommandTreeSocialEntry) => {
+        if (heldSocialRelease) heldSocialRelease.current = () => sendBare(entry);
+        setSelected(entry);
+    };
+    React.useEffect(() => () => { if (heldSocialRelease) heldSocialRelease.current = null; }, [heldSocialRelease]);
     return <>
         <section className={branchClass} aria-label={`Themes for ${button.label}`} {...touchActivation}>
             <CommandTreeTargetHeader/>
@@ -59,8 +65,8 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
                     {theme.socials.map(entry => {
                         const row = <button key={entry.command} type="button" data-menu-item="true" className="command-tree-row"
                         aria-expanded={entry.targeted ? selected?.command === entry.command : undefined}
-                        onClick={() => entry.targeted ? setSelected(entry) : sendBare(entry)}
-                        onPointerEnter={event => { if (event.pointerType === 'mouse' && entry.targeted) setSelected(entry); }}>
+                        onClick={() => entry.targeted ? chooseSocial(entry) : sendBare(entry)}
+                        onPointerEnter={event => { if (event.pointerType === 'mouse' && entry.targeted) chooseSocial(entry); }}>
                         <span className="command-tree-row-label">{entry.label}</span>{entry.targeted && <Chevron/>}
                     </button>;
                         return desktopPin && !entry.targetOptions ? <DesktopCommandPin key={entry.command} label={entry.label}

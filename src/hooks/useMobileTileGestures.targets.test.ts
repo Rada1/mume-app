@@ -64,6 +64,31 @@ describe('mobile held targets', () => {
         expect(result.current.activeTile?.id).toBe('social');
     });
 
+    it('sends the selected social without a target on release, only once', () => {
+        vi.useFakeTimers();
+        const tile = { id: 'social', label: 'Social', button: { ...COMMAND_TREE_SOCIAL_BUTTON, command:'smile' }, commands: [] } as unknown as Parameters<typeof useMobileTileGestures>[0][number];
+        const sent = { current: false };
+        const sendBare = vi.fn(() => { sent.current = true; });
+        const release = { current: null as (() => void) | null };
+        const execute = vi.fn();
+        const button = document.createElement('button');
+        button.setPointerCapture = vi.fn(); button.hasPointerCapture = () => true; button.releasePointerCapture = vi.fn();
+        document.body.innerHTML = '<div data-mobile-tile-target-lane><section class="command-tree-branch"><button aria-expanded="true">Smile</button></section></div>';
+        const social = document.querySelector('section button')!;
+        const originalHitTest = document.elementFromPoint;
+        document.elementFromPoint = () => social;
+        const event = { button: 0, pointerId: 1, clientX: 100, clientY: 100, currentTarget: button } as unknown as React.PointerEvent<HTMLButtonElement>;
+        const { result } = renderHook(() => useMobileTileGestures([tile], vi.fn(), execute, vi.fn(), sent, release));
+        act(() => result.current.handlers(tile).onPointerDown(event));
+        act(() => vi.advanceTimersByTime(220));
+        release.current = sendBare;
+        act(() => result.current.handlers(tile).onPointerUp(event));
+        act(() => vi.runAllTimers());
+        expect(sendBare).toHaveBeenCalledOnce();
+        expect(execute).not.toHaveBeenCalled();
+        document.elementFromPoint = originalHitTest;
+    });
+
     it('starts edge scrolling only after deliberate movement following menu reveal', () => {
         const hold = setup();
         expect(edgeScrollStart).not.toHaveBeenCalled();

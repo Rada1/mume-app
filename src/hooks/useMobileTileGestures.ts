@@ -15,7 +15,8 @@ export const useMobileTileGestures = (
  onTargetCommand: (button: CustomButton | null) => void,
  execute: (button: CustomButton, event: React.MouseEvent) => void,
  haptic: (duration: number) => void,
- commandSent:React.MutableRefObject<boolean>
+ commandSent:React.MutableRefObject<boolean>,
+ heldSocialRelease?:React.MutableRefObject<(() => void) | null>
 ) => {
  const [activeTileId,setActiveTileId] = useState<string | null>(null);
  const [selected,setSelected] = useState<CustomButton | null>(null);
@@ -59,6 +60,7 @@ export const useMobileTileGestures = (
    clearFeedback();
    edgeScroll.stop();edgeScroll.update(event.clientX,event.clientY);
    commandSent.current = false;
+   if (heldSocialRelease) heldSocialRelease.current = null;
    event.currentTarget.setPointerCapture(event.pointerId);
    const button = tile.commands.find(entry => entry.command === tile.button.command) || {...tile.button,label:tile.label};
    session.current = {id:event.pointerId,x:event.clientX,y:event.clientY,lastX:event.clientX,lastY:event.clientY,
@@ -120,7 +122,11 @@ export const useMobileTileGestures = (
      if (target?.hasAttribute('data-mobile-tile-cancel')) {cancel();return;}
      if (target?.hasAttribute('data-mobile-tile-arrange')) {target.click();return;}
      const heldTarget = getHeldTarget(target || null);
-     if (heldTarget && isHeldTargetNavigation(heldTarget)) {close();return;}
+     if (heldTarget && isHeldTargetNavigation(heldTarget) && !heldSocialRelease?.current) {close();return;}
+     if (heldTarget && isHeldTargetNavigation(heldTarget)) {
+      timer.current = setTimeout(() => {try {if (!commandSent.current) heldSocialRelease?.current?.();} finally {close();}},50);
+      return;
+     }
      if (heldTarget) {
       if (target.hasAttribute('disabled')) {close();return;}
       target.click();
@@ -134,7 +140,8 @@ export const useMobileTileGestures = (
      // before deciding whether this release still needs to send the command.
      timer.current = setTimeout(() => {
       try {
-       if (!commandSent.current && button.command.trim() && !isCommandTreeSocial(button)) {
+       if (!commandSent.current && isCommandTreeSocial(button)) heldSocialRelease?.current?.();
+       else if (!commandSent.current && button.command.trim()) {
         commandSent.current = true;
         execute(button,event);
        }

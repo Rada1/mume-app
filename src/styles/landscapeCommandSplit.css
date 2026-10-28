@@ -27,6 +27,18 @@
     padding-top: env(safe-area-inset-top, 0px) !important;
 }
 
+/* --- Fullscreen content can occupy the top display cutout area. --- */
+@media (display-mode: fullscreen) {
+    .app-container.is-mobile.display-standalone:not(.state-account) .content-layer,
+    .app-container.is-mobile.is-landscape.display-standalone:not(.state-account) .content-layer {
+        padding-top: 0 !important;
+    }
+    .app-container.is-mobile.is-landscape.display-standalone:not(.state-account) .content-layer {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+}
+
 .app-container.is-mobile.is-landscape:not(.state-account) .header-right-cluster {
     min-width: 0 !important;
     max-width: calc(100vw - 112px) !important;

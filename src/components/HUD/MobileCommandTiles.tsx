@@ -12,17 +12,18 @@ import { MobileCommandLabel } from './MobileCommandLabel';
 import './MobileCommandTiles.css';
 
 // --- Stable grid and local command chooser ---
-export const MobileCommandTiles = ({controller,tree,onTargetCommand,commandSent,onArrangeChange,closeRequest}: {
+export const MobileCommandTiles = ({controller,tree,onTargetCommand,commandSent,heldSocialRelease,onArrangeChange,closeRequest}: {
  controller:ReturnType<typeof useCommandTreeController>; tree:ReturnType<typeof useCommandTree>;
  onTargetCommand:(button:CustomButton | null) => void;
  commandSent:React.MutableRefObject<boolean>;
+ heldSocialRelease:React.MutableRefObject<(() => void) | null>;
  onArrangeChange:(arranging:boolean) => void;
  closeRequest:number;
 }) => {
  const model = useMobileCommandTiles(controller,tree);
  const gesture = useMobileTileGestures(model.tiles,button => {
   model.previewCommand(button);onTargetCommand(button);
- },model.execute,controller.game.triggerHaptic,commandSent);
+ },model.execute,controller.game.triggerHaptic,commandSent,heldSocialRelease);
  const lastCloseRequest = React.useRef(closeRequest);
  React.useEffect(() => {
   if (lastCloseRequest.current !== closeRequest) {lastCloseRequest.current=closeRequest;gesture.close();}
