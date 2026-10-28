@@ -12,6 +12,10 @@ type ClientPanelStackState = {
     mobileDetailsHeight: number;
     detailsOpen: boolean;
     detailsEnabled: boolean;
+    desktopDetailsEnabled: boolean;
+    mobileDetailsEnabled: boolean;
+    isMobileDetailsMode: boolean;
+    setDetailsViewport: (isMobile: boolean) => void;
     setDetailsEnabled: (enabled: boolean) => void;
     toggleDetailsEnabled: () => void;
     setDetailsOpen: (open: boolean) => void;
@@ -26,7 +30,7 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
     ClientPanelStackState,
     [],
     [],
-    Pick<ClientPanelStackState, 'order' | 'weights' | 'singleHeights' | 'mobileDetailsHeight' | 'detailsEnabled'>
+    Pick<ClientPanelStackState, 'order' | 'weights' | 'singleHeights' | 'mobileDetailsHeight' | 'detailsEnabled' | 'mobileDetailsEnabled'>
 >((set) => ({
     order: ['entities', 'chat', 'actions', 'details', 'help'],
     weights: { entities: 1.2, chat: 1.15, actions: 1.45, details: 1.45, help: 1.4 },
@@ -34,13 +38,23 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
     mobileDetailsHeight: 0.2,
     detailsOpen: false,
     detailsEnabled: true,
+    desktopDetailsEnabled: true,
+    mobileDetailsEnabled: false,
+    isMobileDetailsMode: false,
+    setDetailsViewport: isMobile => set(state => {
+        if (state.isMobileDetailsMode === isMobile) return state;
+        const detailsEnabled = isMobile ? state.mobileDetailsEnabled : state.desktopDetailsEnabled;
+        return { isMobileDetailsMode: isMobile, detailsEnabled, detailsOpen: false };
+    }),
     setDetailsEnabled: detailsEnabled => set(state => ({
         detailsEnabled,
+        ...(state.isMobileDetailsMode ? { mobileDetailsEnabled: detailsEnabled } : { desktopDetailsEnabled: detailsEnabled }),
         detailsOpen: detailsEnabled ? state.detailsOpen : false
     })),
     toggleDetailsEnabled: () => set(state => {
         const detailsEnabled = !state.detailsEnabled;
-        return { detailsEnabled, detailsOpen: detailsEnabled ? state.detailsOpen : false };
+        return { detailsEnabled, detailsOpen: detailsEnabled ? state.detailsOpen : false,
+            ...(state.isMobileDetailsMode ? { mobileDetailsEnabled: detailsEnabled } : { desktopDetailsEnabled: detailsEnabled }) };
     }),
     setDetailsOpen: detailsOpen => set(state => ({ detailsOpen: state.detailsEnabled && detailsOpen })),
     resizePair: (first, second, firstWeight, secondWeight) => set(state => ({
@@ -64,10 +78,14 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
         const saved = persisted as Partial<ClientPanelStackState>;
         const savedOrder = saved.order?.filter(panel => current.order.includes(panel)) ?? [];
         return { ...current, ...saved,
+            desktopDetailsEnabled: saved.detailsEnabled ?? true,
+            mobileDetailsEnabled: saved.mobileDetailsEnabled ?? false,
+            detailsEnabled: current.isMobileDetailsMode ? saved.mobileDetailsEnabled ?? false : saved.detailsEnabled ?? true,
             order: [...new Set([...savedOrder, ...current.order])],
             weights: { ...current.weights, ...saved.weights },
             singleHeights: { ...current.singleHeights, ...saved.singleHeights }
         };
     },
-    partialize: state => ({ order: state.order, weights: state.weights, singleHeights: state.singleHeights, mobileDetailsHeight: state.mobileDetailsHeight, detailsEnabled: state.detailsEnabled })
+    partialize: state => ({ order: state.order, weights: state.weights, singleHeights: state.singleHeights, mobileDetailsHeight: state.mobileDetailsHeight,
+        detailsEnabled: state.desktopDetailsEnabled, mobileDetailsEnabled: state.mobileDetailsEnabled })
 }));

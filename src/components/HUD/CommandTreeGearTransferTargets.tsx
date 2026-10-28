@@ -7,7 +7,7 @@ export const CommandTreeGearTransferTargets = ({transfer}: {transfer: ReturnType
  if (!transfer.command) return null;
  return <section className="command-tree-gear-quick-put-targets" aria-label={transfer.destinationLabel}>
   <div className="command-tree-gear-quick-put-heading">{transfer.label} {transfer.preposition}</div>
-  {transfer.sections.map(section => <div key={section.label} className="command-tree-gear-quick-put-group">
+  {transfer.sections.map(section => <div key={section.label} className="command-tree-gear-quick-put-group" role="group" aria-label={section.label}>
    <div className="command-tree-gear-quick-put-group-label">{section.label}</div>
    {section.targets.map(destination => <button type="button" key={destination.key} className="command-tree-row"
     disabled={transfer.disabled}

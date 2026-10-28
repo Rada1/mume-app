@@ -141,6 +141,7 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
             // Don't close if clicking inside the popover
             // Don't close if clicking inside the popover or on an inline button
             if (popoverRef.current && popoverRef.current.contains(target)) return;
+            if (target instanceof Element && target.closest('.desktop-target-workspace')) return;
             if (target instanceof HTMLElement && target.closest('.unified-command-panel')) return;
             if (target instanceof HTMLElement && (target.closest('.inline-btn') || target.closest('.popover-inspection-panel'))) return;
 

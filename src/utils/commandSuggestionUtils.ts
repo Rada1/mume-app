@@ -13,12 +13,13 @@ import { normalizeOccupantType } from '../services/classification/normalizeOccup
 import { makeCommandTargetSuggestion, type CommandTargetSuggestion } from '../objects/targetSuggestionTypes';
 import {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomInspectionTargetSuggestions,
-    getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomChestTargetSuggestions, getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions,
+    getRoomInspectionTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 } from '../objects/roomTargetSuggestions';
 import {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
-    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getInventoryAndWornWeaponTargetSuggestions, getDrawTargetSuggestions,
     getLanternTargetSuggestions, getSheathTargetSuggestions, getPipeTargetSuggestions, getMeatTargetSuggestions
 } from '../objects/gearTargetSuggestions';
 
@@ -26,12 +27,13 @@ export { makeCommandTargetSuggestion };
 export type { CommandTargetSuggestion };
 export {
     getAssistTargetSuggestions, getGiveRecipientSuggestions, getGroupTargetSuggestions, getRescueTargetSuggestions,
-    getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions, getRoomInspectionTargetSuggestions,
-    getRoomObjectTargetsWithExit, getRoomTargetSuggestions
+    getRoomChestTargetSuggestions, getRoomContainerTargetSuggestions, getRoomCorpseTargetSuggestions,
+    getRoomInspectionTargetSuggestions, getRoomObjectTargetsWithExit, getRoomTargetSuggestions
 };
 export {
     getContainerTargetSuggestions, getDrinkTargetSuggestions, getFillTargetSuggestions, getFluidContainerTargetSuggestions,
-    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions, getDrawTargetSuggestions,
+    getFoodTargetSuggestions, getGearTargetSuggestions, getInventoryAndWornTargetSuggestions,
+    getInventoryAndWornWeaponTargetSuggestions, getDrawTargetSuggestions,
     getLanternTargetSuggestions, getSheathTargetSuggestions, getPipeTargetSuggestions, getMeatTargetSuggestions
 };
 

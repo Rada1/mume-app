@@ -3,20 +3,24 @@ import { isCommandTreeAccess, isCommandTreeContainer } from './commandTreeAccess
 import type { CustomButton } from '../types';
 // --- Group Assignment Section ---
 const verbs = (value: string) => new Set(value.split(' '));
-const combat = verbs('attack kill hit assist rescue disengage bash kick charge backstab shoot missile bandage cast');
-const movement = verbs('north south east west up down northeast northwest southeast southwest enter leave sneak hide flee ride lead abandon dismount track open close lock unlock pick knock call');
+const combat = verbs('attack kill hit assist rescue disengage bash kick charge backstab shoot missile bandage cast flee');
+const movement = verbs('north south east west up down northeast northwest southeast southwest enter leave sneak hide ride lead abandon dismount track open close lock unlock pick knock call');
 const rangerSkills = verbs('climb swim');
-const vision = verbs('look examine consider con scout watch search scan reveal');
-const items = verbs('buy sell value mend list get take put give drop wear wield hold remove eat drink taste sip quaff forage recite pour fill empty light snuff cover uncover extinguish sacrifice junk loot compare identify read show saddle unsaddle offer rent camp');
+const vision = verbs('look examine consider con scout watch search scan reveal flush');
+const items = verbs('buy sell value mend list get take put give drop wear wield hold remove use throw whet eat drink taste sip quaff forage recite pour fill empty light snuff cover uncover extinguish sacrifice junk loot compare identify read show saddle unsaddle offer rent camp');
 const messages = verbs('say tell whisper ask reply emote narrate yell shout sing pray chat group follow converse __parley__');
 const game = verbs('help hint hints time');
 const character = verbs('info stat score skills spells train exits map who whois where weather history quest quests achievement achievements');
 export const commandTreeAbilityClass = (button: CustomButton): string | null => {
- const match = button.setId.match(/^(ranger|warrior|thief|mage|cleric)(?:skill|spell)list$/i);
+ if (button.command.trim().toLowerCase().split(/\s+/)[0] === 'recover') return 'thief';
+ const match = button.setId.match(/^(ranger|warrior|thief|mage|cleric)(?:(?:skill|spell)list)?$/i);
  if (match) return match[1].toLowerCase();
  const subgroup = (button.inlineSubgroup || '').toLowerCase();
  return ['ranger','warrior','thief','mage','cleric'].includes(subgroup) ? subgroup : null;
 };
+export const isCommandTreeThiefSearch = (button: CustomButton): boolean =>
+ button.command.trim().toLowerCase() === 'search'
+ && (commandTreeAbilityClass(button) === 'thief' || button.setId.trim().toLowerCase() === 'thief');
 export const isCommandTreeSpell = (button: CustomButton): boolean =>
  /^cast\b/i.test(button.command.trim()) || /^(?:mage|cleric)spelllist$|^spellbook$/i.test(button.setId);
 
@@ -39,8 +43,10 @@ export const commandTreeGroup = (button: CustomButton): number | null => {
  if (/^practice$/i.test(verb)) return 2;
  if (button.id === 'v2-inventory' || button.id === 'v2-equipment') return 2;
  if (['inventory','equipment','inv','eq'].includes(verb)) return null;
+ if (isCommandTreeThiefSearch(button)) return 0;
  if (vision.has(verb)) return 2;
  if (rangerSkills.has(verb)) return 0;
+ if (verb === 'recover') return 0;
  if (commandTreeAbilityClass(button)) return 0;
  if (messages.has(verb) || /social|communicat/.test(button.setId)) return 4;
  if (movement.has(verb)) return 1;

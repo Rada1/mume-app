@@ -11,8 +11,11 @@
 .docked-parley-chip.parley-channel-chip:hover,
 .docked-parley-chip.parley-channel-chip:focus-within { background:#303030 !important; }
 .parley-channel-chip .parley-action { border:0; border-radius:0; }
+.docked-parley-chip.parley-channel-chip.is-chat-icon { padding:0; background:transparent !important; }
+.parley-channel-chip.is-chat-icon .parley-action { display:flex; align-items:center; justify-content:center; width:30px; height:28px; padding:0; color:#c9c5bc; background:transparent; }
+.parley-channel-chip .parley-clear { padding:0 3px; border:0; background:transparent; color:#b7a77e; cursor:pointer; }
 /* --- Menu Surfaces Section --- */
-.parley-branch-menu { position:fixed; z-index:66050; width:180px; max-height:calc(100dvh - 70px); overflow:auto; box-sizing:border-box; padding:4px; background:#171717; color:#c9c5bc; font:11px var(--font-mono,monospace); }
+.parley-branch-menu { position:fixed; z-index:2147483500; width:180px; max-height:calc(100dvh - 70px); overflow:auto; box-sizing:border-box; padding:4px; background:#171717; color:#c9c5bc; font:11px var(--font-mono,monospace); }
 .parley-branch-menu > small { display:block; padding:8px; color:#9b927c; text-transform:uppercase; font-size:9px; }
 .parley-branch-menu > button { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:33px; padding:8px; border:0; border-radius:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .parley-branch-menu > button:hover,.parley-branch-menu > button:focus-visible,.parley-branch-menu > button[aria-expanded=true] { background:#303030; outline:none; }

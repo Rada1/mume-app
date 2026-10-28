@@ -1,0 +1,20 @@
+/** @file CommandTreeSocialTargets.css — Mobile Social themes, socials, and targets in three columns. */
+/* --- Mobile Social Columns --- */
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-social-branch) {
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+}
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-social-branch {
+    grid-row:1 !important;
+    --mobile-command-menu-button-columns:1;
+}
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-social-branch:nth-child(2) { grid-column:1 !important; }
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-social-branch:nth-child(3) { grid-column:2 !important; }
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-social-branch:nth-child(4) { grid-column:3 !important; }
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode):not(.state-account) .command-tree-mobile-readability-popup .command-tree-branches:has(> .is-social-branch) > .mobile-command-tiles-branch {
+    grid-column:1 !important; z-index:5; pointer-events:none;
+}
+.command-tree-branches:has(> .is-social-branch) .mobile-command-tiles { opacity:0; }
+.command-tree-branches:has(> .is-social-branch) .mobile-tile-command-picker { background:transparent; pointer-events:none; justify-content:flex-end; }
+.command-tree-branches:has(> .is-social-branch) .mobile-tile-command-choices { display:none; }
+.command-tree-branches:has(> .is-social-branch) .mobile-tile-command-picker footer { pointer-events:auto; }
+.command-tree-branches:has(> .is-social-branch) > .is-social-branch:nth-child(2) { padding-bottom:48px !important; }

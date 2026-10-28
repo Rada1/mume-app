@@ -32,6 +32,18 @@ const createDeps = (): CaptureParserDeps => ({
 });
 
 describe('inline inspection capture', () => {
+    it.each(['inventory', 'equipment', 'container'] as const)('keeps an empty %s listing out of item registration', type => {
+        const deps = createDeps();
+        const {result} = renderHook(() => useCaptureParser(deps));
+        act(() => {
+            result.current.startSession(type);
+            result.current.accumulateLine('Nothing.');
+        });
+        expect(deps.registerEntity).not.toHaveBeenCalled();
+        const session = vi.mocked(deps.setCaptureSession).mock.calls.at(-1)?.[0];
+        expect(session?.lines).toMatchObject([{text: 'Nothing.', isItem: false}]);
+    });
+
     it('captures generic Info command output into the Details report', () => {
         const deps = createDeps();
         const reply = 'It is a clear, starry night.';

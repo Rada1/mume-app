@@ -4,7 +4,7 @@
 // --- Logic Section ---
 
 import type { GroupMember } from '../../../types';
-import { getMemberColor } from '../../../utils/groupUtils';
+import { getMemberColor, isAllyGroupMember } from '../../../utils/groupUtils';
 import type { MapperRoom } from '../mapperTypes';
 import type { MapData } from './webcockpit/model';
 import type { FastMapGroupMember } from './model';
@@ -139,6 +139,7 @@ export function resolveFastMapGroupMembers(
       name,
       ...resolvedPosition,
       color: colorValue(index),
+      isAlly: isAllyGroupMember(member),
     });
   });
 

@@ -22,12 +22,17 @@ export const useCommandDockPosition = (isMobile: boolean, open: boolean, anchorK
         const anchor = resolveAnchor();
         if (!anchor) return;
         const rect = anchor.getBoundingClientRect();
+        const isDesktopCategoryAnchor = anchor.parentElement?.classList.contains('command-tree-desktop-category-actions') === true;
+        let horizontalOffset = !isMobile && isDesktopCategoryAnchor ? 28 : 0;
+        if (horizontalOffset > 0 && rect.left + horizontalOffset + 220 > window.innerWidth - 8) {
+            horizontalOffset = rect.left - horizontalOffset >= 8 ? -horizontalOffset : 0;
+        }
         const next = {
-            right: isMobile ? 8 : Math.max(8, window.innerWidth - rect.right),
+            right: isMobile ? 8 : Math.max(8, window.innerWidth - rect.right - horizontalOffset),
             bottom: Math.max(8, window.innerHeight - rect.top + 4),
-            maxWidth: isMobile ? window.innerWidth - 16 : Math.max(0, rect.right - 8),
-            left: isMobile ? undefined : rect.left,
-            rightMaxWidth: isMobile ? undefined : Math.max(0, window.innerWidth - rect.left - 8)
+            maxWidth: isMobile ? window.innerWidth - 16 : Math.max(0, rect.right + horizontalOffset - 8),
+            left: isMobile ? undefined : rect.left + horizontalOffset,
+            rightMaxWidth: isMobile ? undefined : Math.max(0, window.innerWidth - rect.left - horizontalOffset - 8)
         };
         setPosition(previous => previous?.right === next.right && previous.bottom === next.bottom
             && previous.maxWidth === next.maxWidth && previous.left === next.left

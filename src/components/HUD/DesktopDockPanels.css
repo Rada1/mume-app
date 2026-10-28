@@ -1,0 +1,88 @@
+/** @file DesktopDockPanels.css — Collapsible desktop command and character controls. */
+/* --- Dock toggles and floating panels --- */
+.app-container:not(.is-mobile) .command-dock-shell .desktop-dock-toggle {
+ display:flex; align-items:center; justify-content:center; gap:8px; box-sizing:border-box;
+ flex:1 1 0; align-self:stretch; min-width:0; margin:4px; padding:8px 16px;
+ border:0; border-radius:0; background:transparent; color:var(--desktop-control-muted);
+ font:11px/14px var(--font-mono,monospace); text-align:center; cursor:pointer;
+}
+.app-container:not(.is-mobile) .command-dock-shell .desktop-dock-toggle:is(:hover,:focus-visible) {
+ background:color-mix(in srgb,var(--desktop-control-hover) 40%,transparent); color:#e4dfd3;
+}
+.app-container:not(.is-mobile) .command-dock-shell .desktop-dock-toggle[aria-expanded="true"] { color:#e4dfd3; }
+.app-container:not(.is-mobile) .command-dock-shell .desktop-dock-toggle[aria-expanded="true"] svg { transform:rotate(180deg); }
+.app-container:not(.is-mobile) .command-dock-shell .desktop-dock-toggle:focus-visible { outline:1px solid #c9a84c; outline-offset:-2px; }
+.app-container:not(.is-mobile) .command-dock-shell :is(.command-dock-controls,.command-dock-actions) {
+ justify-content:center; background:transparent!important;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-dock-controls { padding:0; }
+.app-container:not(.is-mobile) .command-dock-shell .command-dock-controls .desktop-dock-toggle { margin:4px; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-dock-action-bar {
+ bottom:100%; width:100%; max-width:100%; padding:4px; background:transparent;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-desktop-category-actions { background:transparent; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-dock-action-bar[hidden],
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-dock-controls-inner[hidden] { display:none!important; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-dock-controls-inner {
+ position:absolute; bottom:100%; right:0; box-sizing:border-box; width:100%; max-width:100%; height:58px;
+ padding:4px; background:transparent;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-dock-summary {
+ width:100%; max-width:100%; padding:0 4px; justify-self:end; transform:translateY(-58px); container:desktop-character-summary / inline-size;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-summary { position:relative; padding:0; background:transparent; }
+/* --- Character details float above their toggle, like the gear menus. --- */
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded:not([hidden]) {
+ position:absolute; z-index:30; bottom:100%; left:4px; right:auto; box-sizing:border-box;
+ width:min(340px,calc(100vw - 16px)); max-width:calc(100% - 8px);
+ padding:12px; background:var(--desktop-control-panel); color:#ddd7cb; font:12px/1.4 var(--font-mono,monospace);
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-vitals { margin-top:0; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded :is(.command-tree-you-vitals,.command-tree-you-combat-stats,.command-tree-you-details) {
+ grid-template-columns:minmax(0,1fr); gap:6px;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-vitals > div {
+ min-height:32px; align-items:center; padding:6px 9px;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded :is(.command-tree-you-combat-stats,.command-tree-you-details) { margin-top:14px; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-combat-stats {
+ grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-combat-stats > button {
+ min-height:28px; align-items:center; padding:4px 2px; background:transparent; border-bottom:1px solid #463b30;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-combat-stats > button:is(:hover,:focus-visible):not(:disabled) {
+ background:var(--desktop-control-hover);
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-details > div {
+ grid-column:auto; grid-row:auto; justify-content:space-between; gap:12px; padding:3px 2px; background:transparent;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded :is(.command-tree-you-vitals,.command-tree-you-combat-stats,.command-tree-you-details) small { font-size:10px; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-details span {
+ overflow:visible; white-space:normal; text-align:right;
+}
+.app-container:not(.is-mobile) .command-tree-you-header:has(.command-tree-gear-controls) {
+ grid-template-columns:minmax(0,1fr) minmax(140px,180px) 88px; align-items:stretch;
+}
+.app-container:not(.is-mobile) .command-tree-you-header .command-tree-gear-controls {
+ display:flex; gap:4px; min-width:0;
+}
+.app-container:not(.is-mobile) .command-tree-you-header .command-tree-quick-gear { flex:1 1 0; min-width:0; }
+@container desktop-character-summary (max-width: 420px) {
+ .app-container:not(.is-mobile) .command-tree-you-header:has(.command-tree-gear-controls) {
+  grid-template-columns:minmax(0,1fr) 70px; grid-template-rows:auto auto;
+ }
+ .app-container:not(.is-mobile) .command-dock-shell .command-tree-you-header .command-tree-you-identity {
+  grid-column:1; grid-row:1; grid-template-columns:minmax(0,1fr) auto; gap:2px 6px;
+ }
+ .app-container:not(.is-mobile) .command-tree-you-header > .command-tree-quick-state { grid-column:2; grid-row:1; }
+ .app-container:not(.is-mobile) .command-tree-you-header .command-tree-gear-controls { grid-column:1 / -1; grid-row:2; }
+ .app-container:not(.is-mobile) .command-tree-you-header .command-tree-quick-gear > button { min-height:40px; }
+}
+.app-container:not(.is-mobile) .command-dock-shell:has(.desktop-character-toggle[aria-expanded="false"]) .command-dock-summary { display:none; }
+.app-container:not(.is-mobile):has(.command-dock-shell:not(.command-dock-shell-mobile)) .left-drawer-stack {
+ bottom:calc(58px + env(safe-area-inset-bottom,0px))!important;
+}
+.app-container:not(.is-mobile):has(.command-dock-shell:not(.command-dock-shell-mobile) .desktop-dock-toggle[aria-controls="desktop-commands-panel"][aria-expanded="true"]) .left-drawer-stack {
+ bottom:calc(58px + var(--desktop-command-category-height,184px) + env(safe-area-inset-bottom,0px))!important;
+}

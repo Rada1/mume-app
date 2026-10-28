@@ -48,6 +48,24 @@ section ordering separately from target eligibility. Room target updates must
 refresh eligibility without rebuilding that catalog. Regression coverage lives
 in `src/hooks/useCommandTree.performance.test.tsx`.
 
+**Mobile families** measures mobile family filtering for each command-tree
+snapshot. Group buttons are read once and each button's section is classified
+once across the twelve families. Saved bindings and Arrange updates reuse those
+family command lists; live eligibility changes still rebuild them.
+Family membership is cached weakly by immutable button identity across target
+snapshots, reusing the prepared catalog's section cache. Each available group is
+walked once; changed room eligibility still adds/removes commands immediately.
+`useCommandTraitEligibility.ts` retains up to 256 category/name action sets across
+room snapshots. Trait-setting, race, subrace and class changes invalidate them;
+XP/gold updates do not. Per-button validity still checks the live room, terrain
+and entity location; cached trait IDs must never replace those checks.
+
+The upstream `useButtonLogic.ts` catalog must retain its array and button identities
+across target and XP/gold updates. Only race/subrace/class affect its character
+requirements; target resolution belongs to execution and live action filtering.
+`useButtons.ts` supplies a stable empty abilities map before skills are ready.
+`useButtonLogic.performance.test.tsx` guards identity reuse and real-input refreshes.
+
 Group eligibility and per-target trait sets are lazy within each target snapshot.
 The root strip reads group labels only; do not materialize every group's buttons
 while rendering it. Only the viewed group or explicitly requested command needs
@@ -86,6 +104,12 @@ The vitals scalar updater must not call the package callback again. Regression
 coverage in `useTelnet.gmcp.test.tsx` checks single dispatch, repeated identical
 packets, aliases, fragmented packets and GMCP-before-text ordering. Callback count
 reductions do not imply the same proportional reduction in total frame duration.
+
+Socket drill-down uses inclusive synchronous **Socket protocol**, **Socket GMCP**,
+and **Socket text framing** scopes. **Mapper room matching** measures player room
+resolution inside its caller. These scopes overlap: do not add them together.
+They exclude queued tokenization and later React rendering. A known internal room
+match skips fallback room and coordinate scans, including dark bundled-exit matches.
 
 Text processing measures wall-clock batch duration, including worker waits and
 cooperative yields. Compare it with tokenization and line-handler timings before

@@ -65,6 +65,7 @@ export type CommandTargetMenuKind =
     | 'gear'
     | 'inventory-gear'
     | 'inventory-weapons'
+    | 'inventory-and-worn-weapons'
     | 'inventory-meat'
     | 'herbal-kit'
     | 'worn-gear'
@@ -141,8 +142,9 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
     if (verb === 'locate') return 'blank-only';
     if (verb === 'draw') return 'draw-gear';
     if (verb === 'sheath') return 'worn-weapons';
-    if (['open', 'close', 'lock', 'unlock', 'knock'].includes(verb)) return 'containers';
-    if (['reveal', 'flush', 'hide'].includes(verb) && trimmed.split(/\s+/).length === 1) return 'pace-options';
+    if (['open', 'close'].includes(verb)) return 'containers';
+    if (['lock', 'unlock', 'knock'].includes(verb)) return 'door-direction';
+    if (/^(?:reveal|flush)(?:\s+%n)?$/i.test(trimmed) || (verb === 'hide' && trimmed.split(/\s+/).length === 1)) return 'pace-options';
     if (['ride', 'lead', 'saddle', 'unsaddle', 'abandon', 'dismount'].includes(verb)) return 'mounts';
     if (verb === 'bash') return 'bash';
     if (verb === 'scout') return /%n\s*\|\s*exit/i.test(trimmed) ? 'door-direction' : 'movement-wheel';
@@ -159,7 +161,7 @@ export const getCommandTargetMenuKind = (command: string): CommandTargetMenuKind
         if (['summon', 'transfer'].includes(spell)) return 'who';
         if (spell === 'block door' || spell === 'break door') return 'door-direction';
         if (spell === 'raise dead') return 'room-corpses';
-        if (spell === 'enchant') return 'inventory-weapons';
+        if (spell === 'enchant') return 'inventory-and-worn-weapons';
         if (spell === 'identify') return 'gear';
         if (spell === 'create light') return 'lanterns';
         if (spell === 'control weather') return 'weather-options';

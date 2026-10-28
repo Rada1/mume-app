@@ -128,13 +128,12 @@ export const useUnifiedCommandActions = (
             ...EXIT_BUTTONS,
             ...WEATHER_BUTTONS,
             ...SELF_STATE_BUTTONS,
-            ...NPC_BUTTONS.filter(button => button.setId === 'trait-mount-object' || button.setId === 'trait-saddle'),
+            ...NPC_BUTTONS.filter(button => ['inline-mounts','trait-mount-object','trait-saddle'].includes(button.setId)),
             ...learnedAbilities,
             ...communicationButtons,
             createButton({ id: 'btn-disengage', label: 'Disengage', command: 'disengage', setId: 'trait-retreat', color: DISENGAGE_COMMAND_COLOR, shape: 'rect', width: 140, height: 32 }),
             createButton({ id: 'btn-flee', label: 'Flee', command: 'flee', setId: 'trait-retreat', color: '#ef4444', shape: 'rect', width: 140, height: 32 }),
             createButton({ id: 'btn-ungroup', label: 'Ungroup', command: 'group %n', setId: 'inline-ally', color: '#f59e0b', shape: 'rect', width: 140, height: 32 }),
-            createButton({ id: 'btn-unfollow', label: 'Unfollow', command: 'follow self', setId: 'inline-ally', color: '#16a34a', shape: 'rect', width: 140, height: 32 }),
             createButton({ id: 'btn-assist', label: 'Assist', command: 'assist %n', setId: 'inline-ally', color: '#22c55e', shape: 'rect', width: 140, height: 32 })
         ].forEach(button => {
             if (!byId.has(button.id)) byId.set(button.id, button);
@@ -146,10 +145,6 @@ export const useUnifiedCommandActions = (
         const savedUngroupButton = byId.get('btn-ungroup');
         if (savedUngroupButton && savedUngroupButton.command !== 'group %n') {
             byId.set('btn-ungroup', { ...savedUngroupButton, command: 'group %n' });
-        }
-        const savedUnfollowButton = byId.get('btn-unfollow');
-        if (savedUnfollowButton && savedUnfollowButton.command !== 'follow self') {
-            byId.set('btn-unfollow', { ...savedUnfollowButton, command: 'follow self' });
         }
         [
             { id: 'command-personal-info', label: 'Info', command: 'info' },
@@ -189,8 +184,6 @@ export const useUnifiedCommandActions = (
             };
             addActionToSection('trait-combat', 'btn-assist');
             addActionToSection('trait-group', 'btn-ungroup');
-            addActionToSection('trait-follow', 'btn-follow');
-            addActionToSection('trait-follow', 'btn-unfollow');
             return withGroupActions;
         }
         if (activeState.entityId !== 'command-panel-self') return resolved;
@@ -225,9 +218,9 @@ export const useUnifiedCommandActions = (
         };
         const traitButtons = getEligibleActionButtonIds(categoryId,
             game.entities[activeState.entityId || '']?.name || targetContext || null, filterDeps);
-        const hasFollowTrait = sections.some(section => section.trait.id === 'trait-follow');
         const seen = new Set<string>();
         const actions = menuButtons.filter(button => {
+            if (button.id === 'btn-follow' || button.id === 'btn-unfollow' || /^follow(?:\s|$)/i.test(button.command.trim())) return false;
             if (!skillsReady && (button.requirement?.ability || /^(?:mage|cleric|warrior|ranger|thief)(?:spell|skill)list$/i.test(button.setId)
                 || /^cast\s/i.test(button.command))) return false;
             const commandVerb = button.command.trim().toLowerCase().split(/\s+/)[0];
@@ -235,17 +228,15 @@ export const useUnifiedCommandActions = (
             if (!isRiding && mountButtonIds.has(button.id) && MOUNT_COMMANDS_HIDDEN_WHILE_NOT_RIDING.has(commandVerb)) return false;
             if (categoryId === 'cat-ally-remote' && button.id === 'btn-converse') return false;
             const isGroupOnlyAction = ['btn-assist', 'btn-ungroup'].includes(button.id);
-            const isUnfollowAction = button.id === 'btn-unfollow' && hasFollowTrait;
-            const isGroupMemberFollowAction = isSelectedGroupMember && ['btn-follow', 'btn-unfollow'].includes(button.id);
             if (button.id === 'btn-group' && (isSelectedGroupMember || activeState.entityId === 'command-panel-self')) return false;
             if (isGroupOnlyAction && !isSelectedGroupMember) return false;
-            if (seen.has(button.command) || (!traitButtonIds.has(button.id) && !isGroupOnlyAction && !isGroupMemberFollowAction && !isUnfollowAction)) return false;
+            if (seen.has(button.command) || (!traitButtonIds.has(button.id) && !isGroupOnlyAction)) return false;
             const isPersonalInformationButton = button.id.startsWith('command-personal-');
             const isSelfStateButton = button.setId === 'trait-state';
             if (isPersonalInformationButton && activeState.entityId !== 'command-panel-self') return false;
             if (isSelfStateButton && (activeState.entityId !== 'command-panel-self' || game.isSpectateMode)) return false;
             if (isSelfOnlySpellCommand(button.command) && activeState.entityId !== 'command-panel-self') return false;
-            if (!isPersonalInformationButton && !isSelfStateButton && !isGroupOnlyAction && !isGroupMemberFollowAction && !isUnfollowAction
+            if (!isPersonalInformationButton && !isSelfStateButton && !isGroupOnlyAction
                 && !isButtonValidForEntity(button, activeState.entityId || '', categoryId, filterDeps, activeState.setId, targetContext || undefined, traitButtons)) return false;
             seen.add(button.command);
             return true;

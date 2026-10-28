@@ -32,6 +32,10 @@ export interface ObjectSelectorCandidate {
 
 // --- Object Name and Classification ---
 
+export const isEmptyObjectListing = (text: string): boolean => /^nothing\.?$/i.test(
+    text.replace(/\x1b\[[0-9;]*m/g, '').replace(/<[^>]*>/g, '').trim()
+);
+
 export const getObjectTraits = (source: string | DrawerLine | GmcpOccupant): string[] => {
     if (typeof source === 'string') return getTraitsForName(source).map(trait => trait.id);
     const isDrawerLine = 'text' in source;
@@ -70,10 +74,12 @@ export const getCorpseCommandKeyword = (label: string): string => {
 };
 
 export const getDrawerObjectKeyword = (line: DrawerLine): string => {
-    const label = line.context || line.text;
+    const itemLabel = (line.text || line.rawText || line.context || '').split(';', 1)[0].trim();
+    const hasDescriptionTail = itemLabel !== (line.text || line.rawText || line.context || '').trim();
+    const label = hasDescriptionTail ? itemLabel : line.context || itemLabel;
     return hasObjectTrait(line, 'trait-corpse')
         ? getCorpseCommandKeyword(label)
-        : (line.context || extractMumeKeyword(line.text)).toLowerCase().trim();
+        : (hasDescriptionTail ? extractMumeKeyword(itemLabel) : line.context || extractMumeKeyword(itemLabel)).toLowerCase().trim();
 };
 
 export const getRoomObjectKeyword = (source: GmcpOccupant, fallbackLabel = ''): string => {
@@ -120,7 +126,7 @@ export const getGearObjectCandidates = (
     if (!line.isItem || line.isHeader) return [];
     const label = line.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     const keyword = getDrawerObjectKeyword(line);
-    if (!label || !keyword) return [];
+    if (!label || !keyword || isEmptyObjectListing(label)) return [];
     return [{
         id: line.stableId || line.entityId || line.id || `${location}-${index}`,
         label,

@@ -115,8 +115,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
 
     const handleLogClick = useCallback((e: React.MouseEvent) => {
         initAudio(); // Sound fix
-        // Allow clicks in mobile portrait even if map is open in gutter
-        if (ui.mapExpanded && viewport.isMobile && viewport.isLandscape) return;
+        // The landscape minimap shares the screen with the log; visible log targets remain interactive.
 
         if (handleLogHelpClick(e, executeCommand, viewport.isMobile)) {
             return;
@@ -324,8 +323,7 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             !isMod;
         if (isEntityTap) {
             const commandPanel = useCommandPanelStore.getState();
-            if (viewport.isMobile) commandPanel.setIsMobileGuideOpen(true);
-            else commandPanel.setIsOpen(true);
+            if (!viewport.isMobile) commandPanel.setIsOpen(true);
 
             const shopStore = useUIStore.getState();
             if (shopStore.isShopOpen && shopStore.heldShopAction === 'compare' && shopStore.compareFirstTarget !== null) {

@@ -19,7 +19,7 @@ import { useCommandPracticeStore } from '../../stores/useCommandPracticeStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { reconcileSelfEffectTimers } from '../../services/timers/reconcileEffectTimers';
-import { reconcileObjectSnapshot } from '../../objects/objectTargetModel';
+import { isEmptyObjectListing, reconcileObjectSnapshot } from '../../objects/objectTargetModel';
 import { usePanelDataStore } from '../../stores/usePanelDataStore';
 import { formatCapturedLookLine } from '../../utils/lookTextUtils';
 
@@ -324,8 +324,9 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             ? getObjectText(line)
             : null;
 
-        // Entity registration for Items
-        if ((session.type === 'inventory' || session.type === 'equipment' || session.type === 'container') && !isHeader) {
+        // Empty-list responses remain display text rather than targetable objects.
+        const emptyListing = isEmptyObjectListing(text);
+        if ((session.type === 'inventory' || session.type === 'equipment' || session.type === 'container') && !isHeader && !emptyListing) {
             if (objectText) {
                 const itemName = objectText;
                 const loc = session.type === 'equipment' ? 'worn' : 'carried';
@@ -348,7 +349,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             prefix,
             tokens: finalTokens,
             isHeader,
-            isItem: !isHeader &&
+            isItem: !isHeader && !emptyListing &&
                 (session.type === 'inventory' || session.type === 'equipment' || session.type === 'container' ||
                     (session.type === 'examine' && !/^nothing\.?$/i.test(text.trim()))),
         };

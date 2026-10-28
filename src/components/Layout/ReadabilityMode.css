@@ -23,17 +23,17 @@
     min-width:100%;
 }
 
-.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .message-log-container:has(> .command-dock-shell-mobile) {
     display:flex;
     flex-direction:column;
 }
 
-.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) > .message-log {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .message-log-container:has(> .command-dock-shell-mobile) > .message-log {
     flex:1 1 0;
     min-height:0;
 }
 
-.app-container.is-mobile.readability-mode .message-log-container:has(> .command-dock-shell-mobile) > .command-dock-shell-mobile {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .message-log-container:has(> .command-dock-shell-mobile) > .command-dock-shell-mobile {
     flex:0 0 50%;
     height:50%;
     min-height:0;
@@ -44,7 +44,7 @@
 
 @media (max-width:1024px) {
     /* While typing, collapse the split command workspace to its input row. */
-    .app-container.is-mobile.readability-mode.kb-open .command-dock-shell-mobile {
+    .app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode).kb-open .command-dock-shell-mobile {
         flex:0 0 auto !important;
         height:auto !important;
         min-height:0 !important;
@@ -52,8 +52,8 @@
         grid-template-rows:minmax(44px, auto) !important;
     }
 
-    .app-container.is-mobile.readability-mode.kb-open .command-dock-shell-mobile :is(.command-dock-actions, .command-dock-controls, .command-dock-summary, .command-dock-menu),
-    .app-container.is-mobile.readability-mode.kb-open .docked-panel.command-docked-panel {
+    .app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode).kb-open .command-dock-shell-mobile :is(.command-dock-actions, .command-dock-controls, .command-dock-summary, .command-dock-menu),
+    .app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode).kb-open .docked-panel.command-docked-panel {
         display:none !important;
     }
 }

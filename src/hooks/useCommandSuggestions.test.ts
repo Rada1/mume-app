@@ -11,10 +11,61 @@ vi.mock('../context/GameContext', async importOriginal => {
 vi.mock('./useRoomDrinkWater', () => ({ useRoomDrinkWater: () => false }));
 import { useCommandSuggestions } from './useCommandSuggestions';
 import { useRoomStore } from '../stores/useRoomStore';
+import { useCommunicationSuggestionComposer } from './useCommunicationSuggestionComposer';
+import { getMumeCommandMatch } from '../utils/mumeCommandCatalog';
+import type { ParleyState } from '../types';
 
 const stableEmptyDependencies = { abilities: {}, inventoryLines: [], wornLines: [], practiceSkills: [] };
 
 describe('useCommandSuggestions', () => {
+    it.each(['block door', 'break door'])('selects a current-room door for %s without replacing the spell name', spell => {
+        useRoomStore.setState({rawExits: {n: {name: 'gate'}, s: 42}, chars: {}, items: []});
+        const {result} = renderHook(() => {
+            const [input, setInput] = useState(`cast '${spell}' `);
+            return {input, suggestions: useCommandSuggestions({...stableEmptyDependencies, input, setInput,
+                gameState: 'playing', preferredTarget: 'guard'})};
+        });
+        expect(result.current.suggestions.targetSuggestions.map(entry => entry.value)).toEqual(['n']);
+        act(() => result.current.suggestions.chooseTargetSuggestion('n'));
+        expect(result.current.input).toBe(`cast '${spell}' n`);
+    });
+    it('offers Look targets without a blank target option', () => {
+        const { result } = renderHook(() => useCommandSuggestions({
+            ...stableEmptyDependencies, input: 'look ', setInput: () => {}, gameState: 'playing'
+        }));
+        const values = result.current.targetSuggestions.map(suggestion => suggestion.value);
+        expect(values).toContain('in');
+        expect(values).not.toContain('__blank_target__');
+    });
+    // --- Communication Composer Section ---
+    it('moves an accepted Tell recipient into Parley instead of an inline argument chip', () => {
+        const { result } = renderHook(() => {
+            const [input, setInput] = useState('tell ');
+            const [parley, setParley] = useState<ParleyState>({ active: false, command: 'none', target: null, message: '' });
+            const openCommunicationComposer = useCommunicationSuggestionComposer(setParley, setInput);
+            return { input, parley, suggestions: useCommandSuggestions({ ...stableEmptyDependencies,
+                input, setInput, openCommunicationComposer, gameState: 'playing', preferredTarget: 'Grekko' }) };
+        });
+        act(() => result.current.suggestions.chooseTargetSuggestion('Grekko'));
+        expect(result.current.parley).toMatchObject({ active: true, mode: 'parley', command: 'tell', target: 'Grekko' });
+        expect(result.current.input).toBe('');
+        expect(result.current.suggestions.commandArgumentChips).toEqual([]);
+    });
+
+    it.each(['tell', 'say'])('opens the Parley composer when selecting %s', command => {
+        const { result } = renderHook(() => {
+            const [input, setInput] = useState(command);
+            const [parley, setParley] = useState<ParleyState>({ active: false, command: 'none', target: null, message: '' });
+            const openCommunicationComposer = useCommunicationSuggestionComposer(setParley, setInput);
+            return { input, parley, suggestions: useCommandSuggestions({ ...stableEmptyDependencies,
+                input, setInput, openCommunicationComposer, gameState: 'playing' }) };
+        });
+        act(() => result.current.suggestions.chooseCommandSuggestion(getMumeCommandMatch(command).entry!));
+        expect(result.current.parley).toMatchObject({ active: true, mode: 'parley', command, target: null });
+        expect(result.current.input).toBe('');
+        expect(result.current.suggestions.commandArgumentChips).toEqual([]);
+    });
+
     beforeEach(() => {
         useRoomStore.setState({
             rawExits: {}, items: [],
@@ -203,6 +254,32 @@ describe('useCommandSuggestions', () => {
         const chip = result.current.commandArgumentChips[0];
         expect(chip.value).toBe('guard');
         expect(chip.suggestions.find(entry => entry.value === chip.value)).toMatchObject({ category: 'cat-npc' });
+    });
+
+    it('places the caret after existing text when changing a target chip', () => {
+        let pendingFrame: FrameRequestCallback = () => {};
+        const frame = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { pendingFrame = callback; return 1; });
+        const inputElement = document.createElement('input');
+        const inputRef = { current: inputElement };
+        const { result } = renderHook(() => {
+            const [input, setInput] = useState('bash ');
+            inputElement.value = input;
+            return { input, setInput, suggestions: useCommandSuggestions({ ...stableEmptyDependencies,
+                input, setInput, inputRef, gameState: 'playing', preferredTarget: 'orc' }) };
+        });
+        act(() => result.current.suggestions.chooseTargetSuggestion('orc'));
+        const chip = result.current.suggestions.commandArgumentChips[0];
+        expect(result.current.suggestions.commandArgumentCaretKey).toBe(chip.key);
+        act(() => result.current.setInput('bash orc hello'));
+        expect(result.current.suggestions.commandArgumentCaretKey).toBeNull();
+        expect(result.current.suggestions.commandArgumentChips[0].key).toBe(chip.key);
+        const alternative = chip.suggestions.find(entry => entry.value !== 'orc');
+        expect(alternative).toBeDefined();
+        act(() => result.current.suggestions.chooseCommandArgumentSuggestion(chip.key, alternative!.value));
+        act(() => pendingFrame(0));
+        expect(inputElement.selectionStart).toBe(result.current.input.length);
+        expect(result.current.suggestions.commandArgumentCaretKey).toBeNull();
+        frame.mockRestore();
     });
 
     it('keeps the global target out of suggestions for a recognized bare command', () => {

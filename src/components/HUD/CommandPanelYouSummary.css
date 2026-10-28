@@ -1,5 +1,18 @@
 /** @file CommandPanelYouSummary.css — Character-info disclosure without changing the compact header layout. */
 /* --- Header Toggle Section --- */
+.command-tree-you-header { display:grid; grid-template-columns:minmax(0,1fr) 88px; align-items:center; gap:8px; width:100%; min-width:0; }
+.command-tree-you-header .command-tree-you-toggle { min-width:0; overflow:hidden; }
+.command-tree-you-header .command-tree-quick-state { min-width:0; width:100%; }
+.command-tree-you-header .command-tree-you-toggle > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+.command-tree-you-header .group-state-button { min-width:62px; padding:4px 6px; font-size:10px; }
+.command-tree-you-header .group-state-button small { display:block; color:#a49b81; font-size:9px; }
+@media (max-width:1024px) and (orientation:portrait) {
+    .app-container.is-mobile .command-tree-you-header { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:0; width:100%; }
+    .app-container.is-mobile .command-tree-you-header .command-tree-you-toggle { width:100%; min-width:0; overflow:hidden; grid-template-columns:minmax(0,1fr) auto; gap:2px 6px; }
+    .app-container.is-mobile .command-tree-you-header .command-tree-you-toggle > span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+    .app-container.is-mobile .command-tree-you-header .command-tree-quick-state { width:100%; min-width:0; justify-content:stretch; }
+    .app-container.is-mobile .command-tree-you-header .group-state-button { flex:1 1 0; width:100%; min-width:0; }
+}
 .command-tree-you-summary .command-tree-you-toggle {
     width:100%;
     padding:0;
@@ -20,6 +33,18 @@
 }
 .command-tree-you-summary .command-tree-you-expanded[hidden],
 .command-tree-you-summary .command-tree-you-toggle small[hidden] { display:none !important; }
+
+/* --- Click-to-refresh vitals --- */
+.command-tree-v2 .command-tree-you-vitals { cursor:pointer; }
+.command-tree-v2 .command-tree-you-vitals > div { cursor:inherit; }
+.command-tree-v2 .command-tree-you-vitals:focus-visible { outline:1px solid #c9a84c; outline-offset:1px; }
+.command-tree-v2 .command-tree-you-vitals[aria-disabled="true"] { cursor:default; }
+.command-tree-v2 .command-tree-you-vital-value > span { transition:none; }
+.command-tree-v2 .command-tree-you-vitals:hover:not([aria-disabled="true"]) > div,
+.command-tree-v2 .command-tree-you-vitals.is-requesting > div { background:var(--command-tree-surface-hover); }
+.command-tree-you-vital-snapshot[data-vital-type="health"] { color:#ff5555; }
+.command-tree-you-vital-snapshot[data-vital-type="mana"] { color:#aa55ff; }
+.command-tree-you-vital-snapshot[data-vital-type="move"] { color:#55ff55; }
 
 /* --- Interactive movement and flee settings --- */
 .command-tree-v2 .command-tree-you-details { grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) auto; }

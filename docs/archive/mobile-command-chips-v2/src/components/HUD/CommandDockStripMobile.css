@@ -1,0 +1,266 @@
+/** @file CommandDockStripMobile.css — Mobile console layout, narrow 68px cascading branches, and movement submenu. */
+
+/* --- Mobile Command Console: Input / Actions / State / Info --- */
+.app-container .content-layer:has(.command-dock-shell-mobile) { padding-bottom:0 !important; }
+.command-tree-v2.command-dock-shell.command-dock-shell-mobile {
+    position:relative;
+    inset:auto;
+    flex:0 0 auto;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto auto auto auto;
+    width:100%;
+    max-width:100%;
+    min-height:0;
+}
+.command-dock-shell-mobile .command-dock-input-main { grid-area:1 / 1; min-height:44px; }
+.command-dock-shell-mobile .command-dock-actions { grid-area:2 / 1; margin-top:4px; }
+.command-dock-shell-mobile .command-dock-controls { grid-area:3 / 1; padding:0; }
+.command-dock-shell-mobile .command-dock-summary { grid-area:4 / 1; padding:4px 0 0; }
+.command-dock-shell-mobile .command-tree-root-actions { display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); width:100%; overflow:visible; }
+.command-dock-shell-mobile .command-tree-root-actions > .command-tree-row { min-width:0; min-height:42px; padding:6px 2px; font-size:9px; letter-spacing:0; }
+.command-dock-shell-mobile .command-tree-dock-controls-inner { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; }
+.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-state-controls,
+.command-dock-shell-mobile .command-tree-dock-controls-inner .command-tree-gear-controls { display:contents; }
+.command-dock-shell-mobile .command-tree-quick-state,
+.command-dock-shell-mobile .command-tree-quick-gear { width:100%; min-width:0; }
+.command-dock-shell-mobile .command-tree-quick-state > button,
+.command-dock-shell-mobile .command-tree-quick-gear > button { min-height:44px; padding:5px 2px; font-size:9px; line-height:12px; }
+.command-dock-shell-mobile .command-tree-quick-state > button small { font-size:9px; }
+.command-dock-shell-mobile .command-tree-dock-popup { max-width:calc(100vw - 16px); }
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branches {
+    display:flex;
+    flex-direction:row-reverse;
+    align-items:flex-end;
+    max-width:calc(100vw - 16px);
+    overflow-x:auto;
+    overflow-y:hidden;
+}
+.command-dock-shell-mobile .command-tree-you-identity { gap:4px 6px; }
+.command-dock-shell-mobile .command-tree-you-progression { font-size:9px; }
+.command-dock-shell-mobile .command-tree-quick-gear,
+.command-dock-shell-mobile .command-tree-quick-state { position:static; }
+.command-dock-shell-mobile .command-tree-gear-quick-menu {
+    top:auto;
+    left:auto;
+    right:8px;
+    display:flex;
+    align-items:stretch;
+    width:max-content;
+    max-width:calc(100vw - 16px);
+}
+.command-dock-shell-mobile .command-tree-gear-quick-details {
+    display:flex;
+    flex:0 0 calc((100vw - 24px) / 2);
+    flex-direction:column;
+    box-sizing:border-box;
+    width:calc((100vw - 24px) / 2);
+    height:min(55dvh,480px);
+    max-height:min(55dvh,480px);
+    overflow:visible;
+}
+.command-dock-shell-mobile .command-tree-gear-quick-list,
+.command-dock-shell-mobile .command-tree-gear-quick-list.is-equipment {
+    flex:0 0 calc((100vw - 24px) / 2);
+    box-sizing:border-box;
+    width:calc((100vw - 24px) / 2);
+    min-width:calc((100vw - 24px) / 2);
+    max-width:calc((100vw - 24px) / 2);
+    max-height:min(55dvh,480px);
+}
+.command-dock-shell-mobile .command-tree-gear-quick-actions,
+.command-dock-shell-mobile .command-tree-gear-quick-contents {
+    flex:1 1 0;
+    box-sizing:border-box;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+    max-height:none;
+    min-height:0;
+    overflow:auto;
+}
+.command-dock-shell-mobile .command-tree-gear-quick-details:empty { display:none; }
+.command-dock-shell-mobile .command-tree-quick-options { left:0; right:0; width:100%; }
+.command-dock-shell-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-put-targets) {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    width:calc(100vw - 16px) !important;
+    max-width:calc(100vw - 16px) !important;
+}
+.command-dock-shell-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-put-targets) .command-tree-gear-quick-details { display:contents; }
+.command-dock-shell-mobile .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-put-targets) :is(.command-tree-gear-quick-actions,.command-tree-gear-quick-contents,.command-tree-gear-quick-list,.command-tree-gear-quick-put-targets) {
+    box-sizing:border-box;
+    grid-column:auto;
+    width:100%;
+    min-width:0;
+    max-width:none;
+    max-height:min(55dvh,480px);
+}
+
+/* --- Mobile Branches: Shortened to direction button width (~68px) --- */
+.command-dock-shell-mobile .command-tree-branch,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch {
+    flex:0 0 68px;
+    width:68px;
+    min-width:68px;
+    max-width:68px;
+    padding:2px;
+    box-sizing:border-box;
+    overflow-x:hidden;
+}
+.command-dock-shell-mobile .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)),
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) {
+    flex:0 0 208px;
+    width:208px;
+    min-width:208px;
+    max-width:208px;
+    padding:4px;
+}
+/* --- Transparent Mobile Movement Menu Surface --- */
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)),
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) {
+    background:transparent !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) .command-tree-target-header,
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) .command-tree-target-header {
+    background:transparent !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) > div:hover,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:is(.is-movement-branch, :has(.movement-pad)) > div:hover {
+    background:transparent !important;
+}
+.app-container.is-mobile .command-tree-v2 :is(.command-tree-movement-pad, .movement-pad-menu) {
+    -webkit-tap-highlight-color:transparent;
+}
+/* --- Floating Mobile Menu Rows --- */
+.command-dock-shell-mobile .command-tree-target-header,
+.app-container.is-mobile .command-tree-v2 .command-tree-target-header {
+    display:none !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branches,
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branches { gap:6px; }
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch,
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch { box-shadow:none !important; }
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))),
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) {
+    padding:0 1px 4px;
+    background:transparent !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-root-header, .command-tree-target-header),
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-root-header, .command-tree-target-header) {
+    background:transparent !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup > .command-tree-header,
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup > .command-tree-header { background:transparent !important; }
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-row, .terminal-inspect-row),
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-row, .terminal-inspect-row) {
+    margin:0 0 4px;
+    border:1px solid rgba(201,168,76,.16);
+    border-radius:3px;
+    background:rgba(var(--command-tree-surface-rgb),.82) !important;
+    box-shadow:0 2px 5px rgba(0,0,0,.22);
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-row:hover, .command-tree-row:focus-visible, .command-tree-row[aria-expanded=true], .terminal-inspect-row:hover, .terminal-inspect-row:focus-visible),
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) :is(.command-tree-row:hover, .command-tree-row:focus-visible, .command-tree-row[aria-expanded=true], .terminal-inspect-row:hover, .terminal-inspect-row:focus-visible) {
+    background:rgba(var(--command-tree-surface-rgb),.96) !important;
+}
+.command-dock-shell-mobile .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-current-target > .command-tree-row,
+.app-container.is-mobile .command-tree-v2 .command-tree-dock-popup .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-current-target > .command-tree-row {
+    border-color:rgba(248,113,113,.48);
+    background:var(--active-target-highlight-background, rgba(127,29,29,.24)) !important;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row,
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .terminal-inspect-row,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .terminal-inspect-row {
+    padding:6px 3px;
+    gap:2px;
+    font-size:10px;
+    line-height:14px;
+    min-height:28px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row-label,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row-label {
+    font-size:10px;
+    line-height:14px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row-chevron,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-row-chevron {
+    width:8px;
+    font-size:9px;
+    flex:none;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading {
+    margin:6px 2px 2px;
+    padding:1px 0;
+    font-size:8px;
+    line-height:13px;
+    min-height:16px;
+    gap:3px;
+    width:calc(100% - 4px);
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading::before,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading::before {
+    flex:0 0 3px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading-label,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-section-heading-label {
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-header,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-header {
+    width:calc(100% + 4px);
+    margin:0 -2px 2px;
+    padding:2px 3px;
+    min-height:20px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-header .command-tree-header-title,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-header .command-tree-header-title {
+    font-size:8px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header {
+    width:calc(100% + 4px);
+    margin:0 -2px 2px;
+    padding:2px 3px;
+    min-height:22px;
+    gap:2px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header .command-tree-header-title,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header .command-tree-header-title {
+    display:none;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header > button,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-root-header > button {
+    padding:2px 3px;
+    min-width:0;
+    min-height:20px;
+    font-size:9px;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .gear-slot,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .gear-slot {
+    display:none;
+}
+.command-dock-shell-mobile .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-crosshair,
+.app-container.is-mobile .command-tree-v2 .command-tree-branch:not(:is(.is-movement-branch, :has(.movement-pad))) .command-tree-target-crosshair {
+    width:10px;
+    height:10px;
+}
+
+/* --- Mobile Keyboard: Keep Only the Command Input Above the Keyboard --- */
+@media (max-width:1024px) {
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile {
+        grid-template-rows:auto;
+    }
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-actions,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-controls,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-summary,
+    .app-container.is-mobile.kb-open .command-dock-shell-mobile .command-dock-menu {
+        display:none !important;
+    }
+}

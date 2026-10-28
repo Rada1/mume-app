@@ -55,6 +55,10 @@ const getAbilityProficiency = (
     return Math.max(abilityProf, getPracticeProficiency(abilityName, practiceData, classKey));
 };
 
+const PRACTICE_INDEPENDENT_THIEF_COMMANDS = new Set(['search', 'missile', 'recover']);
+const isPracticeIndependentAbility = (classKey: string, abilityName: string): boolean =>
+    classKey === 'thief' && PRACTICE_INDEPENDENT_THIEF_COMMANDS.has(normalizeAbilityKey(abilityName));
+
 const getClassKeyForSet = (setId?: string): string | undefined => {
     const normalized = (setId || '').toLowerCase();
     if (normalized.includes('mage')) return 'mage';
@@ -73,6 +77,7 @@ const isAbilityInClass = (abilityName: string, classKey?: string): boolean => {
     );
 };
 
+// --- Derived Button Catalog Section ---
 export const useButtonLogic = (deps: {
     rawButtons: CustomButton[],
     activeSet: string,
@@ -88,7 +93,7 @@ export const useButtonLogic = (deps: {
 }) => {
     const { 
         rawButtons, activeSet, abilities, characterClass, characterName, characterInfo,
-        isEditMode, isSmartPopulateEnabled = true, target = null, inlineCategories = [],
+        isEditMode, isSmartPopulateEnabled = true,
         practiceData = null
     } = deps;
 
@@ -230,7 +235,7 @@ export const useButtonLogic = (deps: {
                 }), ...MAGE_SPELLS, ...CLERIC_SPELLS]
                 : [...learnedClassAbilities, ...(CLASS_MAPPINGS[mapKey] || [])];
 
-            if (mapKey === 'thief' && getAbilityProficiency('Missile', safeAbilities, practiceData, mapKey) > 0) {
+            if (mapKey === 'thief') {
                 const missileIndex = baseList.findIndex(name => normalizeAbilityKey(name) === 'missile');
                 const insertIndex = missileIndex >= 0 ? missileIndex + 1 : baseList.length;
                 baseList = [
@@ -248,16 +253,17 @@ export const useButtonLogic = (deps: {
 
             baseList.map(name => ({
                 name,
-                prof: mapKey === 'thief' && normalizeAbilityKey(name) === 'recover'
-                    ? getAbilityProficiency('Missile', safeAbilities, practiceData, mapKey)
-                    : getAbilityProficiency(name, safeAbilities, practiceData, mapKey)
-            })).forEach(({ name, prof }, idx) => {
+                availableWithoutPractice: isPracticeIndependentAbility(mapKey, name),
+                prof: getAbilityProficiency(name, safeAbilities, practiceData, mapKey)
+            })).forEach(({ name, prof, availableWithoutPractice }, idx) => {
                 const abilityKey = normalizeAbilityKey(name);
                 if (seenBaseAbilities.has(abilityKey)) return;
                 seenBaseAbilities.add(abilityKey);
-                if (isSmartPopulateEnabled && prof <= 0) return;
+                if (isSmartPopulateEnabled && prof <= 0 && !availableWithoutPractice) return;
 
-                const cmd = toAbilityCommand(mapKey, name);
+                const cmd = mapKey === 'thief' && normalizeAbilityKey(name) === 'missile'
+                    ? 'shoot %n'
+                    : toAbilityCommand(mapKey, name);
                 if (existingCommands.has(cmd) || getAbilityAliases(name).some(alias => existingAbilityKeys.has(alias))) return;
 
                 const cols = 2;
@@ -275,12 +281,12 @@ export const useButtonLogic = (deps: {
                     actionType: 'command',
                     display: 'floating',
                     isVisible: true,
-                    isDimmed: prof <= 0,
+                    isDimmed: prof <= 0 && !availableWithoutPractice,
                     style: {
                         x, y, w, h,
-                        backgroundColor: prof > 0 ? 'rgba(74, 144, 226, 0.3)' : 'rgba(100, 116, 139, 0.1)',
-                        color: prof > 0 ? '#fff' : 'rgba(255, 255, 255, 0.4)',
-                        borderColor: prof > 0 ? 'rgba(74, 144, 226, 0.5)' : 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: prof > 0 ? 'rgba(74, 144, 226, 0.3)' : availableWithoutPractice ? 'rgba(201, 168, 76, 0.14)' : 'rgba(100, 116, 139, 0.1)',
+                        color: prof > 0 || availableWithoutPractice ? '#fff' : 'rgba(255, 255, 255, 0.4)',
+                        borderColor: prof > 0 ? 'rgba(74, 144, 226, 0.5)' : availableWithoutPractice ? 'rgba(201, 168, 76, 0.4)' : 'rgba(255, 255, 255, 0.1)',
                         shape: 'pill', transparent: false
                     },
                     position: { x, y, w, h },
@@ -289,5 +295,5 @@ export const useButtonLogic = (deps: {
             });
         });
         return [...filtered, ...allGenerated];
-    }, [rawButtons, activeSet, abilities, characterClass, characterName, characterInfo, isEditMode, isSmartPopulateEnabled, target, practiceData]);
+    }, [rawButtons, activeSet, abilities, characterClass, characterName, characterInfo?.race, characterInfo?.subrace, characterInfo?.class, isEditMode, isSmartPopulateEnabled, practiceData]);
 };

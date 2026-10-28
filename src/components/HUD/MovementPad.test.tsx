@@ -18,6 +18,15 @@ vi.mock('../../context/GameContext', () => ({
 }));
 
 describe('MovementPad Component', () => {
+    it('routes map Flee and door actions through the supplied execution handler', () => {
+        useRoomStore.setState({exits:['n'], rawExits:{n:{hasDoor:true, closed:true}}});
+        const onCommand=vi.fn();
+        render(<MovementPad layout="map" onCommand={onCommand}/>);
+        fireEvent.click(screen.getByRole('button', {name:'Flee'}));
+        expect(onCommand).toHaveBeenLastCalledWith('flee', expect.anything());
+        fireEvent.click(screen.getByRole('button', {name:'open north exit'}));
+        expect(onCommand).toHaveBeenLastCalledWith('open exit n', expect.anything());
+    });
     beforeEach(() => {
         vi.useFakeTimers();
         useRoomStore.setState({

@@ -101,13 +101,23 @@ describe('group member commands', () => {
     });
 });
 
-describe('offense commands', () => {
-    it('includes Hit in the general offense actions for an enemy', () => {
+describe('class and combat commands', () => {
+    it.each(['cat-npc', 'cat-ally', 'cat-enemy', 'cat-neutral', 'cat-mount'])('offers learned abilities from every class for %s', category => {
+        state.abilities = {'magic missile': 80, kick: 80, bandage: 80, 'cure light': 80, backstab: 80};
+        usePanelDataStore.setState(current => ({status: {...current.status, skills: 'ready'}}));
+        const entity = {...target, category, setId: category, context: 'Arwen'};
+        const {result} = renderHook(() => useUnifiedCommandActions(entity, 'selected', 'Arwen'));
+        for (const [className, label] of [['mage','Magic Missile'],['warrior','Kick'],['ranger','Bandage'],['cleric','Cure Light'],['thief','Backstab']]) {
+            expect(result.current.actionGroups.find(group => group.section.key === `trait-${className}`)?.buttons.map(button => button.label)).toContain(label);
+        }
+    });
+
+    it('includes Hit in Combat for an enemy', () => {
         const enemyTarget: PopoverState = {
             ...target, category: 'cat-enemy', setId: 'cat-enemy', context: 'orc'
         };
         const { result } = renderHook(() => useUnifiedCommandActions(enemyTarget, 'selected', 'orc'));
-        const offense = result.current.actionGroups.find(group => group.section.key === 'trait-offense');
+        const offense = result.current.actionGroups.find(group => group.section.key === 'trait-combat');
 
         expect(offense?.buttons).toContainEqual(expect.objectContaining({
             id: 'btn-hit',
@@ -116,7 +126,7 @@ describe('offense commands', () => {
         }));
     });
 
-    it('shows Bash Disengage in the Warrior offense subgroup when Bash is learned', () => {
+    it('shows Bash Disengage in Warrior when Bash is learned', () => {
         const enemyTarget: PopoverState = {
             ...target, category: 'cat-enemy', setId: 'cat-enemy', context: 'orc'
         };
@@ -124,7 +134,7 @@ describe('offense commands', () => {
         usePanelDataStore.setState(current => ({ status: { ...current.status, skills: 'ready' } }));
 
         const { result } = renderHook(() => useUnifiedCommandActions(enemyTarget, 'selected', 'orc'));
-        const offense = result.current.actionGroups.find(group => group.section.key === 'trait-offense');
+        const offense = result.current.actionGroups.find(group => group.section.key === 'trait-warrior');
 
         expect(offense?.buttons.map(button => button.label)).toContain('Bash');
         expect(offense?.buttons).toContainEqual(expect.objectContaining({
@@ -135,13 +145,14 @@ describe('offense commands', () => {
         }));
     });
 
-    it('shows Disengage and Flee under Retreat for enemy targets', () => {
+    it('groups Disengage with Combat for enemy targets', () => {
         const enemyTarget: PopoverState = {
             ...target, category: 'cat-enemy', setId: 'cat-enemy', context: 'orc'
         };
         const { result } = renderHook(() => useUnifiedCommandActions(enemyTarget, 'selected', 'orc'));
-        const retreat = result.current.actionGroups.find(group => group.section.key === 'trait-retreat');
+        const combat = result.current.actionGroups.find(group => group.section.key === 'trait-combat');
 
-        expect(retreat?.buttons.map(button => button.command)).toEqual(['disengage', 'flee']);
+        expect(combat?.buttons.map(button => button.command)).toContain('disengage');
+        expect(result.current.actionGroups.map(group => group.section.key)).not.toContain('trait-retreat');
     });
 });

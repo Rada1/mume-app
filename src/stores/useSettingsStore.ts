@@ -97,6 +97,7 @@ interface SettingsState {
     disableSmoothScroll: boolean;
     isTimestampEnabled: boolean;
     keepLogTextOnOneLine: boolean;
+    oneHandedMode: boolean;
     showDebugEchoes: boolean;
     showLegacyButtons: boolean;
     showDeveloperTools: boolean;
@@ -184,6 +185,7 @@ interface SettingsState {
     setRoomColor: (val: string) => void;
     setIsTimestampEnabled: (val: boolean) => void;
     setKeepLogTextOnOneLine: (val: boolean) => void;
+    setOneHandedMode: (val: boolean) => void;
     setShowDebugEchoes: (val: boolean) => void;
     setShowLegacyButtons: (val: boolean) => void;
     setShowDeveloperTools: (val: boolean) => void;
@@ -353,6 +355,7 @@ export const useSettingsStore = create<SettingsState>()(
             disableSmoothScroll: false,
             isTimestampEnabled: false,
             keepLogTextOnOneLine: false,
+            oneHandedMode: false,
             showDebugEchoes: false,
             showLegacyButtons: false,
             showDeveloperTools: false,
@@ -448,6 +451,7 @@ export const useSettingsStore = create<SettingsState>()(
             setDisableSmoothScroll: (disableSmoothScroll) => set({ disableSmoothScroll }),
             setIsTimestampEnabled: (isTimestampEnabled) => set({ isTimestampEnabled }),
             setKeepLogTextOnOneLine: (keepLogTextOnOneLine) => set({ keepLogTextOnOneLine }),
+            setOneHandedMode: (oneHandedMode) => set({ oneHandedMode }),
             setShowDebugEchoes: (showDebugEchoes) => set({ showDebugEchoes }),
             setShowLegacyButtons: (showLegacyButtons) => set({ showLegacyButtons }),
             setShowDeveloperTools: (showDeveloperTools) => set({ showDeveloperTools }),

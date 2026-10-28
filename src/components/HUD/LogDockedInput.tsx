@@ -21,6 +21,8 @@ import { getNonGroupmateRoomTargetSuggestions } from '../../utils/groupTargetSug
 import OpponentRechargeTimer from '../Combat/OpponentRechargeTimer';
 import { ActionTimerDisplay } from './ActionTimerDisplay';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { useCommandPrefixPreview } from '../../hooks/useCommandPrefixPreview';
+import { useCommunicationSuggestionComposer } from '../../hooks/useCommunicationSuggestionComposer';
 import { CommandArgumentText } from '../Controls/CommandArgumentText';
 import { useRotatingCommandSuggestion } from '../../hooks/useRotatingCommandSuggestion';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
@@ -61,9 +63,10 @@ const splitCommandTarget = (command: string, target: string) => {
 
 export const LogDockedInput: FC<LogDockedInputProps> = ({
     handleSend,
-    commandPreview,
+    commandPreview: rawCommandPreview,
     commandDockActive = false
 }) => {
+    const commandPreview = useCommandPrefixPreview(rawCommandPreview);
     const {
         viewport,
         status,
@@ -218,6 +221,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     }, [beginTargetEdit, setAutoTargetEnabled]);
 
     const currentMode = parley?.mode || (parley?.active ? 'parley' : 'command');
+    const openCommunicationComposer = useCommunicationSuggestionComposer(setParley, setInput);
 
     const {
         commandTextParts,
@@ -230,7 +234,6 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         visibleCommandSuggestions,
         targetSuggestions,
         commandArgumentChips,
-        commandArgumentCaretKey,
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle,
@@ -246,6 +249,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
         handleCommandArgumentKeyDown,
         clearCommandArgumentCaret
     } = useCommandSuggestions({
+        openCommunicationComposer,
         input,
         setInput,
         gameState,
@@ -493,9 +497,13 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
             <div className={commandDockActive ? 'command-dock-input-main' : 'command-dock-input-main is-inline'}>
             <span className="docked-prompt-symbol">&gt;</span>
 
-            {isParleyActive && <ParleyChannelChip command={parley.command} target={parley.target} whoList={whoList}
+            {gameState === 'playing' && <ParleyChannelChip command={isParleyActive ? parley.command : 'none'} target={isParleyActive ? parley.target : null} whoList={whoList} iconOnly={!isParleyActive}
                 requestWhoList={requestWhoList} onClear={handleParleyClear}
-                onChoose={(command,target) => { setParley(current => ({...current,command,target})); triggerHaptic?.(15); }} />}
+                onChoose={(command,target) => {
+                    setParley(current => ({...current,active:true,mode:'parley',command,target}));
+                    triggerHaptic?.(15);
+                    requestAnimationFrame(() => inputRef.current?.focus());
+                }} />}
             <form className="docked-input-form" onSubmit={handleSubmit}>
                 <div
                     ref={commandInputWrapRef}
@@ -529,8 +537,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                                         text={commandTextParts.suffix}
                                         offset={commandTextParts.leading.length + commandTextParts.token.length}
                                         chips={commandArgumentChips}
-                                        caretKey={commandArgumentCaretKey}
-                                        onChooseChip={chooseCommandArgumentSuggestion}
+                                            onChooseChip={chooseCommandArgumentSuggestion}
                                     />
                                 </>
                             )}
@@ -542,7 +549,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             id="mud-input"
                             name="mud-input"
                             type="password"
-                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
+                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}`}
                             value={input}
                             disabled={isLoginStage && !isLoginReady}
                             onChange={handleInputChange}
@@ -561,7 +568,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                             ref={setInputElementRef}
                             id="mud-input"
                             name="mud-input"
-                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
+                            className={`docked-input-field input-field account-input-trigger${commandTextParts || (commandPreview && !input) || showTacticalArgumentChips ? ' command-highlight-source' : ''}`}
                             value={input}
                             disabled={isLoginStage && !isLoginReady}
                             rows={1}

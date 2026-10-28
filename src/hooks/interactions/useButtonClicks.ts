@@ -7,6 +7,7 @@ import { triggerRingAnimation, getPressedColor } from './pointerUtils';
 import { perfMonitor } from '../../utils/perfMonitor';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
 import { resolveButtonClickCommand } from './resolveButtonClickCommand';
+import { applyTacticalCommandPrefix, isFollowersCommandAction, useTacticalCommandPrefixStore } from '../../stores/useTacticalCommandPrefixStore';
 
 // --- Logic Section ---
 export const useButtonClicks = (deps: InteractionDeps) => {
@@ -35,6 +36,12 @@ export const useButtonClicks = (deps: InteractionDeps) => {
 
         if (btn.isEditMode) {
             if (button.setId !== 'Tactical' && !wasDraggingRef.current) btn.setEditingButtonId(button.id);
+            return;
+        }
+
+        if (isFollowersCommandAction(button)) {
+            useTacticalCommandPrefixStore.getState().armFollowers();
+            setCommandPreview(null);
             return;
         }
 
@@ -193,7 +200,7 @@ export const useButtonClicks = (deps: InteractionDeps) => {
                 // For nested items, finalContext (e.g. '2.boots') is the exact target
                 executeCommand(`get ${finalContext} ${detectedParent}`, true, true, false, false, { fromUi: true });
             }
-            const executableCmd = decodeCommandEntities([...(deps.heldButton?.commandPrefixes || []), finalCmd].filter(Boolean).join(' '));
+            const executableCmd = applyTacticalCommandPrefix(decodeCommandEntities([...(deps.heldButton?.commandPrefixes || []), finalCmd].filter(Boolean).join(' ')));
             // --- Optimistic Updates for Common Actions ---
             const firstWord = executableCmd.split(' ')[0].toLowerCase();
             const remainder = executableCmd.slice(firstWord.length).trim();

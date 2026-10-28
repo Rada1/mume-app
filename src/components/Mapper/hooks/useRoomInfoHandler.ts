@@ -1,3 +1,4 @@
+/** @file Resolves room observations and consumes one queued input per arrival. */
 import { useCallback, useRef } from 'react';
 import { GmcpRoomInfo, MapperRoom } from '../mapperTypes';
 import { generateId, normalizeTerrain, DIRS, getExitTargetId, stripAnsi } from '../mapperUtils';
@@ -33,11 +34,6 @@ interface RoomInfoProps {
     deathRoomId?: string | null;
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
-    // Timestamp of the last move GMCP authoritatively consumed from the pending queue.
-    // The XML/text move-confirmed handler reads this to skip a redundant SECOND consume
-    // for the same physical move (lit rooms fire BOTH a GMCP room-info and an XML move).
-    lastGmcpMoveTimeRef?: React.MutableRefObject<number>;
-    unmatchedGmcpConfirmationsRef?: React.MutableRefObject<number>;
     activeView: string;
     // When false (default / "play mode"), the mapper only TRACKS position against the
     // preloaded base map and never fabricates a brand-new room. When true ("map edit
@@ -49,7 +45,7 @@ export const useRoomInfoHandler = ({
     roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef,
-    deathRoomId, setDeathRoomId, baseMapExitsRef, lastGmcpMoveTimeRef, unmatchedGmcpConfirmationsRef, activeView, mapEditMode
+    deathRoomId, setDeathRoomId, baseMapExitsRef, activeView, mapEditMode
 }: RoomInfoProps) => {
 
     // Debounce for syncing the explored Set into React state / persistence. The hot
@@ -58,7 +54,8 @@ export const useRoomInfoHandler = ({
     // clone per room (which was O(n) per step → O(n²) over a session).
     const exploredSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const handleRoomInfo = useCallback((data: GmcpRoomInfo) => {
+    // --- Logic Section ---
+    const handleRoomInfo = useCallback((data: GmcpRoomInfo, movementAlreadyConfirmed = false) => {
         // MUME can omit the room id entirely when the player cannot see. Treat that
         // observation like VNUM 0 so queued direction, exits, and local map evidence
         // can still resolve the room instead of dropping the update here.
@@ -133,7 +130,7 @@ export const useRoomInfoHandler = ({
         // If ID didn't change, it's usually a refresh (look) UNLESS we are in a VNUM 0 area 
         // where multiple rooms might share the same "0" ID.
         const hasPendingMove = !isSpectateUpdate && pendingMovesRef.current.length > 0;
-        const isLikelyMove = !isSpectateUpdate && !isScoutObservation && (idChanged || (hasPendingMove && isVnumZero));
+        const isLikelyMove = !movementAlreadyConfirmed && !isSpectateUpdate && !isScoutObservation && (idChanged || (hasPendingMove && isVnumZero));
 
         if (isLikelyMove) {
             // Early queue peek: what direction are we trying to move?
@@ -197,17 +194,6 @@ export const useRoomInfoHandler = ({
             else if (queuedMove && queuedMove.dir !== dirUsed) {
                 pendingMovesRef.current = [];
                 if (showDebugEchoes) addMessage?.('system', `[Mapper] Movement ${dirUsed} did not match queued ${queuedMove.dir}; clearing prediction queue.`);
-            }
-
-            // If GMCP just claimed one or more queued moves, stamp the time so the
-            // XML/text move-confirmed handler knows this physical move is already
-            // accounted for and won't consume a second pending entry for it.
-            if (lastGmcpMoveTimeRef && pendingMovesRef.current.length < pendingLenBeforeConsume) {
-                if (unmatchedGmcpConfirmationsRef) {
-                    if (Date.now() - lastGmcpMoveTimeRef.current >= 400) unmatchedGmcpConfirmationsRef.current = 0;
-                    unmatchedGmcpConfirmationsRef.current++;
-                }
-                lastGmcpMoveTimeRef.current = Date.now();
             }
 
             if (dirUsed && pendingMovesRef.current.length < pendingLenBeforeConsume) {
@@ -387,7 +373,7 @@ export const useRoomInfoHandler = ({
         }
 
         // Prioritize finding a room that's an existing exit from our current location
-        if (!targetId && !isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
+        if (!targetId && !matchedInternalId && !isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
             const ex = currentActiveRoom.exits[dirUsed];
             if (ex.target) {
                 const existingTarget = roomsRef.current[ex.target];
@@ -406,12 +392,12 @@ export const useRoomInfoHandler = ({
         }
 
         // If not found via exits, try global search (only for non-zero unique IDs)
-        if (!targetId && !isVnumZero) {
+        if (!targetId && !matchedInternalId && !isVnumZero) {
             targetId = Object.keys(roomsRef.current).find(key => String(roomsRef.current[key].gmcpId) === String(gmcpId)) || null;
         }
 
         // Final fallback for dark rooms: look for ANY room at the exact predicted coordinates
-        if (!targetId && isVnumZero && currentActiveRoom) {
+        if (!targetId && !matchedInternalId && isVnumZero && currentActiveRoom) {
             targetId = Object.keys(roomsRef.current).find(key => {
                 const r = roomsRef.current[key];
                 return Math.round(r.x) === predX && Math.round(r.y) === predY && Math.abs(Math.round(r.z || 0) - predZ) < 0.5 && r.zone === currentActiveRoom.zone;

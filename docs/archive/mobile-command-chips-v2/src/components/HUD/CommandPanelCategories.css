@@ -1,0 +1,57 @@
+/** @file CommandPanelCategories.css — Compact toggles above one scrolling command flow. */
+/* --- Category strip --- */
+.command-tree-v2 .command-tree-main-branch.is-category-chip-menu {
+ display:flex!important; flex-direction:column; min-height:0; overflow:hidden;
+}
+.command-panel-category-chips {
+ display:grid; grid-template-columns:repeat(auto-fit,minmax(64px,1fr)); gap:3px;
+ flex:0 0 auto; padding:4px 8px 8px;
+}
+.command-tree-v2 .command-panel-category-chips button {
+ min-height:32px; padding:5px 6px; border:0; border-radius:0;
+ background:var(--command-tree-surface-alt); color:#a39b8b;
+ font:11px monospace; text-align:center; overflow-wrap:anywhere;
+}
+.command-tree-v2 .command-panel-category-chips button[aria-pressed="true"] {
+ background:var(--command-tree-surface-hover); color:#ffdf81;
+}
+.command-tree-v2 .command-panel-category-chips button:focus-visible {
+ outline:1px solid #c9a84c; outline-offset:-1px;
+}
+/* --- Shared command flow --- */
+.command-panel-category-scroll {
+ flex:1 1 auto; min-height:0; overflow-y:auto; overflow-x:hidden;
+ overscroll-behavior:contain; touch-action:pan-y; scrollbar-width:thin;
+}
+.command-tree-v2 .command-tree-main-branch .command-panel-category-flow {
+ display:flex; flex-wrap:wrap; gap:4px; max-height:none; overflow:visible; padding:0 8px 8px;
+}
+.command-panel-category-flow > * { flex:0 1 auto; min-width:0; }
+.command-tree-v2 .command-panel-category-flow :is(.command-tree-row,.popover-action-button) {
+ width:auto; min-height:36px; padding:6px 8px;
+}
+/* --- Mobile single-row category navigation --- */
+.app-container.is-mobile .command-panel-category-chips {
+ display:flex; flex-wrap:nowrap; gap:4px; min-width:0; max-width:100%;
+ box-sizing:border-box; overflow-x:auto; overflow-y:hidden;
+ padding:4px 20px 6px 8px; overscroll-behavior-x:contain; touch-action:pan-x;
+ scrollbar-width:none;
+ mask-image:linear-gradient(to right,#000 calc(100% - 12px),transparent);
+}
+.app-container.is-mobile .command-panel-category-chips::-webkit-scrollbar { display:none; }
+.app-container.is-mobile .command-tree-v2 .command-panel-category-chips button {
+ flex:0 0 auto; width:auto; min-height:36px; padding:5px 8px;
+ white-space:nowrap; overflow-wrap:normal;
+}
+.app-container.is-mobile .command-tree-main-branch.is-category-chip-menu {
+ --mobile-command-menu-button-columns:3;
+}
+.app-container.is-mobile .command-tree-v2 .command-tree-main-branch.is-category-chip-menu .command-panel-category-flow {
+ display:grid!important; grid-template-columns:repeat(3,minmax(0,1fr));
+}
+.app-container.is-mobile .command-tree-main-branch.is-category-chip-menu .command-panel-category-flow > * {
+ width:100%; max-width:100%; min-width:0;
+}
+.app-container.is-mobile .command-tree-v2 .command-panel-category-flow :is(.command-tree-row,.popover-action-button) {
+ width:100%; white-space:normal; overflow-wrap:anywhere;
+}

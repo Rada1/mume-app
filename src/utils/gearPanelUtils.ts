@@ -1,7 +1,7 @@
 /** @file gearPanelUtils.ts — Turn captured MUME equipment lines into terminal rows. */
 import type { DrawerLine, GearRecipient, GearRow, GmcpOccupant } from '../types';
 import { extractMumeKeyword, isItemContainer } from './gameUtils';
-import { getRoomObjectKeyword } from '../objects/objectTargetModel';
+import { getDrawerObjectKeyword, getRoomObjectKeyword, isEmptyObjectListing } from '../objects/objectTargetModel';
 import { getOccupantCommandKeyword } from './occupantKeywordUtils';
 import { normalizeOccupantType } from '../services/classification/normalizeOccupantType';
 
@@ -57,7 +57,7 @@ export function sortWornGearRows(rows: GearRow[]): GearRow[] {
 export function toGearRow(line: DrawerLine): GearRow | null {
     if (!line.isItem || line.isHeader) return null;
     const raw = line.text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    if (!raw) return null;
+    if (!raw || isEmptyObjectListing(raw)) return null;
     const conditionMatch = raw.match(/\s+(\([^)]*\))$/);
     const condition = conditionMatch?.[1] ?? '';
     const withoutCondition = condition ? raw.slice(0, -condition.length).trim() : raw;
@@ -71,7 +71,7 @@ export function toGearRow(line: DrawerLine): GearRow | null {
         article,
         name,
         condition,
-        noun: line.context || extractMumeKeyword(raw),
+        noun: getDrawerObjectKeyword(line),
         isContainer: Boolean(line.isContainer || isItemContainer(line.text)),
     };
 }

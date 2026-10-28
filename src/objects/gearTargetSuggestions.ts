@@ -61,6 +61,14 @@ export const getInventoryAndWornTargetSuggestions = (
     objectTraits: entry.traits
 }));
 
+export const getInventoryAndWornWeaponTargetSuggestions = (
+    inventoryLines: DrawerLine[],
+    wornLines: DrawerLine[]
+): CommandTargetSuggestion[] => getInventoryAndWornTargetSuggestions(
+    inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon')),
+    wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'))
+);
+
 export const getSheathTargetSuggestions = (wornLines: DrawerLine[]): CommandTargetSuggestion[] => [
     { key: 'sheath-no-target', label: 'No target', value: BLANK_TARGET_VALUE, meta: 'blank' },
     ...getGearTargetSuggestions(wornLines.filter(line => hasObjectTrait(line, 'trait-weapon')), 'worn')

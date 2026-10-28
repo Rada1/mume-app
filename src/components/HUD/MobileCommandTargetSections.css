@@ -1,0 +1,35 @@
+/** @file MobileCommandTargetSections.css — Commands, vertical locations, and target grids in separate mobile lanes. */
+/* --- Shared Vertical Location Rail Section --- */
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-v2.command-tree-mobile-readability-popup .command-tree-branches:has(.is-target-location-branch) {
+    grid-template-columns:calc((100% - 4px)/2) repeat(var(--mobile-target-content-lanes,2),minmax(0,1fr))!important;
+}
+.app-container.is-mobile .command-tree-mobile-readability-popup .command-tree-branches:has(.is-target-location-branch):has(> .command-tree-branch:nth-child(4)) {
+    --mobile-target-content-lanes:3;
+}
+.app-container.is-mobile .command-tree-mobile-readability-popup .command-tree-branches:has(.is-target-location-branch) > .command-tree-branch:not(.command-tree-main-branch) {
+    grid-column:auto!important;
+    grid-row:1;
+}
+.app-container.is-mobile .command-tree-mobile-readability-popup .command-tree-branches .is-target-location-branch .mobile-target-location-list {
+    display:grid; grid-template-columns:minmax(0,1fr); align-content:start; gap:4px;
+    min-width:0; overflow-x:hidden; touch-action:pan-y;
+}
+.app-container.is-mobile .command-tree-mobile-readability-popup .command-tree-branches .mobile-target-location-list .command-tree-row {
+    flex:none; width:100%; min-height:40px; white-space:normal; overflow-wrap:anywhere;
+}
+.app-container.is-mobile .command-tree-mobile-readability-popup .mobile-target-location-list [aria-pressed="true"] {
+    color:#ffdf81;
+}
+/* --- Landscape Target Lane Section --- */
+.app-container.is-mobile.is-landscape:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-v2.command-tree-mobile-readability-popup .command-tree-branches:has(.is-target-location-branch) {
+    grid-template-columns:var(--landscape-command-grid-columns)!important;
+}
+.app-container.is-mobile.is-landscape:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-v2.command-tree-mobile-readability-popup .command-tree-branches > .command-tree-landscape-target-lane:has(> .is-target-location-branch) {
+    grid-column:3!important;
+    grid-template-columns:repeat(var(--mobile-target-content-lanes,2),minmax(0,1fr))!important;
+    grid-auto-columns:minmax(0,1fr);
+    overflow-x:hidden;
+}
+.app-container.is-mobile.is-landscape .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-landscape-target-lane:has(> .is-target-location-branch):has(> .command-tree-branch:nth-child(3)) {
+    --mobile-target-content-lanes:3;
+}

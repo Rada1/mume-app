@@ -9,6 +9,17 @@ import { getRoomEntityMenuEntries, type RoomEntityMenuEntry } from '../objects/r
 import { getGroupMemberName } from '../utils/groupMemberStatus';
 import { getInlineGlowColor } from '../utils/inlineActionModel';
 import { canSetTargetChipFromCategory } from '../utils/inlineCategoryAxes';
+import { isGroupMemberOccupant } from '../utils/groupTargetSuggestions';
+import { getOccupantCommandKeyword } from '../utils/occupantKeywordUtils';
+
+// --- Group Target Resolution ---
+export const groupMemberCommandTarget = (member: GroupMember, entries: RoomEntityMenuEntry[]): string => {
+    const entry = entries.find(candidate => isGroupMemberOccupant({
+        id: candidate.id.replace(/^roomchars:/, ''), name: candidate.context,
+        short: candidate.label, keyword: candidate.keyword
+    }, [member]));
+    return entry?.context || getOccupantCommandKeyword({ name: getGroupMemberName(member), type: member.type });
+};
 // --- Projection Section ---
 export function useRoomEntitiesPanel() {
     const { roomPlayers, roomNpcs, triggerHaptic } = useGame();

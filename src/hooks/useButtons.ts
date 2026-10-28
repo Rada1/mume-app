@@ -12,6 +12,9 @@ import { useButtonLogic } from './useButtonLogic';
 import { useButtonStore } from '../stores/useButtonStore';
 import { usePanelDataStore } from '../stores/usePanelDataStore';
 
+// --- Stable Unsynced Skills Section ---
+const EMPTY_ABILITIES: Record<string, number> = {};
+
 export const useButtons = (deps: {
     abilities: Record<string, number>,
     characterClass: string,
@@ -55,7 +58,7 @@ export const useButtons = (deps: {
     const buttons = useButtonLogic({
         rawButtons,
         activeSet,
-        abilities: skillsReady ? abilities : {},
+        abilities: skillsReady ? abilities : EMPTY_ABILITIES,
         characterClass,
         characterName,
         characterInfo,

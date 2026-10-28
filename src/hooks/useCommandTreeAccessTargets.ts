@@ -7,6 +7,10 @@ import type { CommandActionTargetEntry } from '../objects/commandActionTargetMod
 import type { useCommandTreeController } from './useCommandTreeController';
 import { getAccessTargetSections } from '../utils/commandTreeAccess';
 // --- Target Context Section ---
+const DIRECTION_LABELS: Record<string, string> = {
+    n: 'North', ne: 'Northeast', e: 'East', se: 'Southeast',
+    s: 'South', sw: 'Southwest', w: 'West', nw: 'Northwest', u: 'Up', d: 'Down'
+};
 export const useCommandTreeAccessTargets = (controller: ReturnType<typeof useCommandTreeController>, targets: CommandActionTargetEntry[]) => {
     const mapper = useMapper();
     const roomId = (mapper.currentRoomId || '').replace(/^m_/, '');
@@ -14,9 +18,10 @@ export const useCommandTreeAccessTargets = (controller: ReturnType<typeof useCom
     const sections = useMemo(() => getAccessTargetSections(targets.map(entry => {
         if (entry.category !== 'cat-exit') return entry;
         const direction = normalizeExitKey(entry.keyword || entry.context.replace(/^exit\s+/i, ''));
+        const directionLabel = DIRECTION_LABELS[direction] || entry.label;
         const mappedExit = Object.entries(room?.exits || {}).find(([key]) => normalizeExitKey(key) === direction)?.[1];
-        const doorName = entry.doorName?.trim() || mappedExit?.doorName?.trim() || 'Door';
-        return {...entry, label: doorName, doorName, keyword: direction, context: `exit ${direction}`};
+        const doorName = entry.doorName?.trim() || mappedExit?.doorName?.trim() || 'door';
+        return {...entry, label: directionLabel, doorName, hasDoor: true, keyword: direction, context: `exit ${direction}`};
     })), [targets, room, mapper.renderVersion]);
     const actionFor = (entry: CommandActionTargetEntry, button: CustomButton): CustomButton => entry.category === 'cat-exit'
         ? {...button, command: `${button.command.split(' ')[0]} exit ${entry.keyword}`} : button;

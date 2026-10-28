@@ -4,6 +4,7 @@ import type { ActionFilterDeps } from './actionUtils';
 import type { ResolvedCommandTargetSuggestions } from './commandTargetSuggestionResolver';
 import { isButtonValidForEntity } from './actionUtils';
 import { getResolvedTraitSections } from './inlineActionModel';
+import { getCommandTargetMenuKind } from './commandTargetUtils';
 
 // --- Reverse Action Lookup ---
 const normalize = (command: string) => command.toLowerCase().replace(/["']/g, '').trim().replace(/\s+/g, ' ');
@@ -12,6 +13,7 @@ export const resolveReverseCommandTargets = (
 ): ResolvedCommandTargetSuggestions | null => {
     // Multi-argument and special catalog menus retain their argument-specific resolvers.
     if (/^(?:give|put|get|pour|buy|sell|value|mend|show|compare|list|look|examine|tell|ask|whisper)(?:\s|$)/i.test(command)) return null;
+    if (['inventory-and-worn-weapons', 'door-direction', 'pick'].includes(getCommandTargetMenuKind(command) || '')) return null;
     const input = normalize(command);
     const matches = deps.buttons.flatMap(button => {
         const template = button.command.match(/^(.*?)\s+%n(?:\|[^\s]+)?$/i);

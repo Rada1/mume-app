@@ -54,6 +54,14 @@ export function useParleyChannelMenu(props: ParleyChannelChipProps) {
         close();
     };
     useEffect(() => {
+        if (isDirectedParleyChannel(props.command) && !props.target) show();
+    }, [props.command, props.target]);
+    useEffect(() => {
+        if (!open || props.target || !isDirectedParleyChannel(props.command) || preview) return;
+        const button = menuRef.current?.querySelector<HTMLElement>(`[data-channel="${props.command}"]`);
+        if (button) previewChannel(props.command, button);
+    }, [open, props.command, props.target, preview]);
+    useEffect(() => {
         if (!open) return;
         const outside = (event: PointerEvent) => {
             if (!anchorRef.current?.contains(event.target as Node) && !menuRef.current?.contains(event.target as Node)) close();

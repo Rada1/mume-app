@@ -12,14 +12,16 @@ import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 import { EXIT_BUTTONS } from '../../constants/buttons/doors';
 import { COMMAND_TREE_OBSERVATION_BUTTONS } from '../../utils/commandTreeObservation';
+import { isCommandTreeCallAction } from '../../utils/commandTreeAccess';
 
 // --- Held Direction Actions Section ---
 const DIRECTION_LABELS: Record<string, string> = {n:'North', s:'South', e:'East', w:'West', u:'Up', d:'Down'};
 
-export const CommandTreeHeldDirectionActions = ({controller, tree, direction}: {
+export const CommandTreeHeldDirectionActions = ({controller, tree, direction, onCommandExecuted}: {
     controller: ReturnType<typeof useCommandTreeController>;
     tree: ReturnType<typeof useCommandTree>;
     direction: string;
+    onCommandExecuted?: () => void;
 }) => {
     const directionLabel = DIRECTION_LABELS[normalizeExitKey(direction)] || direction;
     const touchActivation = useSecondaryTouchActivation();
@@ -33,9 +35,14 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction}: {
     const sections = [{label:'Movement',buttons:movementButtons},{label:'Doors',buttons:doorButtons}]
         .filter(section => section.buttons.length > 0);
     const movementDisabled = controller.game.gameState !== 'playing' || controller.game.isSpectateMode;
-    const targetForDirection = (button: CustomButton): CommandActionTargetEntry | undefined =>
-        (tree.targetsFor(button) ?? []).find(entry => entry.category === 'cat-exit'
-            && normalizeExitKey(entry.keyword || entry.context.replace(/^exit\s+/i, '')) === normalizeExitKey(direction));
+    const targetForDirection = (button: CustomButton): CommandActionTargetEntry | undefined => {
+        const matchesDirection = (entry: CommandActionTargetEntry) => entry.category === 'cat-exit'
+            && normalizeExitKey(entry.keyword || entry.context.replace(/^exit\s+/i, '')) === normalizeExitKey(direction);
+        if (isCommandTreeCallAction(button)) {
+            return controller.entries.find(entry => matchesDirection(entry) && entry.hasDoor === true);
+        }
+        return (tree.targetsFor(button) ?? []).find(matchesDirection);
+    };
     const execute = (button: CustomButton, target: CommandActionTargetEntry | undefined, event: React.MouseEvent<HTMLButtonElement>) => {
         const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
         const normalizedDirection = normalizeExitKey(direction);
@@ -54,6 +61,9 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction}: {
                     controller.game.setCommandPreview?.(null);
                 }
             }
+        } else if (isCommandTreeCallAction(button)) {
+            if (target && !controller.isHelpMode) controller.game.handleButtonClick(button,event);
+            else if (target) controller.executeHelp(button.command,button.label);
         } else if (target) {
             const command = `${button.command.trim().split(/\s+/)[0]} exit ${normalizeExitKey(direction)}`;
             if (controller.isHelpMode) controller.executeHelp(command, button.label);
@@ -73,12 +83,14 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction}: {
                     const disabled = section.label === 'Movement'
                         ? movementDisabled || (verb === 'scout' && !target)
                         : !target;
-                    const command = verb === 'look' || verb === 'scout' ? `${verb} ${normalizeExitKey(direction)}`
+                    const command = isCommandTreeCallAction(button) ? 'call' : verb === 'look' || verb === 'scout' ? `${verb} ${normalizeExitKey(direction)}`
                         : section.label === 'Movement' ? direction
                         : `${verb} exit ${normalizeExitKey(direction)}`;
                     return <button type="button" key={button.id} className="command-tree-row" data-menu-item="true"
                         disabled={disabled} title={disabled ? `No ${section.label === 'Doors' ? 'door action' : 'movement'} available ${directionLabel.toLowerCase()}` : command}
-                        onClick={event => execute(button,target,event)}>
+                        onPointerEnter={event => { if (event.pointerType === 'mouse' && !disabled) controller.game.setCommandPreview?.(command); }}
+                        onFocus={event => { if (event.currentTarget.matches(':focus-visible') && !disabled) controller.game.setCommandPreview?.(command); }}
+                        onClick={event => { execute(button,target,event); onCommandExecuted?.(); }}>
                         <span className="command-tree-row-label" style={{color:getCommandTextColor(button.command,button.setId)}}>{button.label.replace(/%n/g,'').trim()}</span>
                     </button>;
                 })}

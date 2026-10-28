@@ -1,0 +1,115 @@
+Object.defineProperty(__vite_ssr_exports__, "COLOR_NPC", { enumerable: true, configurable: true, get(){ try { return COLOR_NPC } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_PLAYER", { enumerable: true, configurable: true, get(){ try { return COLOR_PLAYER } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_OBJ", { enumerable: true, configurable: true, get(){ try { return COLOR_OBJ } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_ALLY", { enumerable: true, configurable: true, get(){ try { return COLOR_ALLY } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_ENEMY", { enumerable: true, configurable: true, get(){ try { return COLOR_ENEMY } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_NEUTRAL", { enumerable: true, configurable: true, get(){ try { return COLOR_NEUTRAL } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COLOR_ROOM", { enumerable: true, configurable: true, get(){ try { return COLOR_ROOM } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "LEGACY_ID_MAP", { enumerable: true, configurable: true, get(){ try { return LEGACY_ID_MAP } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "canonicalizeCategoryId", { enumerable: true, configurable: true, get(){ try { return canonicalizeCategoryId } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getTraitsForName", { enumerable: true, configurable: true, get(){ try { return getTraitsForName } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getTraitConfigsForName", { enumerable: true, configurable: true, get(){ try { return getTraitConfigsForName } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getCategoryForName", { enumerable: true, configurable: true, get(){ try { return getCategoryForName } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getCategoryType", { enumerable: true, configurable: true, get(){ try { return getCategoryType } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getGlowColorForCategory", { enumerable: true, configurable: true, get(){ try { return getGlowColorForCategory } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "resolveKindAndLocation", { enumerable: true, configurable: true, get(){ try { return resolveKindAndLocation } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/src/utils/inlineActionModel.ts", {"importedNames":["DEFAULT_CATEGORY_CONFIGS","DEFAULT_TRAIT_CONFIGS","getCategoryColorWithOverrides","getKindForCategory","getTraitConfig","getTraitsForName","toCategoryId","toTraitId"]});
+
+
+
+
+
+
+
+
+
+const COLOR_NPC = "#ababab";
+const COLOR_PLAYER = "#4173e6";
+const COLOR_OBJ = "#ababab";
+const COLOR_ALLY = "#61c290";
+const COLOR_ENEMY = "#f35353";
+const COLOR_NEUTRAL = "#61c290";
+const COLOR_ROOM = "#59bd3d";
+const LEGACY_ID_MAP = Object.fromEntries([
+  ...__vite_ssr_import_0__.DEFAULT_CATEGORY_CONFIGS.flatMap((category) => [
+    [category.id, category.id],
+    ...(category.legacyIds || []).map((id) => [id, category.id])
+  ]),
+  ...__vite_ssr_import_0__.DEFAULT_TRAIT_CONFIGS.flatMap((trait) => [
+    [trait.id, trait.id],
+    ...(trait.legacySetIds || []).map((id) => [id, trait.id])
+  ]),
+  ["inlineplayer", "cat-ally"],
+  ["pc", "cat-ally"],
+  ["roomitems", "cat-room-object"],
+  ["inventorylist", "cat-inventory-object"],
+  ["equipmentlist", "cat-worn-object"],
+  ["roomnpcs", "cat-npc"]
+]);
+const canonicalizeCategoryId = (id) => {
+  if (!id) return "cat-object";
+  return (0,__vite_ssr_import_0__.toCategoryId)(id) || (0,__vite_ssr_import_0__.toTraitId)(id) || LEGACY_ID_MAP[id] || id;
+};
+function getTraitsForName(name, customCategories) {
+  return (0,__vite_ssr_import_0__.getTraitsForName)(name, customCategories || []).map((trait) => trait.id);
+};
+function getTraitConfigsForName(name, customCategories) {
+  return (0,__vite_ssr_import_0__.getTraitsForName)(name, customCategories || []).map(traitToInlineConfig);
+};
+function getCategoryForName(name, customCategories) {
+  const traits = getTraitsForName(name, customCategories);
+  return traits.length > 0 ? traits[0] : null;
+};
+function getCategoryType(category, customCategories) {
+  if (!category) return null;
+  const kind = (0,__vite_ssr_import_0__.getKindForCategory)(category);
+  if (kind) return kind;
+  const traitConfig = (0,__vite_ssr_import_0__.getTraitConfig)(category);
+  if (traitConfig?.kind) return traitConfig.kind;
+  const configs = customCategories || [];
+  const config = configs.find((candidate) => canonicalizeCategoryId(candidate.id) === canonicalizeCategoryId(category));
+  return config?.kind || null;
+};
+function getGlowColorForCategory(category, customCategories, entityColors, theme = "dark") {
+  if (!category) return null;
+  const fallback = getFallbackColor(getCategoryType(category, customCategories));
+  return (0,__vite_ssr_import_0__.getCategoryColorWithOverrides)(category, customCategories || [], fallback, entityColors, theme);
+};
+const resolveKindAndLocation = (kind, location, cmd) => {
+  if (kind && location) return { kind, location };
+  const canonicalId = canonicalizeCategoryId(cmd || "");
+  if (canonicalId === "cat-room-object" || canonicalId === "trait-corpse") return { kind: "object", location: "room" };
+  if (canonicalId === "cat-inventory-object") return { kind: "object", location: "carried" };
+  if (canonicalId === "cat-worn-object") return { kind: "object", location: "worn" };
+  if (canonicalId === "cat-npc") return { kind: "npc", location: "room" };
+  if (canonicalId === "cat-ally") return { kind: "ally", location: "room" };
+  if (canonicalId === "cat-enemy") return { kind: "enemy", location: "room" };
+  if (canonicalId === "cat-neutral") return { kind: "neutral", location: "room" };
+  if (canonicalId === "cat-room" || cmd === "roomname" || cmd === "room-name" || cmd === "exits") {
+    return { kind: "room", location: "room" };
+  };
+  return { kind: kind || "object", location: location || "room" };
+};
+function traitToInlineConfig(trait) {
+  return {
+    id: trait.id,
+    kind: trait.kind || (0,__vite_ssr_import_0__.getKindForCategory)(trait.legacySetIds?.[0]) || "object",
+    keywords: trait.keywords,
+    excludedKeywords: trait.excludedKeywords,
+    buttonSetId: trait.legacySetIds?.[0]
+  };
+}
+function getFallbackColor(kind) {
+  if (kind === "ally" || kind === "player") return COLOR_ALLY;
+  if (kind === "enemy") return COLOR_ENEMY;
+  if (kind === "neutral") return COLOR_NEUTRAL;
+  if (kind === "all") return COLOR_PLAYER;
+  if (kind === "npc") return COLOR_NPC;
+  if (kind === "object") return COLOR_OBJ;
+  if (kind === "room") return COLOR_ROOM;
+  return COLOR_OBJ;
+}
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,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dXJjZXMiOlsiY2F0ZWdvcml6YXRpb25VdGlscy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBmaWxlIGNhdGVnb3JpemF0aW9uVXRpbHMudHNcbiAqIEBkZXNjcmlwdGlvbiBMZWdhY3kgY29tcGF0aWJpbGl0eSBhZGFwdGVycyBmb3IgdGhlIGNhbm9uaWNhbCBpbmxpbmUgYWN0aW9uIG1vZGVsLlxuICovXG5cbmltcG9ydCB7IEVudGl0eUtpbmQsIElubGluZUNhdGVnb3J5Q29uZmlnIH0gZnJvbSAnLi4vdHlwZXMnO1xuaW1wb3J0IHtcbiAgICBERUZBVUxUX0NBVEVHT1JZX0NPTkZJR1MsXG4gICAgREVGQVVMVF9UUkFJVF9DT05GSUdTLFxuICAgIEVudGl0eUNvbG9yTWFwLFxuICAgIGdldENhdGVnb3J5Q29sb3JXaXRoT3ZlcnJpZGVzLFxuICAgIGdldENhdGVnb3J5Q29uZmlnLFxuICAgIGdldElubGluZUdsb3dDb2xvcixcbiAgICBnZXRLaW5kRm9yQ2F0ZWdvcnksXG4gICAgZ2V0VHJhaXRDb25maWcsXG4gICAgZ2V0VHJhaXRzRm9yTmFtZSBhcyBnZXRJbmxpbmVUcmFpdHNGb3JOYW1lLFxuICAgIHRvQ2F0ZWdvcnlJZCxcbiAgICB0b1RyYWl0SWQsXG4gICAgVHJhaXRDb25maWdcbn0gZnJvbSAnLi9pbmxpbmVBY3Rpb25Nb2RlbCc7XG5pbXBvcnQgeyBMaW5rZWRDb2xvclRoZW1lIH0gZnJvbSAnLi90aGVtZUxpbmtlZENvbG9ycyc7XG5cbi8vIC0tLSBDb2xvciBGYWxsYmFja3MgLS0tXG5cbmV4cG9ydCBjb25zdCBDT0xPUl9OUEMgPSAnI2FiYWJhYic7XG5leHBvcnQgY29uc3QgQ09MT1JfUExBWUVSID0gJyM0MTczZTYnO1xuZXhwb3J0IGNvbnN0IENPTE9SX09CSiA9ICcjYWJhYmFiJztcbmV4cG9ydCBjb25zdCBDT0xPUl9BTExZID0gJyM2MWMyOTAnO1xuZXhwb3J0IGNvbnN0IENPTE9SX0VORU1ZID0gJyNmMzUzNTMnO1xuZXhwb3J0IGNvbnN0IENPTE9SX05FVVRSQUwgPSAnIzYxYzI5MCc7XG5leHBvcnQgY29uc3QgQ09MT1JfUk9PTSA9ICcjNTliZDNkJztcblxuLy8gLS0tIExlZ2FjeSBBbGlhcyBTZWN0aW9uIC0tLVxuXG5leHBvcnQgY29uc3QgTEVHQUNZX0lEX01BUDogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IE9iamVjdC5mcm9tRW50cmllcyhbXG4gICAgLi4uREVGQVVMVF9DQVRFR09SWV9DT05GSUdTLmZsYXRNYXAoY2F0ZWdvcnkgPT4gW1xuICAgICAgICBbY2F0ZWdvcnkuaWQsIGNhdGVnb3J5LmlkXSxcbiAgICAgICAgLi4uKGNhdGVnb3J5LmxlZ2FjeUlkcyB8fCBbXSkubWFwKGlkID0+IFtpZCwgY2F0ZWdvcnkuaWRdKVxuICAgIF0pLFxuICAgIC4uLkRFRkFVTFRfVFJBSVRfQ09ORklHUy5mbGF0TWFwKHRyYWl0ID0+IFtcbiAgICAgICAgW3RyYWl0LmlkLCB0cmFpdC5pZF0sXG4gICAgICAgIC4uLih0cmFpdC5sZWdhY3lTZXRJZHMgfHwgW10pLm1hcChpZCA9PiBbaWQsIHRyYWl0LmlkXSlcbiAgICBdKSxcbiAgICBbJ2lubGluZXBsYXllcicsICdjYXQtYWxseSddLFxuICAgIFsncGMnLCAnY2F0LWFsbHknXSxcbiAgICBbJ3Jvb21pdGVtcycsICdjYXQtcm9vbS1vYmplY3QnXSxcbiAgICBbJ2ludmVudG9yeWxpc3QnLCAnY2F0LWludmVudG9yeS1vYmplY3QnXSxcbiAgICBbJ2VxdWlwbWVudGxpc3QnLCAnY2F0LXdvcm4tb2JqZWN0J10sXG4gICAgWydyb29tbnBjcycsICdjYXQtbnBjJ11cbl0pO1xuXG5leHBvcnQgY29uc3QgY2Fub25pY2FsaXplQ2F0ZWdvcnlJZCA9IChpZDogc3RyaW5nKTogc3RyaW5nID0+IHtcbiAgICBpZiAoIWlkKSByZXR1cm4gJ2NhdC1vYmplY3QnO1xuICAgIHJldHVybiB0b0NhdGVnb3J5SWQoaWQpIHx8IHRvVHJhaXRJZChpZCkgfHwgTEVHQUNZX0lEX01BUFtpZF0gfHwgaWQ7XG59O1xuXG4vLyAtLS0gS2V5d29yZCBNYXRjaGluZyBBZGFwdGVycyAtLS1cblxuZXhwb3J0IGZ1bmN0aW9uIGdldFRyYWl0c0Zvck5hbWUobmFtZTogc3RyaW5nLCBjdXN0b21DYXRlZ29yaWVzPzogSW5saW5lQ2F0ZWdvcnlDb25maWdbXSk6IHN0cmluZ1tdIHtcbiAgICByZXR1cm4gZ2V0SW5saW5lVHJhaXRzRm9yTmFtZShuYW1lLCBjdXN0b21DYXRlZ29yaWVzIHx8IFtdKS5tYXAodHJhaXQgPT4gdHJhaXQuaWQpO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gZ2V0VHJhaXRDb25maWdzRm9yTmFtZShuYW1lOiBzdHJpbmcsIGN1c3RvbUNhdGVnb3JpZXM/OiBJbmxpbmVDYXRlZ29yeUNvbmZpZ1tdKTogSW5saW5lQ2F0ZWdvcnlDb25maWdbXSB7XG4gICAgcmV0dXJuIGdldElubGluZVRyYWl0c0Zvck5hbWUobmFtZSwgY3VzdG9tQ2F0ZWdvcmllcyB8fCBbXSkubWFwKHRyYWl0VG9JbmxpbmVDb25maWcpO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gZ2V0Q2F0ZWdvcnlGb3JOYW1lKG5hbWU6IHN0cmluZywgY3VzdG9tQ2F0ZWdvcmllcz86IElubGluZUNhdGVnb3J5Q29uZmlnW10pOiBzdHJpbmcgfCBudWxsIHtcbiAgICBjb25zdCB0cmFpdHMgPSBnZXRUcmFpdHNGb3JOYW1lKG5hbWUsIGN1c3RvbUNhdGVnb3JpZXMpO1xuICAgIHJldHVybiB0cmFpdHMubGVuZ3RoID4gMCA/IHRyYWl0c1swXSA6IG51bGw7XG59XG5cbi8vIC0tLSBDYXRlZ29yeSBBZGFwdGVycyAtLS1cblxuZXhwb3J0IGZ1bmN0aW9uIGdldENhdGVnb3J5VHlwZShjYXRlZ29yeTogc3RyaW5nIHwgbnVsbCwgY3VzdG9tQ2F0ZWdvcmllcz86IElubGluZUNhdGVnb3J5Q29uZmlnW10pOiBFbnRpdHlLaW5kIHwgbnVsbCB7XG4gICAgaWYgKCFjYXRlZ29yeSkgcmV0dXJuIG51bGw7XG4gICAgY29uc3Qga2luZCA9IGdldEtpbmRGb3JDYXRlZ29yeShjYXRlZ29yeSk7XG4gICAgaWYgKGtpbmQpIHJldHVybiBraW5kO1xuXG4gICAgY29uc3QgdHJhaXRDb25maWcgPSBnZXRUcmFpdENvbmZpZyhjYXRlZ29yeSk7XG4gICAgaWYgKHRyYWl0Q29uZmlnPy5raW5kKSByZXR1cm4gdHJhaXRDb25maWcua2luZDtcblxuICAgIGNvbnN0IGNvbmZpZ3MgPSBjdXN0b21DYXRlZ29yaWVzIHx8IFtdO1xuICAgIGNvbnN0IGNvbmZpZyA9IGNvbmZpZ3MuZmluZChjYW5kaWRhdGUgPT4gY2Fub25pY2FsaXplQ2F0ZWdvcnlJZChjYW5kaWRhdGUuaWQpID09PSBjYW5vbmljYWxpemVDYXRlZ29yeUlkKGNhdGVnb3J5KSk7XG4gICAgcmV0dXJuIGNvbmZpZz8ua2luZCB8fCBudWxsO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gZ2V0R2xvd0NvbG9yRm9yQ2F0ZWdvcnkoXG4gICAgY2F0ZWdvcnk6IHN0cmluZyB8IG51bGwsXG4gICAgY3VzdG9tQ2F0ZWdvcmllcz86IElubGluZUNhdGVnb3J5Q29uZmlnW10sXG4gICAgZW50aXR5Q29sb3JzPzogRW50aXR5Q29sb3JNYXAsXG4gICAgdGhlbWU6IExpbmtlZENvbG9yVGhlbWUgPSAnZGFyaydcbik6IHN0cmluZyB8IG51bGwge1xuICAgIGlmICghY2F0ZWdvcnkpIHJldHVybiBudWxsO1xuICAgIGNvbnN0IGZhbGxiYWNrID0gZ2V0RmFsbGJhY2tDb2xvcihnZXRDYXRlZ29yeVR5cGUoY2F0ZWdvcnksIGN1c3RvbUNhdGVnb3JpZXMpKTtcbiAgICByZXR1cm4gZ2V0Q2F0ZWdvcnlDb2xvcldpdGhPdmVycmlkZXMoY2F0ZWdvcnksIGN1c3RvbUNhdGVnb3JpZXMgfHwgW10sIGZhbGxiYWNrLCBlbnRpdHlDb2xvcnMsIHRoZW1lKTtcbn1cblxuZXhwb3J0IGNvbnN0IHJlc29sdmVLaW5kQW5kTG9jYXRpb24gPSAoXG4gICAga2luZD86IHN0cmluZyB8IG51bGwsXG4gICAgbG9jYXRpb24/OiBzdHJpbmcgfCBudWxsLFxuICAgIGNtZD86IHN0cmluZyB8IG51bGxcbik6IHsga2luZDogc3RyaW5nLCBsb2NhdGlvbjogc3RyaW5nIH0gPT4ge1xuICAgIGlmIChraW5kICYmIGxvY2F0aW9uKSByZXR1cm4geyBraW5kLCBsb2NhdGlvbiB9O1xuXG4gICAgY29uc3QgY2Fub25pY2FsSWQgPSBjYW5vbmljYWxpemVDYXRlZ29yeUlkKGNtZCB8fCAnJyk7XG4gICAgaWYgKGNhbm9uaWNhbElkID09PSAnY2F0LXJvb20tb2JqZWN0JyB8fCBjYW5vbmljYWxJZCA9PT0gJ3RyYWl0LWNvcnBzZScpIHJldHVybiB7IGtpbmQ6ICdvYmplY3QnLCBsb2NhdGlvbjogJ3Jvb20nIH07XG4gICAgaWYgKGNhbm9uaWNhbElkID09PSAnY2F0LWludmVudG9yeS1vYmplY3QnKSByZXR1cm4geyBraW5kOiAnb2JqZWN0JywgbG9jYXRpb246ICdjYXJyaWVkJyB9O1xuICAgIGlmIChjYW5vbmljYWxJZCA9PT0gJ2NhdC13b3JuLW9iamVjdCcpIHJldHVybiB7IGtpbmQ6ICdvYmplY3QnLCBsb2NhdGlvbjogJ3dvcm4nIH07XG4gICAgaWYgKGNhbm9uaWNhbElkID09PSAnY2F0LW5wYycpIHJldHVybiB7IGtpbmQ6ICducGMnLCBsb2NhdGlvbjogJ3Jvb20nIH07XG4gICAgaWYgKGNhbm9uaWNhbElkID09PSAnY2F0LWFsbHknKSByZXR1cm4geyBraW5kOiAnYWxseScsIGxvY2F0aW9uOiAncm9vbScgfTtcbiAgICBpZiAoY2Fub25pY2FsSWQgPT09ICdjYXQtZW5lbXknKSByZXR1cm4geyBraW5kOiAnZW5lbXknLCBsb2NhdGlvbjogJ3Jvb20nIH07XG4gICAgaWYgKGNhbm9uaWNhbElkID09PSAnY2F0LW5ldXRyYWwnKSByZXR1cm4geyBraW5kOiAnbmV1dHJhbCcsIGxvY2F0aW9uOiAncm9vbScgfTtcbiAgICBpZiAoY2Fub25pY2FsSWQgPT09ICdjYXQtcm9vbScgfHwgY21kID09PSAncm9vbW5hbWUnIHx8IGNtZCA9PT0gJ3Jvb20tbmFtZScgfHwgY21kID09PSAnZXhpdHMnKSB7XG4gICAgICAgIHJldHVybiB7IGtpbmQ6ICdyb29tJywgbG9jYXRpb246ICdyb29tJyB9O1xuICAgIH1cblxuICAgIHJldHVybiB7IGtpbmQ6IGtpbmQgfHwgJ29iamVjdCcsIGxvY2F0aW9uOiBsb2NhdGlvbiB8fCAncm9vbScgfTtcbn07XG5cbi8vIC0tLSBIZWxwZXJzIC0tLVxuXG5mdW5jdGlvbiB0cmFpdFRvSW5saW5lQ29uZmlnKHRyYWl0OiBUcmFpdENvbmZpZyk6IElubGluZUNhdGVnb3J5Q29uZmlnIHtcbiAgICByZXR1cm4ge1xuICAgICAgICBpZDogdHJhaXQuaWQsXG4gICAgICAgIGtpbmQ6IHRyYWl0LmtpbmQgfHwgZ2V0S2luZEZvckNhdGVnb3J5KHRyYWl0LmxlZ2FjeVNldElkcz8uWzBdKSB8fCAnb2JqZWN0JyxcbiAgICAgICAga2V5d29yZHM6IHRyYWl0LmtleXdvcmRzLFxuICAgICAgICBleGNsdWRlZEtleXdvcmRzOiB0cmFpdC5leGNsdWRlZEtleXdvcmRzLFxuICAgICAgICBidXR0b25TZXRJZDogdHJhaXQubGVnYWN5U2V0SWRzPy5bMF1cbiAgICB9O1xufVxuXG5mdW5jdGlvbiBnZXRGYWxsYmFja0NvbG9yKGtpbmQ6IEVudGl0eUtpbmQgfCBzdHJpbmcgfCBudWxsKTogc3RyaW5nIHtcbiAgICBpZiAoa2luZCA9PT0gJ2FsbHknIHx8IGtpbmQgPT09ICdwbGF5ZXInKSByZXR1cm4gQ09MT1JfQUxMWTtcbiAgICBpZiAoa2luZCA9PT0gJ2VuZW15JykgcmV0dXJuIENPTE9SX0VORU1ZO1xuICAgIGlmIChraW5kID09PSAnbmV1dHJhbCcpIHJldHVybiBDT0xPUl9ORVVUUkFMO1xuICAgIGlmIChraW5kID09PSAnYWxsJykgcmV0dXJuIENPTE9SX1BMQVlFUjtcbiAgICBpZiAoa2luZCA9PT0gJ25wYycpIHJldHVybiBDT0xPUl9OUEM7XG4gICAgaWYgKGtpbmQgPT09ICdvYmplY3QnKSByZXR1cm4gQ09MT1JfT0JKO1xuICAgIGlmIChraW5kID09PSAncm9vbScpIHJldHVybiBDT0xPUl9ST09NO1xuICAgIHJldHVybiBDT0xPUl9PQko7XG59XG4iXSwiZmlsZSI6Ii9zcmMvdXRpbHMvY2F0ZWdvcml6YXRpb25VdGlscy50cyJ9
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvdXRpbHMvY2F0ZWdvcml6YXRpb25VdGlscy50cyIsIi9zcmMvdXRpbHMvY2F0ZWdvcml6YXRpb25VdGlscy50cyIsW11d

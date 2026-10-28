@@ -41,10 +41,10 @@ export function getNearbyCombatImpact(
     if (impact[1].toLowerCase() === 'hit' && /^points?\b/i.test(actionRemainder)) return undefined;
 
     const actor = cleanLine.slice(0, impact.index).trim().toLowerCase();
-    if (ownCharacterNames.some(name => name && actor.startsWith(name.toLowerCase()))) return undefined;
+    if (ownCharacterNames.some(name => typeof name === 'string' && name && actor.startsWith(name.toLowerCase()))) return undefined;
 
     const targetsOwnCharacter = /\b(?:you|your)\b/i.test(actionRemainder) || ownCharacterNames.some(name => {
-        const escapedName = name?.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const escapedName = typeof name === 'string' ? name.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
         return !!escapedName && new RegExp(`\\b${escapedName}\\b`, 'i').test(actionRemainder);
     });
     return { verb: impact[1].toLowerCase(), isDirect: targetsOwnCharacter };

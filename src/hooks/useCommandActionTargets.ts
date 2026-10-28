@@ -3,7 +3,7 @@
  * @description Builds command target choices and selects the active target context.
  */
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import type { DrawerLine, GmcpOccupant, GroupMember, PopoverState } from '../types';
 import type { SelectedTargetInfo } from '../stores/useUIStore';
 import { getCommandActionTargetEntries, getGlobalWeatherActionTargets, type CommandActionTargetEntry } from '../objects/commandActionTargetModel';
@@ -12,6 +12,8 @@ import { useSettingsStore } from '../stores/useSettingsStore';
 import { getInlineGlowColor } from '../utils/inlineActionModel';
 import { canSetTargetChipFromCategory } from '../utils/inlineCategoryAxes';
 import { useActiveRoom } from '../stores/useActiveGameState';
+import { MapperContext } from '../context/MapperContext';
+import { normalizeExitKey } from '../utils/gmcpExitUtils';
 
 // --- Type Section ---
 type RoomSource = string | GmcpOccupant;
@@ -53,9 +55,23 @@ export const useCommandActionTargets = ({
         objectColor: state.objectColor, roomColor: state.roomColor, theme: state.theme
     })));
     const { rawExits } = useActiveRoom();
+    const mapper = useContext(MapperContext);
+    const roomId = (mapper?.currentRoomId || '').replace(/^m_/, '');
+    const mapperRoom = mapper?.rooms[mapper.currentRoomId || ''] || mapper?.rooms[roomId] || mapper?.rooms[`m_${roomId}`];
+    const enrichedExits = useMemo(() => {
+        if (!mapperRoom?.exits) return rawExits;
+        return Object.fromEntries(Object.entries(rawExits || {}).map(([direction, value]) => {
+            const mappedExit = Object.entries(mapperRoom.exits).find(([key]) => normalizeExitKey(key) === normalizeExitKey(direction))?.[1];
+            const mappedDoorName = mappedExit?.doorName?.trim();
+            if (!mappedDoorName || typeof value !== 'object' || value === null) return [direction, value];
+            const exit = value as Record<string, unknown>;
+            if (typeof exit.doorName === 'string' || typeof exit.name === 'string') return [direction, value];
+            return [direction, { ...exit, doorName: mappedDoorName }];
+        }));
+    }, [mapperRoom, rawExits]);
     const entries = useMemo(
-        () => [...getCommandActionTargetEntries(players, npcs, roomObjects, wornLines, inventoryLines, groupMembers, rawExits), ...getGlobalWeatherActionTargets()],
-        [groupMembers, inventoryLines, npcs, players, rawExits, roomObjects, wornLines]
+        () => [...getCommandActionTargetEntries(players, npcs, roomObjects, wornLines, inventoryLines, groupMembers, enrichedExits), ...getGlobalWeatherActionTargets()],
+        [enrichedExits, groupMembers, inventoryLines, npcs, players, roomObjects, wornLines]
     );
     const selectEntity = useCallback((entry: CommandActionTargetEntry) => {
         const accentColor = getInlineGlowColor(entry.category, settings.inlineCategories, {

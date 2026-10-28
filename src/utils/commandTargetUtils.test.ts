@@ -93,8 +93,8 @@ describe('commandTargetUtils', () => {
             ]);
         });
 
-        it('limits Enchant targets to weapons in inventory', () => {
-            expect(getCommandTargetMenuKind("cast 'enchant'")).toBe('inventory-weapons');
+        it('limits Enchant targets to weapons in inventory and worn', () => {
+            expect(getCommandTargetMenuKind("cast 'enchant'")).toBe('inventory-and-worn-weapons');
 
             const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
             const result = resolveCommandTargetSuggestions({
@@ -108,13 +108,18 @@ describe('commandTargetUtils', () => {
                     line('shoes', 'a pair of shoes'),
                     line('bow', 'a longbow')
                 ],
-                wornLines: [line('worn-sword', 'a long sword')]
+                wornLines: [
+                    line('worn-sword', 'a long sword'),
+                    line('worn-shoes', 'a pair of boots')
+                ]
             });
 
             expect(result.suggestions.map(suggestion => suggestion.label)).toEqual([
-                'a steel sword', 'a longbow'
+                'a steel sword', 'a longbow', 'a long sword'
             ]);
-            expect(result.suggestions.every(suggestion => suggestion.meta === 'inventory')).toBe(true);
+            expect(result.suggestions.map(suggestion => suggestion.meta)).toEqual([
+                'inventory', 'inventory', 'worn'
+            ]);
         });
 
         it('identifies targeted spells', () => {
@@ -156,7 +161,7 @@ describe('commandTargetUtils', () => {
         it('routes special commands to spellbook, key, and Bash target menus', () => {
             expect(getCommandTargetMenuKind("cast 'store'")).toBe('mage-spells');
             expect(getCommandTargetMenuKind("cast 'raise dead'")).toBe('room-corpses');
-            expect(getCommandTargetMenuKind("cast 'enchant'")).toBe('inventory-weapons');
+            expect(getCommandTargetMenuKind("cast 'enchant'")).toBe('inventory-and-worn-weapons');
             expect(canCommandAcceptTarget("cast 'enchant'")).toBe(true);
             expect(getCommandTargetMenuKind("cast 'portal'")).toBe('magic-keys');
             expect(getCommandTargetMenuKind("cast 'scry'")).toBe('magic-keys');

@@ -57,9 +57,9 @@
 
     .client-panels-stack:not([data-active="true"]) { display: none; }
 
-    /* The fixed character summary occupies the right column above the bottom strip. */
-    .app-container:has(.command-dock-shell:not(.command-dock-shell-mobile)) .client-panels-stack[data-active="true"] {
-        height: max(0px, calc(100% - var(--command-dock-summary-height, 0px)));
+    /* The open character controls and summary occupy space above the bottom strip. */
+    .app-container:not(.is-mobile):has(.command-dock-shell:not(.command-dock-shell-mobile) .desktop-character-toggle[aria-expanded="true"]) .client-panels-stack[data-active="true"] {
+        height: max(0px, calc(100% - 58px - var(--command-dock-summary-height, 0px)));
         align-self: flex-start;
     }
 

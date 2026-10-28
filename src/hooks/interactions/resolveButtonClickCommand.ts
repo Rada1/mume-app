@@ -3,6 +3,7 @@ import type { CustomButton } from '../../types';
 import { extractMumeKeyword, formatMumeTarget } from '../../utils/gameUtils';
 import { getInlineCategoryAxes } from '../../utils/inlineCategoryAxes';
 import { decodeCommandEntities } from '../../utils/commandTextUtils';
+import { usesCommandTargetChip } from '../../utils/commandTreeCurrentTarget';
 
 // --- Logic Section ---
 export interface ResolveButtonClickCommandOptions {
@@ -36,6 +37,9 @@ export const resolveButtonClickCommand = ({
     button, context, parentNoun, direction, target, keywordOverrides, popoverCategory,
     popoverSetId, isTrackpadModifierActive, joystickDirection, joystickTargetModifierActive
 }: ResolveButtonClickCommandOptions): ResolvedButtonClickCommand => {
+    // Explicit menu contexts remain valid for every command; offensive actions
+    // and Track may implicitly consume the locked target chip.
+    const chipTarget = usesCommandTargetChip(button) ? target : null;
     const effectiveContext = context && keywordOverrides[context] ? keywordOverrides[context] : context;
     const popoverAxes = getInlineCategoryAxes(popoverCategory || popoverSetId);
     const isNpcContext = popoverAxes.isCharacter || Boolean(popoverSetId?.startsWith('npc'));
@@ -64,9 +68,9 @@ export const resolveButtonClickCommand = ({
     if (finalContext) {
         if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, finalContext);
         else if (cmd.includes('%n')) cmd = cmd.replace(/%n/g, finalContext);
-    } else if (cmd.includes('%n') && target) {
-        if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, target);
-        else cmd = cmd.replace(/%n/g, target);
+    } else if (cmd.includes('%n') && chipTarget) {
+        if (cmd.match(/%n\|/)) cmd = cmd.replace(/%n\|[^\s]+/g, chipTarget);
+        else cmd = cmd.replace(/%n/g, chipTarget);
         consumedTarget = true;
     } else if (cmd.match(/%n\|/)) {
         cmd = cmd.replace(/%n\|([^\s]+)/g, '$1');
@@ -74,11 +78,11 @@ export const resolveButtonClickCommand = ({
     if (detectedParent && cmd.includes('%p')) cmd = cmd.replace(/%p/g, detectedParent);
 
     const resolvedDirection = direction || (isDirection(finalContext) ? finalContext : undefined)
-        || (target && isDirection(target) ? target : undefined);
+        || (chipTarget && isDirection(chipTarget) ? chipTarget : undefined);
     if (resolvedDirection) cmd = cmd.includes('%d') ? cmd.replace(/%d/g, resolvedDirection) : cmd;
 
     if (button.setId === 'doors' && !button.command.includes('%')) {
-        const appendTarget = resolvedDirection || target || finalContext;
+        const appendTarget = resolvedDirection || finalContext;
         if (appendTarget && !cmd.toLowerCase().includes(appendTarget.toLowerCase())) cmd = `${cmd} ${appendTarget}`;
     }
 
@@ -94,8 +98,8 @@ export const resolveButtonClickCommand = ({
         const dirMap: Record<string, string> = { n: 'north', s: 'south', e: 'east', w: 'west', u: 'up', d: 'down' };
         finalCmd = `${finalCmd} ${dirMap[joystickDirection] || joystickDirection}`;
         consumesJoystick = true;
-    } else if (joystickTargetModifierActive && target && !consumedTarget && !skipJoystick) {
-        finalCmd = `${finalCmd} ${target}`;
+    } else if (joystickTargetModifierActive && chipTarget && !consumedTarget && !skipJoystick) {
+        finalCmd = `${finalCmd} ${chipTarget}`;
         consumesJoystick = true;
     }
 

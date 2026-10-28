@@ -15,6 +15,7 @@ export interface ParleyChannelChipProps {
     onChoose: (command: Exclude<ParleyState['command'], 'none'>, target: string | null) => void;
     onClear?: () => void;
     disabled?: boolean;
+    iconOnly?: boolean;
 }
 export interface CommandCommunicationIntent {
     command: Exclude<ParleyState['command'], 'none'>;

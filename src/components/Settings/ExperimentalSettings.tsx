@@ -24,6 +24,8 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
     const setIsReadabilityMode = useSettingsStore(s => s.setIsReadabilityMode);
     const keepLogTextOnOneLine = useSettingsStore(s => s.keepLogTextOnOneLine);
     const setKeepLogTextOnOneLine = useSettingsStore(s => s.setKeepLogTextOnOneLine);
+    const oneHandedMode = useSettingsStore(s => s.oneHandedMode);
+    const setOneHandedMode = useSettingsStore(s => s.setOneHandedMode);
 
     // Discord Activity Settings
     const isDiscordEnabled = useSettingsStore(s => s.isDiscordEnabled ?? true);
@@ -64,6 +66,13 @@ export const ExperimentalSettings: React.FC<ExperimentalSettingsProps> = ({
                 description="Let long lines extend horizontally instead of wrapping. Swipe or scroll sideways to read the rest."
                 value={keepLogTextOnOneLine}
                 onToggle={() => setKeepLogTextOnOneLine(!keepLogTextOnOneLine)}
+            />
+
+            <ToggleRow
+                label="One handed mode"
+                description="Show mobile command choices in one vertical list, with swipe direction hints."
+                value={oneHandedMode}
+                onToggle={() => setOneHandedMode(!oneHandedMode)}
             />
 
             {/* Auto-Save Sessions */}

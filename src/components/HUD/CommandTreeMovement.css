@@ -1,47 +1,45 @@
 /** @file CommandTreeMovement.css — Compact map-style directions within the command cascade. */
 /* --- Directional Pad Section --- */
-.command-tree-v2 .movement-pad-menu {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-rows: repeat(3, 62px);
     width: calc(100% - 16px);
     margin: 8px;
     gap: 4px;
 }
-.command-tree-v2 .movement-pad-menu.movement-pad-door-selector {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu.movement-pad-door-selector {
     grid-template-rows: repeat(3, 66px);
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell {
     border: 0;
     border-radius: 0;
     background: #292929;
     padding: 6px 2px;
     gap: 5px;
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-label { font: 10px/14px monospace; }
-.command-tree-v2 .movement-pad-menu .pad-u { grid-area: 1 / 1; }
-.command-tree-v2 .movement-pad-menu .pad-n { grid-area: 1 / 2; }
-.command-tree-v2 .movement-pad-menu .pad-w { grid-area: 2 / 1; }
-.command-tree-v2 .movement-pad-menu .pad-e { grid-area: 2 / 3; }
-.command-tree-v2 .movement-pad-menu .pad-s { grid-area: 3 / 2; }
-.command-tree-v2 .movement-pad-menu .pad-d { grid-area: 3 / 3; }
-.command-tree-v2 .movement-pad-menu .pad-mount { grid-area: 1 / 3; }
-.command-tree-v2 .movement-pad-menu .pad-mount .movement-pad-label { font: 10px/14px monospace; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-label { font: 10px/14px monospace; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-u { grid-area: 1 / 1; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-n { grid-area: 1 / 2; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-w { grid-area: 2 / 1; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-e { grid-area: 2 / 3; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-s { grid-area: 3 / 2; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-d { grid-area: 3 / 3; }
 @media (hover: hover) and (pointer: fine) {
-.command-tree-v2 .movement-pad-menu .movement-pad-cell:hover:not(:disabled) { background: #383838; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell:hover:not(:disabled) { background: #383838; }
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d),
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d) .movement-pad-label {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d),
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell.is-valid-exit:is(.pad-u, .pad-n, .pad-w, .pad-e, .pad-s, .pad-d) .movement-pad-label {
     color: var(--ansi-bright-green, #44ff70);
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-closed-door {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell.is-closed-door {
     border: 1px solid #d97706;
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-door-target {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell.is-door-target {
     opacity: 1 !important;
     color: #f97316;
     cursor: pointer;
 }
-.command-tree-v2 .movement-pad-menu .movement-pad-cell.is-door-target .movement-pad-label {
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell.is-door-target .movement-pad-label {
     color: #f97316;
     font-size: 9px;
     line-height: 1.05;
@@ -49,44 +47,44 @@
     text-overflow: clip;
     white-space: normal;
 }
-.command-tree-v2 .movement-pad-menu .pad-flee { grid-area: 3 / 1; color:var(--ansi-bright-green, #44ff70); background:#292929; }
-.command-tree-v2 .movement-pad-menu .pad-flee .movement-pad-label { color:var(--ansi-bright-green, #44ff70); }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-flee { grid-area: 3 / 1; color:var(--ansi-bright-green, #44ff70); background:#292929; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-flee .movement-pad-label { color:var(--ansi-bright-green, #44ff70); }
 @media (hover: hover) and (pointer: fine) {
-.command-tree-v2 .movement-pad-menu .pad-flee:hover:not(:disabled) { color:#86efac; background:#24412d; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-flee:hover:not(:disabled) { color:#86efac; background:#24412d; }
 }
 @media (hover: hover) and (pointer: fine) {
-.command-tree-v2 .movement-pad-menu .pad-flee:hover:not(:disabled) .movement-pad-label { color:#86efac; }
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .pad-flee:hover:not(:disabled) .movement-pad-label { color:#86efac; }
 }
 
 /* --- Translucent movement controls over the mobile map --- */
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu {
     position:relative;
     z-index:2;
     background:transparent;
     pointer-events:none;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .movement-pad-cell {
     border:1px solid rgba(201, 168, 76, 0.22);
     border-radius:3px;
     background:rgba(20, 17, 14, 0.2);
     text-shadow:0 1px 2px #000, 0 0 4px #000;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell.is-closed-door {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .movement-pad-cell.is-closed-door {
     border-color:#d97706;
 }
 @media (hover: hover) and (pointer: fine) {
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell:hover:not(:disabled) {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .movement-pad-cell:hover:not(:disabled) {
     background:rgba(201, 168, 76, 0.25);
 }
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .movement-pad-cell:focus-visible {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .movement-pad-cell:focus-visible {
     background:rgba(201, 168, 76, 0.25);
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .pad-flee {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .pad-flee {
     background:rgba(20, 17, 14, 0.2);
 }
 @media (hover: hover) and (pointer: fine) {
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch .movement-pad-menu .pad-flee:hover:not(:disabled) {
+:is(.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .is-movement-branch,.desktop-map-movement-pad:not(.is-docked)) .movement-pad-menu .pad-flee:hover:not(:disabled) {
     background:rgba(36, 65, 45, 0.3);
 }
 }

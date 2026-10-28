@@ -23,6 +23,7 @@ type ShopItemGroupProps = {
     selectOnClick?: boolean;
     compact?: boolean;
     objectColorTargets?: boolean;
+    showInspect?: boolean;
     onSelect: (item: ShopItem) => void;
     onToggle: (num: number) => void;
     onInspect: (num: number) => void;
@@ -31,7 +32,7 @@ type ShopItemGroupProps = {
 // --- Render Section ---
 export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
     item, variants, expanded, loading, selectedNum, compareNum, targeting, selectOnRelease = false, compact = false, objectColorTargets = false,
-    onSelect, onToggle, onInspect, selectOnClick = false
+    onSelect, onToggle, onInspect, selectOnClick = false, showInspect = true
 }) => {
     const count = getShopProductCount(item.name);
     const stock = variants?.length || count;
@@ -99,8 +100,8 @@ export const ShopItemGroup: React.FC<ShopItemGroupProps> = ({
                                 ? <CommandTreeObjectTargetLabel label={variantName} location="room">{variant.condition || variantName}</CommandTreeObjectTargetLabel>
                                 : variant.condition || variantName}</span>
                             <span className="shop-item-price" title={variant.price}>{formatMumePrice(variant.price)}</span>
-                            <button type="button" className="shop-variant-inspect" onPointerDown={event => event.stopPropagation()}
-                                onClick={event => { if (selectOnClick) event.stopPropagation(); onInspect(variant.num); }}>Inspect</button>
+                            {showInspect && <button type="button" className="shop-variant-inspect" onPointerDown={event => event.stopPropagation()}
+                                onClick={event => { if (selectOnClick) event.stopPropagation(); onInspect(variant.num); }}>Inspect</button>}
                         </div>;
                     }) : <div className="shop-variant-empty">No individual items returned.</div>}
             </div>}

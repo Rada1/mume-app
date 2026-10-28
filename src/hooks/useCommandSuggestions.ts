@@ -46,6 +46,7 @@ export interface UseCommandSuggestionsOptions {
     wrapRef?: RefObject<HTMLElement | null>; inputRef?: RefObject<HTMLInputElement | HTMLTextAreaElement | null>;
     isMobile?: boolean; targetPickerRequestId?: number; placement?: 'top' | 'bottom';
     positionOverMap?: boolean;
+    openCommunicationComposer?: (command: string) => boolean;
     inventoryLines?: DrawerLine[]; wornLines?: DrawerLine[];
     characterName?: string; practiceSkills?: PracticeSkill[]; preferredTarget?: string | null;
 }
@@ -96,18 +97,25 @@ export const useCommandSuggestions = ({
     wornLines = [],
     characterName = '',
     practiceSkills = [],
-    preferredTarget = null
+    preferredTarget = null,
+    openCommunicationComposer
 }: UseCommandSuggestionsOptions): UseCommandSuggestionsReturn => {
     const effectivePlacement: 'top' | 'bottom' = propPlacement ?? (isMobile ? 'top' : 'bottom');
     const reverseCommandTargets = useCommandActionSuggestions(abilities, inventoryLines, wornLines, characterName);
     const [isFocused, setIsFocused] = useState(false);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
+    const updatePopupStyle = useCallback((next: CSSProperties) => {
+        setPopupStyle(current => current.left === next.left && current.top === next.top
+            && current.width === next.width && current.maxHeight === next.maxHeight
+            && current.transform === next.transform ? current : next);
+    }, []);
     const [isTargetPickerForced, setIsTargetPickerForced] = useState(false);
     const [selectedCommandArguments, setSelectedCommandArguments] = useState<SelectedCommandArgumentChip[]>([]);
     const [commandArgumentCaretKey, setCommandArgumentCaretKey] = useState<string | null>(null);
     const commandArgumentChipId = useRef(0);
 
     const chars = useRoomStore(s => s.chars);
+    const rawExits = useRoomStore(s => s.rawExits);
     const { groupMembers } = useVitals();
     const roomItems = useRoomStore(s => s.items);
     const roomWaterAvailable = useRoomDrinkWater();
@@ -191,6 +199,15 @@ export const useCommandSuggestions = ({
         });
     }, [commandArgumentChips]);
 
+    // Mobile keyboards can update text without a printable keydown event.
+    useEffect(() => {
+        if (!commandArgumentCaretKey) return;
+        const chip = commandArgumentChips.find(candidate => candidate.key === commandArgumentCaretKey);
+        if (!chip || /\S/.test(input.slice(chip.end))) {
+            setCommandArgumentCaretKey(null);
+        }
+    }, [commandArgumentCaretKey, commandArgumentChips, input]);
+
     const targetSuggestionResolution = useMemo<ResolvedCommandTargetSuggestions>(() => {
         const suggestionCommand = aliasCommand?.command || `${commandToken}${commandTextParts?.suffix || ''}`;
         const isRoomInspectionCommand = /^(?:look|examine|consider)(?:\s|$)/i.test(suggestionCommand.trim());
@@ -220,6 +237,7 @@ export const useCommandSuggestions = ({
             };
         }
         return resolveCommandTargetSuggestions({
+            rawExits,
             command,
             argumentText: aliasCommand?.argumentText || commandTextParts?.suffix || '',
             menuKind: getCommandTargetMenuKind(command),
@@ -236,7 +254,7 @@ export const useCommandSuggestions = ({
             roomWaterAvailable,
             groupMembers
         });
-    }, [abilities, aliasCommand, characterName, chars, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, isAliasInput, keyedSpellInput, practiceSkills, reverseCommandTargets, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
+    }, [abilities, aliasCommand, characterName, chars, rawExits, commandTextParts, commandToken, groupMembers, hasCommandArgumentSpace, inventoryLines, isAliasInput, keyedSpellInput, practiceSkills, reverseCommandTargets, roomItems, roomWaterAvailable, shopItems, teleportTargets, whoList, wornLines]);
 
     const canSuggestLockedTarget = Boolean(preferredTarget?.trim()) && !keyedSpellInput
         && !/^(?:assist|ass)(?:\s|$)/i.test(suggestionInput.trim()) && (
@@ -310,12 +328,14 @@ export const useCommandSuggestions = ({
     }, [aliasCommand, input, inputRef, setInput, suggestionInput]);
 
     const chooseCommandSuggestion = useCallback((entry: MumeCommandEntry) => {
-        setInput(replaceMumeCommandToken(input, entry));
+        const nextInput = replaceMumeCommandToken(input, entry);
+        if (entry.aliasExpansion || !openCommunicationComposer?.(nextInput)) setInput(nextInput);
         requestAnimationFrame(() => inputRef?.current?.focus());
-    }, [input, inputRef, setInput]);
+    }, [input, inputRef, setInput, openCommunicationComposer]);
 
     const chooseTargetSuggestion = useCallback((value: string) => {
         const keyedSpell = parseKeyedSpellCommand(input);
+        const quotedSpell = input.match(/^(\s*(?:cast|c|commune)\s+(['"])[^'"]+\2)\s*(.*)$/i);
         const chosenSuggestion = targetSuggestions.find(entry => entry.value === value);
         let nextInput = input;
         let chipStart = input.length;
@@ -323,6 +343,9 @@ export const useCommandSuggestions = ({
         if (keyedSpell) {
             nextInput = `${keyedSpell.prefix} ${value}`;
             chipStart = nextInput.length - value.length;
+        } else if (quotedSpell && value !== BLANK_TARGET_VALUE && value !== '__room__') {
+            nextInput = `${quotedSpell[1]} ${value}`;
+            chipStart = quotedSpell[1].length + 1;
         } else if (value === BLANK_TARGET_VALUE) {
             const leadingWhitespace = input.match(/^\s*/)?.[0] ?? '';
             const commandToken = input.trimStart().match(/^(\S+)/)?.[1] ?? '';
@@ -348,6 +371,17 @@ export const useCommandSuggestions = ({
                 nextInput = replaceActiveCommandArgumentToken(input, value);
             }
         }
+        if (!aliasCommand && openCommunicationComposer?.(nextInput)) {
+            setSelectedCommandArguments([]);
+            setCommandArgumentCaretKey(null);
+            setIsTargetPickerForced(false);
+            requestAnimationFrame(() => {
+                const element = inputRef?.current;
+                element?.focus();
+                element?.setSelectionRange(element.value.length, element.value.length);
+            });
+            return;
+        }
         setInput(nextInput);
         let nextCaretChipKey: string | null = null;
         if (chosenSuggestion && value !== BLANK_TARGET_VALUE) {
@@ -365,17 +399,19 @@ export const useCommandSuggestions = ({
                 snapshot: isVirtualChip ? nextInput : undefined
             }]);
         }
-        setCommandArgumentCaretKey(nextCaretChipKey);
+        const chipEnd = chipStart + value.length;
+        const hasFollowingText = /\S/.test(nextInput.slice(chipEnd));
+        setCommandArgumentCaretKey(hasFollowingText ? null : nextCaretChipKey);
         setIsTargetPickerForced(false);
-        const caretPosition = value === BLANK_TARGET_VALUE || value === '__room__'
+        const caretPosition = value === BLANK_TARGET_VALUE || value === '__room__' || hasFollowingText
             ? nextInput.length
-            : chipStart + value.length;
+            : chipEnd;
         requestAnimationFrame(() => {
             const inputElement = inputRef?.current;
             inputElement?.focus();
             inputElement?.setSelectionRange(caretPosition, caretPosition);
         });
-    }, [commandTextParts, commandTokenKey, input, inputRef, setInput, targetSuggestionResolution, targetSuggestions]);
+    }, [aliasCommand, commandTextParts, commandTokenKey, input, inputRef, setInput, targetSuggestionResolution, targetSuggestions, openCommunicationComposer]);
 
     const chooseCommandArgumentSuggestion = useCallback((key: string, value: string) => {
         const chip = commandArgumentChips.find(candidate => candidate.key === key);
@@ -388,11 +424,13 @@ export const useCommandSuggestions = ({
                 ? `${input.slice(0, chip.start)}${input.slice(chip.end)}`
                 : `${input.slice(0, chip.start)}${value}${input.slice(chip.end)}`;
         setInput(nextInput);
+        const chipEnd = value === '__room__' || value === BLANK_TARGET_VALUE ? chip.start : chip.start + value.length;
+        const hasFollowingText = /\S/.test(nextInput.slice(chipEnd));
         if (value === BLANK_TARGET_VALUE) {
             setSelectedCommandArguments(current => current.filter(argument => argument.key !== key));
             setCommandArgumentCaretKey(null);
         } else {
-            setCommandArgumentCaretKey(key);
+            setCommandArgumentCaretKey(hasFollowingText ? null : key);
             setSelectedCommandArguments(current => current.map(argument => argument.key === key
                 ? {
                     ...argument,
@@ -405,7 +443,9 @@ export const useCommandSuggestions = ({
                 }
                 : argument));
         }
-        const caretPosition = value === BLANK_TARGET_VALUE
+        const caretPosition = hasFollowingText
+            ? nextInput.length
+            : value === BLANK_TARGET_VALUE
             ? Math.min(chip.start, nextInput.length)
             : value === '__room__'
                 ? nextInput.length
@@ -542,7 +582,7 @@ export const useCommandSuggestions = ({
                         const popupBottom = commandLineRect && commandLineRect.height > 0
                             ? commandLineRect.top - 4 : rect.bottom;
                         const spaceAbove = popupBottom - viewportPadding;
-                        setPopupStyle({
+                        updatePopupStyle({
                             left: Math.round(mapRight - width),
                             top: Math.max(viewportPadding, popupBottom),
                             width,
@@ -556,7 +596,7 @@ export const useCommandSuggestions = ({
 
             if (effectivePlacement === 'bottom') {
                 const spaceBelow = viewportHeight - rect.bottom - viewportPadding;
-                setPopupStyle({
+                updatePopupStyle({
                     left,
                     top: Math.round(rect.bottom + 4),
                     width: desiredWidth,
@@ -565,7 +605,7 @@ export const useCommandSuggestions = ({
                 });
             } else {
                 const spaceAbove = rect.top - viewportPadding - 6;
-                setPopupStyle({
+                updatePopupStyle({
                     left,
                     top: Math.max(viewportPadding, rect.top - 6),
                     width: desiredWidth,
@@ -585,7 +625,7 @@ export const useCommandSuggestions = ({
             window.removeEventListener('scroll', updatePopupPosition, true);
             window.visualViewport?.removeEventListener('resize', updatePopupPosition);
         };
-    }, [effectivePlacement, positionOverMap, showCompletionPopup, showTargetPopup, targetSuggestions, wrapRef]);
+    }, [effectivePlacement, positionOverMap, showCompletionPopup, showTargetPopup, targetSuggestions, wrapRef, updatePopupStyle]);
 
     const handleSuggestionKeyDown = useCallback((e: KeyboardEvent): boolean => {
         if (disabled) return false;

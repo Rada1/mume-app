@@ -104,8 +104,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         !isCommandPanelContext &&
         (!parentPopoverState.type || parentPopoverState.type === 'menu') && parentPopoverState.menuDisplay !== 'dial';
     const isDesktopEntityMenu = !isMobile && isEntityMenu;
-    const isMobileEntityMenu = isMobile && isEntityMenu;
-    const isMobileReadabilityInlineMenu = isMobile && isReadabilityMode && !isCommandPanelContext &&
+    const isWorkspaceMenu = isDesktopTargetWorkspaceRequest(parentPopoverState);
+    const isMobileEntityMenu = isMobile && isEntityMenu && !isWorkspaceMenu;
+    const isMobileReadabilityInlineMenu = isMobile && isReadabilityMode && !isCommandPanelContext && !isWorkspaceMenu &&
         (isInlineEntityMenuState(parentPopoverState) || isInlineEntityMenuState(localState));
     const isMobileCommandPanelMenu = isMobileEntityMenu && !isReadabilityMode;
 
@@ -428,7 +429,7 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
         };
     }, [popoverState, isDesktopEntityPopover, isMobileEntityMenu, triggerHaptic, setPopoverState]);
 
-    if (!popoverState || isMobileCommandPanelMenu || (!isMobile && isDesktopTargetWorkspaceRequest(popoverState))) return null;
+    if (!popoverState || isMobileCommandPanelMenu || isDesktopTargetWorkspaceRequest(popoverState)) return null;
     console.log('[PopoverManager] Current state:', { type: popoverState.type, setId: popoverState.setId, context: popoverState.context, direction: popoverState.direction });
 
     const detectedCatId = normalizeInlineCategoryId(popoverState.category || popoverState.setId);

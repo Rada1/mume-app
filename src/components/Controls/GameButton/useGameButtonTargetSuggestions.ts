@@ -4,6 +4,7 @@
  */
 
 import { useMemo } from 'react';
+import { getRoomDoorSpellTargets } from '../../../utils/doorCommandUtils';
 import { useGame, useUI } from '../../../context/GameContext';
 import { useVitals } from '../../../context/GameContext';
 import { useRoomStore } from '../../../stores/useRoomStore';
@@ -36,6 +37,7 @@ import {
     getSelfTargetSuggestion,
     getSheathTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
+    getInventoryAndWornWeaponTargetSuggestions,
     getLanternTargetSuggestions,
     getLearnedMageSpellSuggestions,
     getMagicKeyTargetSuggestions,
@@ -44,7 +46,7 @@ import {
     getPipeTargetSuggestions,
     getRoomTargetSuggestions,
     getRescueTargetSuggestions,
-    getRoomContainerTargetSuggestions,
+    getRoomChestTargetSuggestions,
     getSelfAndRoomAlliesTargetSuggestions,
     getSelfAndRoomTargetSuggestions,
     getSocialTargetSuggestions,
@@ -72,6 +74,8 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'look-containers': 'CONTAINERS',
     gear: 'ITEMS',
     'inventory-gear': 'INVENTORY',
+    'inventory-and-worn-weapons': 'WEAPONS',
+    'inventory-weapons': 'INVENTORY WEAPONS',
     'inventory-meat': 'MEAT',
     'herbal-kit': 'KIT',
     'worn-gear': 'WORN ITEMS',
@@ -124,6 +128,7 @@ export const useGameButtonTargetSuggestions = (
     const { practice, abilities, teleportTargets } = useGame();
     const { groupMembers } = useVitals();
     const roomChars = useRoomStore(state => state.chars);
+    const rawExits = useRoomStore(state => state.rawExits);
     const roomItems = useRoomStore(state => state.items);
     const roomWaterAvailable = useRoomDrinkWater();
     const hasRoomDoor = useCurrentRoomHasDoor();
@@ -217,6 +222,9 @@ export const useGameButtonTargetSuggestions = (
             return getInventoryAndWornTargetSuggestions(displayInventoryLines, displayEqLines);
         }
         if (resolvedKind === 'inventory-gear') return getGearTargetSuggestions(displayInventoryLines, 'inventory');
+        if (resolvedKind === 'inventory-and-worn-weapons') {
+            return getInventoryAndWornWeaponTargetSuggestions(displayInventoryLines, displayEqLines);
+        }
         if (resolvedKind === 'inventory-meat') return getMeatTargetSuggestions(displayInventoryLines);
         if (resolvedKind === 'herbal-kit') return [{ key: 'herbal-kit', label: 'Kit', value: 'kit', meta: 'gear' }];
         if (resolvedKind === 'worn-gear') return getGearTargetSuggestions(displayEqLines, 'worn');
@@ -264,10 +272,8 @@ export const useGameButtonTargetSuggestions = (
             getSelfTargetSuggestion(),
             ...getGearTargetSuggestions(displayInventoryLines, 'inventory')
         ];
-        if (resolvedKind === 'pick') return getRoomContainerTargetSuggestions(roomObjects, hasRoomDoor);
-        if (resolvedKind === 'door-direction') return [
-            { key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }
-        ];
+        if (resolvedKind === 'pick') return [...getRoomDoorSpellTargets(rawExits), ...getRoomChestTargetSuggestions(roomObjects)];
+        if (resolvedKind === 'door-direction') return getRoomDoorSpellTargets(rawExits);
         if (resolvedKind === 'room-spell' || resolvedKind === 'room-spell-with-extras' || resolvedKind === 'bash' || resolvedKind === 'room') {
             const roomTargets = isOffensiveTargetCommand(command)
                 ? getNonGroupmateRoomTargetSuggestions(roomOccupants, groupMembers, characterName)
@@ -316,7 +322,7 @@ export const useGameButtonTargetSuggestions = (
     }, [
         command, kind, resolvedKind, targetKindOverride, isEatCommand, isMixCommand, roomObjects, displayInventoryLines, displayEqLines, roomOccupants,
         characterName, practice.practiceData?.skills, abilities, teleportTargets, whoList, groupMembers, shopItems, roomWaterAvailable,
-        hasRoomDoor
+        hasRoomDoor, rawExits
     ]);
 
     const stagedArguments = useMemo(() => {

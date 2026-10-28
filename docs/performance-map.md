@@ -56,6 +56,12 @@ Player room matching stays in `MapperContext`, which receives GMCP, text-derived
 room observations, and XML movement confirmations. The worker only renders the
 resolved player position and exploration state; it does not infer or overwrite
 the player's room.
+`useMapGmcphandlers` gives player GMCP room packets ownership of movement
+confirmations once received. XML movement tags and text room echoes must not
+consume the same queued command again, regardless of text-processing delays.
+Without GMCP, XML consumes the move and the following room observation refines
+that arrival without advancing the queue a second time. Scout and spectate
+observations do not establish player GMCP ownership.
 Queued, unconfirmed movement commands draw the same solid gold prespammed-path
 line and endpoint used by the regular renderer. The worker resolves the route
 against the canonical exit graph, selects a known first destination when

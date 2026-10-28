@@ -23,6 +23,7 @@ import { useSmartWalk } from './hooks/useSmartWalk';
 import { useMapperFindPanel } from './hooks/useMapperFindPanel';
 import { useMapperPlayerTracking } from './hooks/useMapperPlayerTracking';
 import { DpadCluster } from './DpadCluster';
+import { DesktopMapMovementPad } from './DesktopMapMovementPad';
 import { DEFAULT_MOBILE_MAP_ZOOM, GRID_SIZE } from './mapperUtils';
 import { useMapperTracing } from './hooks/useMapperTracing';
 import { TracingHUD } from './TracingHUD';
@@ -525,6 +526,7 @@ export const Mapper = forwardRef<MapperHandle, MapperProps>((props, ref) => {
             )}
 
             {isMobile && !mapSwipeWheel && <DpadCluster heldButton={heldButton} setHeldButton={setHeldButton} />}
+            {!isMobile && !effectiveIsMinimized && !props.isDesignMode && <DesktopMapMovementPad/>}
 
             {markerEditor.isOpen && <MapMarkerManager editor={markerEditor} />}
 

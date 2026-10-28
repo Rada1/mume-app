@@ -2,6 +2,7 @@
 import type { CustomButton } from '../types';
 import { PRACTICE_CLASS_SKILLS, TARGETED_SKILLS } from './practiceClassCatalog';
 import { isCommandTreeSpell } from './commandTreeGroups';
+import { isCommandTreeSearchAction } from './commandTreeSearch';
 // --- Identity Section ---
 const normalize = (value: string) => value.toLowerCase().replace(/\barmor\b/g,'armour').trim().replace(/\s+/g,' ');
 const spellNames = [...PRACTICE_CLASS_SKILLS.mage, ...PRACTICE_CLASS_SKILLS.cleric].map(normalize).sort((a,b)=>b.length-a.length);
@@ -26,6 +27,7 @@ const targetedSkillSyntax = (button: CustomButton): string | null => {
 const classCategory = /^(?:ranger|warrior|thief|mage|cleric)(?:\s*(?:skills?|spells?)\s*(?:list)?)?$/;
 // Directed messaging and following always open the shared target picker in V2.
 export const normalizeCommandTreeButton = (button: CustomButton): CustomButton => {
+ if (isCommandTreeSearchAction(button)) return {...button,command:`${button.command.trim().split(/\s+/)[0].toLowerCase()} %n`};
  if (/^pour\b/i.test(button.command.trim())) return {...button, label: 'Pour'};
  const communicationVerb = button.command.trim().toLowerCase().split(/\s+/)[0];
  if (communicationChannels.has(communicationVerb)) return {...button, setId: 'trait-communication'};

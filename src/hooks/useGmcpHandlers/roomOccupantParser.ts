@@ -48,7 +48,8 @@ const parseOccupant = (data: unknown, characterName: string | null): GmcpOccupan
     if (!data) return null;
     if (typeof data === 'string' || typeof data === 'number') {
         const value = String(data);
-        const occupant: GmcpOccupant = { id: value, name: value, short: value };
+        // ID-only updates must retain the cached name/type, including a ridden mount.
+        const occupant: GmcpOccupant = knownRoomChars.has(value) ? { id: value } : { id: value, name: value, short: value };
         return rememberAndFilterOccupant(occupant, characterName);
     }
     if (!isRecord(data)) return null;
@@ -59,9 +60,14 @@ const parseOccupant = (data: unknown, characterName: string | null): GmcpOccupan
         id: data.id !== undefined ? String(data.id) : name
     } as GmcpOccupant;
     if (name) occupant.name = name;
+    // Malformed name fields must not replace usable cached strings or reach renderers.
+    for (const field of ['name', 'keyword', 'short', 'shortdesc', 'desc'] as const) {
+        if (typeof occupant[field] !== 'string') delete occupant[field];
+    }
 
     const normalizedType = normalizeOccupantType(data);
     if (normalizedType) occupant.type = normalizedType;
+    else delete occupant.type;
     if (occupant.name || occupant.keyword || occupant.short || occupant.shortdesc) {
         occupant.keyword = getOccupantCommandKeyword(occupant, String(occupant.id || ''));
     }

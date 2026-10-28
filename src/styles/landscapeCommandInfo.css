@@ -40,11 +40,6 @@
     pointer-events: auto;
 }
 
-.app-container.is-mobile.is-landscape:not(.state-account) .landscape-character-summary-overlay:has(.command-tree-you-expanded:not([hidden])) .command-tree-you-summary {
-    height: 100%;
-    flex: 1 1 auto;
-}
-
 .app-container.is-mobile.is-landscape:not(.state-account) .landscape-character-summary-overlay .command-tree-you-identity {
     grid-template-columns: minmax(0, 1fr) auto;
 }

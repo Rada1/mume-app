@@ -1,10 +1,10 @@
 /** @file CommandDockMobileReadabilityMenus.css — Compact state dropdowns and gear menus for readability mode. */
 
 /* --- Fill Command and Target Rows --- */
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) > .command-tree-main-branch {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branches:has(> .command-tree-branch.is-ability-side-branch) > .command-tree-main-branch {
     --mobile-command-menu-button-columns:3;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branch :is(
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branch :is(
     .command-tree-section-commands:not(.is-ability-mode-commands),
     .command-tree-section-content:not([hidden]):has(> .command-tree-row),
     .command-tree-section-content > [role="group"]:not(.movement-pad):not(.command-tree-section-commands)
@@ -14,7 +14,7 @@
     align-items:stretch;
     gap:4px;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branch :is(
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branch :is(
     .command-tree-section-commands:not(.is-ability-mode-commands),
     .command-tree-section-content:not([hidden]):has(> .command-tree-row),
     .command-tree-section-content > [role="group"]:not(.movement-pad):not(.command-tree-section-commands)
@@ -25,16 +25,16 @@
     min-width:0;
     max-width:100%;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-ability-side-branch {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branches > .command-tree-branch.is-ability-side-branch {
     --mobile-command-menu-button-columns:4;
 }
-.app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-section-commands:not(.is-ability-mode-commands) > div > .command-tree-row {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-section-commands:not(.is-ability-mode-commands) > div > .command-tree-row {
     width:100%;
     height:100%;
 }
 
 /* --- Readability Menu Lane --- */
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu {
     position:fixed !important;
     top:var(--mobile-readability-menu-top, calc(50dvh + clamp(72px, 11dvh, 96px))) !important;
     right:4px !important;
@@ -51,47 +51,47 @@
 }
 
 /* --- Quick State Choices --- */
-.app-container.is-mobile.readability-mode .command-tree-quick-options {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-quick-options {
     display:flex !important;
     flex-direction:column;
     gap:2px;
     padding:4px;
     overflow:auto;
 }
-.app-container.is-mobile.readability-mode .command-tree-quick-options > * { min-width:0; }
-.app-container.is-mobile.readability-mode .command-tree-quick-options :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-quick-options > * { min-width:0; }
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-quick-options :is(.command-tree-row, .terminal-inspect-row, .popover-action-button) {
     justify-content:center;
     min-height:48px;
     padding:8px 4px;
     text-align:center;
     white-space:normal;
 }
-.app-container.is-mobile.readability-mode .command-tree-quick-options .command-tree-row-label {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-quick-options .command-tree-row-label {
     overflow-wrap:anywhere;
     text-align:center;
     white-space:normal;
 }
 
 /* --- Equipment and Inventory Cascades --- */
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu {
     display:grid !important;
     align-items:stretch !important;
     overflow:hidden;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-details,
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-list {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu .command-tree-gear-quick-details,
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu .command-tree-gear-quick-list {
     height:100% !important;
     max-height:none !important;
     min-height:0;
     overflow:auto;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-details {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu .command-tree-gear-quick-details {
     overflow:hidden;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu .command-tree-gear-quick-list {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu .command-tree-gear-quick-list {
     margin-left:auto;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-details:empty) .command-tree-gear-quick-list {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu:has(> .command-tree-gear-quick-details:empty) .command-tree-gear-quick-list {
     flex:1 1 100% !important;
     width:100% !important;
     min-width:100% !important;
@@ -143,11 +143,11 @@
     white-space:normal;
     overflow-wrap:anywhere;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
     max-height:none !important;
     min-height:0;
     overflow:auto;
 }
-.app-container.is-mobile.readability-mode .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-gear-quick-menu :is(.command-tree-gear-quick-actions, .command-tree-gear-quick-contents) {
     transform:none !important;
 }

@@ -7,6 +7,9 @@ import { CustomButton, InlineCategoryConfig, GameEntity, EntityCapability, GmcpO
 import { getButtonIdsForTraits, getResolvedTraitSections, matchesKeyword } from './inlineActionModel';
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from './inlineCategoryAxes';
 import { isButtonEligibleForCharacter } from './characterEligibility';
+import { isMountActionEligible } from './mountEligibility';
+import { hasObjectTrait } from '../objects/objectTargetModel';
+import { isDoorPresenceSpellCommand } from './doorCommandUtils';
 
 export interface ActionFilterDeps {
     buttons: CustomButton[];
@@ -18,12 +21,13 @@ export interface ActionFilterDeps {
 }
 
 // --- Trait Eligibility Section ---
-// Prepare once per target/rebuild; never retain this across changes to the input data.
-export const getEligibleActionButtonIds = (categoryId: string, name: string | null, deps: ActionFilterDeps): ReadonlySet<string> => {
+// Classification depends only on category/name, custom traits and character identity.
+// Live per-button validity (room occupants, location and terrain) stays separate below.
+export const getEligibleActionButtonIds = (categoryId: string, name: string | null, deps: Pick<ActionFilterDeps, 'inlineCategories' | 'characterInfo'>): ReadonlySet<string> => {
     const sections = getResolvedTraitSections(categoryId, name, deps.inlineCategories || []);
     return new Set(getButtonIdsForTraits(sections
         .filter(section => isButtonEligibleForCharacter(section.trait.requirement, deps.characterInfo))
-        .map(section => section.trait)));
+        .map(section => section.trait)).filter(id => isMountActionEligible(id, name, deps.characterInfo)));
 };
 
 /**
@@ -50,6 +54,7 @@ export function isButtonValidForEntity(
     // --- STEP 2: Main Set Validation ---
     // Resolved traits are authoritative for inline actions.
     if (!traitButtons.has(button.id)) return false;
+    if (!isMountActionEligible(button.id, entity?.name || context || null, deps.characterInfo)) return false;
     if (!isButtonEligibleForCharacter(button.requirement, deps.characterInfo)) return false;
     if (button.inlineTargetKinds) {
         const targetKind = axes.isCharacter ? 'character' : axes.isObject ? 'object' : axes.family === 'exit' ? 'exit' : null;
@@ -62,7 +67,18 @@ export function isButtonValidForEntity(
     // These rules prune buttons that are physically impossible in the current context
     
     const location = axes.location;
+    if (isDoorPresenceSpellCommand(button.command) && (axes.family !== 'exit' || location !== 'room')) return false;
+    if (/^(?:lock|unlock)(?:\s|$)/i.test(button.command.trim()) && (axes.family !== 'exit' || location !== 'room')) return false;
+    if (/^pick(?:\s|$)/i.test(button.command.trim())) {
+        const isRoomDoor = axes.family === 'exit' && location === 'room';
+        const isRoomChest = axes.isObject && location === 'room' && /\bchest\b/i.test(entity?.name || context || '');
+        if (!isRoomDoor && !isRoomChest) return false;
+    }
     const isPosessed = location === 'carried' || location === 'worn';
+    if (/^cast\s+['"]?enchant['"]?(?:\s|$)/i.test(button.command.trim())
+        && (!axes.isObject || !isPosessed || !hasObjectTrait(entity?.name || context || '', 'trait-weapon'))) {
+        return false;
+    }
     const isWornContainer = resolvedCategoryId === 'cat-worn-object'
         && traitButtons.has('btn-get')
         && traitButtons.has('btn-container-open');
@@ -115,32 +131,25 @@ export function isButtonValidForEntity(
         return false;
     }
 
-    // 8. Throw actions only apply under specific location/category constraints:
-    // - "glass flask" must be worn
-    // - "a twisted rock fragment" must be inventory (carried) or worn
+    // 8. Throw applies only to the Twisted rock fragment in inventory.
     if (button.id === 'btn-throw') {
         const lowerName = (entity?.name || context || '').toLowerCase();
         const matchesRock = matchesKeyword(lowerName, 'twisted-rock');
-        const matchesFlask = matchesKeyword(lowerName, 'glass-flask');
-
-        if (matchesFlask && location !== 'worn') {
-            return false;
-        }
-        if (matchesRock && location !== 'carried' && location !== 'worn') {
-            return false;
-        }
+        if (!matchesRock || location !== 'carried') return false;
     }
 
-    // 9. Use actions only apply under specific location/category constraints:
-    // - "pale blue stone", rings, and other useables must be worn
+    // 9. Use actions only apply to known useables in worn gear.
     if (button.id === 'btn-use') {
         const lowerName = (entity?.name || context || '').toLowerCase();
         const matchesStone = matchesKeyword(lowerName, 'pale-blue-stone');
-        const matchesRing = ['topaz-ring', 'ruby-ring', 'garnet-ring', 'emerald-ring', 'opal-ring'].some(k => matchesKeyword(lowerName, k));
+        const matchesStaff = ['bejewelled-oak-staff', 'bejeweled-oak-staff', 'bejewelled-oaken-staff', 'bejeweled-oaken-staff']
+            .some(keyword => matchesKeyword(lowerName, keyword));
+        const matchesRing = ['golden-topaz-ring', 'golden-garnet-ring', 'golden-emerald-ring', 'golden-opal-ring']
+            .some(keyword => matchesKeyword(lowerName, keyword));
         const matchesEye = matchesKeyword(lowerName, 'obsidian-eye');
-        const matchesOther = ['black-candle', 'small-pouch', 'fragile-parchment', 'deep-black-orb'].some(k => matchesKeyword(lowerName, k));
+        const matchesOther = ['black-candle', 'small-pouch', 'small-crystal-phial'].some(k => matchesKeyword(lowerName, k));
 
-        if ((matchesStone || matchesRing || matchesEye || matchesOther) && location !== 'worn') {
+        if ((matchesStone || matchesStaff || matchesRing || matchesEye || matchesOther) && location !== 'worn') {
             return false;
         }
     }

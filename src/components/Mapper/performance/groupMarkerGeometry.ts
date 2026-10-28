@@ -5,6 +5,7 @@
 
 import type { FastMapGroupMember, FastMapTextLabel } from './model';
 import type { FastMapView } from './protocol';
+import { getMemberLabelBackgroundColor } from '../../../utils/groupUtils';
 
 interface MarkerLayout {
   member: FastMapGroupMember;
@@ -16,7 +17,7 @@ interface MarkerLayout {
 const MARKER_OUTER_HALF_SIZE = 0.415;
 const MARKER_INNER_HALF_SIZE = 0.33;
 export const GROUP_MEMBER_LABEL_FONT_SIZE = 18;
-const LABEL_STACK_SPACING = GROUP_MEMBER_LABEL_FONT_SIZE + 2;
+const LABEL_STACK_SPACING = GROUP_MEMBER_LABEL_FONT_SIZE + 4;
 const SIDE_MIDDLE_ALPHA = 0.38;
 // MMapper uses 45 / PI degrees per occupied slot, which is exactly 0.25 radians.
 const GROUP_MEMBER_ROTATION_STEP = 0.25;
@@ -71,7 +72,7 @@ function markerLayouts(members: readonly FastMapGroupMember[]): MarkerLayout[] {
 
 export function buildGroupMemberLabels(members: readonly FastMapGroupMember[]): FastMapTextLabel[] {
   const labels: FastMapTextLabel[] = [];
-  for (const layout of markerLayouts(members)) {
+  for (const layout of markerLayouts(members.filter(member => member.isAlly !== false))) {
     const { member, x, y, roomIndex } = layout;
     const text = member.name.trim();
     if (!text) continue;
@@ -82,6 +83,8 @@ export function buildGroupMemberLabels(members: readonly FastMapGroupMember[]): 
       text,
       fontSize: GROUP_MEMBER_LABEL_FONT_SIZE,
       color: member.color,
+      backgroundColor: getMemberLabelBackgroundColor(member.color),
+      backgroundAlpha: 0.96,
       offsetY: roomIndex * LABEL_STACK_SPACING,
     };
     labels.push(label);

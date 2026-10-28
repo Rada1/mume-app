@@ -9,13 +9,12 @@ import './TargetArgumentChip.css';
 
 interface Props {
     chip: TacticalArgumentChipData;
-    showCommandCaret?: boolean;
 }
 
 // --- Logic Section ---
 
 // --- Render Section ---
-export const TargetArgumentChip: FC<Props> = ({ chip, showCommandCaret = false }) => {
+export const TargetArgumentChip: FC<Props> = ({ chip }) => {
     const { triggerHaptic } = useGame();
     const [isOpen, setIsOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement>(null);
@@ -27,7 +26,7 @@ export const TargetArgumentChip: FC<Props> = ({ chip, showCommandCaret = false }
         <button
             ref={anchorRef}
             type="button"
-            className={`docked-target-badge has-target docked-argument-chip${showCommandCaret ? ' has-command-caret' : ''}`}
+            className="docked-target-badge has-target docked-argument-chip"
             data-target-kind={appearance?.kind}
             style={{ '--argument-target-color': appearance?.color } as React.CSSProperties}
             aria-label={`${chip.title}: ${chip.displayLabel}. Choose another argument`}

@@ -1,4 +1,4 @@
-/** @file useCommandSummaryHeight.ts — Reserves desktop panel space above the character summary. */
+/** @file useCommandSummaryHeight.ts — Measures the character summary for adjacent panel placement. */
 import { useLayoutEffect, useRef } from 'react';
 
 // --- Summary Measurement Section ---
@@ -9,7 +9,7 @@ export function useCommandSummaryHeight() {
         const summary = summaryRef.current;
         const slot = summary?.closest<HTMLElement>('.command-dock-summary');
         const app = slot?.closest<HTMLElement>('.app-container');
-        if (!slot || !app || slot.closest('.command-dock-shell-mobile')) return;
+        if (!slot || !app) return;
 
         const property = '--command-dock-summary-height';
         const update = () => {

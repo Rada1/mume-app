@@ -7,6 +7,12 @@
     initial-value: #8293ad;
 }
 
+@property --terrain-frame-color {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #667085;
+}
+
 /* --- Client Frame --- */
 .app-container.immersion-mode::after {
     --zone-frame-rim: color-mix(in srgb, var(--zone-frame-color) 85%, transparent);
@@ -30,8 +36,48 @@
 /* Performance Mode uses the rim to show the active light instead of the zone. */
 .app-container.performance-mode.immersion-mode::after {
     --zone-frame-color: #667085;
+    --terrain-frame-color: #667085;
     /* Keep the hue in the edge glow, while letting the rim fade into it. */
     --zone-frame-rim: color-mix(in srgb, var(--zone-frame-color) 12%, transparent);
+    --terrain-frame-rim: color-mix(in srgb, var(--terrain-frame-color) 12%, transparent);
+    border: 0;
+    /* Preserve the original inset glow; a second layer replaces its bottom edge. */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, calc(100% - 28px) calc(100% - 28px), 28px calc(100% - 28px), 0 100%);
+    box-shadow: var(--zone-frame-shadow);
+    transition: --zone-frame-color 3s cubic-bezier(0.25, 0.1, 0.25, 1),
+        --terrain-frame-color 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.app-container.performance-mode.immersion-mode:not(.classic-mode)::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    z-index: 65002;
+    --terrain-frame-color: #667085;
+    border: 0;
+    box-shadow: inset 0 0 12px 2px color-mix(in srgb, var(--terrain-frame-color) 48%, transparent),
+        inset 0 0 28px color-mix(in srgb, var(--terrain-frame-color) 18%, transparent);
+    clip-path: polygon(0 100%, 28px calc(100% - 28px), calc(100% - 28px) calc(100% - 28px), 100% 100%);
+    transition: --terrain-frame-color 3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* --- Performance terrain edge --- */
+.app-container.performance-mode.immersion-mode:is(.terrain-forest, .terrain-field, .terrain-brush, .terrain-hills, .terrain-mountain, .terrain-road, .terrain-glow-shallows)::before {
+    --terrain-frame-color: #5c9b54;
+}
+
+.app-container.performance-mode.immersion-mode:is(.terrain-underground, .terrain-building)::before {
+    --terrain-frame-color: #a0a0a0;
+}
+
+.app-container.performance-mode.immersion-mode.terrain-city::before {
+    --terrain-frame-color: #a67449;
+}
+
+.app-container.performance-mode.immersion-mode.terrain-water:not(.terrain-glow-shallows)::before {
+    --terrain-frame-color: #438dc4;
 }
 
 .app-container.performance-mode.immersion-mode.lighting-sun::after {

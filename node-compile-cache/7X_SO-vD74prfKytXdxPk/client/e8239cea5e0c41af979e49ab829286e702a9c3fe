@@ -1,0 +1,155 @@
+Object.defineProperty(__vite_ssr_exports__, "getSpellSyntax", { enumerable: true, configurable: true, get(){ try { return getSpellSyntax } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getSkillOrSpellSyntax", { enumerable: true, configurable: true, get(){ try { return getSkillOrSpellSyntax } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "CANONICAL_SPELL_MANA", { enumerable: true, configurable: true, get(){ try { return CANONICAL_SPELL_MANA } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getSpellManaCost", { enumerable: true, configurable: true, get(){ try { return getSpellManaCost } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/src/utils/practiceClassCatalog.ts", {"importedNames":["PASSIVE_SKILLS","TARGETED_SKILLS"]});
+const SPELL_SYNTAX_OVERRIDES = {
+  "block door": "cast 'block door' <dir>",
+  "break door": "cast 'break door' <dir>",
+  "create water": "cast 'create water' [container]",
+  "detect poison": "cast 'detect poison' <target/item>",
+  "locate": "cast 'locate' <item>",
+  "identify": "cast 'identify' <item>",
+  "enchant": "cast 'enchant' <weapon>",
+  "portal": "cast 'portal' <target>",
+  "scry": "cast 'scry' <target>",
+  "ventriloquate": "cast 'ventriloquate' <target> <speech>",
+  // Self / area spells (explicitly no target needed)
+  "shroud": "cast 'shroud'",
+  "detect invisibility": "cast 'detect invisibility'",
+  "detect magic": "cast 'detect magic'",
+  "create light": "cast 'create light'",
+  "locate magic": "cast 'locate magic'",
+  "find the path": "cast 'find the path'",
+  "call familiar": "cast 'call familiar'",
+  "night vision": "cast 'night vision'",
+  "earthquake": "cast 'earthquake'",
+  "control weather": "cast 'control weather'",
+  "store": "cast 'store'",
+  "watch room": "cast 'watch room'",
+  "detect evil": "cast 'detect evil'",
+  "create food": "cast 'create food'",
+  "sense life": "cast 'sense life'",
+  "breath of briskness": "cast 'breath of briskness'",
+  "word of recall": "cast 'word of recall'",
+  "darkness": "cast 'darkness'",
+  "divination": "cast 'divination'"
+};
+const SKILL_SYNTAX_OVERRIDES = {
+  "climb": "climb <dir>",
+  "search": "search [dir]",
+  "pick": "pick <dir/item>"
+};
+const getSpellSyntax = (spellName) => {
+  const norm = spellName.trim().toLowerCase();
+  if (SPELL_SYNTAX_OVERRIDES[norm]) {
+    return SPELL_SYNTAX_OVERRIDES[norm];
+  };
+  const needsTarget = __vite_ssr_import_0__.TARGETED_SKILLS.has(norm);
+  return needsTarget ? `cast '${norm}' <target>` : `cast '${norm}'`;
+};
+const getSkillOrSpellSyntax = (name, isSpell) => {
+  const norm = name.trim().toLowerCase();
+  if (isSpell) {
+    return getSpellSyntax(name);
+  };
+  if (__vite_ssr_import_0__.PASSIVE_SKILLS.has(norm)) {
+    return "passive";
+  };
+  if (SKILL_SYNTAX_OVERRIDES[norm]) {
+    return SKILL_SYNTAX_OVERRIDES[norm];
+  };
+  const needsTarget = __vite_ssr_import_0__.TARGETED_SKILLS.has(norm);
+  return needsTarget ? `${norm} <target>` : norm;
+};
+const CANONICAL_SPELL_MANA = {
+  // Mage
+  "magic missile": 10,
+  "ventriloquate": 5,
+  "detect invisibility": 7,
+  "detect magic": 5,
+  "armour": 15,
+  "chill touch": 15,
+  "create light": 5,
+  "locate magic": 15,
+  "burning hands": 15,
+  "shroud": 25,
+  "find the path": 15,
+  "locate": 20,
+  "call familiar": 30,
+  "night vision": 10,
+  "shocking grasp": 15,
+  "earthquake": 25,
+  "teleport": 35,
+  "block door": 20,
+  "lightning bolt": 25,
+  "control weather": 25,
+  "store": 10,
+  "colour spray": 20,
+  "locate life": 20,
+  "call lightning": 30,
+  "enchant": 50,
+  "scry": 25,
+  "shield": 20,
+  "charm": 25,
+  "sleep": 25,
+  "fireball": 35,
+  "magic blast": 35,
+  "dispel magic": 25,
+  "watch room": 15,
+  "silence": 25,
+  "identify": 25,
+  "portal": 50,
+  // Cleric
+  "cure light": 10,
+  "detect evil": 5,
+  "create water": 5,
+  "detect poison": 5,
+  "create food": 5,
+  "smother": 10,
+  "cure blindness": 15,
+  "protection from evil": 15,
+  "bless": 15,
+  "cure serious": 15,
+  "blindness": 15,
+  "cure disease": 15,
+  "sense life": 10,
+  "strength": 20,
+  "poison": 15,
+  "summon": 50,
+  "cure critic": 20,
+  "cure critical": 20,
+  "remove poison": 15,
+  "breath of briskness": 15,
+  "curse": 15,
+  "remove curse": 20,
+  "word of recall": 20,
+  "black breath": 30,
+  "dispel evil": 25,
+  "darkness": 15,
+  "energy drain": 35,
+  "heal": 50,
+  "transfer": 35,
+  "fear": 20,
+  "harm": 35,
+  "hold": 25,
+  "break door": 20,
+  "divination": 30,
+  "raise dead": 100,
+  "sanctuary": 50
+};
+const getSpellManaCost = (spellName, practiceSkills) => {
+  const norm = spellName.trim().toLowerCase();
+  if (practiceSkills) {
+    const found = practiceSkills.find((s) => s.name.trim().toLowerCase() === norm);
+    if (found?.mana) {
+      const parsed = parseInt(found.mana, 10);
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+  };
+  return CANONICAL_SPELL_MANA[norm] ?? null;
+};
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsQ0FBQTs7OztBQU1BO0FBR0EsTUFBTSx5QkFBaUQ7QUFBQSxFQUNuRCxjQUFjO0FBQUEsRUFDZCxjQUFjO0FBQUEsRUFDZCxnQkFBZ0I7QUFBQSxFQUNoQixpQkFBaUI7QUFBQSxFQUNqQixVQUFVO0FBQUEsRUFDVixZQUFZO0FBQUEsRUFDWixXQUFXO0FBQUEsRUFDWCxVQUFVO0FBQUEsRUFDVixRQUFRO0FBQUEsRUFDUixpQkFBaUI7QUFBQTtBQUFBLEVBRWpCLFVBQVU7QUFBQSxFQUNWLHVCQUF1QjtBQUFBLEVBQ3ZCLGdCQUFnQjtBQUFBLEVBQ2hCLGdCQUFnQjtBQUFBLEVBQ2hCLGdCQUFnQjtBQUFBLEVBQ2hCLGlCQUFpQjtBQUFBLEVBQ2pCLGlCQUFpQjtBQUFBLEVBQ2pCLGdCQUFnQjtBQUFBLEVBQ2hCLGNBQWM7QUFBQSxFQUNkLG1CQUFtQjtBQUFBLEVBQ25CLFNBQVM7QUFBQSxFQUNULGNBQWM7QUFBQSxFQUNkLGVBQWU7QUFBQSxFQUNmLGVBQWU7QUFBQSxFQUNmLGNBQWM7QUFBQSxFQUNkLHVCQUF1QjtBQUFBLEVBQ3ZCLGtCQUFrQjtBQUFBLEVBQ2xCLFlBQVk7QUFBQSxFQUNaLGNBQWM7QUFDbEI7QUFFQSxNQUFNLHlCQUFpRDtBQUFBLEVBQ25ELFNBQVM7QUFBQSxFQUNULFVBQVU7QUFBQSxFQUNWLFFBQVE7QUFDWjtBQU1PLE1BQU0saUJBQWlCLENBQUMsY0FBOEI7QUFDekQsUUFBTSxPQUFPLFVBQVUsS0FBSyxFQUFFLFlBQVk7QUFDMUMsTUFBSSx1QkFBdUIsSUFBSSxHQUFHO0FBQzlCLFdBQU8sdUJBQXVCLElBQUk7QUFBQSxFQUN0QztBQUNBLFFBQU0sY0FBYyxzQ0FBZ0IsSUFBSSxJQUFJO0FBQzVDLFNBQU8sY0FBYyxTQUFTLElBQUksZUFBZSxTQUFTLElBQUk7QUFDbEU7QUFLTyxNQUFNLHdCQUF3QixDQUFDLE1BQWMsWUFBNkI7QUFDN0UsUUFBTSxPQUFPLEtBQUssS0FBSyxFQUFFLFlBQVk7QUFDckMsTUFBSSxTQUFTO0FBQ1QsV0FBTyxlQUFlLElBQUk7QUFBQSxFQUM5QjtBQUNBLE1BQUkscUNBQWUsSUFBSSxJQUFJLEdBQUc7QUFDMUIsV0FBTztBQUFBLEVBQ1g7QUFDQSxNQUFJLHVCQUF1QixJQUFJLEdBQUc7QUFDOUIsV0FBTyx1QkFBdUIsSUFBSTtBQUFBLEVBQ3RDO0FBQ0EsUUFBTSxjQUFjLHNDQUFnQixJQUFJLElBQUk7QUFDNUMsU0FBTyxjQUFjLEdBQUcsSUFBSSxjQUFjO0FBQzlDO0FBR08sTUFBTSx1QkFBK0M7QUFBQTtBQUFBLEVBRXhELGlCQUFpQjtBQUFBLEVBQUksaUJBQWlCO0FBQUEsRUFBRyx1QkFBdUI7QUFBQSxFQUFHLGdCQUFnQjtBQUFBLEVBQ25GLFVBQVU7QUFBQSxFQUFJLGVBQWU7QUFBQSxFQUFJLGdCQUFnQjtBQUFBLEVBQUcsZ0JBQWdCO0FBQUEsRUFDcEUsaUJBQWlCO0FBQUEsRUFBSSxVQUFVO0FBQUEsRUFBSSxpQkFBaUI7QUFBQSxFQUFJLFVBQVU7QUFBQSxFQUNsRSxpQkFBaUI7QUFBQSxFQUFJLGdCQUFnQjtBQUFBLEVBQUksa0JBQWtCO0FBQUEsRUFBSSxjQUFjO0FBQUEsRUFDN0UsWUFBWTtBQUFBLEVBQUksY0FBYztBQUFBLEVBQUksa0JBQWtCO0FBQUEsRUFBSSxtQkFBbUI7QUFBQSxFQUMzRSxTQUFTO0FBQUEsRUFBSSxnQkFBZ0I7QUFBQSxFQUFJLGVBQWU7QUFBQSxFQUFJLGtCQUFrQjtBQUFBLEVBQ3RFLFdBQVc7QUFBQSxFQUFJLFFBQVE7QUFBQSxFQUFJLFVBQVU7QUFBQSxFQUFJLFNBQVM7QUFBQSxFQUFJLFNBQVM7QUFBQSxFQUMvRCxZQUFZO0FBQUEsRUFBSSxlQUFlO0FBQUEsRUFBSSxnQkFBZ0I7QUFBQSxFQUFJLGNBQWM7QUFBQSxFQUNyRSxXQUFXO0FBQUEsRUFBSSxZQUFZO0FBQUEsRUFBSSxVQUFVO0FBQUE7QUFBQSxFQUV6QyxjQUFjO0FBQUEsRUFBSSxlQUFlO0FBQUEsRUFBRyxnQkFBZ0I7QUFBQSxFQUFHLGlCQUFpQjtBQUFBLEVBQ3hFLGVBQWU7QUFBQSxFQUFHLFdBQVc7QUFBQSxFQUFJLGtCQUFrQjtBQUFBLEVBQUksd0JBQXdCO0FBQUEsRUFDL0UsU0FBUztBQUFBLEVBQUksZ0JBQWdCO0FBQUEsRUFBSSxhQUFhO0FBQUEsRUFBSSxnQkFBZ0I7QUFBQSxFQUNsRSxjQUFjO0FBQUEsRUFBSSxZQUFZO0FBQUEsRUFBSSxVQUFVO0FBQUEsRUFBSSxVQUFVO0FBQUEsRUFDMUQsZUFBZTtBQUFBLEVBQUksaUJBQWlCO0FBQUEsRUFBSSxpQkFBaUI7QUFBQSxFQUFJLHVCQUF1QjtBQUFBLEVBQ3BGLFNBQVM7QUFBQSxFQUFJLGdCQUFnQjtBQUFBLEVBQUksa0JBQWtCO0FBQUEsRUFBSSxnQkFBZ0I7QUFBQSxFQUN2RSxlQUFlO0FBQUEsRUFBSSxZQUFZO0FBQUEsRUFBSSxnQkFBZ0I7QUFBQSxFQUFJLFFBQVE7QUFBQSxFQUMvRCxZQUFZO0FBQUEsRUFBSSxRQUFRO0FBQUEsRUFBSSxRQUFRO0FBQUEsRUFBSSxRQUFRO0FBQUEsRUFDaEQsY0FBYztBQUFBLEVBQUksY0FBYztBQUFBLEVBQUksY0FBYztBQUFBLEVBQUssYUFBYTtBQUN4RTtBQU1PLE1BQU0sbUJBQW1CLENBQzVCLFdBQ0EsbUJBQ2dCO0FBQ2hCLFFBQU0sT0FBTyxVQUFVLEtBQUssRUFBRSxZQUFZO0FBQzFDLE1BQUksZ0JBQWdCO0FBQ2hCLFVBQU0sUUFBUSxlQUFlLEtBQUssT0FBSyxFQUFFLEtBQUssS0FBSyxFQUFFLFlBQVksTUFBTSxJQUFJO0FBQzNFLFFBQUksT0FBTyxNQUFNO0FBQ2IsWUFBTSxTQUFTLFNBQVMsTUFBTSxNQUFNLEVBQUU7QUFDdEMsVUFBSSxDQUFDLE1BQU0sTUFBTSxLQUFLLFNBQVMsRUFBRyxRQUFPO0FBQUEsSUFDN0M7QUFBQSxFQUNKO0FBQ0EsU0FBTyxxQkFBcUIsSUFBSSxLQUFLO0FBQ3pDIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJzcGVsbFN5bnRheFV0aWxzLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGZpbGUgc3BlbGxTeW50YXhVdGlscy50c1xuICogQGRlc2NyaXB0aW9uIFByb3ZpZGVzIGNhbm9uaWNhbCBNVU1FIGNhc3RpbmcgYW5kIHNraWxsIHR5cGluZyBzeW50YXggKGUuZy4gYGNhc3QgJ2J1cm5pbmcgaGFuZHMnIDx0YXJnZXQ+YCkuXG4gKi9cblxuLy8gLS0tIExvZ2ljIFNlY3Rpb24gLS0tXG5pbXBvcnQgeyBQQVNTSVZFX1NLSUxMUywgVEFSR0VURURfU0tJTExTIH0gZnJvbSAnLi9wcmFjdGljZUNsYXNzQ2F0YWxvZyc7XG5cbi8qKiBTcGVjaWFsLWNhc2UgcGFyYW1ldGVyIHJlcXVpcmVtZW50cyBmb3Igc3BlY2lmaWMgc3BlbGxzLiAqL1xuY29uc3QgU1BFTExfU1lOVEFYX09WRVJSSURFUzogUmVjb3JkPHN0cmluZywgc3RyaW5nPiA9IHtcbiAgICAnYmxvY2sgZG9vcic6IFwiY2FzdCAnYmxvY2sgZG9vcicgPGRpcj5cIixcbiAgICAnYnJlYWsgZG9vcic6IFwiY2FzdCAnYnJlYWsgZG9vcicgPGRpcj5cIixcbiAgICAnY3JlYXRlIHdhdGVyJzogXCJjYXN0ICdjcmVhdGUgd2F0ZXInIFtjb250YWluZXJdXCIsXG4gICAgJ2RldGVjdCBwb2lzb24nOiBcImNhc3QgJ2RldGVjdCBwb2lzb24nIDx0YXJnZXQvaXRlbT5cIixcbiAgICAnbG9jYXRlJzogXCJjYXN0ICdsb2NhdGUnIDxpdGVtPlwiLFxuICAgICdpZGVudGlmeSc6IFwiY2FzdCAnaWRlbnRpZnknIDxpdGVtPlwiLFxuICAgICdlbmNoYW50JzogXCJjYXN0ICdlbmNoYW50JyA8d2VhcG9uPlwiLFxuICAgICdwb3J0YWwnOiBcImNhc3QgJ3BvcnRhbCcgPHRhcmdldD5cIixcbiAgICAnc2NyeSc6IFwiY2FzdCAnc2NyeScgPHRhcmdldD5cIixcbiAgICAndmVudHJpbG9xdWF0ZSc6IFwiY2FzdCAndmVudHJpbG9xdWF0ZScgPHRhcmdldD4gPHNwZWVjaD5cIixcbiAgICAvLyBTZWxmIC8gYXJlYSBzcGVsbHMgKGV4cGxpY2l0bHkgbm8gdGFyZ2V0IG5lZWRlZClcbiAgICAnc2hyb3VkJzogXCJjYXN0ICdzaHJvdWQnXCIsXG4gICAgJ2RldGVjdCBpbnZpc2liaWxpdHknOiBcImNhc3QgJ2RldGVjdCBpbnZpc2liaWxpdHknXCIsXG4gICAgJ2RldGVjdCBtYWdpYyc6IFwiY2FzdCAnZGV0ZWN0IG1hZ2ljJ1wiLFxuICAgICdjcmVhdGUgbGlnaHQnOiBcImNhc3QgJ2NyZWF0ZSBsaWdodCdcIixcbiAgICAnbG9jYXRlIG1hZ2ljJzogXCJjYXN0ICdsb2NhdGUgbWFnaWMnXCIsXG4gICAgJ2ZpbmQgdGhlIHBhdGgnOiBcImNhc3QgJ2ZpbmQgdGhlIHBhdGgnXCIsXG4gICAgJ2NhbGwgZmFtaWxpYXInOiBcImNhc3QgJ2NhbGwgZmFtaWxpYXInXCIsXG4gICAgJ25pZ2h0IHZpc2lvbic6IFwiY2FzdCAnbmlnaHQgdmlzaW9uJ1wiLFxuICAgICdlYXJ0aHF1YWtlJzogXCJjYXN0ICdlYXJ0aHF1YWtlJ1wiLFxuICAgICdjb250cm9sIHdlYXRoZXInOiBcImNhc3QgJ2NvbnRyb2wgd2VhdGhlcidcIixcbiAgICAnc3RvcmUnOiBcImNhc3QgJ3N0b3JlJ1wiLFxuICAgICd3YXRjaCByb29tJzogXCJjYXN0ICd3YXRjaCByb29tJ1wiLFxuICAgICdkZXRlY3QgZXZpbCc6IFwiY2FzdCAnZGV0ZWN0IGV2aWwnXCIsXG4gICAgJ2NyZWF0ZSBmb29kJzogXCJjYXN0ICdjcmVhdGUgZm9vZCdcIixcbiAgICAnc2Vuc2UgbGlmZSc6IFwiY2FzdCAnc2Vuc2UgbGlmZSdcIixcbiAgICAnYnJlYXRoIG9mIGJyaXNrbmVzcyc6IFwiY2FzdCAnYnJlYXRoIG9mIGJyaXNrbmVzcydcIixcbiAgICAnd29yZCBvZiByZWNhbGwnOiBcImNhc3QgJ3dvcmQgb2YgcmVjYWxsJ1wiLFxuICAgICdkYXJrbmVzcyc6IFwiY2FzdCAnZGFya25lc3MnXCIsXG4gICAgJ2RpdmluYXRpb24nOiBcImNhc3QgJ2RpdmluYXRpb24nXCJcbn07XG5cbmNvbnN0IFNLSUxMX1NZTlRBWF9PVkVSUklERVM6IFJlY29yZDxzdHJpbmcsIHN0cmluZz4gPSB7XG4gICAgJ2NsaW1iJzogJ2NsaW1iIDxkaXI+JyxcbiAgICAnc2VhcmNoJzogJ3NlYXJjaCBbZGlyXScsXG4gICAgJ3BpY2snOiAncGljayA8ZGlyL2l0ZW0+J1xufTtcblxuLyoqXG4gKiBSZXR1cm5zIHRoZSBleGFjdCBjb21tYW5kIHN5bnRheCBuZWVkZWQgdG8gY2FzdCBhIHNwZWxsIGluIE1VTUUuXG4gKiBFLmcuIGBjYXN0ICdidXJuaW5nIGhhbmRzJyA8dGFyZ2V0PmAsIGBjYXN0ICdzaHJvdWQnYCwgYGNhc3QgJ2FybW91cicgPHRhcmdldD5gLlxuICovXG5leHBvcnQgY29uc3QgZ2V0U3BlbGxTeW50YXggPSAoc3BlbGxOYW1lOiBzdHJpbmcpOiBzdHJpbmcgPT4ge1xuICAgIGNvbnN0IG5vcm0gPSBzcGVsbE5hbWUudHJpbSgpLnRvTG93ZXJDYXNlKCk7XG4gICAgaWYgKFNQRUxMX1NZTlRBWF9PVkVSUklERVNbbm9ybV0pIHtcbiAgICAgICAgcmV0dXJuIFNQRUxMX1NZTlRBWF9PVkVSUklERVNbbm9ybV07XG4gICAgfVxuICAgIGNvbnN0IG5lZWRzVGFyZ2V0ID0gVEFSR0VURURfU0tJTExTLmhhcyhub3JtKTtcbiAgICByZXR1cm4gbmVlZHNUYXJnZXQgPyBgY2FzdCAnJHtub3JtfScgPHRhcmdldD5gIDogYGNhc3QgJyR7bm9ybX0nYDtcbn07XG5cbi8qKlxuICogUmV0dXJucyB0aGUgdHlwaW5nIHN5bnRheCBmb3IgYSBza2lsbCBvciBzcGVsbC5cbiAqL1xuZXhwb3J0IGNvbnN0IGdldFNraWxsT3JTcGVsbFN5bnRheCA9IChuYW1lOiBzdHJpbmcsIGlzU3BlbGw6IGJvb2xlYW4pOiBzdHJpbmcgPT4ge1xuICAgIGNvbnN0IG5vcm0gPSBuYW1lLnRyaW0oKS50b0xvd2VyQ2FzZSgpO1xuICAgIGlmIChpc1NwZWxsKSB7XG4gICAgICAgIHJldHVybiBnZXRTcGVsbFN5bnRheChuYW1lKTtcbiAgICB9XG4gICAgaWYgKFBBU1NJVkVfU0tJTExTLmhhcyhub3JtKSkge1xuICAgICAgICByZXR1cm4gJ3Bhc3NpdmUnO1xuICAgIH1cbiAgICBpZiAoU0tJTExfU1lOVEFYX09WRVJSSURFU1tub3JtXSkge1xuICAgICAgICByZXR1cm4gU0tJTExfU1lOVEFYX09WRVJSSURFU1tub3JtXTtcbiAgICB9XG4gICAgY29uc3QgbmVlZHNUYXJnZXQgPSBUQVJHRVRFRF9TS0lMTFMuaGFzKG5vcm0pO1xuICAgIHJldHVybiBuZWVkc1RhcmdldCA/IGAke25vcm19IDx0YXJnZXQ+YCA6IG5vcm07XG59O1xuXG4vKiogQ2Fub25pY2FsIGJhc2UgbWFuYSBjb3N0cyBmb3IgTVVNRSBzcGVsbHMuICovXG5leHBvcnQgY29uc3QgQ0FOT05JQ0FMX1NQRUxMX01BTkE6IFJlY29yZDxzdHJpbmcsIG51bWJlcj4gPSB7XG4gICAgLy8gTWFnZVxuICAgICdtYWdpYyBtaXNzaWxlJzogMTAsICd2ZW50cmlsb3F1YXRlJzogNSwgJ2RldGVjdCBpbnZpc2liaWxpdHknOiA3LCAnZGV0ZWN0IG1hZ2ljJzogNSxcbiAgICAnYXJtb3VyJzogMTUsICdjaGlsbCB0b3VjaCc6IDE1LCAnY3JlYXRlIGxpZ2h0JzogNSwgJ2xvY2F0ZSBtYWdpYyc6IDE1LFxuICAgICdidXJuaW5nIGhhbmRzJzogMTUsICdzaHJvdWQnOiAyNSwgJ2ZpbmQgdGhlIHBhdGgnOiAxNSwgJ2xvY2F0ZSc6IDIwLFxuICAgICdjYWxsIGZhbWlsaWFyJzogMzAsICduaWdodCB2aXNpb24nOiAxMCwgJ3Nob2NraW5nIGdyYXNwJzogMTUsICdlYXJ0aHF1YWtlJzogMjUsXG4gICAgJ3RlbGVwb3J0JzogMzUsICdibG9jayBkb29yJzogMjAsICdsaWdodG5pbmcgYm9sdCc6IDI1LCAnY29udHJvbCB3ZWF0aGVyJzogMjUsXG4gICAgJ3N0b3JlJzogMTAsICdjb2xvdXIgc3ByYXknOiAyMCwgJ2xvY2F0ZSBsaWZlJzogMjAsICdjYWxsIGxpZ2h0bmluZyc6IDMwLFxuICAgICdlbmNoYW50JzogNTAsICdzY3J5JzogMjUsICdzaGllbGQnOiAyMCwgJ2NoYXJtJzogMjUsICdzbGVlcCc6IDI1LFxuICAgICdmaXJlYmFsbCc6IDM1LCAnbWFnaWMgYmxhc3QnOiAzNSwgJ2Rpc3BlbCBtYWdpYyc6IDI1LCAnd2F0Y2ggcm9vbSc6IDE1LFxuICAgICdzaWxlbmNlJzogMjUsICdpZGVudGlmeSc6IDI1LCAncG9ydGFsJzogNTAsXG4gICAgLy8gQ2xlcmljXG4gICAgJ2N1cmUgbGlnaHQnOiAxMCwgJ2RldGVjdCBldmlsJzogNSwgJ2NyZWF0ZSB3YXRlcic6IDUsICdkZXRlY3QgcG9pc29uJzogNSxcbiAgICAnY3JlYXRlIGZvb2QnOiA1LCAnc21vdGhlcic6IDEwLCAnY3VyZSBibGluZG5lc3MnOiAxNSwgJ3Byb3RlY3Rpb24gZnJvbSBldmlsJzogMTUsXG4gICAgJ2JsZXNzJzogMTUsICdjdXJlIHNlcmlvdXMnOiAxNSwgJ2JsaW5kbmVzcyc6IDE1LCAnY3VyZSBkaXNlYXNlJzogMTUsXG4gICAgJ3NlbnNlIGxpZmUnOiAxMCwgJ3N0cmVuZ3RoJzogMjAsICdwb2lzb24nOiAxNSwgJ3N1bW1vbic6IDUwLFxuICAgICdjdXJlIGNyaXRpYyc6IDIwLCAnY3VyZSBjcml0aWNhbCc6IDIwLCAncmVtb3ZlIHBvaXNvbic6IDE1LCAnYnJlYXRoIG9mIGJyaXNrbmVzcyc6IDE1LFxuICAgICdjdXJzZSc6IDE1LCAncmVtb3ZlIGN1cnNlJzogMjAsICd3b3JkIG9mIHJlY2FsbCc6IDIwLCAnYmxhY2sgYnJlYXRoJzogMzAsXG4gICAgJ2Rpc3BlbCBldmlsJzogMjUsICdkYXJrbmVzcyc6IDE1LCAnZW5lcmd5IGRyYWluJzogMzUsICdoZWFsJzogNTAsXG4gICAgJ3RyYW5zZmVyJzogMzUsICdmZWFyJzogMjAsICdoYXJtJzogMzUsICdob2xkJzogMjUsXG4gICAgJ2JyZWFrIGRvb3InOiAyMCwgJ2RpdmluYXRpb24nOiAzMCwgJ3JhaXNlIGRlYWQnOiAxMDAsICdzYW5jdHVhcnknOiA1MFxufTtcblxuLyoqXG4gKiBSZXR1cm5zIHRoZSBtYW5hIGNvc3Qgb2YgYSBzcGVsbC5cbiAqIENoZWNrcyBhdXRob3JpdGF0aXZlIHBhcnNlZCBwcmFjdGljZSBkYXRhIGZpcnN0LCB0aGVuIGZhbGxzIGJhY2sgdG8gY2Fub25pY2FsIGJhc2UgbWFuYS5cbiAqL1xuZXhwb3J0IGNvbnN0IGdldFNwZWxsTWFuYUNvc3QgPSAoXG4gICAgc3BlbGxOYW1lOiBzdHJpbmcsXG4gICAgcHJhY3RpY2VTa2lsbHM/OiBBcnJheTx7IG5hbWU6IHN0cmluZzsgbWFuYT86IHN0cmluZyB9PiB8IG51bGxcbik6IG51bWJlciB8IG51bGwgPT4ge1xuICAgIGNvbnN0IG5vcm0gPSBzcGVsbE5hbWUudHJpbSgpLnRvTG93ZXJDYXNlKCk7XG4gICAgaWYgKHByYWN0aWNlU2tpbGxzKSB7XG4gICAgICAgIGNvbnN0IGZvdW5kID0gcHJhY3RpY2VTa2lsbHMuZmluZChzID0+IHMubmFtZS50cmltKCkudG9Mb3dlckNhc2UoKSA9PT0gbm9ybSk7XG4gICAgICAgIGlmIChmb3VuZD8ubWFuYSkge1xuICAgICAgICAgICAgY29uc3QgcGFyc2VkID0gcGFyc2VJbnQoZm91bmQubWFuYSwgMTApO1xuICAgICAgICAgICAgaWYgKCFpc05hTihwYXJzZWQpICYmIHBhcnNlZCA+IDApIHJldHVybiBwYXJzZWQ7XG4gICAgICAgIH1cbiAgICB9XG4gICAgcmV0dXJuIENBTk9OSUNBTF9TUEVMTF9NQU5BW25vcm1dID8/IG51bGw7XG59O1xuIl0sImZpbGUiOiIvc3JjL3V0aWxzL3NwZWxsU3ludGF4VXRpbHMudHMifQ==
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvdXRpbHMvc3BlbGxTeW50YXhVdGlscy50cyIsIi9zcmMvdXRpbHMvc3BlbGxTeW50YXhVdGlscy50cyIsW11d

@@ -39,19 +39,21 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
                 }
             }
             const inputRect = input?.getBoundingClientRect();
-            const controlsBottom = controlsContent?.getBoundingClientRect().bottom ?? controls.getBoundingClientRect().bottom;
+            const controlsRect = (controlsContent ?? controls).getBoundingClientRect();
             const actionsBottom = actionsContent?.getBoundingClientRect().bottom ?? actions.getBoundingClientRect().bottom;
             const menuTop = isLandscape
-                ? Math.min(controlsBottom, actionsBottom)
-                : Math.max(controlsBottom, actionsBottom, inputRect?.bottom ?? 0);
+                ? app.querySelector<HTMLElement>('.mobile-command-column')?.getBoundingClientRect().top ?? actionsBottom
+                : Math.max(actionsBottom, inputRect?.bottom ?? 0);
             const summaryTop = (summaryContent ?? summary).getBoundingClientRect().top;
-            const menuBottomBoundary = Math.max(summaryTop, isLandscape ? inputRect?.top ?? 0 : 0);
+            const menuBottomBoundary = isLandscape
+                ? Math.max(controlsRect.top, inputRect?.top ?? 0)
+                : Math.min(summaryTop, controlsRect.top);
             app.style.setProperty('--mobile-readability-menu-top', `${Math.ceil(menuTop + 4)}px`);
             app.style.setProperty('--mobile-readability-main-branch-offset', `${Math.max(0, Math.floor(actionsBottom - menuTop))}px`);
-            app.style.setProperty('--mobile-readability-right-branch-offset', `${Math.max(0, Math.floor(controlsBottom - menuTop))}px`);
+            app.style.setProperty('--mobile-readability-right-branch-offset', '0px');
             app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - menuBottomBoundary + 4))}px`);
             app.style.setProperty('--mobile-readability-main-branch-bottom-inset', `${isLandscape && inputRect ? Math.max(0, Math.ceil(menuBottomBoundary - inputRect.top)) : 0}px`);
-            app.style.setProperty('--mobile-readability-right-branch-bottom-inset', `${isLandscape ? Math.max(0, Math.ceil(menuBottomBoundary - summaryTop)) : 0}px`);
+            app.style.setProperty('--mobile-readability-right-branch-bottom-inset', `${isLandscape ? Math.max(0, Math.ceil(menuBottomBoundary - controlsRect.top)) : 0}px`);
             if (isLandscape) {
                 app.style.setProperty('--landscape-command-input-clearance', `${Math.max(4, Math.ceil(window.innerHeight - (inputRect?.top ?? window.innerHeight) + 4))}px`);
                 const mapSlotRect = app.querySelector<HTMLElement>('.command-tree-movement-map-slot')?.getBoundingClientRect();

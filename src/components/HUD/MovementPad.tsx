@@ -4,9 +4,10 @@
  */
 
 import React, { FC } from 'react';
+import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
 import {
     ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-    ChevronsUp, ChevronsDown, Eye, DoorOpen, Map, CircleAlert
+    ChevronsUp, ChevronsDown, Eye, DoorOpen, Map, CircleAlert, UserRound
 } from 'lucide-react';
 import { useGame } from '../../context/GameContext';
 import { useActiveRoomExits } from '../../stores/useActiveGameState';
@@ -49,6 +50,8 @@ export const MovementPad: FC<{
     layout?: MovementPadLayout;
     onCommand?: (command: string, event: React.MouseEvent<HTMLButtonElement>) => void;
     onPreviewDirection?: (command: string | null) => void;
+    onDirectionHover?: (command: string, element: HTMLElement) => void;
+    onFollowHover?: (element: HTMLElement) => void;
     doorNamesByDirection?: Record<string, string>;
     disabled?: boolean;
     hideFlee?: boolean;
@@ -57,11 +60,11 @@ export const MovementPad: FC<{
     onDirectionHold?: (direction: string) => void;
     onDirectionRelease?: (direction: string) => void;
     heldDirection?: string | null;
-    showMountButton?: boolean;
-    onMountHold?: () => void;
-    onMountRelease?: () => void;
-    mountHeld?: boolean;
-}> = ({ layout = 'panel', onCommand, onPreviewDirection, doorNamesByDirection, disabled = false, hideFlee = false, doorSelectionOnly = false, ariaLabel = 'Movement controls', onDirectionHold, onDirectionRelease, heldDirection, showMountButton = false, onMountHold, onMountRelease, mountHeld = false }) => {
+    onFollowClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+    onFollowHold?: () => void;
+    onFollowRelease?: () => void;
+    followTargetsOpen?: boolean;
+}> = ({ layout = 'panel', onCommand, onPreviewDirection, onDirectionHover, onFollowHover, doorNamesByDirection, disabled = false, hideFlee = false, doorSelectionOnly = false, ariaLabel = 'Movement controls', onDirectionHold, onDirectionRelease, heldDirection, onFollowClick, onFollowHold, onFollowRelease, followTargetsOpen = false }) => {
     const { executeCommand, triggerHaptic } = useGame() as {
         executeCommand: (cmd: string) => void;
         triggerHaptic?: (ms: number) => void;
@@ -73,9 +76,8 @@ export const MovementPad: FC<{
     const beginDirectionHold = React.useCallback((direction: string) => onDirectionHold?.(direction), [onDirectionHold]);
     const endDirectionHold = React.useCallback((direction: string) => onDirectionRelease?.(direction), [onDirectionRelease]);
     const directionHold = usePressAndHold(beginDirectionHold, endDirectionHold, layout === 'menu' && Boolean(onDirectionHold && onDirectionRelease));
-    const mountHold = usePressAndHold<string>(() => onMountHold?.(), () => onMountRelease?.(),
-        layout === 'menu' && showMountButton && Boolean(onMountHold && onMountRelease));
-
+    const followHold = usePressAndHold(() => onFollowHold?.(), () => onFollowRelease?.(),
+        layout === 'menu' && Boolean(onFollowHold), 220);
     const { normalizedExitSet, getDoorState, isExitClosed } = useMovementPadExits(exits, rawExits);
 
     const getDoorActions = (cmd: string): Array<{ command: string; isApplicable: boolean }> => {
@@ -170,14 +172,15 @@ export const MovementPad: FC<{
                 const isPressed = pressedCmd === cell.cmd;
 
                 const directionButton = <button
+                    ref={heldTargetPreviewRef(() => { if (!doorSelectionOnly || hasDoor) onPreviewDirection?.(cell.cmd); })}
                     type="button"
                     className={`movement-pad-cell ${cell.className}${stateClass}${isPressed ? ' is-key-pressed' : ''}${heldDirection === cell.cmd ? ' is-gesture-held' : ''}${layout === 'menu' && onDirectionHold ? ' is-holdable-direction' : ''}`}
                     onPointerDown={event => { event.stopPropagation(); if (isMovement) directionHold.onPointerDown(cell.cmd,event); }}
                     onPointerMove={directionHold.onPointerMove}
                     onPointerUp={directionHold.onPointerUp}
                     onPointerCancel={directionHold.onPointerCancel}
-                    onPointerEnter={event => { if (event.pointerType === 'mouse' && (!doorSelectionOnly || hasDoor)) onPreviewDirection?.(cell.cmd); }}
-                    onFocus={event => { if (event.currentTarget.matches(':focus-visible') && (!doorSelectionOnly || hasDoor)) onPreviewDirection?.(cell.cmd); }}
+                    onPointerEnter={event => { if (event.pointerType === 'mouse' && (!doorSelectionOnly || hasDoor)) { onPreviewDirection?.(cell.cmd); if (isMovement) onDirectionHover?.(cell.cmd, event.currentTarget); } }}
+                    onFocus={event => { if (event.currentTarget.matches(':focus-visible') && (!doorSelectionOnly || hasDoor)) { onPreviewDirection?.(cell.cmd); if (isMovement) onDirectionHover?.(cell.cmd, event.currentTarget); } }}
                     onClick={event => {
                         if (directionHold.shouldSuppressClick(cell.cmd)) { event.preventDefault(); event.stopPropagation(); return; }
                         fire(cell.cmd, event);
@@ -202,26 +205,41 @@ export const MovementPad: FC<{
                             disabled={!isApplicable}
                             aria-label={`${command} ${cell.label.toLowerCase()} exit`} title={`${command} ${cell.label.toLowerCase()} exit`}
                             onPointerDown={event => event.stopPropagation()}
-                            onClick={() => { triggerHaptic?.(15); executeCommand(`${command} exit ${cell.cmd}`); }}>
+                            onClick={event => fire(`${command} exit ${cell.cmd}`, event)}>
                             {command}
                         </button>)}
                     </div>}
                 </div>;
             })}
-            {layout === 'menu' && showMountButton && <button type="button"
-                className={`movement-pad-cell pad-mount is-holdable-mount${mountHeld ? ' is-gesture-held' : ''}`}
-                onPointerDown={event => { event.stopPropagation(); mountHold.onPointerDown('mount', event); }}
-                onPointerMove={mountHold.onPointerMove} onPointerUp={mountHold.onPointerUp} onPointerCancel={mountHold.onPointerCancel}
-                onClick={event => { if (mountHold.shouldSuppressClick('mount')) { event.preventDefault(); event.stopPropagation(); } }}
-                title="Hold for mount actions" aria-label="Hold for mount actions" aria-pressed={mountHeld}>
-                <span className="movement-pad-label">Mount</span>
+            {layout === 'menu' && onFollowClick && <button
+                type="button"
+                className={`movement-pad-cell pad-follow${followTargetsOpen ? ' is-follow-targets-open is-gesture-held' : ''}${onFollowHold ? ' is-holdable-direction' : ''}`}
+                onPointerDown={event => { event.stopPropagation(); followHold.onPointerDown('follow', event); }}
+                onPointerMove={followHold.onPointerMove}
+                onPointerUp={followHold.onPointerUp}
+                onPointerCancel={followHold.onPointerCancel}
+                onPointerEnter={event => { if (event.pointerType === 'mouse') onFollowHover?.(event.currentTarget); }}
+                onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onFollowHover?.(event.currentTarget); }}
+                onClick={event => {
+                    if (followHold.shouldSuppressClick('follow')) { event.preventDefault(); event.stopPropagation(); return; }
+                    onFollowClick(event);
+                }}
+                title="Follow a room entity. Hold to choose."
+                aria-label="Follow a room entity. Hold to choose."
+                aria-haspopup="true"
+                aria-expanded={followTargetsOpen}
+                aria-pressed={followTargetsOpen}
+                disabled={disabled}
+            >
+                <UserRound size={16} strokeWidth={2.2} />
+                <span className="movement-pad-label">Follow</span>
             </button>}
             {layout === 'map' && <div className="movement-pad-flee-group">
                 <button
                     type="button"
                     className={`movement-pad-cell movement-pad-flee${pressedCmd === 'flee' ? ' is-key-pressed' : ''}`}
                     onPointerDown={event => event.stopPropagation()}
-                    onClick={() => fire('flee')}
+                    onClick={event => fire('flee', event)}
                     title="Flee"
                     aria-label="Flee"
                 >

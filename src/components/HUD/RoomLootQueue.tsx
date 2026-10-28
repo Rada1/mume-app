@@ -1,7 +1,7 @@
 /** @file RoomLootQueue.tsx — Persistent room loot entry point. */
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { BedDouble, Compass, GraduationCap, Store } from 'lucide-react';
+import { BedDouble, Compass, Store } from 'lucide-react';
 import { useKillPromptStore } from '../../stores/useKillPromptStore';
 import { useActiveRoom } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
@@ -253,8 +253,8 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
             </button>}
             {hasGuildService && <button className="room-context-trigger is-guild" type="button"
                 onClick={openSkillsPanel}
-                aria-label="Open skills panel at this guild">
-                <GraduationCap size={14} /><span>Skills</span>
+                aria-label="Open practice panel at this guild">
+                <span>Practice</span>
             </button>}
             {lootSourceCount > 0 && <div className="room-loot-trigger-wrap">
                 <button ref={lootTriggerRef} className="room-loot-trigger" type="button" onClick={openQueue}

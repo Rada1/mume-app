@@ -85,6 +85,7 @@ export interface FastMapGroupMember {
   y: number;
   z: number;
   color: number;
+  isAlly?: boolean;
 }
 
 export interface FastMapInfomarks {

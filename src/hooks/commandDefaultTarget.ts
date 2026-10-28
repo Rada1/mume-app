@@ -6,8 +6,7 @@ import type { CommandActionTargetEntry } from '../objects/commandActionTargetMod
 import { isCurrentCommandTarget } from '../utils/currentCommandTarget';
 import { isCommandTreeObservation } from '../utils/commandTreeObservation';
 import { executeCommandTreeObservation } from './useCommandTreeObservation';
-import { isFriendlyTargetCommand } from '../utils/friendlyTargetCommand';
-import { isCommandTreeOffensiveTargetAction } from '../utils/commandTreeCurrentTarget';
+import { isCommandTreeOffensiveTargetAction, usesCommandTargetChip } from '../utils/commandTreeCurrentTarget';
 import { useAutomaticTargetStore } from '../stores/useAutomaticTargetStore';
 // --- Default Execution Section ---
 export function executeUntargetedTransferCommand(controller: ReturnType<typeof useCommandTreeController>, button: CustomButton, event: MouseEvent) {
@@ -16,7 +15,7 @@ export function executeUntargetedTransferCommand(controller: ReturnType<typeof u
 }
 
 export function getDefaultCommandTarget(controller: ReturnType<typeof useCommandTreeController>, targets: CommandActionTargetEntry[], button: CustomButton) {
-    if (isFriendlyTargetCommand(button) || /^(?:assist|ass)(?:\s|$)/i.test(button.command.trim())) return null;
+    if (!usesCommandTargetChip(button)) return null;
     if (controller.isHelpMode || controller.game?.gameState !== 'playing' || controller.game?.isSpectateMode) return null;
     const currentTarget = targets.find(candidate => isCurrentCommandTarget(candidate, controller.vitals?.target));
     if (currentTarget) return currentTarget;

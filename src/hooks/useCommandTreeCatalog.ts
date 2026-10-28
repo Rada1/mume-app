@@ -16,6 +16,8 @@ import { COMMAND_TREE_DRINK_BUTTON, isLegacyDrinkCommand } from '../utils/comman
 import { COMMAND_TREE_FOOD_BUTTONS, isCommandTreeForageAvailable } from '../utils/commandTreeFood';
 import { COMMAND_TREE_LIGHT_CAMP_BUTTONS } from '../utils/commandTreeLightCamp';
 import { createButton } from '../utils/buttonFactory';
+import { COMMAND_TREE_SEARCH_BUTTONS } from '../utils/commandTreeSearch';
+import { COMMAND_TREE_SOCIAL_BUTTON, isLegacyCommandTreeSocialEmote } from '../utils/commandTreeSocial';
 // --- Catalog Metadata Section ---
 export const COMMAND_TREE_GROUPS = ['Abilities', 'Movement', 'Info', 'Objects', 'Social'];
 const isLegacyCommandTreeGetAll = (button: CustomButton) => /^get\s+all(?:\s|$)/i.test(button.command.trim());
@@ -39,7 +41,7 @@ export const useCommandTreeCatalog = (controller: ReturnType<typeof useCommandTr
   const extra = ['info', 'stat', 'score', 'history', 'quests', 'achievements', 'inventory', 'equipment', 'hints', 'help', 'time', 'look', 'examine', 'exits', 'map', 'who', 'where'].map(verb => createButton({id: `v2-${verb}`, label: verb[0].toUpperCase()+verb.slice(1), command: verb, setId: ['info','stat','score','history','quests','achievements','inventory','equipment'].includes(verb) ? 'trait-personal-information' : 'cat-room'}));
   const foodButtons = COMMAND_TREE_FOOD_BUTTONS.filter(button => button.id !== 'v2-forage'
    || isCommandTreeForageAvailable(controller.vitals.characterInfo?.race, controller.vitals.characterInfo?.subrace));
-  return deduplicateCommandTreeButtons([...catalog, ...SOCIAL_BUTTONS, ...extra, ...foodButtons].filter(button=>!isLegacyDrinkCommand(button) && !isLegacyAccessCommand(button) && !isLegacyObservationCommand(button) && !isLegacyCommandTreeShopAction(button) && !isLegacyCommandTreeGetAll(button) && !isLegacyCommandTreeEatFood(button) && !isDeferredCommandTreeCampRent(button) && !isDuplicateKillAction(button) && !isCommandTreeConverseButton(button) && !/^call(?:\s|$)/i.test(button.command.trim()) && !/^practice(?:\s|$)/i.test(button.command) && !/^(?:move|north|south|east|west|up|down|n|s|e|w|u|d)$/i.test(button.command.trim())).concat(atShop ? COMMAND_TREE_SHOP_BUTTONS : [], [COMMAND_TREE_PRACTICE_BUTTON, COMMAND_TREE_MOVE_BUTTON, COMMAND_TREE_CALL_BUTTON, ...COMMAND_TREE_OBSERVATION_BUTTONS, ...COMMAND_TREE_ACCESS_BUTTONS, COMMAND_TREE_DRINK_BUTTON]).map(normalizeCommandTreeButton));
+  return deduplicateCommandTreeButtons([...catalog, ...SOCIAL_BUTTONS, ...extra, ...foodButtons].filter(button=>!isLegacyDrinkCommand(button) && !isLegacyAccessCommand(button) && !isLegacyObservationCommand(button) && !isLegacyCommandTreeShopAction(button) && !isLegacyCommandTreeGetAll(button) && !isLegacyCommandTreeEatFood(button) && !isDeferredCommandTreeCampRent(button) && !isDuplicateKillAction(button) && !isCommandTreeConverseButton(button) && !isLegacyCommandTreeSocialEmote(button) && !/^call(?:\s|$)/i.test(button.command.trim()) && !/^practice(?:\s|$)/i.test(button.command) && !/^(?:move|north|south|east|west|up|down|n|s|e|w|u|d)$/i.test(button.command.trim())).concat(atShop ? COMMAND_TREE_SHOP_BUTTONS : [], [COMMAND_TREE_PRACTICE_BUTTON, COMMAND_TREE_MOVE_BUTTON, COMMAND_TREE_CALL_BUTTON, COMMAND_TREE_SOCIAL_BUTTON, ...COMMAND_TREE_OBSERVATION_BUTTONS, ...COMMAND_TREE_SEARCH_BUTTONS, ...COMMAND_TREE_ACCESS_BUTTONS, COMMAND_TREE_DRINK_BUTTON]).map(normalizeCommandTreeButton));
  }, [catalog, atShop, controller.vitals.characterInfo?.race, controller.vitals.characterInfo?.subrace]);
  const preparedCatalog = useMemo(() => {
  const sectionCache = new Map<CustomButton, string>();
@@ -56,7 +58,7 @@ export const useCommandTreeCatalog = (controller: ReturnType<typeof useCommandTr
   return groupCache.get(button);
  };
  const mountCommandOrder: Record<string, number> = { ride: 0, lead: 1, dismount: 2, abandon: 3 };
- const grouped = COMMAND_TREE_GROUPS.map((label, index) => ({label, buttons: [...commandCatalog.filter(button => groupFor(button) === index), ...(index === 3 ? COMMAND_TREE_CONTAINER_BUTTONS : [])].sort((a,b) => {
+ const grouped = COMMAND_TREE_GROUPS.map((label, index) => ({label, buttons: [...commandCatalog.filter(button => groupFor(button) === index && !/^follow\b/i.test(button.command.trim())), ...(index === 3 ? COMMAND_TREE_CONTAINER_BUTTONS : [])].sort((a,b) => {
   const aSection = sectionFor(a);
   const bSection = sectionFor(b);
   if (aSection !== bSection) return aSection.localeCompare(bSection);

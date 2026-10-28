@@ -12,6 +12,7 @@ import { parseMsspTime } from '../utils/telnet/msspTime';
 import type { TelnetConfig } from '../types';
 export type { TelnetConfig } from '../types';
 import { GmcpDecoder } from '../utils/telnet/GmcpDecoder';
+import { uiPerformance } from '../utils/uiPerformance';
 
 export function useTelnet(config: TelnetConfig) {
     const { isConnected, lastError, sendBytes, connect, disconnect } = useTelnetSocket();
@@ -92,7 +93,9 @@ export function useTelnet(config: TelnetConfig) {
             
             // The decoder owns routing: a second explicit/generic dispatch here
             // repeats vitals, room updates and their synchronous mapper events.
-            gmcpDecoder.current?.decode(pkg, json);
+            const finish = uiPerformance.startWork('Socket GMCP');
+            try { gmcpDecoder.current?.decode(pkg, json); }
+            finally { finish(); }
         } else if (cmd === TELNET_MSSP) {
             const time = parseMsspTime(buffer.slice(1));
             if (time) configRef.current.handlers.onMsspTime?.(time);
@@ -108,7 +111,11 @@ export function useTelnet(config: TelnetConfig) {
             sendBytes: (bytes) => sendBytes(bytes),
             addMessage: (type, text, combat, mid, isRoom, precalc) => configRef.current.handlers.addMessage(type, text, combat, mid, isRoom, precalc),
             handleSubnegotiation: (buffer) => handleSubnegotiation(buffer),
-            processText: (text) => processText(text),
+            processText: (text) => {
+                const finish = uiPerformance.startWork('Socket text framing');
+                try { processText(text); }
+                finally { finish(); }
+            },
             sendGMCP: (pkg, data) => sendGmcp(pkg, data),
             onEchoChange: (visible) => configRef.current.handlers.onEchoChange?.(visible)
         });
@@ -118,7 +125,9 @@ export function useTelnet(config: TelnetConfig) {
         if (configRef.current.recordEntry) {
             configRef.current.recordEntry('rx', { length: data.byteLength });
         }
-        protocolHandler.current?.handleRawData(new Uint8Array(data));
+        const finish = uiPerformance.startWork('Socket protocol');
+        try { protocolHandler.current?.handleRawData(new Uint8Array(data)); }
+        finally { finish(); }
     }, []);
 
     return { 

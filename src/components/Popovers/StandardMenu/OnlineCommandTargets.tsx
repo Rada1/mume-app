@@ -3,6 +3,7 @@ import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import type { DrawerLine, OnlineCommandTargetsProps } from '../../../types';
 import { useOnlineCommandTargets } from '../../../hooks/useOnlineCommandTargets';
+import { heldTargetPreviewRef } from '../../../utils/heldTargetPreview';
 
 // --- Who Line Rendering ---
 interface OnlinePlayerLineParts {
@@ -66,6 +67,7 @@ export const OnlineCommandTargets: React.FC<OnlineCommandTargetsProps> = ({ onSe
     const rows = entries.length ? entries.map(entry => {
         const line = findPlayerLine(online.whoLines, entry.label);
         return <button key={entry.id} type="button"
+            ref={heldTargetPreviewRef(() => onPreviewTarget?.(entry))}
             className="command-action-target-option command-tree-row" aria-current={currentEntityId === entry.id ? 'true' : undefined}
             onPointerEnter={event => { if (event.pointerType === 'mouse') onPreviewTarget?.(entry); }}
             onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onPreviewTarget?.(entry); }}

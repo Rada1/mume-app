@@ -17,8 +17,6 @@ export const META_BUTTONS = [
     createButton({ id: 'btn-group', label: 'Group', command: 'group %n', setId: 'inline-ally', color: '#22c55e' }),
     createButton({ id: 'btn-ungroup', label: 'Ungroup', command: 'group %n', setId: 'inline-ally', color: '#f59e0b' }),
     createButton({ id: 'btn-assist', label: 'Assist', command: 'assist %n', setId: 'inline-ally', color: '#22c55e' }),
-    createButton({ id: 'btn-follow', label: 'Follow', command: 'follow %n', setId: 'inline-ally', color: '#16a34a' }),
-    createButton({ id: 'btn-unfollow', label: 'Unfollow', command: 'follow self', setId: 'inline-ally', color: '#16a34a' }),
     createButton({ id: 'btn-social', label: 'Social', command: 'social list', setId: 'inline-ally', color: '#06b6d4', actionType: 'menu' }),
     createButton({ id: 'btn-converse', label: 'Converse', command: '__parley__', setId: 'inline-ally', color: '#8b5cf6' }),
 ];

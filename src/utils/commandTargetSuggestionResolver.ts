@@ -3,6 +3,7 @@
  * @description Resolves typed command targets through the same menu kinds used by game buttons.
  */
 
+import { COMMAND_SEARCH_PACES } from './commandTreeSearch';
 import type { DrawerLine, GmcpOccupant, GroupMember, PracticeSkill, ShopItem, TeleportTarget } from '../types';
 import {
     BLANK_TARGET_VALUE,
@@ -23,6 +24,7 @@ import {
     getGiveRecipientSuggestions,
     getGroupTargetSuggestions,
     getInventoryAndWornTargetSuggestions,
+    getInventoryAndWornWeaponTargetSuggestions,
     getLanternTargetSuggestions,
     getLearnedMageSpellSuggestions,
     getMagicKeyTargetSuggestions,
@@ -31,7 +33,7 @@ import {
     getPipeTargetSuggestions,
     getRescueTargetSuggestions,
     getRoomCorpseTargetSuggestions,
-    getRoomContainerTargetSuggestions,
+    getRoomChestTargetSuggestions,
     getRoomInspectionTargetSuggestions,
     getRoomTargetSuggestions,
     getSelfAndRoomAlliesTargetSuggestions,
@@ -45,10 +47,12 @@ import {
 } from './commandSuggestionUtils';
 import { hasObjectTrait } from '../objects/objectTargetModel';
 import { getNonGroupmateRoomTargetSuggestions } from './groupTargetSuggestions';
+import { getRoomDoorSpellTargets } from './doorCommandUtils';
 
 // --- Type Section ---
 
 export interface CommandTargetSuggestionContext {
+    rawExits?: Record<string, unknown>;
     command: string;
     argumentText: string;
     menuKind: CommandTargetMenuKind | null;
@@ -179,7 +183,8 @@ const getMenuSuggestions = (
     whoList: string[],
     shopItems: ShopItem[],
     roomWaterAvailable: boolean,
-    groupMembers: GroupMember[]
+    groupMembers: GroupMember[],
+    rawExits: Record<string, unknown>
 ): CommandTargetSuggestion[] | null => {
     const isEatCommand = /^eat\b/i.test(command.trim());
     if (kind === 'shop') return shopItems.map(item => ({
@@ -187,7 +192,7 @@ const getMenuSuggestions = (
     }));
     if (isEatCommand || kind === 'food') return getFoodTargetSuggestions(inventoryLines, roomObjects);
     if (kind === 'movement-wheel') return [];
-    if (kind === 'pace-options') return ['quick', 'normal', 'thorough'].map(pace => ({
+    if (kind === 'pace-options') return ( /^(?:reveal|flush)\b/i.test(command.trim()) ? COMMAND_SEARCH_PACES : ['quick', 'normal', 'thorough']).map(pace => ({
         key: `pace-${pace}`, label: pace.charAt(0).toUpperCase() + pace.slice(1), value: pace, meta: 'pace'
     }));
     if (kind === 'containers') return getContainerTargetSuggestions(roomObjects, inventoryLines, wornLines);
@@ -199,6 +204,9 @@ const getMenuSuggestions = (
         inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon')),
         'inventory'
     );
+    if (kind === 'inventory-and-worn-weapons') {
+        return getInventoryAndWornWeaponTargetSuggestions(inventoryLines, wornLines);
+    }
     if (kind === 'inventory-meat') return getMeatTargetSuggestions(inventoryLines);
     if (kind === 'worn-gear') return getGearTargetSuggestions(wornLines, 'worn');
     if (kind === 'drink') return getDrinkTargetSuggestions(inventoryLines, wornLines, roomWaterAvailable);
@@ -232,8 +240,8 @@ const getMenuSuggestions = (
     ];
     if (kind === 'self-only') return [getSelfTargetSuggestion()];
     if (kind === 'self-inventory') return [getSelfTargetSuggestion(), ...getGearTargetSuggestions(inventoryLines, 'inventory')];
-    if (kind === 'pick') return getRoomContainerTargetSuggestions(roomObjects);
-    if (kind === 'door-direction') return [{ key: 'door-exit', label: 'Exit', value: 'exit', meta: 'exit' }];
+    if (kind === 'pick') return [...getRoomDoorSpellTargets(rawExits), ...getRoomChestTargetSuggestions(roomObjects)];
+    if (kind === 'door-direction') return getRoomDoorSpellTargets(rawExits);
     if (kind === 'room-spell' || kind === 'room-spell-with-extras' || kind === 'bash' || kind === 'room') {
         const verb = command.trim().split(/\s+/, 1)[0].toLowerCase();
         if (['look', 'examine', 'consider'].includes(verb)) {
@@ -241,7 +249,6 @@ const getMenuSuggestions = (
             if (verb === 'look') return [
                 ...inspectionTargets,
                 getSelfTargetSuggestion(),
-                { key: 'blank-target', label: 'Blank Target', value: BLANK_TARGET_VALUE, meta: 'source' },
                 { key: 'look-in', label: 'In', value: 'in', meta: 'look-in' }
             ];
             if (verb === 'examine') return [...inspectionTargets, getSelfTargetSuggestion()];
@@ -305,14 +312,16 @@ export const resolveCommandTargetSuggestions = (context: CommandTargetSuggestion
         context.whoList || [],
         context.shopItems || [],
         context.roomWaterAvailable || false,
-        context.groupMembers || []
+        context.groupMembers || [],
+        context.rawExits || {}
     );
     const fallbackKind = /^(get|take|pick)$/.test(context.command.trim().split(/\s+/, 1)[0].toLowerCase())
         ? 'objects'
         : /^(assist|rescue|follow)$/.test(context.command.trim().split(/\s+/, 1)[0].toLowerCase())
             ? 'allies'
             : 'characters';
-    const argumentText = menuKind === 'look-containers'
+    const spellArguments = context.command.match(/^\s*(?:cast|c|commune)\s+(['"])[^'"]+\1\s*(.*)$/i)?.[2];
+    const argumentText = spellArguments !== undefined ? spellArguments : menuKind === 'look-containers'
         ? context.argumentText.replace(/^\s*in(?:\s|$)/i, '')
         : context.argumentText;
     return {

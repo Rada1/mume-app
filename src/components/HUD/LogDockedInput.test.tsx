@@ -19,9 +19,13 @@ vi.mock('../../context/GameContext', () => ({
 vi.mock('../../context/useMapper', () => ({
     useMapper: () => mockUseMapper()
 }));
+vi.mock('../../hooks/useRoomDrinkWater', () => ({ useRoomDrinkWater: () => false }));
 
 vi.mock('../../stores/useRoomStore', () => ({
-    useRoomStore: (selector: any) => selector({ chars: {}, items: [] })
+    useRoomStore: (selector?: (state: { chars: object; items: object; roomNum: number; roomName: string; roomZone: string; roomDesc: string; rawExits: object }) => unknown) => {
+        const state = { chars: {}, items: [], roomNum: 0, roomName: '', roomZone: '', roomDesc: '', rawExits: {} };
+        return selector ? selector(state) : state;
+    }
 }));
 
 vi.mock('../../stores/useCombatStore', () => ({
@@ -45,6 +49,7 @@ vi.mock('../Controls/CommandSuggestionPopup', () => ({
 describe('LogDockedInput', () => {
     beforeEach(() => {
         vi.clearAllMocks();
+        vi.stubGlobal('matchMedia', () => ({ matches: false }));
         mockUseGame.mockReturnValue({
             viewport: { isMobile: false, isLandscape: false },
             gameState: 'playing',
@@ -76,6 +81,7 @@ describe('LogDockedInput', () => {
 
     afterEach(() => {
         cleanup();
+        vi.unstubAllGlobals();
     });
 
     it('places desktop play suggestions above and beside the command bar', () => {
@@ -113,10 +119,36 @@ describe('LogDockedInput', () => {
         expect(popup.getAttribute('data-placement')).toBe('top');
     });
 
+    it('opens chat channels from the command bar and prepares the selected composer', () => {
+        const setParley = vi.fn();
+        mockUseGame.mockReturnValue({ ...mockUseGame(), setParley, whoList: [] });
+        useInputStore.setState({ input: 'hello there' });
+        render(<LogDockedInput handleSend={vi.fn()} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'say' }));
+        const update = setParley.mock.calls[0][0];
+        expect(update({ active: false, mode: 'command', command: 'none', target: null, message: '' }))
+            .toMatchObject({ active: true, mode: 'parley', command: 'say', target: null });
+        expect(useInputStore.getState().input).toBe('hello there');
+    });
+
+    it('chooses a room recipient for a directed chat channel', () => {
+        const setParley = vi.fn();
+        mockUseGame.mockReturnValue({ ...mockUseGame(), setParley, whoList: [], roomNpcs: [{ id: 7, name: 'pack horse', type: 'npc' }] });
+        render(<LogDockedInput handleSend={vi.fn()} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
+        fireEvent.click(screen.getByRole('menuitem', { name: /whisper/ }));
+        fireEvent.click(screen.getByRole('menuitem', { name: 'pack horse' }));
+        const update = setParley.mock.calls[0][0];
+        expect(update({ active: false, mode: 'command', command: 'none', target: null, message: '' }))
+            .toMatchObject({ active: true, mode: 'parley', command: 'whisper', target: 'horse' });
+    });
+
     it('shows the global target control and opens its editor when tapped', () => {
         render(<LogDockedInput handleSend={vi.fn()} />);
 
-        fireEvent.click(screen.getByRole('button', { name: 'Set global target' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Choose a room target' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Enter target manually…' }));
 
         expect(screen.getByRole('textbox', { name: 'Edit global target' })).toBeTruthy();
     });

@@ -2,6 +2,9 @@
  * @file groupUtils.ts
  * Shared utilities and constants for group members (colors, etc).
  */
+// --- Logic Section ---
+
+import type { GroupMember } from '../types';
 
 export const GROUP_COLORS = [
     { core: '#bbf7d0', halo: '187, 247, 208', label: '#dcfce7' },
@@ -20,4 +23,20 @@ export const GROUP_COLORS = [
 
 export const getMemberColor = (index: number) => {
     return GROUP_COLORS[index % GROUP_COLORS.length];
+};
+
+export const isAllyGroupMember = (member: Pick<GroupMember, 'type' | 'pc' | 'isNpc'>): boolean => {
+    const type = member.type?.trim().toLowerCase() ?? '';
+    return member.isNpc !== true
+        && member.pc !== false
+        && member.pc !== 0
+        && type !== 'you'
+        && !/^(?:npc|mob|mount|creature)(?:\b|$)/.test(type);
+};
+
+export const getMemberLabelBackgroundColor = (color: number): number => {
+    const shade = (channel: number) => Math.round(channel * 0.24);
+    return (shade((color >> 16) & 255) << 16)
+        | (shade((color >> 8) & 255) << 8)
+        | shade(color & 255);
 };

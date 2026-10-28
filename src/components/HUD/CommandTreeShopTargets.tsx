@@ -14,16 +14,20 @@ export const CommandTreeShopTargets=({controller,command,onCommandExecuted,heldM
  const touchActivation=useSecondaryTouchActivation();
  const {shop}=controller;
  const commandShop={...shop,
+  browse:(command?:string)=>{
+   shop.browse(command);
+   if(targets.action==='compare'&&shop.compareFirst)shop.setCompareFirst(shop.compareFirst);
+  },
   selectStock:(item:Parameters<typeof shop.selectStock>[0])=>{
-   const completesAction=targets.action!=='compare'||Boolean(shop.compareFirst);
+   const completesAction=targets.action!=='list'&&(targets.action!=='compare'||Boolean(shop.compareFirst));
    targets.selectStock(item);
    if(completesAction)onCommandExecuted?.();
   },
   runShow:(num:Parameters<typeof shop.runShow>[0])=>{shop.runShow(num);onCommandExecuted?.();}
  };
- return <section className={`command-tree-branch command-tree-shop-stock-targets${heldMenu?' command-tree-held-command-targets':''}`} aria-label={`Targets for ${command.label}`} {...touchActivation}>
+ return <section className={`command-tree-branch command-tree-shop-stock-targets${heldMenu?' command-tree-held-command-targets':''}`} aria-label={`Targets for ${command.label}`} data-command-tree-persistent-shop={controller.game.viewport.isMobile||undefined} {...touchActivation}>
   <CommandTreeTargetHeader/>
-  {targets.showStock&&<CommandShopStock shop={commandShop} open inline selectOnClick={heldMenu} onOpenChange={()=>undefined}/>}
+  {targets.showStock&&<CommandShopStock shop={commandShop} open inline selectOnClick onOpenChange={()=>undefined}/>}
   {targets.showInventory&&<CommandTreeCollapsibleSection label="Inventory">
    <div className="command-tree-section-commands" role="group" aria-label="Inventory item targets">
     {targets.inventory.map(entry=><button key={entry.id} type="button" data-menu-item="true" className="command-tree-row" disabled={targets.disabled} onClick={()=>{targets.selectInventory(entry);onCommandExecuted?.();}}><span className="command-tree-row-label is-gear-target"><CommandTreeObjectTargetLabel label={entry.label} row={entry.gearRow} category={entry.category}/></span></button>)}

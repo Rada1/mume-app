@@ -204,9 +204,9 @@ export const useGmcpOccupants = ({
 
     const onUpdateChar = useCallback((data: any) => {
         console.groupCollapsed('[GMCP Room.Chars.Update] payload');
-        // console.log('raw:', data);
+        console.log('raw:', JSON.stringify(data));
         const occupants = parseOccupants(data, characterName);
-        // console.log('parsed:', occupants);
+        console.log('parsed:', JSON.stringify(occupants));
         console.groupEnd();
         if (occupants.length === 0) return;
 

@@ -51,6 +51,9 @@ export const useCommandGearQuickMenu = (controller: ReturnType<typeof useCommand
  };
  const actionSections = COMMAND_TREE_GROUPS.map((label, index) => {
   const buttons = items.actions.filter(button => {
+   if (/^flee(?:\s|$)/i.test(button.command.trim())) return false;
+   if (['Social actions', 'Messages'].includes(getCommandTreeSection(button))
+    && !['cat-ally', 'cat-ally-remote'].includes((selectedContent || items.selected)?.category || '')) return false;
    if (button.id === 'btn-corpse-get-all' || /^g\s*\/\s*all$/i.test(button.label)) return false;
    const group = commandTreeGroup(button);
    return group === index || (group === null && index === 3);

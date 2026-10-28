@@ -1,0 +1,28 @@
+/** @file MobileCharacterPopover.css — Mobile character details use the desktop popover layout. */
+/* --- Character details --- */
+.app-container.is-mobile .command-tree-you-expanded:not([hidden]) {
+ box-sizing:border-box; overflow-y:auto; padding:12px; border:0; border-radius:0;
+ background:var(--command-panel-surface,#211b16); color:#ddd7cb; font:12px/1.4 var(--font-mono,monospace);
+}
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-vitals { margin-top:0; }
+.app-container.is-mobile .command-tree-you-expanded :is(.command-tree-you-vitals,.command-tree-you-combat-stats,.command-tree-you-details) {
+ grid-template-columns:minmax(0,1fr); gap:6px;
+}
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-vitals > div {
+ min-height:32px; align-items:center; padding:6px 9px;
+}
+.app-container.is-mobile .command-tree-you-expanded :is(.command-tree-you-combat-stats,.command-tree-you-details) { margin-top:14px; }
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-combat-stats {
+ grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px 12px;
+}
+.app-container.is-mobile.is-landscape:not(.state-account) .landscape-character-summary-overlay .command-tree-you-expanded .command-tree-you-combat-stats {
+ grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-combat-stats > button {
+ min-height:36px; align-items:center; padding:4px 2px; background:transparent; border-bottom:1px solid #463b30;
+}
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-details > div {
+ grid-column:auto; grid-row:auto; justify-content:space-between; gap:12px; padding:3px 2px; background:transparent;
+}
+.app-container.is-mobile .command-tree-you-expanded :is(.command-tree-you-vitals,.command-tree-you-combat-stats,.command-tree-you-details) small { font-size:10px; }
+.app-container.is-mobile .command-tree-you-expanded .command-tree-you-details span { overflow:visible; white-space:normal; text-align:right; }

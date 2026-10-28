@@ -11,12 +11,16 @@ import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
+import { MobileCommandTargetSections } from './MobileCommandTargetSections';
+import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
+import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
 // --- Render Section ---
 export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu = false}: {
     controller: ReturnType<typeof useCommandTreeController>; tree: ReturnType<typeof useCommandTree>; command: CustomButton; heldMenu?: boolean;
 }) => {
     const transfer = useCommandTreeTransfer(controller, command);
     const touchActivation = useSecondaryTouchActivation();
+    const flatTargets = React.useContext(CommandTargetMenuContext);
     const branchClass = `command-tree-branch terminal-inline-popover${heldMenu ? ' command-tree-held-command-targets' : ''}`;
     const [putLocation, setPutLocation] = React.useState<'room' | 'inventory' | 'worn'>('room');
     const isTargetDestination = (value: string) => transfer.label === 'Give' && controller.entries.some(entry => entry.context === value && isCurrentCommandTarget(entry, controller.vitals.target));
@@ -28,6 +32,7 @@ export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu 
     const destinationSection = transfer.sections.find(section => 'meta' in section && section.meta === putLocation);
     const renderDestinations = (section: (typeof transfer.sections)[number]) => <div className="command-tree-section-commands" role="group" aria-label={`${section.label} destinations`} tabIndex={0}>
         {section.targets.map(destination => <button key={destination.key} type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
+            ref={heldTargetPreviewRef(() => transfer.previewDestination(destination))}
             disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label}
             onPointerEnter={event => { if (event.pointerType === 'mouse') transfer.previewDestination(destination); }} onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.previewDestination(destination); }}
             onClick={event => transfer.transfer(destination, event)}>
@@ -67,7 +72,7 @@ export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu 
         {transfer.currency && !transfer.amountSelected && <section className={branchClass} aria-label={`Amount of ${transfer.currency.label}`} onMouseEnter={tree.cancelPreview} {...touchActivation}>
             <CommandTreeCollapsibleSection label="Common amounts">
                 <div className="command-tree-money-presets" role="group" aria-label="Common amounts">
-                    {[1, 5, 10, 20, 50, 100].map(amount => <button key={amount} type="button"
+                    {[1, 5, 10, 20, 50, 100].map(amount => <button key={amount} type="button" data-held-target-navigation
                         onClick={() => transfer.chooseAmount(String(amount))}>
                         {amount} {transfer.currency?.value}
                     </button>)}
@@ -80,21 +85,21 @@ export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu 
                     onChange={event => transfer.updateAmount(event.target.value.replace(/\D/g, ''))}
                     onKeyDown={event => { if (event.key === 'Enter') transfer.confirmAmount(); }}/>
                 <button type="button" className="command-tree-money-confirm" disabled={!transfer.amountValid}
+                    data-held-target-navigation
                     onClick={transfer.confirmAmount}>Use {transfer.amountValid ? transfer.amount : 'amount'}</button>
             </div>
         </section>}
-        {(transfer.selected || (transfer.currency && transfer.amountSelected)) && <section className={branchClass} aria-label={transfer.destinationLabel} onMouseEnter={tree.cancelPreview} {...touchActivation}>
-            <CommandTreeTargetHeader/>
-            {transfer.label === 'Put' && controller.game.viewport?.isMobile ? <>
-                <div className="command-tree-location-selector" role="group" aria-label="Put into location">
-                    {putLocationOptions.map(option => <button key={option.key} type="button" className={putLocation === option.key ? 'is-selected' : ''}
-                        aria-pressed={putLocation === option.key} onClick={() => setPutLocation(option.key)}>{option.label}</button>)}
-                </div>
+        {(transfer.selected || (transfer.currency && transfer.amountSelected)) && (transfer.label === 'Put' && (controller.game.viewport?.isMobile || flatTargets)
+            ? <MobileCommandTargetSections label={transfer.destinationLabel} heldMenu={heldMenu}
+                options={putLocationOptions.map(option => ({key: option.key, label: option.key === 'worn' ? 'Worn' : option.label}))}
+                selectedKey={putLocation} onSelect={key => setPutLocation(key as typeof putLocation)}>
                 {destinationSection ? renderDestinations(destinationSection) : <p className="command-tree-section-empty">No containers available in this location.</p>}
-            </> : transfer.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
+            </MobileCommandTargetSections> : <section className={branchClass} aria-label={transfer.destinationLabel} onMouseEnter={tree.cancelPreview} {...touchActivation}>
+            <CommandTreeTargetHeader/>
+            {transfer.sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
                 {renderDestinations(section)}
             </CommandTreeCollapsibleSection>)}
             {transfer.label !== 'Put' && !transfer.sections.length && <p className="command-tree-section-empty">{transfer.emptyLabel}</p>}
-        </section>}
+        </section>)}
     </>;
 };

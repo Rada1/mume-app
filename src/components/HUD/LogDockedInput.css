@@ -512,28 +512,6 @@
     text-overflow: ellipsis;
 }
 
-.docked-argument-chip.has-command-caret::after {
-    content: '';
-    position: absolute;
-    z-index: 2;
-    top: 50%;
-    right: -4px;
-    width: 2px;
-    height: 1.2em;
-    transform: translateY(-50%);
-    background: #f5f0e1;
-    animation: dockedArgumentCaretBlink 1s steps(2, start) infinite;
-    pointer-events: none;
-}
-
-@keyframes dockedArgumentCaretBlink {
-    to { visibility: hidden; }
-}
-
-.command-argument-caret-hidden {
-    caret-color: transparent !important;
-}
-
 .docked-input-field {
     display: block;
     width: 100%;
@@ -814,6 +792,23 @@
 .message-log-docked-input .docked-cancel-btn:hover,
 .message-log-docked-input .docked-cancel-btn:active {
     color: #f87171;
+}
+.message-log-docked-input .docked-cancel-btn {
+    box-sizing: border-box;
+    flex: 0 0 34px;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    min-height: 34px;
+    padding: 0;
+    border-radius: 4px;
+    background: rgba(239, 68, 68, 0.22);
+}
+.message-log-docked-input .docked-cancel-btn:hover {
+    background: rgba(239, 68, 68, 0.34);
+}
+.message-log-docked-input .docked-cancel-btn:active {
+    background: rgba(239, 68, 68, 0.44);
 }
 .message-log-docked-input .docked-target-badge.has-target {
     background: var(--active-target-highlight-background, rgba(127, 29, 29, 0.24));

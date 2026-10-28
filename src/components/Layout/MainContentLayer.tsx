@@ -43,6 +43,7 @@ import { CharacterSessionProgressTracker } from '../HUD/CharacterSessionProgress
 import { getRoomTerrainVisualKey, getZoneVisualKey, getRoomTerrainGlowColor } from '../../utils/roomTerrainVisuals';
 import { useMobileGearSwipe } from '../../hooks/useMobileGearSwipe';
 import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
+import { useClientDetailsViewport } from '../../hooks/useClientDetailsViewport';
 import { SwipeWheelCellDialogHost } from '../Controls/GameButton/SwipeWheelCellDialog';
 import { MobileLogCommandResizeHandle } from './MobileLogCommandResizeHandle';
 
@@ -101,6 +102,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         spectateTerrain
     } = useGame() as any;
     const isReplaying = sessionMode === 'replay';
+    useClientDetailsViewport(viewport.isMobile);
     const isAccountScreen = gameState === 'account' && !isReplaying;
     const layoutGameState = gameState === 'account' && isReplaying ? 'playing' : gameState;
     const activeVitals = useActiveVitals();

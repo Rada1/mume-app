@@ -10,7 +10,6 @@ import { Mapper } from '../Mapper/Mapper';
 import { MapperRef } from '../Mapper/mapperTypes';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
-import { MapRoomInfoHeader } from '../HUD/MapRoomInfoHeader';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './PlaceholderDrawers.css';
 
@@ -117,7 +116,6 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                     <DrawerResizeHandle handleType="right" widthVar="--desktop-map-width" minWidth={15} maxWidth={45} label="Resize log left edge and map" />
                     <div  className={`map-drawer-desktop open${hideMapHeaderFooter ? ' hide-header-footer' : ''}`} style={{ opacity: mapDrawerOpacity } as React.CSSProperties}>
                         <div className="drawer-content" style={{ flex: 1, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                            {!hideMapHeaderFooter && <MapRoomInfoHeader />}
                             {/* Pinned Full Map Canvas */}
                             <div  className="map-canvas-full-viewport" style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0 }}>
                                 <Mapper

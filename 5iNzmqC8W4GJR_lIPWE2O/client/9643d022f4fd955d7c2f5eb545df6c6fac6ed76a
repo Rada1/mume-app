@@ -1,0 +1,15 @@
+Object.defineProperty(__vite_ssr_exports__, "useGearPanelData", { enumerable: true, configurable: true, get(){ try { return useGearPanelData } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/node_modules/react/index.js", {"importedNames":["useEffect"]});
+const __vite_ssr_import_1__ = await __vite_ssr_import__("/src/hooks/usePanelData.ts", {"importedNames":["usePanelData"]});
+const useGearPanelData = (wornOpen, inventoryOpen) => {
+  const data = (0,__vite_ssr_import_1__.usePanelData)();
+  (0,__vite_ssr_import_0__.useEffect)(() => {
+    if (wornOpen) data.request("equipment");
+    if (inventoryOpen) data.request("inventory");
+  }, [wornOpen, inventoryOpen, data.request, data.revision]);
+  return data;
+};
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsQ0FBQTtBQUNBO0FBQ0E7QUFHTyxNQUFNLG1CQUFtQixDQUFDLFVBQW1CLGtCQUEyQjtBQUMzRSxRQUFNLFVBQU8sb0NBQWE7QUFDMUIsc0NBQVUsTUFBTTtBQUNaLFFBQUksU0FBVSxNQUFLLFFBQVEsV0FBVztBQUN0QyxRQUFJLGNBQWUsTUFBSyxRQUFRLFdBQVc7QUFBQSxFQUMvQyxHQUFHLENBQUMsVUFBVSxlQUFlLEtBQUssU0FBUyxLQUFLLFFBQVEsQ0FBQztBQUN6RCxTQUFPO0FBQ1giLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbInVzZUdlYXJQYW5lbERhdGEudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqIEBmaWxlIHVzZUdlYXJQYW5lbERhdGEudHMg4oCUIExvYWRzIHRoZSBnZWFyIHNlY3Rpb25zIHRoZSBwbGF5ZXIgb3BlbnMuICovXG5pbXBvcnQgeyB1c2VFZmZlY3QgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyB1c2VQYW5lbERhdGEgfSBmcm9tICcuL3VzZVBhbmVsRGF0YSc7XG5cbi8vIC0tLSBTZWN0aW9uIExvYWRpbmcgLS0tXG5leHBvcnQgY29uc3QgdXNlR2VhclBhbmVsRGF0YSA9ICh3b3JuT3BlbjogYm9vbGVhbiwgaW52ZW50b3J5T3BlbjogYm9vbGVhbikgPT4ge1xuICAgIGNvbnN0IGRhdGEgPSB1c2VQYW5lbERhdGEoKTtcbiAgICB1c2VFZmZlY3QoKCkgPT4ge1xuICAgICAgICBpZiAod29ybk9wZW4pIGRhdGEucmVxdWVzdCgnZXF1aXBtZW50Jyk7XG4gICAgICAgIGlmIChpbnZlbnRvcnlPcGVuKSBkYXRhLnJlcXVlc3QoJ2ludmVudG9yeScpO1xuICAgIH0sIFt3b3JuT3BlbiwgaW52ZW50b3J5T3BlbiwgZGF0YS5yZXF1ZXN0LCBkYXRhLnJldmlzaW9uXSk7XG4gICAgcmV0dXJuIGRhdGE7XG59O1xuIl0sImZpbGUiOiIvc3JjL2hvb2tzL3VzZUdlYXJQYW5lbERhdGEudHMifQ==
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvaG9va3MvdXNlR2VhclBhbmVsRGF0YS50cyIsIi9zcmMvaG9va3MvdXNlR2VhclBhbmVsRGF0YS50cyIsW11d

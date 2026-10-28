@@ -4,12 +4,13 @@
  */
 
 import { useRef } from 'react';
-import { MapperPrediction, MapperRoom } from '../mapperTypes';
+import { GmcpRoomInfo, MapperPrediction, MapperRoom } from '../mapperTypes';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
 import { DIRS, getExitTargetId } from '../mapperUtils';
 import { formatMovementArrow, normalizeMovementDirection } from '../../../utils/movementDirections';
+import { uiPerformance } from '../../../utils/uiPerformance';
 
 interface UseMapGmcphandlersProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -48,13 +49,11 @@ const normalizeMoveDir = (dir: string | null | undefined): string | null => {
 };
 
 export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
-    const lastXmlMovementRef = useRef<{ dir: string | null; time: number } | null>(null);
     const lastMovementLogRef = useRef<{ dir: string; time: number } | null>(null);
-    // Set by the GMCP room-info handler whenever it authoritatively consumes a queued
-    // move. The XML/text move-confirmed handler checks this to avoid a redundant second
-    // consume of the same physical move (lit rooms fire BOTH a GMCP and an XML event).
-    const lastGmcpMoveTimeRef = useRef<number>(0);
-    const unmatchedGmcpConfirmationsRef = useRef<number>(0);
+    // GMCP owns arrivals once available. XML and rendered room text describe the
+    // same responses and must never dequeue additional commands, even if delayed.
+    const hasGmcpRoomsRef = useRef(false);
+    const xmlConfirmedRef = useRef(false);
 
     const pushPendingMove = (dir: string) => {
         props.pendingMovesRef.current.push({ dir, time: Date.now() });
@@ -81,8 +80,6 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         const isGmcpMovement = e?.detail?.source === 'gmcp';
         const hasDirectedMovement = eventDir !== null;
         const pending = props.pendingMovesRef.current;
-        const now = Date.now();
-
         // MMapper's GMCP Event.Moved only records direction for the following room
         // payload; it does not dequeue prespam by itself. Room.Info remains the
         // authoritative GMCP consumer below.
@@ -90,22 +87,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             return;
         }
 
-        if (!isXmlMovement && !hasDirectedMovement && lastXmlMovementRef.current && now - lastXmlMovementRef.current.time < 350) {
-            return;
-        }
-        if (isXmlMovement) {
-            lastXmlMovementRef.current = { dir: eventDir, time: now };
-        }
-
-        // Lit rooms fire BOTH a GMCP room-info AND this XML/text move event for the same
-        // physical step. If GMCP just authoritatively consumed a queued move (within a
-        // short window), this XML event is that same move's redundant second confirmation
-        // — bail so we don't consume a second pending entry (which drained the prediction
-        // line at 2x speed) or dead-reckon a room GMCP already resolved exactly.
-        if (isXmlMovement && unmatchedGmcpConfirmationsRef.current > 0 && now - lastGmcpMoveTimeRef.current < 400) {
-            unmatchedGmcpConfirmationsRef.current--;
-            return;
-        }
+        if (hasGmcpRoomsRef.current || (!isXmlMovement && xmlConfirmedRef.current)) return;
 
         // MMapper treats its prespammed path as a FIFO command queue: each movement
         // confirmation consumes the head only. If the confirmed direction differs
@@ -194,6 +176,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
             props.pendingMovesRef.current.shift();
         }
 
+        if (isXmlMovement) xmlConfirmedRef.current = true;
+
         if (confirmedDir) {
             emitMovementLog(confirmedDir);
         }
@@ -210,7 +194,7 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         props.triggerRender?.();
     };
 
-    const { handleRoomInfo } = useRoomInfoHandler({
+    const { handleRoomInfo: processRoomInfo } = useRoomInfoHandler({
         roomsRef: props.roomsRef,
         setRooms: props.setRooms,
         currentRoomIdRef: props.currentRoomIdRef,
@@ -235,11 +219,25 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         preMoveRef: props.preMoveRef,
         deathRoomId: props.deathRoomId,
         setDeathRoomId: props.setDeathRoomId,
-        lastGmcpMoveTimeRef,
-        unmatchedGmcpConfirmationsRef,
         activeView: props.activeView,
         mapEditMode: props.mapEditMode
     });
+
+    const handleRoomInfo = (data: GmcpRoomInfo) => {
+        if (data.spectating || data.scouting) {
+            processRoomInfo(data);
+            return;
+        }
+        if (data.source === 'text' && hasGmcpRoomsRef.current) return;
+        if (data.source !== 'text') hasGmcpRoomsRef.current = true;
+        // With XML-only output, the movement tag has already advanced the FIFO
+        // and dead-reckoned position. Room details refine that arrival, not the next.
+        const alreadyConfirmed = xmlConfirmedRef.current;
+        xmlConfirmedRef.current = false;
+        const finish = uiPerformance.startWork('Mapper room matching');
+        try { processRoomInfo(data, alreadyConfirmed); }
+        finally { finish(); }
+    };
 
     const { handleUpdateExits } = useUpdateExitsHandler({
         setRooms: props.setRooms,

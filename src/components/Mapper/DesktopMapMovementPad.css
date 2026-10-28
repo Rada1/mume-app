@@ -1,0 +1,44 @@
+/** @file DesktopMapMovementPad.css — Mobile pad controls spaced around the desktop map. */
+/* --- Map placement only; button visuals come from the shared mobile pad. --- */
+.desktop-map-movement-pad {
+ position:absolute; inset:0; z-index:24; pointer-events:none;
+}
+.desktop-map-movement-pad .movement-pad-menu {
+ position:absolute; inset:0; width:100%; height:100%; margin:0;
+ box-sizing:border-box; padding:56px 24px 24px; pointer-events:none;
+ grid-template-columns:repeat(3,64px); grid-template-rows:repeat(3,64px);
+ justify-content:space-between; align-content:space-between;
+}
+.desktop-map-movement-pad .movement-pad-menu .movement-pad-cell { pointer-events:auto; }
+.desktop-map-movement-pad .movement-pad-menu .pad-follow { grid-area:1 / 3; }
+/* --- Compact command-bar placement --- */
+.desktop-map-movement-pad.is-docked { position:relative; inset:auto; width:100%; height:100%; }
+.desktop-map-movement-pad.is-docked .movement-pad-menu {
+ inset:0; width:100%; height:100%; padding:0; margin:0; gap:0;
+ grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(3,minmax(0,1fr));
+ justify-content:stretch; align-content:stretch;
+}
+.desktop-map-movement-pad.is-docked .movement-pad-menu .movement-pad-cell { gap:1px; padding:2px; }
+.desktop-map-movement-pad.is-docked .movement-pad-menu .movement-pad-label { font-size:8px; line-height:10px; }
+@media (max-height:700px) {
+ .desktop-map-movement-pad:not(.is-docked) .movement-pad-menu {
+  grid-template-columns:repeat(3,52px); grid-template-rows:repeat(3,52px);
+  padding:44px 16px 16px;
+ }
+}
+/* --- Hover menus reuse the mobile direction actions and Follow target rows. --- */
+.desktop-map-movement-menu.command-tree-v2 {
+ position:fixed; z-index:65020; overflow-x:hidden!important; overflow-y:auto; overscroll-behavior:contain;
+ padding:4px!important; box-sizing:border-box; background:var(--command-tree-surface,#211b16)!important;
+ border:1px solid rgba(201,168,76,.3); box-shadow:0 6px 24px #0008; pointer-events:auto;
+}
+.desktop-map-movement-menu.command-tree-v2 .command-tree-branch {
+ position:static!important; flex:none; width:100%!important; min-width:0; max-width:none;
+ height:auto; min-height:0; max-height:none!important; margin:0; padding:0; overflow:visible;
+ border:0!important; border-radius:0; box-shadow:none!important;
+}
+.desktop-map-movement-menu.command-tree-v2 .command-tree-target-header {
+ width:100%; min-width:0; max-width:100%; margin:0 0 4px;
+}
+.desktop-map-movement-menu .command-tree-section-commands { display:flex; flex-direction:column; gap:4px; }
+.desktop-map-movement-menu :is(.command-tree-row,.popover-action-button) { width:100%; min-height:34px; }

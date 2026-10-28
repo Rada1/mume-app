@@ -1,4 +1,4 @@
-/** @file CommandShopOutputPanel.test.tsx — Verifies shop output portals into the desktop Details slot and repeated shop chip clicks reopen Buy. */
+/** @file CommandShopOutputPanel.test.tsx — Shop output uses Details and repeated shop chip clicks reopen List. */
 // @vitest-environment jsdom
 import React, { act } from 'react';
 import { render, cleanup } from '@testing-library/react';
@@ -11,6 +11,7 @@ import type { useCommandTreeController } from '../../hooks/useCommandTreeControl
 import type { CommandShopProps } from '../../types';
 
 const mockViewport = { isMobile: false };
+vi.mock('../../hooks/useCommandTreeAutomaticTarget', () => ({ useCommandTreeAutomaticTarget: () => null }));
 vi.mock('../../context/GameContext', () => ({
     useGame: () => ({ viewport: mockViewport })
 }));
@@ -54,7 +55,7 @@ it('portals shop output into the desktop Details panel slot and marks detailsOpe
 });
 
 // --- Repeated Shop Chip Clicks ---
-it('reopens Objects -> Shop -> Buy every time the shop chip requests it', () => {
+it('reopens Objects -> Shop -> List every time the shop chip requests it', () => {
     const makeController = (shopOpenRequest: number) => ({
         shopOpenRequest,
         practiceOpenRequest: 0,
@@ -80,7 +81,7 @@ it('reopens Objects -> Shop -> Buy every time the shop chip requests it', () => 
     render(<Harness />);
     expect(treeState.group).toBe(3);
     expect(treeState.section).toBe('Shop');
-    expect(treeState.command?.command).toBe('buy %n');
+    expect(treeState.command?.command).toBe('list');
     expect(useCommandPanelStore.getState().shopOpenRequest).toBe(0);
 
     // User closes the menu or switches to another command (e.g. Show)
@@ -90,12 +91,12 @@ it('reopens Objects -> Shop -> Buy every time the shop chip requests it', () => 
     });
     expect(treeState.group).toBeNull();
 
-    // Clicking the shop chip again must reopen Objects -> Shop -> Buy
+    // Clicking the shop chip again must reopen Objects -> Shop -> List
     act(() => {
         useCommandPanelStore.getState().requestShopOpen();
     });
     expect(treeState.group).toBe(3);
     expect(treeState.section).toBe('Shop');
-    expect(treeState.command?.command).toBe('buy %n');
+    expect(treeState.command?.command).toBe('list');
     expect(useCommandPanelStore.getState().shopOpenRequest).toBe(0);
 });

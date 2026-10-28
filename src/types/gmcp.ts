@@ -203,6 +203,8 @@ export interface GroupMember {
     name: string;
     label?: string; // fallback
     type?: string;
+    pc?: boolean | number;
+    isNpc?: boolean;
     hp: number | string;
     'hp-string'?: string;
     mana?: number | string;

@@ -1,32 +1,39 @@
+/** @file CommandTreeCollapsibleSection.test.tsx — Mobile targets stay visible despite saved desktop collapse choices. */
 // @vitest-environment jsdom
-/** @file CommandTreeCollapsibleSection.test.tsx — Section preferences survive reopening and stay scoped to their menu. */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { afterEach, beforeEach, expect, it } from 'vitest';
-import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
-import { useCommandMenuSectionsStore } from '../../stores/useCommandMenuSectionsStore';
+import React, {act} from 'react';
+import {createRoot} from 'react-dom/client';
+import {expect, it} from 'vitest';
+import {CommandTreeCollapsibleSection} from './CommandTreeCollapsibleSection';
+import {CommandTargetMenuContext} from '../../context/CommandTargetMenuContext';
+import {useCommandMenuSectionsStore} from '../../stores/useCommandMenuSectionsStore';
 
-// --- Reopening Checks Section ---
-beforeEach(() => useCommandMenuSectionsStore.setState({ collapsed: {} }));
-afterEach(cleanup);
-const menu = (name: string) => <section aria-label={name}>
-    <CommandTreeCollapsibleSection label="Inventory">Items</CommandTreeCollapsibleSection>
-</section>;
-it('remembers a collapsed section after its menu unmounts and reopens', () => {
-    const first = render(menu('Give objects'));
-    fireEvent.click(screen.getByRole('button', { name: 'Inventory' }));
-    first.unmount();
-    render(menu('Give objects'));
-    expect(screen.getByRole('button', { name: 'Inventory' }).getAttribute('aria-expanded')).toBe('false');
-    fireEvent.click(screen.getByRole('button', { name: 'Inventory' }));
-    cleanup();
-    render(menu('Give objects'));
-    expect(screen.getByRole('button', { name: 'Inventory' }).getAttribute('aria-expanded')).toBe('true');
-});
-it('keeps sections with the same name independent when switching menus', () => {
-    const view = render(menu('Give objects'));
-    fireEvent.click(screen.getByRole('button', { name: 'Inventory' }));
-    view.rerender(menu('Put objects'));
-    expect(screen.getByRole('button', { name: 'Inventory' }).getAttribute('aria-expanded')).toBe('true');
-    view.rerender(menu('Give objects'));
-    expect(screen.getByRole('button', { name: 'Inventory' }).getAttribute('aria-expanded')).toBe('false');
+// --- Saved Collapse and Mobile Presentation Section ---
+it('removes mobile headings and exposes targets without changing the saved collapse choice', async () => {
+    const host = document.createElement('div');
+    const root = createRoot(host);
+    const previous = useCommandMenuSectionsStore.getState().collapsed;
+    useCommandMenuSectionsStore.setState({collapsed: {}});
+    const render = async (mobile: boolean) => {
+        await act(async () => root.render(<div aria-label="Inventory targets">
+            <CommandTargetMenuContext.Provider value={mobile}>
+                <CommandTreeCollapsibleSection label="Inventory">
+                    <button type="button">Sword</button>
+                </CommandTreeCollapsibleSection>
+            </CommandTargetMenuContext.Provider>
+        </div>));
+    };
+    try {
+        await render(false);
+        await act(async () => host.querySelector<HTMLButtonElement>('.command-tree-section-heading')!.click());
+        expect(host.querySelector('.command-tree-section-content')?.hasAttribute('hidden')).toBe(true);
+        await render(true);
+        expect(host.querySelector('.command-tree-section-heading')).toBeNull();
+        expect(host.querySelector('.command-tree-section-content')?.hasAttribute('hidden')).toBe(false);
+        expect(host.querySelector('.command-tree-section-content button')?.textContent).toBe('Sword');
+        await render(false);
+        expect(host.querySelector('.command-tree-section-content')?.hasAttribute('hidden')).toBe(true);
+    } finally {
+        await act(async () => root.unmount());
+        useCommandMenuSectionsStore.setState({collapsed: previous});
+    }
 });

@@ -10,6 +10,7 @@ import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 import { OnlineCommandTargets } from '../Popovers/StandardMenu/OnlineCommandTargets';
+import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
 
 // --- Target Branch Section ---
 export const CommandTreeHeldCommandTargets = ({controller, button, targets, onCommandExecuted}: {
@@ -20,9 +21,14 @@ export const CommandTreeHeldCommandTargets = ({controller, button, targets, onCo
 }) => {
     const touchActivation = useSecondaryTouchActivation();
     const tell = /^tell\b/i.test(button.command.trim());
-    const objectSections = targets.length && targets.every(entry => ['objects', 'inventory', 'worn'].includes(entry.group))
-        ? getObjectTargetSections(targets) : [];
-    const sections = objectSections.length ? objectSections : getCommandTargetSections(targets);
+    const isFollowCommand = /^follow\b/i.test(button.command.trim());
+    const visibleTargets = isFollowCommand ? targets.filter(entry => entry.id === 'command-panel-self'
+        || (entry.id !== 'command-panel-room' && entry.scope === 'room'
+            && ['players', 'npcs'].includes(entry.group) && entry.category !== 'cat-exit')) : targets;
+    const objectSections = visibleTargets.length && visibleTargets.every(entry => ['objects', 'inventory', 'worn'].includes(entry.group))
+        ? getObjectTargetSections(visibleTargets) : [];
+    const sections = isFollowCommand ? [{label: 'Room Entities', entries: visibleTargets}]
+        : objectSections.length ? objectSections : getCommandTargetSections(visibleTargets, controller.game.viewport?.isMobile !== true);
     const previewTarget = (entry: CommandActionTargetEntry) => {
         controller.game.setCommandPreview?.(getCommandTreeTargetPreview(button.command, entry.context, entry.parentNoun));
         if (entry.id === 'command-panel-self') controller.previewTargetContext('self');
@@ -35,8 +41,8 @@ export const CommandTreeHeldCommandTargets = ({controller, button, targets, onCo
             onPreview={() => previewTarget(entry)}/>;
     };
 
-    return <section className="command-tree-branch terminal-inline-popover is-ability-side-branch command-tree-held-command-targets"
-        aria-label={`Targets for ${button.label}`} {...touchActivation}>
+    return <section className={`command-tree-branch terminal-inline-popover command-tree-held-command-targets${isFollowCommand ? ' command-tree-main-branch is-follow-target-branch' : ' is-ability-side-branch'}`}
+        aria-label={isFollowCommand ? 'Follow targets' : `Targets for ${button.label}`} {...touchActivation}>
         <CommandTreeTargetHeader/>
         {!tell && sections.map(section => <CommandTreeCollapsibleSection key={section.label} label={section.label}>
             <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
@@ -56,7 +62,7 @@ export const CommandTreeHeldCommandTargets = ({controller, button, targets, onCo
                     }}/>
             </CommandTreeCollapsibleSection>
         </>}
-        {!tell && !targets.length && <p className="command-tree-section-empty">No available targets.</p>}
+        {!tell && !visibleTargets.length && <p className="command-tree-section-empty">No room entities available.</p>}
     </section>;
 };
 
@@ -68,7 +74,7 @@ const HeldCommandTarget = ({controller, button, entry, label, onPreview}: {
     label: string;
     onPreview: () => void;
 }) => {
-    return <div
+    return <div ref={heldTargetPreviewRef(onPreview)}
             onPointerEnter={event => { if (event.pointerType === 'mouse') onPreview(); }}
             onFocus={event => { if (event.target instanceof Element && event.target.matches(':focus-visible')) onPreview(); }}>
             <CommandTreeAction controller={controller} button={button} targetLabel={label} targetGearRow={entry.gearRow}

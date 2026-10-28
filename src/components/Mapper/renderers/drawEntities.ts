@@ -4,7 +4,7 @@
 import { RenderContext, getSeed } from './rendererUtils';
 import { GRID_SIZE, DIRS, WALL_COLOR, getGateState, getExitTargetId, getClientThemeColor } from '../mapperUtils';
 
-import { getMemberColor } from '../../../utils/groupUtils';
+import { getMemberColor, getMemberLabelBackgroundColor, isAllyGroupMember } from '../../../utils/groupUtils';
 import { COLOR_NPC, COLOR_PLAYER, COLOR_OBJ } from '../../../utils/categorizationUtils';
 import { occupantAnims, OCCUPANT_ANIM_DURATION, getOccupantKey } from '../occupantAnimStore';
 import { getMapOccupantTargets } from '../occupantTargets';
@@ -336,7 +336,7 @@ const addMissingCurrentRoomGroupMembers = (
 
     groupMembers.forEach(member => {
         const memberName = getGroupMemberDisplayName(member);
-        if (member.type === 'you' || !memberName) return;
+        if (!isAllyGroupMember(member) || !memberName) return;
         if (!groupMemberIsInActiveRoom(member, activeRoomKeys, rCtx)) return;
         if (Object.values(next).some(occupant => occupantMatchesGroupMember(occupant, member))) return;
 
@@ -364,8 +364,36 @@ const hashGroupMemberName = (name: string): number => {
     return hash || 1;
 };
 
+const drawGroupMemberNameLabel = (
+    ctx: CanvasRenderingContext2D,
+    name: string,
+    x: number,
+    y: number,
+    memberIndex: number,
+    fontSize: number,
+    alpha = 1
+) => {
+    if (!name) return;
+    const colors = getMemberColor(memberIndex);
+    const backgroundColor = getMemberLabelBackgroundColor(Number.parseInt(colors.core.slice(1), 16));
+    const backgroundHex = `#${backgroundColor.toString(16).padStart(6, '0')}`;
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.font = `bold ${fontSize}px Inter`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    const textWidth = ctx.measureText(name).width;
+    const paddingX = Math.max(2, fontSize * 0.24);
+    const paddingY = Math.max(1, fontSize * 0.14);
+    ctx.fillStyle = backgroundHex;
+    ctx.fillRect(x - textWidth / 2 - paddingX, y - fontSize - paddingY, textWidth + paddingX * 2, fontSize + paddingY * 2);
+    ctx.fillStyle = colors.label;
+    ctx.fillText(name, x, y);
+    ctx.restore();
+};
+
 const getOccupantInitial = (name?: string) => {
-    const cleanName = name?.trim().replace(/^(a|an|the)\s+/i, '');
+    const cleanName = typeof name === 'string' ? name.trim().replace(/^(a|an|the)\s+/i, '') : '';
     return cleanName ? cleanName.charAt(0).toUpperCase() : '';
 };
 
@@ -1013,13 +1041,15 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
 
     resolvedMembers.forEach(({ member, memberKey, rx, ry, rz }) => {
         const memberName = getGroupMemberDisplayName(member);
+        const isAlly = isAllyGroupMember(member);
         const roomKey = `${rx},${ry},${rz}`;
         const occupants = roomOccupancy.get(roomKey) || [];
         
         // CONSISTENT COLOR FIX: Use the original index from the groupMembers list 
         // to ensure it matches the group tab, regardless of map resolution order.
         const originalIndex = groupMembers.findIndex(m => m.id === member.id);
-        const color = getMemberColor(originalIndex !== -1 ? originalIndex : 0);
+        const memberColorIndex = originalIndex !== -1 ? originalIndex : 0;
+        const color = getMemberColor(memberColorIndex);
         
         // Track trail
         const prev = lastPos.get(memberKey);
@@ -1120,12 +1150,7 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
             if (!isSameRoom) {
                 // Name plate below arrow
                 ctx.rotate(-angleToMember);
-                ctx.font = 'bold 10px Inter';
-                ctx.fillStyle = color.core;
-                ctx.textAlign = 'center';
-                ctx.shadowBlur = 4;
-                ctx.shadowColor = 'black';
-                if (memberName) ctx.fillText(memberName, 0, 18);
+                if (isAlly && memberName) drawGroupMemberNameLabel(ctx, memberName, 0, 18, memberColorIndex, 10, alpha);
             }
 
             ctx.restore();
@@ -1168,16 +1193,16 @@ export const drawGroupMembers = (rCtx: RenderContext) => {
         drawOccupantDot(rCtx, px, py, MEMBER_COLOR, alpha * 0.92, memberName, ORB_RADIUS, anim, false, false, !!rCtx.inCombat && isOpponent, true, isHeldActive);
 
         const isSameRoom = prx !== undefined && prx === rx && pry === ry && prz === rz;
-        if (!isSameRoom) {
-            ctx.save();
-            ctx.font = `bold ${8 / camera.zoom}px Inter`;
-            ctx.fillStyle = MEMBER_COLOR;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'bottom';
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = 'black';
-            if (memberName) ctx.fillText(memberName, px, py - (ORB_RADIUS + 2) / camera.zoom);
-            ctx.restore();
+        if (!isSameRoom && isAlly && memberName) {
+            drawGroupMemberNameLabel(
+                ctx,
+                memberName,
+                px,
+                py - (ORB_RADIUS + 2) / camera.zoom,
+                memberColorIndex,
+                8 / camera.zoom,
+                alpha
+            );
         }
 
     });

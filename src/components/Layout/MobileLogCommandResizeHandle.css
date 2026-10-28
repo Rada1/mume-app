@@ -189,8 +189,19 @@
     }
 }
 
-/* --- Keep the portrait character info line on the client bottom edge --- */
+/* --- Portrait footer: state controls above character info --- */
 @media (max-width: 1024px) and (orientation: portrait) {
+    .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-controls {
+        position: fixed;
+        z-index: 65001;
+        right: 0;
+        bottom: var(--command-dock-summary-height, 44px);
+        left: 0;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+    }
+
     .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-summary {
         position: fixed;
         z-index: 65001;

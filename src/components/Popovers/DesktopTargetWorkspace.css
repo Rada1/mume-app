@@ -9,7 +9,7 @@
 .desktop-target-workspace.is-floating {
  position:fixed; right:16px; bottom:100px; z-index:70000;
  width:min(560px,calc(100vw - 32px)); height:min(480px,calc(100dvh - 160px)); box-shadow:0 8px 24px #0008;
- background:rgba(var(--command-panel-surface-rgb,33,27,22),var(--client-panel-opacity,.75))!important;
+ background:rgb(var(--command-panel-surface-rgb,33,27,22))!important;
 }
 .desktop-target-workspace-header { display:flex; flex:none; align-items:stretch; border-bottom:1px solid #c9a84c66; }
 .desktop-target-workspace-header nav { display:flex; flex:1; min-width:0; }
@@ -20,6 +20,22 @@
 .desktop-target-workspace-header > button { flex:0 0 28px; font-size:18px; }
 
 /* --- Commands Left, Targets Right --- */
+.desktop-target-workspace.is-floating.is-mobile-target-workspace {
+ inset:auto; margin:0;
+ right:max(8px,env(safe-area-inset-right,0px));
+ bottom:max(8px,env(safe-area-inset-bottom,0px));
+ width:min(560px,calc(100vw - 16px));
+ height:min(480px,calc(100dvh - 72px));
+ max-height:calc(100dvh - 16px); max-width:calc(100vw - 16px);
+ border:0; border-radius:0; box-shadow:none;
+ z-index:2147483647;
+}
+.desktop-target-workspace.is-mobile-target-workspace::backdrop { background:transparent; }
+.desktop-target-workspace.is-mobile-target-workspace .desktop-target-workspace-header button { min-height:40px; }
+.desktop-target-workspace.is-mobile-target-workspace :is(.command-tree-object,.desktop-target-container-toggle,.command-tree-row) { min-height:40px; }
+@media (orientation:landscape) {
+ .desktop-target-workspace.is-floating.is-mobile-target-workspace { height:calc(100dvh - 16px); }
+}
 .desktop-target-workspace .desktop-target-columns.command-tree-gear-quick-menu {
  position:static; display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);
  grid-template-rows:minmax(0,1fr) auto; align-items:stretch; flex:1; width:100%; max-width:100%; min-height:0;
@@ -33,6 +49,47 @@
 .desktop-target-workspace .command-tree-gear-quick-contents { grid-column:2; grid-row:2; max-height:180px!important; }
 .desktop-target-workspace .command-tree-gear-quick-put-targets { grid-column:3; grid-row:1 / span 2; overflow:auto; border-left:1px solid #c9a84c33; }
 .desktop-target-workspace .desktop-target-columns:has(> .command-tree-gear-quick-put-targets) { grid-template-columns:repeat(3,minmax(0,1fr)); }
+/* --- Selected-target commands without location navigation or the target roster --- */
+.desktop-target-workspace.is-commands-only .desktop-target-workspace-header { position:relative; justify-content:flex-end; align-items:center; border:0; }
+.desktop-target-workspace.is-commands-only { overflow:visible!important; }
+.desktop-target-workspace.is-commands-only .desktop-target-workspace-header { z-index:1000; }
+.desktop-target-workspace-name {
+ position:absolute; left:50%; width:max-content; max-width:calc(100% - 72px); min-width:0;
+ box-sizing:border-box; min-height:32px!important; height:32px!important; padding:5px 8px!important;
+ transform:translateX(-50%); align-items:center; justify-content:center; text-align:center;
+ font:11px/1.3 var(--font-mono,monospace)!important; overflow-wrap:anywhere;
+ border:0; border-radius:0; background:rgba(201,168,76,.16); color:#e2d7ba; cursor:pointer;
+}
+.desktop-target-workspace.is-commands-only .desktop-target-workspace-header .desktop-target-workspace-name {
+ display:inline-flex; width:max-content; min-width:0!important; min-height:32px!important; height:32px!important;
+ padding:5px 8px!important; font-size:11px!important; font-family:var(--font-mono,monospace)!important;
+ font-weight:400!important; line-height:1.3!important;
+}
+.desktop-target-workspace-name[data-target-kind="enemy"] { background:var(--active-target-highlight-background,rgba(127,29,29,.24)); }
+.desktop-target-workspace-name[data-target-kind="ally"] { background:rgba(97,194,144,.12); }
+.desktop-target-workspace-name[data-target-kind="object"] { background:rgba(201,168,76,.16); }
+.app-container.immersion-mode:not(.light-mode) .desktop-target-workspace-name[data-targetable="true"] { background:rgba(201,168,76,.16); }
+.app-container.immersion-mode:not(.light-mode) .desktop-target-workspace-name[data-targetable="true"][data-target-kind="enemy"] { background:var(--active-target-highlight-background,rgba(127,29,29,.24)); }
+.app-container.immersion-mode:not(.light-mode) .desktop-target-workspace-name[data-targetable="true"][data-target-kind="ally"] { background:rgba(97,194,144,.18); }
+.app-container.immersion-mode:not(.light-mode) .desktop-target-workspace-name[data-targetable="true"][data-target-kind="object"] { background:rgba(201,168,76,.16); }
+.desktop-target-workspace.is-commands-only .desktop-target-columns { grid-template-columns:minmax(0,1fr); }
+.desktop-target-workspace.is-commands-only .command-tree-gear-quick-details { border-right:0; }
+.desktop-target-workspace.is-commands-only .desktop-target-columns:has(> .command-tree-gear-quick-put-targets) { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.desktop-target-workspace.is-commands-only .command-tree-gear-quick-put-targets { grid-column:2; }
+.desktop-target-workspace-target-menu {
+ position:absolute; z-index:1100; top:100%; left:50%; display:flex; flex-direction:column;
+ width:min(280px,calc(100% - 24px)); max-height:min(45dvh,320px); overflow:auto;
+ transform:translateX(-50%); border:1px solid rgba(201,168,76,.35);
+ background:var(--command-tree-surface,#211b16); box-shadow:0 6px 18px #0009;
+}
+.desktop-target-workspace-target-menu > button {
+ flex:none; min-width:0; min-height:34px; padding:7px 10px; border:0; border-radius:0;
+ background:transparent; color:#d7d2c8; font:inherit; text-align:left; cursor:pointer;
+}
+.desktop-target-workspace-target-menu > button:hover,
+.desktop-target-workspace-target-menu > button[aria-selected="true"] { background:rgba(201,168,76,.18); color:#ffdf81; }
+.desktop-target-workspace-target-menu > button:focus-visible { outline:1px solid #dfbf6c; outline-offset:-1px; }
+.desktop-target-workspace-no-targets { padding:10px; color:#a99c86; }
 .client-panels-stack:has(.desktop-target-columns > .command-tree-gear-quick-put-targets) {
  flex-basis:max(var(--desktop-client-panels-width,26vw), min(600px,45vw));
  width:max(var(--desktop-client-panels-width,26vw), min(600px,45vw));
@@ -48,6 +105,24 @@
 .desktop-target-workspace .command-tree-gear-quick-list.is-equipment .command-tree-gear-empty-slot { background:transparent; }
 
 /* --- Match the Inline Log Selection Palette --- */
+/* One category selects a vertical command list. */
+.desktop-target-workspace .workspace-action-categories {
+ position:sticky; top:0; z-index:0; display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(60px,1fr)); gap:3px;
+ padding:4px 0 8px; background:rgb(var(--command-panel-surface-rgb,33,27,22));
+}
+.desktop-target-workspace .workspace-action-category {
+ min-height:32px; padding:5px 6px; border:0; border-radius:0;
+ background:transparent; color:#a99c86; font:11px/1.3 var(--font-mono,monospace);
+ cursor:pointer; overflow-wrap:anywhere;
+}
+.desktop-target-workspace .workspace-action-category[aria-pressed="true"] { background:rgba(201,168,76,.18); color:#dfbf6c; }
+.desktop-target-workspace .workspace-action-category:hover { background:rgba(201,168,76,.1); }
+.desktop-target-workspace .workspace-action-category:focus-visible { outline:1px solid #dfbf6c; outline-offset:-1px; }
+.desktop-target-workspace .workspace-action-flow { display:flex; flex-direction:column; align-items:stretch; gap:4px; padding:4px 0; }
+.desktop-target-workspace .workspace-action-flow > div { width:100%; min-width:0; max-width:100%; }
+.desktop-target-workspace .workspace-action-flow :is(.command-tree-row,.popover-action-button) { width:100%; min-height:36px; padding:6px 8px; }
+.desktop-target-workspace.is-mobile-target-workspace .workspace-action-category { min-height:36px; }
 .desktop-workspace-target[aria-expanded="true"] { background:rgba(201,168,76,.09)!important; }
 .desktop-workspace-target[data-target-kind="room"][aria-expanded="true"] { background:rgba(248,250,252,.1)!important; }
 .desktop-workspace-target[data-target-kind="enemy"][aria-expanded="true"] { background:var(--active-target-highlight-background,rgba(127,29,29,.24))!important; }
@@ -74,3 +149,71 @@
 .desktop-target-workspace .desktop-workspace-command-grid .command-tree-row { width:auto; max-width:100%; padding:6px 8px; }
 .desktop-workspace-command-grid .command-tree-row-label { white-space:normal; }
 .desktop-workspace-subcategory > .command-tree-section-heading { margin-top:6px; font-size:9px; }
+
+/* --- Compact desktop target-first command surface --- */
+.app-container:not(.is-mobile) .client-panel-stack-slot--actions:has(> .desktop-target-workspace) { background:transparent; }
+.app-container:not(.is-mobile) .client-panel-stack-slot--actions > .desktop-target-workspace {
+ height:auto; max-height:100%; flex:0 1 auto; padding:8px!important;
+ background:var(--command-panel-surface,#211b16)!important;
+}
+.app-container:not(.is-mobile) .client-panel-stack-slot--actions > .desktop-target-workspace .desktop-target-workspace-header { padding-left:16px; }
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .desktop-target-columns.command-tree-gear-quick-menu {
+ flex:0 1 auto; grid-template-rows:minmax(0,auto) auto;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace).is-commands-only .desktop-target-workspace-header {
+ justify-content:space-between; gap:4px; padding-bottom:4px;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace).is-commands-only .desktop-target-workspace-header .desktop-target-workspace-name {
+ position:static; transform:none; flex:1 1 auto; width:auto; max-width:none;
+ justify-content:space-between; gap:8px; text-align:left;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .desktop-target-workspace-name > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .desktop-target-workspace-name > svg { flex:none; }
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .desktop-target-workspace-target-menu {
+ left:auto; right:0; width:min(280px,calc(100vw - 16px)); transform:none;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .command-tree-gear-quick-actions {
+ display:grid; grid-template-columns:minmax(70px,35%) minmax(0,1fr); align-content:start; gap:0 8px;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-categories {
+ position:static; grid-column:1; grid-row:1 / span 2; grid-template-columns:minmax(0,1fr);
+ align-content:start; gap:4px; padding:0; background:transparent;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-category {
+ min-height:36px; background:var(--command-panel-surface-raised,#2d271e); text-align:center;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-category:is(:hover,:focus-visible,[aria-pressed="true"]) {
+ background:var(--command-panel-surface-hover,#3b3024); color:#e4dfd3;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-flow {
+ display:grid; grid-column:2; grid-row:1; grid-template-columns:minmax(0,1fr); align-content:start; gap:4px; padding:0;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .command-tree-gear-quick-actions > .command-tree-section-empty { grid-column:2; }
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-flow > .skills-sync-prompt { grid-column:1 / -1; }
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-flow :is(.command-tree-row,.popover-action-button) {
+ display:flex; align-items:center; justify-content:center; box-sizing:border-box; min-height:40px;
+ border:0; border-radius:0; background:var(--command-panel-surface-raised,#2d271e); text-align:center;
+}
+:is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-flow :is(.command-tree-row,.popover-action-button):is(:hover,:focus-visible,[aria-pressed="true"]) {
+ background:var(--command-panel-surface-hover,#3b3024);
+}
+/* The mobile workspace is portaled to the body and cannot inherit app theme variables. */
+.desktop-target-workspace.is-mobile-target-workspace {
+ --command-panel-surface:#211b16; --command-panel-surface-raised:#2d271e; --command-panel-surface-hover:#3b3024;
+}
+.desktop-target-workspace.is-floating.is-mobile-target-workspace {
+ height:auto; max-height:min(480px,calc(100dvh - 16px));
+}
+@media (orientation:landscape) {
+ .desktop-target-workspace.is-floating.is-mobile-target-workspace {
+  max-height:min(480px,calc(100dvh - max(16px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px))));
+ }
+}
+:root:has(.app-container.is-mobile.immersion-mode) .desktop-target-workspace.is-mobile-target-workspace {
+ --command-panel-surface:#000; --command-panel-surface-raised:#111; --command-panel-surface-hover:#222; --command-panel-surface-rgb:0,0,0;
+}
+:root:has(.app-container.is-mobile.performance-mode) .desktop-target-workspace.is-mobile-target-workspace {
+ --command-panel-surface:#171717; --command-panel-surface-raised:#222; --command-panel-surface-hover:#303030; --command-panel-surface-rgb:23,23,23;
+}
+.desktop-target-workspace.is-mobile-target-workspace.is-commands-only .workspace-action-category { min-height:44px; }
+.desktop-target-workspace.is-mobile-target-workspace.is-commands-only .desktop-target-workspace-header .desktop-target-workspace-name { min-height:40px!important; height:40px!important; }

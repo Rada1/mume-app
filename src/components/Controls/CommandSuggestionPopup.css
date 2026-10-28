@@ -9,12 +9,10 @@
     display: flex;
     flex-direction: column;
     padding: 3px !important;
-    border: 1px solid rgba(201, 168, 76, 0.35) !important;
-    border-radius: 2px !important;
-    background: #0d0a07 !important;
-    box-shadow:
-        0 7px 16px rgba(0, 0, 0, 0.45),
-        0 0 1px rgba(201, 168, 76, 0.25) !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: #211b16 !important;
+    box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     font-family: var(--font-mono, monospace) !important;
@@ -37,11 +35,8 @@
 
 .command-suggestion-popup.placement-top {
     transform: translateY(-100%) !important;
-    box-shadow:
-        0 -7px 16px rgba(0, 0, 0, 0.45),
-        0 0 1px rgba(201, 168, 76, 0.25) !important;
 }
-
+.command-suggestion-popup.immersion-glass.placement-top { box-shadow: 0 -7px 16px rgba(0, 0, 0, 0.45) !important; }
 
 .command-suggestion-popup::-webkit-scrollbar {
     width: 4px;
@@ -64,7 +59,7 @@
     width: 100%;
     padding: 7px !important;
     border: 0 !important;
-    border-radius: 2px !important;
+    border-radius: 0 !important;
     background: transparent !important;
     color: #c9b88f !important;
     font-family: var(--font-mono, monospace) !important;
@@ -155,6 +150,15 @@
     outline: none;
 }
 
+/* --- Regular-mode secondary actions share the flat menu treatment --- */
+.command-suggestion-popup:not(.immersion-glass) :is(.command-suggestion-portkey-favorite, .command-suggestion-portkey-clear) {
+    border: 0 !important;
+    border-radius: 0 !important;
+}
+.command-suggestion-popup:not(.immersion-glass) :is(.command-suggestion-portkey-favorite, .command-suggestion-portkey-clear):is(:hover, :focus-visible) {
+    background: rgba(201, 168, 76, 0.12) !important;
+}
+
 @media (max-width: 768px) {
     .command-suggestion-option {
         min-height: 48px;
@@ -243,6 +247,9 @@ body:has(.app-container.performance-mode.immersion-mode) .command-suggestion-pop
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+}
+body:has(.app-container.performance-mode:not(.immersion-mode):not(.classic-mode)) .command-suggestion-popup {
+    background: #171717 !important;
 }
 
 /* --- Shared command semantics and target highlight kinds --- */

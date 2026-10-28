@@ -28,15 +28,15 @@ export const useCommandTreeShopTargets = (controller:ReturnType<typeof useComman
    else shop.setCompareFirst(item);
    return;
   }
-  controller.previewEntity(null); shop.selectStock(item);
+  // List is browsing only; selecting stock must never run an item action.
  };
  const selectInventory=(entry:CommandActionTargetEntry)=>{
   if(disabled) return;
   if(controller.isHelpMode){controller.executeHelp(action);return;}
   if(action==='compare') shop.tryCompare(entry);
-  else if(action==='sell'||action==='value') shop.runInventoryAction(action,entry.context,entry.label);
+  else if(action==='sell'||action==='value'||action==='mend') shop.runInventoryAction(action,entry.context,entry.label);
  };
  const inventory=controller.entries.filter(entry=>entry.group==='inventory'||(action==='compare'&&entry.group==='worn'));
  return {action,disabled,selectStock,selectInventory,inventory,
-  showStock:['buy','show','compare'].includes(action),showInventory:['sell','value'].includes(action)||Boolean(action==='compare'&&shop.compareFirst)};
+  showStock:['list','buy','show','compare'].includes(action),showInventory:['sell','value','mend'].includes(action)||Boolean(action==='compare'&&shop.compareFirst)};
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTacticalCommandPrefixStore } from '../../../stores/useTacticalCommandPrefixStore';
 import { CustomButton, PopoverState, MessageType, GameEntity } from '../../../types';
 import { sanitizeGameTarget } from '../../../utils/gameUtils';
 import { shouldKeepInlineActionPopoverOpen } from '../../../utils/popoverPanelUtils';
@@ -103,6 +104,9 @@ export const PopoverActionButton: React.FC<PopoverActionButtonProps> = ({
             if (isExecute) handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
             setPopoverState(null);
             addMessage('system', `${isExecute ? 'Executed and assigned' : 'Assigned'} '${button.label}'${dir ? ` to swipe ${dir}` : ''}.`);
+        } else if (useTacticalCommandPrefixStore.getState().prefix
+            && (button.setId === 'trait-state' || [2, 5].includes(commandTreeGroup(button) ?? -1))) {
+            handleButtonClick(button, e, popoverState.context, undefined, popoverState.parentNoun, direction);
         } else if ([2, 5].includes(commandTreeGroup(button) ?? -1) && onRequestCommandReport?.(
             resolveButtonClickCommand({
                 button,

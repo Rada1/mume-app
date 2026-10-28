@@ -1,0 +1,26 @@
+Object.defineProperty(__vite_ssr_exports__, "COMMAND_SEARCH_PACES", { enumerable: true, configurable: true, get(){ try { return COMMAND_SEARCH_PACES } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "isCommandTreeSearchAction", { enumerable: true, configurable: true, get(){ try { return isCommandTreeSearchAction } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "COMMAND_TREE_SEARCH_BUTTONS", { enumerable: true, configurable: true, get(){ try { return COMMAND_TREE_SEARCH_BUTTONS } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "getCommandTreeSearchTargets", { enumerable: true, configurable: true, get(){ try { return getCommandTreeSearchTargets } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/src/utils/buttonFactory.ts", {"importedNames":["createButton"]});
+const COMMAND_SEARCH_PACES = ["quick", "fast", "normal", "careful", "thorough"];
+const isCommandTreeSearchAction = (button) => /^(?:reveal|flush)(?:\s+(?:%n|\$1))?$/i.test(button.command.trim());
+const COMMAND_TREE_SEARCH_BUTTONS = ["reveal", "flush"].map((verb) => (0,__vite_ssr_import_0__.createButton)({
+  id: `v2-search-${verb}`,
+  label: verb[0].toUpperCase() + verb.slice(1),
+  command: `${verb} %n`,
+  setId: "trait-utility"
+}));
+const getCommandTreeSearchTargets = () => COMMAND_SEARCH_PACES.map((pace) => ({
+  id: `command-search-pace:${pace}`,
+  label: pace[0].toUpperCase() + pace.slice(1),
+  keyword: pace,
+  context: pace,
+  category: "cat-command-option",
+  group: "objects",
+  scope: "self"
+}));
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsQ0FBQTs7OztBQUdBO0FBR08sTUFBTSx1QkFBdUIsQ0FBQyxTQUFRLFFBQU8sVUFBUyxXQUFVLFVBQVU7QUFDMUUsTUFBTSw0QkFBNEIsQ0FBQyxXQUFnQyx3Q0FBd0MsS0FBSyxPQUFPLFFBQVEsS0FBSyxDQUFDO0FBQ3JJLE1BQU0sOEJBQThCLENBQUMsVUFBUyxPQUFPLEVBQUUsSUFBSSxhQUFNLG9DQUFhO0FBQUEsRUFDcEYsSUFBRyxhQUFhLElBQUk7QUFBQSxFQUFHLE9BQU0sS0FBSyxDQUFDLEVBQUUsWUFBWSxJQUFFLEtBQUssTUFBTSxDQUFDO0FBQUEsRUFBRSxTQUFRLEdBQUcsSUFBSTtBQUFBLEVBQU0sT0FBTTtBQUM3RixDQUFDLENBQUM7QUFDSyxNQUFNLDhCQUE4QixNQUFpQyxxQkFBcUIsSUFBSSxXQUFPO0FBQUEsRUFDM0csSUFBRyx1QkFBdUIsSUFBSTtBQUFBLEVBQUcsT0FBTSxLQUFLLENBQUMsRUFBRSxZQUFZLElBQUUsS0FBSyxNQUFNLENBQUM7QUFBQSxFQUFFLFNBQVE7QUFBQSxFQUFLLFNBQVE7QUFBQSxFQUNoRyxVQUFTO0FBQUEsRUFBcUIsT0FBTTtBQUFBLEVBQVUsT0FBTTtBQUNyRCxFQUFFIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJjb21tYW5kVHJlZVNlYXJjaC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKiogQGZpbGUgY29tbWFuZFRyZWVTZWFyY2gudHMg4oCUIFJldmVhbCBhbmQgRmx1c2ggdXNlIHNoYXJlZCBzZWFyY2ggcGFjZSBjaG9pY2VzLiAqL1xuaW1wb3J0IHR5cGUge0N1c3RvbUJ1dHRvbn0gZnJvbSAnLi4vdHlwZXMnO1xuaW1wb3J0IHR5cGUge0NvbW1hbmRBY3Rpb25UYXJnZXRFbnRyeX0gZnJvbSAnLi4vb2JqZWN0cy9jb21tYW5kQWN0aW9uVGFyZ2V0TW9kZWwnO1xuaW1wb3J0IHtjcmVhdGVCdXR0b259IGZyb20gJy4vYnV0dG9uRmFjdG9yeSc7XG5cbi8vIC0tLSBTZWFyY2ggQ29tbWFuZHMgYW5kIFBhY2UgVGFyZ2V0cyBTZWN0aW9uIC0tLVxuZXhwb3J0IGNvbnN0IENPTU1BTkRfU0VBUkNIX1BBQ0VTID0gWydxdWljaycsJ2Zhc3QnLCdub3JtYWwnLCdjYXJlZnVsJywndGhvcm91Z2gnXSBhcyBjb25zdDtcbmV4cG9ydCBjb25zdCBpc0NvbW1hbmRUcmVlU2VhcmNoQWN0aW9uID0gKGJ1dHRvbjpDdXN0b21CdXR0b24pOmJvb2xlYW4gPT4gL14oPzpyZXZlYWx8Zmx1c2gpKD86XFxzKyg/OiVufFxcJDEpKT8kL2kudGVzdChidXR0b24uY29tbWFuZC50cmltKCkpO1xuZXhwb3J0IGNvbnN0IENPTU1BTkRfVFJFRV9TRUFSQ0hfQlVUVE9OUyA9IFsncmV2ZWFsJywnZmx1c2gnXS5tYXAodmVyYj0+Y3JlYXRlQnV0dG9uKHtcbiBpZDpgdjItc2VhcmNoLSR7dmVyYn1gLGxhYmVsOnZlcmJbMF0udG9VcHBlckNhc2UoKSt2ZXJiLnNsaWNlKDEpLGNvbW1hbmQ6YCR7dmVyYn0gJW5gLHNldElkOid0cmFpdC11dGlsaXR5J1xufSkpO1xuZXhwb3J0IGNvbnN0IGdldENvbW1hbmRUcmVlU2VhcmNoVGFyZ2V0cyA9ICgpOkNvbW1hbmRBY3Rpb25UYXJnZXRFbnRyeVtdID0+IENPTU1BTkRfU0VBUkNIX1BBQ0VTLm1hcChwYWNlPT4oe1xuIGlkOmBjb21tYW5kLXNlYXJjaC1wYWNlOiR7cGFjZX1gLGxhYmVsOnBhY2VbMF0udG9VcHBlckNhc2UoKStwYWNlLnNsaWNlKDEpLGtleXdvcmQ6cGFjZSxjb250ZXh0OnBhY2UsXG4gY2F0ZWdvcnk6J2NhdC1jb21tYW5kLW9wdGlvbicsZ3JvdXA6J29iamVjdHMnLHNjb3BlOidzZWxmJ1xufSkpO1xuIl0sImZpbGUiOiIvc3JjL3V0aWxzL2NvbW1hbmRUcmVlU2VhcmNoLnRzIn0=
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvdXRpbHMvY29tbWFuZFRyZWVTZWFyY2gudHMiLCIvc3JjL3V0aWxzL2NvbW1hbmRUcmVlU2VhcmNoLnRzIixbXV0=

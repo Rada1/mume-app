@@ -11,6 +11,9 @@ import { CommandTreeObjectTargetLabel } from './CommandTreeObjectTargetLabel';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
+import { MobileCommandTargetSections } from './MobileCommandTargetSections';
+import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
+import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
 
 // --- Render Section ---
 export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = false}: {
@@ -19,8 +22,9 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
 }) => {
     const getFrom = useCommandTreeGetFrom(controller);
     const touchActivation = useSecondaryTouchActivation();
+    const flatTargets = React.useContext(CommandTargetMenuContext);
+    const isMobile = controller.game.viewport?.isMobile === true || flatTargets;
     const branchClass = `command-tree-branch terminal-inline-popover${heldMenu ? ' command-tree-held-command-targets' : ''}`;
-    const [location, setLocation] = React.useState<'room' | 'inventory' | 'worn'>('room');
     const contentsIdPrefix = React.useId();
     const roomContainers = getFrom.fromSections.find(section => section.meta === 'room')?.targets || [];
     const roomContainerIds = new Set(roomContainers.flatMap(target => [target.objectId, target.containerId, target.key]).filter((id): id is string => Boolean(id)));
@@ -35,6 +39,7 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
         displayName: entry.label, entityId: entry.id, parentNoun: entry.parentNoun});
     const renderContents = () => getFrom.loading ? <p className="command-tree-section-empty">Loading contents…</p>
         : getFrom.items.length ? getFrom.items.map(item => <button key={item.key} type="button" data-menu-item="true" className="command-tree-row"
+            ref={heldTargetPreviewRef(() => getFrom.previewItem(item))}
             disabled={getFrom.disabled} title={item.label} onPointerEnter={event => { if (event.pointerType === 'mouse') getFrom.previewItem(item); }}
             onFocus={event => { if (event.currentTarget.matches(':focus-visible')) getFrom.previewItem(item); }} onClick={() => getFrom.getItem(item)}>
             <span className={`command-tree-row-label${item.value === 'all' ? '' : ' is-gear-target'}`}>{item.value === 'all'
@@ -44,14 +49,17 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
         const keyword = target.keyword?.trim() || target.value.replace(/^\d+\./, '');
         const expanded = getFrom.selected?.key === target.key;
         const contentsId = `${contentsIdPrefix}-contents-${encodeURIComponent(target.key)}`;
+        const getButton = <button key={target.key} type="button" data-menu-item="true" className="command-tree-row" disabled={getFrom.disabled} title={`Get ${keyword}`}
+            ref={heldTargetPreviewRef(() => controller.game.setCommandPreview?.(`get ${target.value}`))}
+            onPointerEnter={event => { if (event.pointerType === 'mouse') controller.game.setCommandPreview?.(`get ${target.value}`); }}
+            onFocus={event => { if (event.currentTarget.matches(':focus-visible')) controller.game.setCommandPreview?.(`get ${target.value}`); }}
+            onClick={() => getFrom.getContainer(target)}>
+            <span className="command-tree-row-label is-gear-target"><CommandTreeObjectTargetLabel label={keyword} location={target.meta}/></span>
+        </button>;
+        if (isMobile) return getButton;
         return <div key={target.key} className="command-tree-get-container-option">
             <div className="command-tree-get-target-row" role="group" aria-label={keyword}>
-                <button type="button" data-menu-item="true" className="command-tree-row" disabled={getFrom.disabled} title={`Get ${keyword}`}
-                    onPointerEnter={event => { if (event.pointerType === 'mouse') controller.game.setCommandPreview?.(`get ${target.value}`); }}
-                    onFocus={event => { if (event.currentTarget.matches(':focus-visible')) controller.game.setCommandPreview?.(`get ${target.value}`); }}
-                    onClick={() => getFrom.getContainer(target)}>
-                    <span className="command-tree-row-label is-gear-target"><CommandTreeObjectTargetLabel label={keyword} location={target.meta}/></span>
-                </button>
+                {getButton}
                 <button type="button" className="command-tree-row command-tree-get-expand" aria-label={`${expanded ? 'Hide' : 'Show'} contents of ${keyword}`}
                     aria-expanded={expanded} aria-controls={heldMenu ? `${contentsIdPrefix}-held-contents` : contentsId} disabled={getFrom.disabled}
                     onClick={event => { event.stopPropagation(); expanded ? getFrom.clearSelection() : getFrom.selectContainer(target); }}>
@@ -70,7 +78,7 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
             renderedRoomContainers.add(container.key);
             return renderContainerTarget(container);
         }
-        return <div key={entry.id} onPointerEnter={event => {
+        return <div key={entry.id} ref={heldTargetPreviewRef(() => controller.game.setCommandPreview?.(`get ${entry.context}`))} onPointerEnter={event => {
             if (event.pointerType !== 'mouse') return;
             getFrom.clearSelection();
             controller.game.setCommandPreview?.(`get ${entry.keyword.toLowerCase() === 'all' ? 'all' : entry.context}`.trim());
@@ -89,19 +97,7 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
         {key: 'inventory' as const, label: 'Inventory', available: inventoryTargets.length > 0},
         {key: 'worn' as const, label: 'Equipment', available: equipmentTargets.length > 0}
     ];
-    const selectLocation = (nextLocation: typeof location) => {
-        setLocation(nextLocation);
-        if (nextLocation === 'room') {
-            getFrom.clearSelection();
-            return;
-        }
-        const containers = nextLocation === 'inventory' ? inventoryTargets : equipmentTargets;
-        const firstContainer = containers[0];
-        if (firstContainer) getFrom.selectContainer(firstContainer);
-        else getFrom.clearSelection();
-    };
-    const isMobile = controller.game.viewport?.isMobile === true;
-    const renderLocationContent = (selectedLocation: typeof location) => selectedLocation === 'room' ? <div className="command-tree-location-content" role="group" aria-label="Room objects">
+    const renderLocationContent = (selectedLocation: (typeof locationOptions)[number]['key']) => selectedLocation === 'room' ? <div className="command-tree-location-content" role="group" aria-label="Room objects">
                 {roomObjectTargets}{additionalRoomContainers}
                 {!roomHasTargets && <p className="command-tree-section-empty">No room objects available.</p>}
             </div> : <div className="command-tree-location-content command-tree-section-commands" role="group"
@@ -109,15 +105,24 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
                 {(selectedLocation === 'worn' ? equipmentTargets : inventoryTargets).map(renderContainerTarget)}
                 {!(selectedLocation === 'worn' ? equipmentTargets : inventoryTargets).length && <p className="command-tree-section-empty">No containers available.</p>}
             </div>;
+    const mobileContainers = getFrom.fromSections.flatMap(section => section.targets);
+    if (isMobile) return <MobileCommandTargetSections label="Get targets" heldMenu={heldMenu}
+        options={[{key: 'room', label: 'Room'}, ...mobileContainers.map(target => ({key: `container:${target.key}`,
+            label: <CommandTreeObjectTargetLabel label={target.label} location={target.meta}/>}))]}
+        selectedKey={getFrom.selected ? `container:${getFrom.selected.key}` : 'room'}
+        onSelect={key => {
+            if (key === 'room') { getFrom.clearSelection(); return; }
+            const container = mobileContainers.find(target => `container:${target.key}` === key);
+            if (container) getFrom.selectContainer(container);
+        }}>
+        {getFrom.selected ? <div className="command-tree-get-contents" role="group" aria-label={`Contents of ${getFrom.selected.label}`}>
+            {renderContents()}
+        </div> : renderLocationContent('room')}
+    </MobileCommandTargetSections>;
     return <>
         <section className={branchClass} aria-label="Get targets" {...touchActivation}>
             <CommandTreeTargetHeader/>
-            {isMobile && <div className="command-tree-location-selector" role="group" aria-label="Get from location">
-                {locationOptions.map(option => <button key={option.key} type="button" className={location === option.key ? 'is-selected' : ''}
-                    aria-pressed={location === option.key} disabled={!option.available}
-                    onClick={() => selectLocation(option.key)}>{option.label}</button>)}
-            </div>}
-            {isMobile ? renderLocationContent(location) : locationOptions.filter(option => option.available).map(option =>
+            {locationOptions.filter(option => option.available).map(option =>
                 <CommandTreeCollapsibleSection key={option.key} label={option.label}>{renderLocationContent(option.key)}</CommandTreeCollapsibleSection>)}
         </section>
         {heldMenu && getFrom.selected && <section className={branchClass} aria-label={`Contents of ${getFrom.selected.label}`} {...touchActivation}>

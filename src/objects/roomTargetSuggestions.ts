@@ -273,6 +273,24 @@ export const getRoomContainerTargetSuggestions = (
         : containers;
 };
 
+export const getRoomChestTargetSuggestions = (
+    roomObjects: Array<string | GmcpOccupant>
+): CommandTargetSuggestion[] => getRoomTargetSuggestions(
+    [],
+    roomObjects.filter(source => {
+        if (typeof source !== 'string') {
+            const occupantType = normalizeOccupantType(source)?.toLowerCase();
+            if (['npc', 'enemy', 'ally', 'neutral', 'you', 'self', 'player', 'pc'].includes(occupantType || '')) return false;
+        }
+        if (hasObjectTrait(source, 'trait-mount')) return false;
+        const text = typeof source === 'string'
+            ? source
+            : [source.short, source.shortdesc, source.name, source.keyword].filter(Boolean).join(' ');
+        return /\bchest\b/i.test(text);
+    }),
+    'objects'
+);
+
 export const getRoomCorpseTargetSuggestions = (
     roomObjects: Array<string | GmcpOccupant>
 ): CommandTargetSuggestion[] => getRoomTargetSuggestions(
@@ -280,3 +298,4 @@ export const getRoomCorpseTargetSuggestions = (
     roomObjects.filter(source => hasObjectTrait(source, 'trait-corpse')),
     'objects'
 );
+

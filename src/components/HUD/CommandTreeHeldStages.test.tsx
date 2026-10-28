@@ -63,3 +63,35 @@ it.each(['Get', 'Put'])('%s adds its third target column only after choosing a c
         }
     } finally { await act(async () => root.unmount()); }
 });
+
+// --- Mobile Get Navigation Section ---
+it('keeps mobile Get in three lanes while containers replace the right-hand contents', async () => {
+    actions.getItem.mockClear();
+    actions.getContainer.mockClear();
+    const host = document.createElement('div');
+    const root = createRoot(host);
+    const controller = {game: {viewport: {isMobile: true}, setCommandPreview: vi.fn()}, entries: [], vitals: {target: null}} as unknown as ReturnType<typeof useCommandTreeController>;
+    const button = createButton({id: 'get', label: 'Get', command: 'get %n', setId: 'trait-container'});
+    try {
+        await act(async () => root.render(<div className="command-tree-branches">
+            <section className="command-tree-branch command-tree-main-branch"/>
+            <CommandTreeGetTargets controller={controller} button={button} targets={[]} heldMenu/>
+        </div>));
+        const locations = host.querySelector('[aria-label="Get targets locations"]')!;
+        const targets = host.querySelector('[aria-label="Get targets"]')!;
+        const options = locations.querySelectorAll<HTMLButtonElement>('button');
+        expect([...options].map(option => option.textContent)).toEqual(['Room', 'a leather backpack']);
+        expect(host.querySelectorAll('.command-tree-branches > .command-tree-branch')).toHaveLength(3);
+        await act(async () => options[1].click());
+        expect(actions.getContainer).not.toHaveBeenCalled();
+        expect(actions.getItem).not.toHaveBeenCalled();
+        expect(host.querySelectorAll('.command-tree-branches > .command-tree-branch')).toHaveLength(3);
+        const item = targets.querySelector<HTMLButtonElement>('[aria-label="Contents of a leather backpack"] button')!;
+        expect(item.textContent).toBe('sword');
+        await act(async () => item.click());
+        expect(actions.getItem).toHaveBeenCalledOnce();
+        await act(async () => options[0].click());
+        expect(targets.querySelector('[aria-label="Room objects"]')).not.toBeNull();
+        expect(targets.querySelector('[aria-label="Contents of a leather backpack"]')).toBeNull();
+    } finally { await act(async () => root.unmount()); }
+});

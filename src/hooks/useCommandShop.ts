@@ -124,8 +124,13 @@ export const useCommandShop = (activeState: PopoverState, isVisible: boolean, ac
         browse();
         return true;
     };
+    const closeWorkspace = () => {
+        shop.setCompareFirst(null);
+        shop.setOutputOpen(false);
+        useUIStore.getState().setIsShopOpen(false);
+    };
     return { ...shop, available, atShop, showBrowse, selectedStock, inventoryTarget, outputVisible, purchaseQuantity, purchaseLimit, purchaseTotal,
         stockPending, refreshBalance,
         shopItems, variants, variantRequest, keeperName: keeper?.name || mapShop || 'Shop',
-        browse, selectStock, tryCompare, runStockAction, runInventoryAction, runShow, handleButton };
+        browse, closeWorkspace, selectStock, tryCompare, runStockAction, runInventoryAction, runShow, handleButton };
 };

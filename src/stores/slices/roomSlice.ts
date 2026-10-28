@@ -11,6 +11,7 @@ import { applyVisibleRoomOrder } from '../../hooks/roomVisibleOrder';
 import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils';
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 import { roomFieldUpdate } from './roomFieldUpdate';
+import { occupantsTaggedForRoom } from '../../utils/roomOccupantTransition';
 
 export interface RoomState {
     roomName: string;
@@ -141,7 +142,7 @@ export const createRoomActions = (set: (fn: (state: RoomState) => any) => void, 
                 roomNum: incomingId !== undefined && incomingId !== null ? Number(incomingId) : state.roomNum,
                 mapId: data.id !== undefined && data.id !== null ? data.id : state.mapId,
                 // SMARTER: Only clear occupants if it's a physical room change
-                chars: isNewPhysicalRoom ? {} : state.chars,
+                chars: isNewPhysicalRoom ? occupantsTaggedForRoom(state.chars,incomingId!) : state.chars,
                 visibleRoomSubjects: isNewPhysicalRoom ? [] : state.visibleRoomSubjects,
                 items: isNewPhysicalRoom ? [] : state.items,
                 // Exits often come in the same packet. Normalize keys to short canonical

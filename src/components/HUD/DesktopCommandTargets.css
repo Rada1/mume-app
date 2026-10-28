@@ -1,0 +1,81 @@
+/** @file DesktopCommandTargets.css — Mobile-style target cascades for desktop command menus. */
+/* --- Flat target surfaces and compact branch titles --- */
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu) {
+    box-sizing:border-box; padding:4px!important; border:0; border-radius:0;
+    background:var(--command-tree-surface,#211b16)!important; box-shadow:none;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu) > .command-tree-target-header {
+    box-sizing:border-box; min-height:32px; margin:0 0 4px; padding:0 4px; background:transparent;
+}
+/* --- Single-column target cells match the mobile chooser --- */
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu)
+ :is(.desktop-command-category-list,.command-tree-section-commands,.command-tree-location-content,.command-tree-get-contents,.command-tree-section-content:has(> .command-tree-row),.command-action-target-group:has(> .command-tree-row),.command-tree-money-presets) {
+    display:grid!important; grid-template-columns:minmax(0,1fr)!important; gap:4px; align-items:stretch; align-content:start; min-width:0;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.desktop-command-category-list,.command-tree-section-commands,.command-tree-location-content,.command-tree-get-contents) > * {
+    --mobile-target-cell-background:var(--desktop-control-surface,#2b241d);
+    box-sizing:border-box; min-width:0; width:100%; max-width:100%; margin:0;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.desktop-command-category-list,.command-tree-section-commands,.command-tree-location-content,.command-tree-get-contents) > .command-tree-section-empty { grid-column:1/-1; }
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu)
+ :is(.command-tree-row,.popover-action-button,.terminal-inspect-row) {
+    display:flex; align-items:center; justify-content:center; gap:4px; box-sizing:border-box;
+    width:100%; height:100%; min-width:0; min-height:40px; margin:0!important; padding:6px 4px!important;
+    border:0!important; border-radius:0!important; box-shadow:none!important;
+    background:var(--mobile-target-cell-background,var(--desktop-control-surface,#2b241d))!important;
+    font:11px/1.25 monospace; text-align:center; white-space:normal; overflow-wrap:anywhere;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu) .command-tree-row-label {
+    min-width:0; white-space:normal; overflow-wrap:anywhere; text-align:center;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu)
+ :is(.command-tree-row,.popover-action-button,.terminal-inspect-row):is(:hover,:active,:focus-visible,[aria-pressed="true"],[aria-expanded="true"],[aria-selected="true"],[aria-current="true"],.selected,.is-selected) {
+    background:var(--desktop-control-hover,#43382a)!important;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu) .command-tree-current-target
+ :is(.command-tree-row,.popover-action-button,.terminal-inspect-row) { background:var(--desktop-control-hover,#43382a)!important; }
+/* --- Location rail and selected location styling --- */
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches) .is-target-location-branch .mobile-target-location-list {
+    display:grid; grid-template-columns:minmax(0,1fr); align-content:start; gap:4px; min-width:0; overflow-x:hidden;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches) .mobile-target-location-list .command-tree-row {
+    flex:none; width:100%; min-height:40px; white-space:normal; overflow-wrap:anywhere;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches) .mobile-target-location-list [aria-pressed="true"] {
+    color:#ffdf81;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-category-section-selector,.command-tree-location-selector) { gap:4px; margin:0 0 6px; }
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-category-section-selector,.command-tree-location-selector) button {
+    min-height:36px; padding:5px 8px; border:0; border-radius:0; background:var(--desktop-control-surface,#2b241d); text-transform:none; font:11px monospace;
+}
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
+ :is(.command-tree-category-section-selector,.command-tree-location-selector) button[aria-pressed="true"] { background:var(--desktop-control-hover,#43382a); color:#ffdf81; }
+/* --- Command choices and family buttons share the same chip surfaces --- */
+.app-container:not(.is-mobile) .desktop-command-category-branch .desktop-command-category-list :is(.command-tree-row,.popover-action-button,.terminal-inspect-row) {
+    display:flex; align-items:center; justify-content:center; box-sizing:border-box; width:100%; min-width:0; min-height:40px;
+    margin:0!important; padding:6px 4px!important; border:0!important; border-radius:0!important; box-shadow:none!important;
+    background:var(--mobile-target-cell-background,var(--desktop-control-surface,#2b241d))!important; font:11px/1.25 monospace; text-align:center; white-space:normal; overflow-wrap:anywhere;
+}
+.app-container:not(.is-mobile) .command-tree-v2 .command-tree-desktop-category-actions { gap:4px; background:transparent; }
+.app-container:not(.is-mobile) .command-tree-v2 .command-tree-desktop-category-actions > .command-tree-row {
+    background:var(--desktop-control-surface,#2b241d); border:0; border-radius:0; box-shadow:none; text-transform:none;
+}
+.app-container:not(.is-mobile) .command-tree-v2 .command-tree-desktop-category-actions > .command-tree-row:is(:hover,:focus-visible,[aria-pressed="true"]) {
+    background:var(--desktop-control-hover,#43382a); color:#fff0bd; box-shadow:none;
+}
+/* --- Keep desktop menus free of panel titles --- */
+.app-container:not(.is-mobile) :is(.command-tree-v2,.command-dock-shell) .command-tree-header-title,
+.app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches) .command-tree-target-header {
+    display:none!important;
+}

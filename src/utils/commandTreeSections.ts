@@ -1,6 +1,6 @@
 /** @file commandTreeSections.ts — Shared command subcategories for command and target workspaces. */
 import type { CustomButton } from '../types';
-import { commandTreeGroup as classify, commandTreeAbilityClass, commandTreeMountSection, isCommandTreeObservationCommand } from './commandTreeGroups';
+import { commandTreeGroup as classify, commandTreeAbilityClass, commandTreeMountSection, isCommandTreeObservationCommand, isCommandTreeThiefSearch } from './commandTreeGroups';
 import { commandTreeSpellName } from './commandTreeIdentity';
 import { getPracticeClassKey } from './practiceClassCatalog';
 import { isCommandTreeCallAction, isCommandTreeAccess, isCommandTreeContainer } from './commandTreeAccess';
@@ -13,9 +13,10 @@ import { isCommandTreePracticeAction } from './commandTreePractice';
 export const COMMAND_TREE_ABILITY_CLASS_ORDER = ['Warrior', 'Thief', 'Mage', 'Cleric', 'Ranger'];
 export const getCommandTreeSection = (button: CustomButton) => {
   const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
+  if (verb === 'flee') return 'Retreat';
   const mountSection = commandTreeMountSection(button);
   if (mountSection) return mountSection;
-  if (isCommandTreeObservationCommand(button)) return 'Observation';
+  if (isCommandTreeObservationCommand(button) && !isCommandTreeThiefSearch(button)) return 'Observation';
   if (classify(button) === 2) return ['exits','map'].includes(verb) ? 'Navigation'
    : ['who','whois','where'].includes(verb) ? 'People' : verb === 'weather' ? 'Weather'
     : ['help','hint','hints','time'].includes(verb) ? 'Game' : 'Character';

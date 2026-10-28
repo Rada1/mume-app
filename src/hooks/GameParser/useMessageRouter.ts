@@ -233,7 +233,10 @@ export const useMessageRouter = (deps: MessageRouterDeps) => {
         // Createfood reports its new mushroom as a plain-text appearance event,
         // rather than as a room-description object. Track it so Eat can target it.
         if (isFoodAppearance && appearanceMatch) {
-            objects.push(normalizeRoomObjectName(appearanceMatch[1]));
+            const name = normalizeRoomObjectName(appearanceMatch[1]);
+            if (!objects.some(objectName => normalizeRoomObjectName(objectName).toLowerCase() === name.toLowerCase())) {
+                objects.push(name);
+            }
         }
 
         const skipNouns = /^(here|to|at|is|are|the|some|you|it|from|with|in|on|by)$/i;

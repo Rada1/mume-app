@@ -12,6 +12,7 @@ import { mergeGmcpExitUpdate, normalizeExitMap } from '../../utils/gmcpExitUtils
 import type { GmcpExitMap } from '../../utils/gmcpExitUtils';
 import { reconcileRoomObjectSnapshot } from '../../objects/objectTargetModel';
 import { useVitalsStore } from '../../stores/useVitalsStore';
+import { occupantsTaggedForRoom, tagRiddenMountForRoom } from '../../utils/roomOccupantTransition';
 
 interface UseGmcpRoomProps {
     mapperRef: React.RefObject<MapperRef>;
@@ -127,6 +128,12 @@ export const useGmcpRoom = ({
         if (zone) setRoomZone(zone);
 
         // --- Store Sync ---
+        // Preserve the confirmed ridden mount before Room.Info clears the old roster.
+        // Mounted travel commonly has no accompanying Room.Chars.Add packet.
+        const ridingVitals=useVitalsStore.getState();
+        if (roomChanged && roomNum != null && (ridingVitals.isRiding || ['riding','mounted'].includes(ridingVitals.position))) {
+            setRoomChars?.(previous => tagRiddenMountForRoom(previous,roomNum));
+        }
         gmcpBus.emit('Room.Info', { ...data, zone, isSnooped: false });
 
         // Drive lighting from GMCP Room Info
@@ -156,13 +163,7 @@ export const useGmcpRoom = ({
             const newRoomKey = roomNum != null ? String(roomNum) : null;
             setRoomChars?.(prev => {
                 if (!newRoomKey) return {};
-                const next: Record<number, import('../../types').GmcpOccupant> = {};
-                Object.entries(prev).forEach(([key, occ]) => {
-                    if (occ._roomNum != null && String(occ._roomNum) === newRoomKey) {
-                        next[Number(key)] = occ;
-                    }
-                });
-                return next;
+                return occupantsTaggedForRoom(prev,newRoomKey);
             });
             
             // The first Room.Info initializes the current room; only later room

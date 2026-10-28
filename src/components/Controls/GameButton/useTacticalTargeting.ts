@@ -87,7 +87,7 @@ export const useTacticalTargeting = ({
                 const usesChipPriority = usesChipPriorityOffensiveTarget(activeCmd);
                 const automaticTarget = autoTargetForCommand?.(activeCmd);
                 const hasOffensiveAutoTarget = isOffensiveSingleTargetCommand(activeCmd) && Boolean(automaticTarget);
-                const defaultTarget = menuKind === 'social'
+                const defaultTarget = menuKind === 'social' || menuKind === 'inventory-and-worn-weapons'
                     ? null
                     : isForcedDefaultCommand
                     ? getDefaultCommandTarget(activeCmd)
@@ -207,6 +207,7 @@ export const useTacticalTargeting = ({
                 || automaticTarget;
         }
         if (kind === 'inventory-meat') return null;
+        if (kind === 'inventory-and-worn-weapons') return null;
         const isRoomCharacterCommand = kind === 'room' || kind === 'room-spell'
             || kind === 'room-spell-with-extras' || kind === 'bash';
         const rememberedTarget = autoTargetEnabled || !isRoomCharacterCommand

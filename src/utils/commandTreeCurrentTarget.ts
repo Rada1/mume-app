@@ -7,6 +7,7 @@ import { isFriendlyTargetCommand } from './friendlyTargetCommand';
 
 // --- Offensive Target Section ---
 export const isCommandTreeOffensiveTargetAction = (button: CustomButton): boolean => {
+    if (/^(?:assist|ass|track)(?:\s|$)/i.test(button.command.trim())) return false;
     if (!canCommandAcceptTarget(button.command)) return false;
     if (/^(?:bash|pick)\s+%n\|exit\b/i.test(button.command.trim())) return false;
     if (isFriendlyTargetCommand(button) || button.inlineTargetKinds?.every(kind => kind !== 'character')) return false;
@@ -14,6 +15,11 @@ export const isCommandTreeOffensiveTargetAction = (button: CustomButton): boolea
         || /^trait-(?:offense|control)$/.test(button.setId)
         || /^inline-ability-(?:offense|control)-/.test(button.id);
 };
+
+export const usesCommandTargetChip = (button: CustomButton): boolean => (
+    isCommandTreeOffensiveTargetAction(button)
+    || (/^track(?:\s|$)/i.test(button.command.trim()) && canCommandAcceptTarget(button.command))
+);
 
 // --- Current Target Section ---
 export const getCommandTreeCurrentTarget = (

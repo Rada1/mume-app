@@ -34,9 +34,9 @@ export const useCommandTreeObservation = (controller: ReturnType<typeof useComma
     useEffect(() => { setSectionLabel('Room'); setLookInOpen(false); }, [button.id, button.command]);
     const chooseSection = (label: string) => {
         setSectionLabel(label);
-        setLookInOpen(false);
+        setLookInOpen(label === 'Containers');
         controller.previewEntity(null);
-        controller.game.setCommandPreview?.(getCommandTreeBasePreview(button.command));
+        controller.game.setCommandPreview?.(label === 'Containers' ? 'look in <container>' : getCommandTreeBasePreview(button.command));
     };
     const containers = useMemo(() => getLookInTargets(targets, controller.game.entities, controller.game.inlineCategories || []),
         [targets, controller.game.entities, controller.game.inlineCategories]);

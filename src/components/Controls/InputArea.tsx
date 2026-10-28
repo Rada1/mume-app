@@ -10,6 +10,8 @@ import { audioManager } from '../../services/audio/AudioManager';
 import { useRoomStore } from '../../stores/useRoomStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandSuggestions } from '../../hooks/useCommandSuggestions';
+import { useCommandPrefixPreview } from '../../hooks/useCommandPrefixPreview';
+import { useCommunicationSuggestionComposer } from '../../hooks/useCommunicationSuggestionComposer';
 import { CommandArgumentText } from './CommandArgumentText';
 import { useWhoListRefresh } from '../../hooks/useWhoListRefresh';
 import { CommandSuggestionPopup } from './CommandSuggestionPopup';
@@ -58,9 +60,10 @@ const EXAMPLE_COMMANDS = [
 ];
 
 const InputArea: React.FC<InputAreaProps> = ({
-    onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview,
+    onSend, terrain, onSwipe, isMobile, isKeyboardOpen, commandPreview: rawCommandPreview,
     spatButtons, setActiveSet, executeCommand, setSpatButtons, setPopoverState, parley, setParley, whoList, gameState, rightSlot
 }) => {
+    const commandPreview = useCommandPrefixPreview(rawCommandPreview);
     const input = useInputStore(s => s.input);
     const setInput = useInputStore(s => s.setInput);
     const targetPickerRequestId = useInputStore(s => s.targetPickerRequestId);
@@ -86,6 +89,11 @@ const InputArea: React.FC<InputAreaProps> = ({
     const isSwiping = useRef(false);
     const [commandIndex, setCommandIndex] = useState(0);
     const [openParleyPicker, setOpenParleyPicker] = useState<'channel' | 'target' | null>(null);
+    useEffect(() => {
+        if (parley.active && ['tell', 'whisper', 'ask'].includes(parley.command) && !parley.target) {
+            setOpenParleyPicker('target');
+        }
+    }, [parley.active, parley.command, parley.target]);
     const parleyChannelSuggestions = useMemo(() => getChatChannelSuggestions(), []);
     const parleyTargetSuggestions = useMemo(() => getChatTargetSuggestions(whoList), [whoList]);
     const requestWhoList = useWhoListRefresh(whoList, executeCommand);
@@ -382,6 +390,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         if ((parley.target || '') !== value) triggerHaptic?.(15);
         setParley(current => ({ ...current, target: value || null }));
         setOpenParleyPicker(null);
+        requestAnimationFrame(() => inputRef.current?.focus());
     }, [parley.target, setParley, triggerHaptic]);
 
     const TARGETLESS_COMMANDS = ['say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act'];
@@ -423,6 +432,7 @@ const InputArea: React.FC<InputAreaProps> = ({
     const loginWaitingLabel = status === 'connected' ? 'Waiting for server response…'
         : status === 'connecting' ? 'Connecting to MUME…' : 'Connect to MUME to begin.';
     const currentMode = parley.mode || (parley.active ? 'parley' : 'command');
+    const openCommunicationComposer = useCommunicationSuggestionComposer(setParley, setInput);
 
     const {
         commandTextParts,
@@ -435,7 +445,6 @@ const InputArea: React.FC<InputAreaProps> = ({
         visibleCommandSuggestions,
         targetSuggestions,
         commandArgumentChips,
-        commandArgumentCaretKey,
         selectedTargetSuggestion,
         spellSuggestions,
         popupStyle: commandPopupStyle,
@@ -452,6 +461,7 @@ const InputArea: React.FC<InputAreaProps> = ({
         handleCommandArgumentKeyDown,
         clearCommandArgumentCaret
     } = useCommandSuggestions({
+        openCommunicationComposer,
         input,
         setInput,
         gameState,
@@ -806,7 +816,6 @@ const InputArea: React.FC<InputAreaProps> = ({
                                     text={commandTextParts.suffix}
                                     offset={commandTextParts.leading.length + commandTextParts.token.length}
                                     chips={commandArgumentChips}
-                                    caretKey={commandArgumentCaretKey}
                                     onChooseChip={chooseCommandArgumentSuggestion}
                                 />
                             </div>
@@ -815,7 +824,7 @@ const InputArea: React.FC<InputAreaProps> = ({
                             ref={inputRef}
                             id="mud-input"
                             name="mud-input"
-                            className={`input-field${commandTextParts ? ' command-highlight-source' : ''}${commandArgumentCaretKey ? ' command-argument-caret-hidden' : ''}`}
+                            className={`input-field${commandTextParts ? ' command-highlight-source' : ''}`}
                             autoComplete="off"
                             autoCapitalize="none"
                             autoCorrect="off"

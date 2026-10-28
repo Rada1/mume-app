@@ -2,14 +2,27 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useCommandSectionExpansion } from '../../hooks/useCommandSectionExpansion';
+import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
 
 // --- Render Section ---
-export const CommandTreeCollapsibleSection = ({label, children, ariaLabel, className = ''}: {
+type SectionProps = {
     label: string;
     children: React.ReactNode;
     ariaLabel?: string;
     className?: string;
-}) => {
+};
+
+export const CommandTreeCollapsibleSection = (props: SectionProps) => {
+    const flatTargets = React.useContext(CommandTargetMenuContext);
+    if (flatTargets) return <section className={`command-tree-section${props.className ? ` ${props.className}` : ''}`}
+        aria-label={props.ariaLabel || props.label}>
+        <div className="command-tree-section-content">{props.children}</div>
+    </section>;
+    return <ExpandableSection {...props}/>;
+};
+
+// --- Expandable Command and Desktop Section ---
+const ExpandableSection = ({label, children, ariaLabel, className = ''}: SectionProps) => {
     const { sectionRef, open, toggle } = useCommandSectionExpansion(ariaLabel || label);
     const contentId = React.useId();
     return <section ref={sectionRef} className={`command-tree-section${className ? ` ${className}` : ''}`} aria-label={ariaLabel || label}>

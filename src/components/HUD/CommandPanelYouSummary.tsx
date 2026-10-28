@@ -10,36 +10,46 @@ import type { DrawerLine, ExecuteCommand } from '../../types';
 import { calculateRegen, formatRegen } from '../../utils/regenUtils';
 import { useCommandInfoStore } from '../../stores/useCommandInfoStore';
 import { useCommandSummaryHeight } from '../../hooks/useCommandSummaryHeight';
+import { useDesktopHoverPreview } from '../../hooks/useDesktopHoverPreview';
+import { useQuickStateMenuPosition } from '../../hooks/useQuickStateMenuPosition';
 import { useWimpyThresholdControl } from '../../hooks/useWimpyThresholdControl';
 import { getMovementModeActions } from '../../hooks/useMovementModeActions';
+import { MobileGroupControl } from './MobileGroupControl';
 import './CommandPanelYouSummary.css';
+import './MobileCharacterPopover.css';
 
 // --- Logic Section ---
 const formatCharacterName = (name: string | null | undefined, fallback: string | null | undefined) =>
-    name?.trim() || fallback?.trim() || 'Adventurer';
+    (typeof name === 'string' && name.trim()) || (typeof fallback === 'string' && fallback.trim()) || 'Adventurer';
 
 // --- Render Section ---
 export const CommandPanelYouSummary = ({
     fallbackName,
     scoreLines,
     executeCommand,
-    scopeKey
+    scopeKey,
+    headerActions
 }: {
     fallbackName: string | null;
     scoreLines: DrawerLine[];
     executeCommand: ExecuteCommand;
     scopeKey: string;
+    headerActions?: React.ReactNode;
 }) => {
     const vitals = useActiveVitals();
     const summaryRef = useCommandSummaryHeight();
     const collapsed = useCommandInfoStore(state => state.collapsed);
     const toggle = useCommandInfoStore(state => state.toggle);
     const detailsId = React.useId();
-    const { characterInfo: gameCharacterInfo, gameState, isSpectateMode, triggerHaptic } = useGame();
+    const { characterInfo: gameCharacterInfo, gameState, isSpectateMode, triggerHaptic, viewport } = useGame();
+    const hoverPreview = useDesktopHoverPreview(viewport?.isMobile === false);
+    const expanded = !collapsed || hoverPreview.open;
+    const mobilePopover = useQuickStateMenuPosition(viewport?.isMobile && expanded ? 'character' : null, true);
     const { displayEqLines } = useUI();
     const { value: wimpyValue, canChange: canChangeWimpy, changeThreshold } = useWimpyThresholdControl();
     const activeTimers = useActiveEffectTimers();
-    const { snapshot } = useVitalsScoreSnapshot(scoreLines, executeCommand, scopeKey);
+    const { snapshot, isRequesting: isRequestingVitalsScore, requestScore } =
+        useVitalsScoreSnapshot(scoreLines, executeCommand, scopeKey);
     const [showSnapshot, setShowSnapshot] = React.useState(false);
     const previousSnapshot = React.useRef(snapshot);
     const character = vitals.characterInfo;
@@ -49,7 +59,7 @@ export const CommandPanelYouSummary = ({
         vitals.characterInfo.affectedBy,
         vitals.conditions,
         vitals.position,
-        character.name || fallbackName || ''
+        name
     );
     const flags = [
         vitals.isRiding || ['riding', 'mounted'].includes(String(vitals.position || '').toLowerCase()) ? 'Riding' : null,
@@ -68,6 +78,11 @@ export const CommandPanelYouSummary = ({
         name, character.xp, character.tp, character.tnl, character.tpnl, scopeKey
     );
     const canRefreshCombatStats = gameState === 'playing' && !isSpectateMode;
+    const refreshVitals = () => {
+        if (!canRefreshCombatStats || isRequestingVitalsScore) return;
+        triggerHaptic(10);
+        requestScore();
+    };
     const toggleMovementMode = (command: string) => {
         if (!canRefreshCombatStats) return;
         triggerHaptic(10);
@@ -92,7 +107,7 @@ export const CommandPanelYouSummary = ({
         if (!snapshot || previousSnapshot.current === snapshot) return;
         previousSnapshot.current = snapshot;
         setShowSnapshot(true);
-        const timeout = window.setTimeout(() => setShowSnapshot(false), 4500);
+        const timeout = window.setTimeout(() => setShowSnapshot(false), 2000);
         return () => window.clearTimeout(timeout);
     }, [snapshot]);
     React.useEffect(() => {
@@ -102,20 +117,15 @@ export const CommandPanelYouSummary = ({
     const renderVital = (label: string, status: string | null, value: number, maximum: number, regeneration: number) => {
         const scoreText = maximum > 0 ? `${value}/${maximum}` : String(value);
         const displayStatus = status ? `${status.charAt(0).toUpperCase()}${status.slice(1)}` : '\u2014';
-        const regenText = `${formatRegen(regeneration)} per tick`;
-        return <div className="command-tree-you-vital" data-vital-type={label.toLowerCase()} key={label} tabIndex={0}
-            aria-label={`${label}: ${scoreText}; regeneration ${regenText}`}
-            aria-describedby={`command-tree-vital-tooltip-${label.toLowerCase()}`}>
+        return <div className="command-tree-you-vital" data-vital-type={label.toLowerCase()} key={label}>
             <small>{label}</small>
             <span className={`command-tree-you-vital-value${showSnapshot ? ' is-showing-snapshot' : ''}`} aria-live="polite">
                 <span className="command-tree-you-vital-status" data-vital-type={label.toLowerCase()} aria-hidden={showSnapshot}>
                     {displayStatus} <span className="command-tree-you-vital-regen">({formatRegen(regeneration)}/tick)</span>
                 </span>
-                <span className="command-tree-you-vital-snapshot" aria-hidden={!showSnapshot}>{scoreText}</span>
-            </span>
-            <span id={`command-tree-vital-tooltip-${label.toLowerCase()}`} className="command-tree-you-vital-tooltip" role="tooltip">
-                <strong>{scoreText}</strong>
-                <span><small>Regen</small>{regenText}</span>
+                <span className="command-tree-you-vital-snapshot" data-vital-type={label.toLowerCase()} aria-hidden={!showSnapshot}>
+                    {scoreText} <span className="command-tree-you-vital-regen">({formatRegen(regeneration)}/tick)</span>
+                </span>
             </span>
         </div>;
     };
@@ -126,19 +136,40 @@ export const CommandPanelYouSummary = ({
     };
 
     return <section ref={summaryRef} className="command-tree-you-summary" aria-label="Character status">
-        <button type="button" className="command-tree-you-identity command-tree-you-toggle"
-            aria-expanded={!collapsed} aria-controls={detailsId}
-            aria-label={`${collapsed ? 'Expand' : 'Collapse'} character info`} onClick={toggle}>
+        <div className="command-tree-you-header">
+        <button ref={node => { mobilePopover.anchorRef.current = node; }} type="button" className="command-tree-you-identity command-tree-you-toggle"
+            aria-expanded={expanded} aria-controls={detailsId}
+            aria-label={`${collapsed ? 'Expand' : 'Collapse'} character info`} onPointerEnter={hoverPreview.enter} onPointerLeave={hoverPreview.leave}
+            onClick={() => { hoverPreview.clear(); toggle(); }}>
             <strong title={name}>{name}</strong>
             <span>Lv.{character.level || '\u2014'}</span>
             <span className="command-tree-you-gold">{(character.gold || 0).toLocaleString()} gold</span>
             <span className="command-tree-you-progression" title={`+${sessionXp.toLocaleString()} XP and +${sessionTp.toLocaleString()} TP gained this session`} aria-label={`${sessionXp.toLocaleString()} XP and ${sessionTp.toLocaleString()} TP gained this session`}>
                 XP +{sessionXp.toLocaleString()} · TP +{sessionTp.toLocaleString()}
             </span>
-            {subtext && <small title={subtext} hidden={collapsed}>{subtext}</small>}
+            {subtext && <small title={subtext} hidden={!expanded}>{subtext}</small>}
         </button>
-        <div id={detailsId} className="command-tree-you-expanded" hidden={collapsed}>
-        <div className="command-tree-you-vitals" aria-label="Vitals">
+        {headerActions}
+        <MobileGroupControl dock />
+        </div>
+        <div id={detailsId} ref={node => { mobilePopover.menuRef.current = node; }} popover={viewport?.isMobile ? 'manual' : undefined} className="command-tree-you-expanded" hidden={!expanded}
+            style={viewport?.isMobile ? {...mobilePopover.position, width:'min(340px, calc(100vw - 16px))'} : undefined}
+            onPointerEnter={hoverPreview.enter} onPointerLeave={hoverPreview.leave}>
+        <div className={`command-tree-you-vitals${isRequestingVitalsScore ? ' is-requesting' : ''}`}
+            role="button" aria-label="Refresh vitals with score command" aria-disabled={!canRefreshCombatStats}
+            aria-busy={isRequestingVitalsScore} tabIndex={canRefreshCombatStats ? 0 : -1}
+            onClick={() => { if (canRefreshCombatStats) refreshVitals(); }}
+            onKeyDown={event => {
+                if (event.key === ' ' && canRefreshCombatStats) event.preventDefault();
+                if (!canRefreshCombatStats || event.repeat || event.key !== 'Enter') return;
+                event.preventDefault();
+                refreshVitals();
+            }}
+            onKeyUp={event => {
+                if (!canRefreshCombatStats || event.key !== ' ') return;
+                event.preventDefault();
+                refreshVitals();
+            }}>
             {renderVital('Health', vitals.hpStatus, vitalsSnapshot.hp, vitalsSnapshot.maxHp, regen.hp)}
             {renderVital('Mana', vitals.manaStatus, vitalsSnapshot.mana, vitalsSnapshot.maxMana, regen.mana)}
             {renderVital('Move', vitals.moveStatus, vitalsSnapshot.move, vitalsSnapshot.maxMove, regen.move)}

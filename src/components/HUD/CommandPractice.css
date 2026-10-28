@@ -4,7 +4,6 @@
 .command-practice-tools span { flex: 1; }
 .command-practice-tools button { padding: 6px; border: 1px solid rgba(201,168,76,.3); border-radius: 3px; background: transparent; color: var(--accent); font: inherit; cursor: pointer; }
 .command-practice-tools button:disabled, .command-practice-actions .terminal-inspect-row:disabled { opacity: .45; cursor: default; }
-.command-practice-targets > input { box-sizing: border-box; width: 100%; min-width: 0; padding: 6px; background: transparent; border: 1px solid rgba(201,168,76,.2); color: var(--text-primary); font: inherit; font-size: 11px; }
 .command-practice-expanded-group > .command-practice-group-heading { display: flex; min-height: 24px; align-items: center; gap: 8px; padding: 5px 10px 5px 0; }
 .command-practice-group-heading > span { display: flex; flex: 1 1 auto; min-width: 0; align-items: center; gap: 8px; color: #8f8374; font-size: 0.58rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
 .command-practice-group-heading > span::before, .command-practice-group-heading > span::after { content: ''; height: 1px; background: rgba(201, 168, 76, 0.2); }
