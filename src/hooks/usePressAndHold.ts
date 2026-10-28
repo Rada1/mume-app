@@ -79,6 +79,10 @@ export const usePressAndHold = <T,>(
 
     const onPointerUp = useCallback((event: ReactPointerEvent<HTMLElement>) => finishPointer(event.pointerId, false), [finishPointer]);
     const onPointerCancel = useCallback((event: ReactPointerEvent<HTMLElement>) => finishPointer(event.pointerId, true), [finishPointer]);
+    const cancel = useCallback(() => {
+        const activeHold = activeHoldRef.current;
+        if (activeHold) finishPointer(activeHold.pointerId, true);
+    }, [finishPointer]);
     const shouldSuppressClick = useCallback((value: T) => {
         if (!Object.is(suppressedClickRef.current, value)) return false;
         suppressedClickRef.current = null;
@@ -93,5 +97,5 @@ export const usePressAndHold = <T,>(
         activeHoldRef.current = null;
     }, []);
 
-    return {onPointerDown, onPointerMove, onPointerUp, onPointerCancel, shouldSuppressClick};
+    return {onPointerDown, onPointerMove, onPointerUp, onPointerCancel, shouldSuppressClick, cancel};
 };

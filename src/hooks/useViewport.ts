@@ -5,6 +5,7 @@
 
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTerminalLayout } from './useTerminalLayout';
+import { useLogAutoScroll } from './useLogAutoScroll';
 
 export function useViewport(
     uiMode: import('../types').UiMode = 'auto',
@@ -19,13 +20,9 @@ export function useViewport(
 
 
 
-    // Scroll refs
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const scrollAnimationRef = useRef<number | null>(null);
-    const autoScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const isAutoScrollingRef = useRef<boolean>(false);
-    const isLockedToBottomRef = useRef(true);
+    // --- Shared log following ---
+    const { scrollContainerRef, messagesEndRef, scrollAnimationRef,
+        isAutoScrollingRef, isLockedToBottomRef, scrollToBottom } = useLogAutoScroll();
 
     // Viewport measurement refs
     const lastWidthRef = useRef<number>(0);
@@ -52,64 +49,6 @@ export function useViewport(
     // Mobile landscape uses its native orientation and receives a side-by-side layout.
     const isRotatedLandscape: boolean = false;
     const isLandscape = isPhysicalLandscape;
-
-    const scrollToBottom = useCallback((force = false, instant = false, _source = 'unknown') => {
-        if (!scrollContainerRef.current) return;
-        const container = scrollContainerRef.current;
-
-        const currentScroll = container.scrollTop;
-        const targetScroll = Math.max(0, container.scrollHeight - container.clientHeight);
-
-        if (!force) {
-            const threshold = 40; // Increased to match MessageLog.tsx lock detection
-            const isNearBottom = targetScroll - currentScroll < threshold;
-            if (!isNearBottom) return;
-        }
-
-        if (scrollAnimationRef.current) {
-            cancelAnimationFrame(scrollAnimationRef.current);
-            scrollAnimationRef.current = null;
-        }
-        // Set isAutoScrollingRef BEFORE scrollTop so the resulting scroll event
-        // is recognized as programmatic — otherwise handleScroll sets isUserScrollingRef=true
-        // for 150ms which blocks VirtualizerResize corrections during rapid text.
-        isAutoScrollingRef.current = true;
-        container.scrollTop = targetScroll;
-        requestAnimationFrame(() => { isAutoScrollingRef.current = false; });
-    }, []);
-
-    useEffect(() => {
-        const container = scrollContainerRef.current;
-        if (!container) return;
-
-        let lastHeight = container.scrollHeight;
-
-        const resizeObserver = new ResizeObserver(() => {
-            const newHeight = container.scrollHeight;
-            if (newHeight === lastHeight) return;
-
-            // If already animating, the animation loop itself will track the height.
-            // But for simple snaps or stillness, let's follow the growth.
-            if (isAutoScrollingRef.current) {
-                lastHeight = newHeight;
-                return;
-            }
-
-            lastHeight = newHeight;
-
-            if (isLockedToBottomRef.current) {
-                // Remove the delay, use RAF for sub-pixel accuracy
-                requestAnimationFrame(() => {
-                    if (isLockedToBottomRef.current && !isAutoScrollingRef.current) {
-                        scrollToBottom(true, true, 'ResizeObserver_Growth');
-                    }
-                });
-            }
-        });
-
-        resizeObserver.observe(container);
-        return () => resizeObserver.disconnect();
-    }, [scrollToBottom]);
 
     // logFontSize is a MULTIPLIER on top of the auto-fit base size.
     // Desktop and mobile fit game text to 80 columns, with desktop capped at 16px.

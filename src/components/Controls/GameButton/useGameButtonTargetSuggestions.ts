@@ -74,7 +74,7 @@ const TARGET_MENU_TITLES: Record<CommandTargetMenuKind, string> = {
     'look-containers': 'CONTAINERS',
     gear: 'ITEMS',
     'inventory-gear': 'INVENTORY',
-    'inventory-and-worn-weapons': 'WEAPONS',
+    'inventory-and-worn-weapons': 'WEAPONS & ARROWS',
     'inventory-weapons': 'INVENTORY WEAPONS',
     'inventory-meat': 'MEAT',
     'herbal-kit': 'KIT',

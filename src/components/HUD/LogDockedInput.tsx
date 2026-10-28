@@ -494,7 +494,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
     return (
         <div className={`message-log-docked-input${commandDockActive ? ' command-dock-row' : ''}`}>
             {commandDockActive && <div id="command-dock-controls" className="command-dock-controls" />}
-            <div className={commandDockActive ? 'command-dock-input-main' : 'command-dock-input-main is-inline'}>
+            <div className={`command-dock-input-main${commandDockActive ? '' : ' is-inline'}${isParleyActive ? ' has-parley' : ''}`}>
             <span className="docked-prompt-symbol">&gt;</span>
 
             {gameState === 'playing' && <ParleyChannelChip command={isParleyActive ? parley.command : 'none'} target={isParleyActive ? parley.target : null} whoList={whoList} iconOnly={!isParleyActive}
@@ -504,6 +504,7 @@ export const LogDockedInput: FC<LogDockedInputProps> = ({
                     triggerHaptic?.(15);
                     requestAnimationFrame(() => inputRef.current?.focus());
                 }} />}
+            {isParleyActive && <span className="docked-parley-line-break" aria-hidden="true" />}
             <form className="docked-input-form" onSubmit={handleSubmit}>
                 <div
                     ref={commandInputWrapRef}

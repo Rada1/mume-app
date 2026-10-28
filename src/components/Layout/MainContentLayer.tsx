@@ -1,3 +1,4 @@
+/** @file MainContentLayer.tsx — Main log, map, command and docked panel surfaces. */
 import React, { FC } from 'react';
 import Header from '../HUD/Header';
 import MessageLog from '../Messages/MessageLog';
@@ -16,6 +17,7 @@ import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { getDockedWidth } from '../../utils/dockedPanelUtils';
 import { useRetainedLogWidth } from '../../hooks/useRetainedLogWidth';
+import { useLogSurfaceLayout } from '../../hooks/useLogSurfaceLayout';
 import { LineCluster } from './HUD/LineCluster';
 import { CounterRotatedContent } from './CounterRotatedContent';
 import { CharacterCard } from '../HUD/CharacterCard';
@@ -46,7 +48,6 @@ import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
 import { useClientDetailsViewport } from '../../hooks/useClientDetailsViewport';
 import { SwipeWheelCellDialogHost } from '../Controls/GameButton/SwipeWheelCellDialog';
 import { MobileLogCommandResizeHandle } from './MobileLogCommandResizeHandle';
-
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
 const MumeArchive = React.lazy(() => import('../Utility/MumeArchive').then(module => ({ default: module.MumeArchive })));
@@ -273,62 +274,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
         return () => observer.disconnect();
     }, [isNewbieMode, roomName, roomDesc]);
 
-    React.useLayoutEffect(() => {
-        const updateCenter = () => {
-            if (logContainerRef.current) {
-                const rect = logContainerRef.current.getBoundingClientRect();
-                const commandBar = logContainerRef.current.querySelector<HTMLElement>('.command-dock-input-main:not(.is-inline), .message-log-docked-input:not(.command-dock-row)');
-                const commandBarRect = commandBar?.getBoundingClientRect();
-                const mapPanel = [
-                    document.querySelector<HTMLElement>('.mobile-map-panel'),
-                    document.querySelector<HTMLElement>('.map-drawer-desktop.open')
-                ].find(panel => {
-                    const panelRect = panel?.getBoundingClientRect();
-                    return Boolean(panelRect && panelRect.width > 0 && panelRect.height > 0);
-                });
-                const mapRect = mapPanel?.getBoundingClientRect();
-                const x = rect.left + rect.width / 2;
-                const y = rect.top + rect.height / 2;
-                document.documentElement.style.setProperty('--wheel-center-x', `${x}px`);
-                document.documentElement.style.setProperty('--wheel-center-y', `${y}px`);
-                document.documentElement.style.setProperty('--target-menu-log-bottom', `${rect.bottom}px`);
-                document.documentElement.style.setProperty('--message-log-left', `${rect.left}px`);
-                document.documentElement.style.setProperty('--message-log-top', `${rect.top}px`);
-                document.documentElement.style.setProperty('--message-log-width', `${rect.width}px`);
-                document.documentElement.style.setProperty('--message-log-height', `${rect.height}px`);
-                document.documentElement.style.setProperty(
-                    '--message-log-action-area-height',
-                    `${commandBarRect ? Math.max(0, commandBarRect.top - rect.top) : rect.height}px`
-                );
-                document.documentElement.style.setProperty('--tactical-map-left', `${mapRect?.left ?? 0}px`);
-                document.documentElement.style.setProperty('--tactical-map-top', `${mapRect?.top ?? 0}px`);
-                document.documentElement.style.setProperty('--tactical-map-width', `${mapRect?.width ?? window.innerWidth}px`);
-                document.documentElement.style.setProperty('--tactical-map-height', `${mapRect?.height ?? window.innerHeight}px`);
-            }
-        };
-
-        const observer = new ResizeObserver(updateCenter);
-        if (logContainerRef.current) {
-            observer.observe(logContainerRef.current);
-            const commandBar = logContainerRef.current.querySelector<HTMLElement>('.command-dock-input-main:not(.is-inline), .message-log-docked-input:not(.command-dock-row)');
-            if (commandBar) observer.observe(commandBar);
-            document.querySelectorAll<HTMLElement>('.mobile-map-panel, .map-drawer-desktop.open')
-                .forEach(mapPanel => observer.observe(mapPanel));
-            if (logContainerRef.current.parentElement) {
-                observer.observe(logContainerRef.current.parentElement);
-            }
-        }
-
-        const timeout = setTimeout(updateCenter, 100);
-        window.addEventListener('resize', updateCenter);
-        window.addEventListener('scroll', updateCenter, true);
-        return () => {
-            clearTimeout(timeout);
-            observer.disconnect();
-            window.removeEventListener('resize', updateCenter);
-            window.removeEventListener('scroll', updateCenter, true);
-        };
-    }, []);
+    useLogSurfaceLayout(logContainerRef);
 
     // --- Full-width terrain strip alignment ---
     // The pixel-art terrain border used to be scoped to the log column only. To let it
@@ -585,6 +531,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         } as React.CSSProperties}
                     >
                         <div className="log-opaque-backdrop" />
+                        {viewport.isMobile && isImmersionMode && <div className="mobile-log-frame" aria-hidden="true" />}
                         {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
                         <CounterRotatedContent active={viewport.isRotatedLandscape} className="rotated-log-display">
                         {!viewport.isMobile && <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" label="Resize log right edge" />}

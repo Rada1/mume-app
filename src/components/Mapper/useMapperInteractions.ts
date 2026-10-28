@@ -201,7 +201,9 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
     const startMouseRef = useRef({ x: 0, y: 0 });
     const startTimeRef = useRef(0);
     const hasDraggedRef = useRef(false);
-    const dragTypeRef = useRef<'pan' | 'room' | 'marker' | 'marquee' | 'joystick' | 'region-label' | 'background-align' | null>(null);
+    const dragTypeRef = useRef<'pan' | 'room' | 'marker' | 'marquee' | 'joystick' | 'region-label' | 'background-align' | 'pad-pending' | null>(null);
+    const padPointersRef = useRef(new Map<number, HTMLElement>());
+    const padInteractionRef = useRef(false);
     const draggedMarkerRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
     const markersRefLocal = useRef(deps.markers);
     useEffect(() => { markersRefLocal.current = deps.markers; }, [deps.markers]);
@@ -484,8 +486,19 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             depsRef.current.setContextMenu(null);
         };
 
-        const onDown = (e: PointerEvent) => {
-            if (e.target !== currentCanvas()) return;
+        const markPadGesture = () => {
+            if (!padPointersRef.current.size) return;
+            const pads = new Set<HTMLElement>();
+            padPointersRef.current.forEach(button => {
+                button.dataset.mapGesture = 'true';
+                const pad = button.closest<HTMLElement>('.movement-pad');
+                if (pad) pads.add(pad);
+            });
+            pads.forEach(pad => pad.dispatchEvent(new Event('mume:movement-pad-map-gesture')));
+        };
+
+        const onDown = (e: PointerEvent, padButton?: HTMLElement) => {
+            if (!padButton && e.target !== currentCanvas()) return;
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
             lastMapPointerTypeRef.current = e.pointerType;
@@ -502,11 +515,19 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
             // Prevent browser gestures (scrolling, etc) from stealing map input
             if (e.pointerType === 'mouse' && e.button !== 0) return; // Only allow left-click for drag
-            if (e.cancelable) e.preventDefault();
-            e.stopPropagation();
+            if (!padButton) {
+                if (e.cancelable) e.preventDefault();
+                e.stopPropagation();
+            }
 
             activePointersRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
-            try { currentCanvas().setPointerCapture(e.pointerId); } catch(err) {}
+            if (padButton) {
+                padInteractionRef.current = true;
+                delete padButton.dataset.mapGesture;
+                padPointersRef.current.set(e.pointerId, padButton);
+            } else {
+                try { currentCanvas().setPointerCapture(e.pointerId); } catch(err) {}
+            }
             
             const pointers = Array.from(activePointersRef.current.keys()).sort((a, b) => a - b).map(id => ({ id, ...activePointersRef.current.get(id)! }));
             lastPointersRef.current = pointers;
@@ -522,6 +543,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 dragTypeRef.current = 'room';
                 contextMenuTriggeredRef.current = false;
                 mapLookActivatedRef.current = false;
+                if (padButton) {
+                    dragTypeRef.current = 'pad-pending';
+                    return;
+                }
                 // console.log(`[MapperInteractions] PointerDown: ${e.pointerType} x=${e.clientX} y=${e.clientY}`);
 
                 if (depsRef.current.isTracingMode && e.ctrlKey && depsRef.current.setCalibration) {
@@ -535,7 +560,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                 // Compact map drags pan the camera instead of issuing movement commands.
                 const app = currentCanvas().closest('.app-container');
                 const isMinimap = app?.classList.contains('is-mobile') === true
-                    && (app.classList.contains('kb-open') || app.classList.contains('readability-mode'));
+                    && (app.classList.contains('kb-open') || app.classList.contains('readability-mode') || Boolean(currentCanvas().closest('.command-tree-movement-map-slot')));
 
                 const { screenToWorld, getRoomAt, getMarkerAt } = hitTestRef.current;
                 const world = screenToWorld(e.clientX, e.clientY);
@@ -598,6 +623,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     }
                 }
             } else if (activePointersRef.current.size === 2) {
+                markPadGesture();
                 if (longPressTimerRef.current) {
                     clearTimeout(longPressTimerRef.current);
                     longPressTimerRef.current = null;
@@ -642,6 +668,10 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
                     const totalDy = p.y - startMouseRef.current.y;
                     if (Math.sqrt(totalDx * totalDx + totalDy * totalDy) > 5) {
                         hasDraggedRef.current = true;
+                        if (dragTypeRef.current === 'pad-pending') {
+                            dragTypeRef.current = 'pan';
+                            markPadGesture();
+                        }
                         if (dragTypeRef.current !== 'joystick') {
                             setIsDragging(true);
                         }
@@ -825,6 +855,22 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             mapSwipeOriginRef.current = null;
             activePointersRef.current.delete(e.pointerId);
             try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
+
+            if (padInteractionRef.current) {
+                padPointersRef.current.delete(e.pointerId);
+                const remaining = Array.from(activePointersRef.current.entries());
+                lastPointersRef.current = remaining.map(([id, point]) => ({ id, ...point }));
+                if (remaining.length === 1) {
+                    lastMouseRef.current = { ...remaining[0][1] };
+                    dragTypeRef.current = 'pan';
+                } else if (remaining.length === 0) {
+                    padInteractionRef.current = false;
+                    isDraggingInternalRef.current = false;
+                    dragTypeRef.current = null;
+                    setIsDragging(false);
+                }
+                return;
+            }
 
             if (fireMapLongPressAtPointer(e)) {
                 for (const pointerId of activePointersRef.current.keys()) {
@@ -1273,6 +1319,8 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
             const { setIsDragging, joystick } = depsRef.current;
             activePointersRef.current.delete(e.pointerId);
             try { currentCanvas().releasePointerCapture(e.pointerId); } catch(err) {}
+            padPointersRef.current.delete(e.pointerId);
+            if (activePointersRef.current.size === 0) padInteractionRef.current = false;
 
             if (dragTypeRef.current === 'joystick' && joystick?.handleJoystickCancel) {
                 joystick.handleJoystickCancel(e);
@@ -1382,6 +1430,15 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         };
 
         const onCanvasDown = (event: Event) => onDown(event as PointerEvent);
+        const onPadDown = (event: PointerEvent) => {
+            if (!depsRef.current.isMobile || event.pointerType !== 'touch') return;
+            const target = event.target instanceof Element ? event.target : null;
+            const button = target?.closest<HTMLElement>('.is-movement-branch .movement-pad-cell');
+            const branch = button?.closest('.is-movement-branch');
+            const slot = currentCanvas().closest('.command-tree-movement-map-slot[data-map-visible="true"]');
+            if (!button || !branch || !slot || slot.parentElement !== branch.parentElement) return;
+            onDown(event, button);
+        };
         const onCanvasWheel = (event: Event) => {
             if (event.target === currentCanvas()) onWheel(event as WheelEvent);
         };
@@ -1398,6 +1455,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
         };
 
         eventRoot.addEventListener('pointerdown', onCanvasDown, { passive: false });
+        window.addEventListener('pointerdown', onPadDown, true);
         window.addEventListener('pointermove', onMove, { passive: true });
         window.addEventListener('pointerup', onUp, { passive: false });
         window.addEventListener('pointercancel', onCancel, { passive: false });
@@ -1408,6 +1466,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
         return () => {
             eventRoot.removeEventListener('pointerdown', onCanvasDown);
+            window.removeEventListener('pointerdown', onPadDown, true);
             window.removeEventListener('pointermove', onMove);
             window.removeEventListener('pointerup', onUp);
             window.removeEventListener('pointercancel', onCancel);

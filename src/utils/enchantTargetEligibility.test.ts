@@ -1,4 +1,4 @@
-/** @file enchantTargetEligibility.test.ts — Enchant only acts on carried or worn weapons. */
+/** @file enchantTargetEligibility.test.ts — Enchant accepts carried or worn weapons and arrows. */
 import { describe, expect, it } from 'vitest';
 import { isButtonValidForEntity } from './actionUtils';
 import { createButton } from './buttonFactory';
@@ -10,6 +10,11 @@ describe('Enchant target eligibility', () => {
     it.each([
         ['cat-inventory-object', 'a steel sword', true],
         ['cat-worn-object', 'a long sword', true],
+        ['cat-inventory-object', 'a fletched arrow', true],
+        ['cat-inventory-object', 'several fletched arrows', true],
+        ['cat-worn-object', 'a silver-tipped arrow', true],
+        ['cat-room-object', 'a fletched arrow', false],
+        ['cat-inventory-object', 'an iron bolt', false],
         ['cat-room-object', 'a steel sword', false],
         ['cat-inventory-object', 'a pair of shoes', false],
         ['cat-worn-object', 'a pair of boots', false],

@@ -14,7 +14,8 @@
 }
 
 /* --- Client Frame --- */
-.app-container.immersion-mode::after {
+.app-container.immersion-mode:not(.is-mobile)::after,
+.app-container.immersion-mode.is-mobile .mobile-log-frame::after {
     --zone-frame-rim: color-mix(in srgb, var(--zone-frame-color) 85%, transparent);
     --zone-frame-glow: color-mix(in srgb, var(--zone-frame-color) 48%, transparent);
     --zone-frame-soft-glow: color-mix(in srgb, var(--zone-frame-color) 18%, transparent);
@@ -34,7 +35,8 @@
 }
 
 /* Performance Mode uses the rim to show the active light instead of the zone. */
-.app-container.performance-mode.immersion-mode::after {
+.app-container.performance-mode.immersion-mode:not(.is-mobile)::after,
+.app-container.performance-mode.immersion-mode.is-mobile .mobile-log-frame::after {
     --zone-frame-color: #667085;
     --terrain-frame-color: #667085;
     /* Keep the hue in the edge glow, while letting the rim fade into it. */
@@ -48,7 +50,8 @@
         --terrain-frame-color 3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-.app-container.performance-mode.immersion-mode:not(.classic-mode)::before {
+.app-container.performance-mode.immersion-mode:not(.classic-mode):not(.is-mobile)::before,
+.app-container.performance-mode.immersion-mode:not(.classic-mode).is-mobile .mobile-log-frame::before {
     content: '';
     position: fixed;
     inset: 0;
@@ -64,34 +67,67 @@
 }
 
 /* --- Performance terrain edge --- */
-.app-container.performance-mode.immersion-mode:is(.terrain-forest, .terrain-field, .terrain-brush, .terrain-hills, .terrain-mountain, .terrain-road, .terrain-glow-shallows)::before {
+.app-container.performance-mode.immersion-mode:is(.terrain-forest, .terrain-field, .terrain-brush, .terrain-hills, .terrain-mountain, .terrain-road, .terrain-glow-shallows):not(.is-mobile)::before,
+.app-container.performance-mode.immersion-mode:is(.terrain-forest, .terrain-field, .terrain-brush, .terrain-hills, .terrain-mountain, .terrain-road, .terrain-glow-shallows).is-mobile .mobile-log-frame::before {
     --terrain-frame-color: #5c9b54;
 }
 
-.app-container.performance-mode.immersion-mode:is(.terrain-underground, .terrain-building)::before {
+.app-container.performance-mode.immersion-mode:is(.terrain-underground, .terrain-building):not(.is-mobile)::before,
+.app-container.performance-mode.immersion-mode:is(.terrain-underground, .terrain-building).is-mobile .mobile-log-frame::before {
     --terrain-frame-color: #a0a0a0;
 }
 
-.app-container.performance-mode.immersion-mode.terrain-city::before {
+.app-container.performance-mode.immersion-mode.terrain-city:not(.is-mobile)::before,
+.app-container.performance-mode.immersion-mode.terrain-city.is-mobile .mobile-log-frame::before {
     --terrain-frame-color: #a67449;
 }
 
-.app-container.performance-mode.immersion-mode.terrain-water:not(.terrain-glow-shallows)::before {
+.app-container.performance-mode.immersion-mode.terrain-water:not(.terrain-glow-shallows):not(.is-mobile)::before,
+.app-container.performance-mode.immersion-mode.terrain-water:not(.terrain-glow-shallows).is-mobile .mobile-log-frame::before {
     --terrain-frame-color: #438dc4;
 }
 
-.app-container.performance-mode.immersion-mode.lighting-sun::after {
+.app-container.performance-mode.immersion-mode.lighting-sun:not(.is-mobile)::after,
+.app-container.performance-mode.immersion-mode.lighting-sun.is-mobile .mobile-log-frame::after {
     --zone-frame-color: #66c2ff;
 }
 
-.app-container.performance-mode.immersion-mode.lighting-moon::after {
+.app-container.performance-mode.immersion-mode.lighting-moon:not(.is-mobile)::after,
+.app-container.performance-mode.immersion-mode.lighting-moon.is-mobile .mobile-log-frame::after {
     --zone-frame-color: #596a7d;
 }
 
-.app-container.performance-mode.immersion-mode.lighting-dark::after {
+.app-container.performance-mode.immersion-mode.lighting-dark:not(.is-mobile)::after,
+.app-container.performance-mode.immersion-mode.lighting-dark.is-mobile .mobile-log-frame::after {
     --zone-frame-color: #000000;
 }
 
-.app-container.performance-mode.immersion-mode.lighting-artificial::after {
+.app-container.performance-mode.immersion-mode.lighting-artificial:not(.is-mobile)::after,
+.app-container.performance-mode.immersion-mode.lighting-artificial.is-mobile .mobile-log-frame::after {
     --zone-frame-color: #ff7629;
+}
+
+/* --- Mobile log frame --- */
+.mobile-log-frame {
+    position: absolute;
+    inset: 0;
+    z-index: 65002;
+    pointer-events: none;
+}
+
+.app-container.is-mobile.immersion-mode .mobile-log-frame::before,
+.app-container.is-mobile.immersion-mode .mobile-log-frame::after {
+    position: absolute;
+}
+
+/* Paint the terrain edge directly against the mobile log's bottom boundary. */
+.app-container.is-mobile.performance-mode.immersion-mode:not(.classic-mode) .mobile-log-frame::before {
+    top: auto;
+    height: 28px;
+    clip-path: none;
+    box-shadow: none;
+    background: linear-gradient(to top,
+        color-mix(in srgb, var(--terrain-frame-color) 48%, transparent),
+        color-mix(in srgb, var(--terrain-frame-color) 18%, transparent) 45%,
+        transparent);
 }

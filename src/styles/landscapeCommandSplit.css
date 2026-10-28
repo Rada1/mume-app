@@ -6,6 +6,11 @@
     --landscape-command-grid-columns: minmax(128px, 0.9fr) minmax(0, 1.9fr) minmax(128px, 0.9fr);
 }
 
+/* Give the input more room while the keyboard replaces the right-hand controls. */
+.app-container.is-mobile.is-landscape.kb-open:not(.state-account) {
+    --landscape-command-grid-columns: minmax(0, 1fr) minmax(0, 1fr) 0px;
+}
+
 :fullscreen .app-container.is-mobile:not(.state-account) .content-layer,
 :fullscreen .app-container.is-mobile.is-landscape:not(.state-account) .content-layer {
     padding-top: 0 !important;

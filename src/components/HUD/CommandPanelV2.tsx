@@ -38,6 +38,7 @@ import { useUpwardCommandBranches } from '../../hooks/useUpwardCommandBranches';
 import { useMobileReadabilityMenuBounds } from '../../hooks/useMobileReadabilityMenuBounds';
 import { useMobileCommandTileLayout } from '../../hooks/useMobileCommandTileLayout';
 import type { PopoverState } from '../../types';
+import { isDesktopTargetWorkspaceRequest } from '../../utils/popoverPanelUtils';
 // --- Render Section ---
 
 const isInlineEntityPopover = (state: PopoverState | null | undefined): boolean => Boolean(
@@ -133,6 +134,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  const mobileReadabilitySplit = Boolean(isMobile && dockSlots && !isRotatedLandscape);
  useMobileCommandTileLayout(isMobile,dockSlots?.app);
  const readabilityInlinePopoverOpen = mobileReadabilitySplit && isInlineEntityPopover(controller.ui.popoverState);
+ const hideCommandMenuForInlinePopover = readabilityInlinePopoverOpen && !isDesktopTargetWorkspaceRequest(controller.ui.popoverState);
  const dismissReadabilityInlinePopover = () => {
   if (!readabilityInlinePopoverOpen) return false;
   controller.ui.setPopoverState(null);
@@ -262,7 +264,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  }, [mobileCommandFocus, mobileReadabilitySplit, tree.command?.id, tree.command?.command, tree.targets.length]);
  if (dockSlots) return <>
   {createPortal(characterSummaryPortal, landscapeSummaryOverlay ? dockSlots.app : dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
-  {(isMobile || tree.group !== null || controller.isHelpMode) && !readabilityInlinePopoverOpen && createPortal(commandMenu, mobileCommandFocus ? dockSlots.app : dockSlots.menu)}
+  {(isMobile || tree.group !== null || controller.isHelpMode) && !hideCommandMenuForInlinePopover && createPortal(commandMenu, mobileCommandFocus ? dockSlots.app : dockSlots.menu)}
   <span className="command-tree-portal-host" aria-hidden="true" /><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </>;
  return <aside className="command-guide-panel unified-command-panel command-tree-v2" aria-label="Command tree">
@@ -270,7 +272,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   {isMobile && !mobileCommandFocus && <div className="command-tree-category-bar">{categoryMenu}</div>}
   <div className="command-tree-flat-layout">
    <section className="command-tree-character-dock" aria-label="Character controls">{characterSummary}{characterControls}</section>
-   {!readabilityInlinePopoverOpen
+   {!hideCommandMenuForInlinePopover
     ? mobileCommandFocus && typeof document !== 'undefined'
      ? createPortal(commandMenu, document.querySelector<HTMLElement>('.app-container') || document.body)
      : commandMenu

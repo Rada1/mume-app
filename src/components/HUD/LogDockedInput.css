@@ -705,6 +705,15 @@
     min-height: 34px;
 }
 
+/* A separate channel row lets wrapped message text use the whole input lane. */
+.docked-parley-line-break { display:none; }
+.app-container.is-mobile .command-dock-input-main.has-parley {
+    display:flex; flex-wrap:wrap; row-gap:2px;
+}
+.app-container.is-mobile .command-dock-input-main.has-parley .docked-parley-line-break {
+    display:block; flex-basis:100%; height:0;
+}
+
 .app-container.is-mobile .docked-target-x,
 .app-container.is-mobile .docked-parley-chip .parley-x {
     width: 36px;

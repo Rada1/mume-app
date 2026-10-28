@@ -65,8 +65,9 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
                     {theme.socials.map(entry => {
                         const row = <button key={entry.command} type="button" data-menu-item="true" className="command-tree-row"
                         aria-expanded={entry.targeted ? selected?.command === entry.command : undefined}
-                        onClick={() => entry.targeted ? chooseSocial(entry) : sendBare(entry)}
-                        onPointerEnter={event => { if (event.pointerType === 'mouse' && entry.targeted) chooseSocial(entry); }}>
+                        onClick={() => entry.targeted && controller.game.viewport.isMobile ? chooseSocial(entry) : sendBare(entry)}
+                        onPointerEnter={event => { if (event.pointerType === 'mouse' && entry.targeted) chooseSocial(entry); }}
+                        onFocus={event => { if (!controller.game.viewport.isMobile && entry.targeted && event.currentTarget.matches(':focus-visible')) chooseSocial(entry); }}>
                         <span className="command-tree-row-label">{entry.label}</span>{entry.targeted && <Chevron/>}
                     </button>;
                         return desktopPin && !entry.targetOptions ? <DesktopCommandPin key={entry.command} label={entry.label}

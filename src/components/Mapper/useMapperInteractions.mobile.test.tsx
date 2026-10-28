@@ -1,8 +1,10 @@
 // @vitest-environment jsdom
 /** @file useMapperInteractions.mobile.test.tsx — Mobile taps select rooms beneath map targets. */
-import { act, cleanup, renderHook } from '@testing-library/react';
+import React from 'react';
+import { act, cleanup, fireEvent, render, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useMapperInteractions, type InteractionDeps } from './useMapperInteractions';
+import { MovementPad } from '../HUD/MovementPad';
 
 // --- Logic Section ---
 const hit = vi.hoisted(() => ({
@@ -15,6 +17,7 @@ const hit = vi.hoisted(() => ({
 vi.mock('./hooks/useMapHitTest', () => ({ useMapHitTest: () => hit }));
 vi.mock('../../services/audio/AudioManager', () => ({ audioManager: { playEffect: vi.fn() } }));
 vi.mock('./occupantAnimStore', () => ({ registerOccupantTap: vi.fn() }));
+vi.mock('../../context/GameContext', () => ({ useGame: () => ({ executeCommand: vi.fn(), triggerHaptic: vi.fn() }) }));
 
 const pointer = (target: EventTarget, type: 'pointerdown' | 'pointerup', pointerType: string) => {
     const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: 25, clientY: 25, button: 0 });
@@ -22,11 +25,27 @@ const pointer = (target: EventTarget, type: 'pointerdown' | 'pointerup', pointer
     act(() => { target.dispatchEvent(event); });
 };
 
-const mountMap = (isMobile: boolean, readability = false, held = false) => {
+const mountMap = (isMobile: boolean, readability = false, held = false, withPad = false) => {
     const host = document.createElement('div');
     host.className = `app-container ${isMobile ? 'is-mobile' : ''} ${readability ? 'readability-mode' : ''}`;
     const canvas = document.createElement('canvas');
-    host.append(canvas);
+    let padButton = document.createElement('button');
+    const padCommand = vi.fn();
+    if (withPad) {
+        const branches = document.createElement('div');
+        const branch = document.createElement('div');
+        branch.className = 'is-movement-branch';
+        const pad = document.createElement('div');
+        render(<MovementPad layout="menu" onCommand={padCommand} onDirectionHold={vi.fn()} onDirectionRelease={vi.fn()} />, { container: pad });
+        padButton = pad.querySelector<HTMLButtonElement>('.pad-n')!;
+        branch.append(pad);
+        const slot = document.createElement('div');
+        slot.className = 'command-tree-movement-map-slot';
+        slot.dataset.mapVisible = 'true';
+        slot.append(canvas);
+        branches.append(branch, slot);
+        host.append(branches);
+    } else host.append(canvas);
     document.body.append(host);
     const executeCommand = vi.fn();
     const setContextMenu = vi.fn();
@@ -51,7 +70,14 @@ const mountMap = (isMobile: boolean, readability = false, held = false) => {
         pointer(canvas, 'pointerdown', isMobile ? 'touch' : 'mouse');
         pointer(window, 'pointerup', isMobile ? 'touch' : 'mouse');
     };
-    return { tap, executeCommand, setContextMenu, setPopoverState, onEditMarker };
+    return { tap, executeCommand, setContextMenu, setPopoverState, onEditMarker, canvas, padButton, padCommand, camera: deps.cameraRef };
+};
+
+const touch = (target: EventTarget, type: string, id: number, x: number, y: number) => {
+    const event = new MouseEvent(type, { bubbles: true, cancelable: true, clientX: x, clientY: y, button: 0 });
+    Object.defineProperties(event, { pointerId: { value: id }, pointerType: { value: 'touch' } });
+    act(() => { target.dispatchEvent(event); });
+    return event;
 };
 
 beforeEach(() => {
@@ -99,5 +125,56 @@ describe('desktop map target interactions', () => {
         const map = mountMap(false);
         map.tap();
         expect(map.setPopoverState).toHaveBeenCalledWith(expect.objectContaining({ entityId: 'roomchars:12', context: 'target' }));
+    });
+});
+
+describe('mobile movement pad map gestures', () => {
+    it('keeps a direction tap available and pans when the finger moves', () => {
+        const map = mountMap(true, true, false, true);
+        expect(touch(map.padButton, 'pointerdown', 1, 25, 25).defaultPrevented).toBe(false);
+        touch(map.padButton, 'pointerup', 1, 25, 25);
+        fireEvent.click(map.padButton, { detail: 1 });
+        expect(map.padCommand).toHaveBeenCalledTimes(1);
+        expect(map.padButton.classList.contains('is-key-pressed')).toBe(true);
+        expect(map.padButton.dataset.mapGesture).toBeUndefined();
+        expect(map.setContextMenu).not.toHaveBeenCalled();
+
+        touch(map.padButton, 'pointerdown', 2, 25, 25);
+        touch(map.padButton, 'pointermove', 2, 45, 25);
+        expect(map.camera.current.x).toBe(-20);
+        expect(map.padButton.dataset.mapGesture).toBe('true');
+        touch(map.padButton, 'pointerup', 2, 45, 25);
+        fireEvent.click(map.padButton, { detail: 1 });
+        expect(map.padCommand).toHaveBeenCalledTimes(1);
+        expect(map.executeCommand).not.toHaveBeenCalled();
+    });
+
+    it('zooms when a pinch starts across the pad and map', () => {
+        const map = mountMap(true, true, false, true);
+        touch(map.padButton, 'pointerdown', 1, 25, 25);
+        touch(map.canvas, 'pointerdown', 2, 75, 25);
+        touch(map.canvas, 'pointermove', 2, 100, 25);
+        expect(map.camera.current.zoom).toBeGreaterThan(1);
+        expect(map.padButton.dataset.mapGesture).toBe('true');
+        touch(map.padButton, 'pointerup', 1, 25, 25);
+        touch(map.canvas, 'pointerup', 2, 100, 25);
+        fireEvent.click(map.padButton, { detail: 1 });
+        expect(map.padCommand).not.toHaveBeenCalled();
+        expect(map.executeCommand).not.toHaveBeenCalled();
+        expect(map.setContextMenu).not.toHaveBeenCalled();
+    });
+
+    it('suppresses both direction taps when a pinch starts on two pad buttons', () => {
+        const map = mountMap(true, true, false, true);
+        const west = map.padButton.closest('.movement-pad')!.querySelector<HTMLButtonElement>('.pad-w')!;
+        touch(map.padButton, 'pointerdown', 1, 25, 25);
+        touch(west, 'pointerdown', 2, 75, 25);
+        touch(west, 'pointermove', 2, 100, 25);
+        expect(map.camera.current.zoom).toBeGreaterThan(1);
+        touch(map.padButton, 'pointerup', 1, 25, 25);
+        touch(west, 'pointerup', 2, 100, 25);
+        fireEvent.click(map.padButton, { detail: 1 });
+        fireEvent.click(west, { detail: 1 });
+        expect(map.padCommand).not.toHaveBeenCalled();
     });
 });

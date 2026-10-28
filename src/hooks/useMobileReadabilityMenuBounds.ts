@@ -15,8 +15,14 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
         const { app, controls, actions, summary } = slots;
         let observedMapSlot: HTMLElement | null = null;
         let observedSummaryToggle: HTMLElement | null = null;
+        let frame: number | null = null;
         const updateRegion = () => {
+            frame = null;
             if (![app, controls, actions, summary].every(element => element.isConnected)) return;
+            // Gather every geometry read before touching CSS. Interleaving them
+            // forces the browser to lay out the whole mobile surface again.
+            const pending = new Map<string, string>();
+            const setCss = (name: string, value: string) => pending.set(name, value);
             // Rotation reparents/remounts the summary and input; never measure cached descendants.
             const controlsContent = controls.querySelector<HTMLElement>('.command-tree-dock-controls-inner');
             const actionsContent = actions.querySelector<HTMLElement>('.command-tree-dock-action-bar');
@@ -33,9 +39,7 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
                     const height = Math.ceil(Math.max(...rows.map(rect => rect.bottom)) - Math.min(...rows.map(rect => rect.top))
                         + parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom) + 8);
                     const value = `${height}px`;
-                    if (app.style.getPropertyValue('--landscape-summary-reserved-height') !== value) {
-                        app.style.setProperty('--landscape-summary-reserved-height', value);
-                    }
+                    setCss('--landscape-summary-reserved-height', value);
                 }
             }
             const inputRect = input?.getBoundingClientRect();
@@ -48,26 +52,32 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
             const menuBottomBoundary = isLandscape
                 ? Math.max(controlsRect.top, inputRect?.top ?? 0)
                 : Math.min(summaryTop, controlsRect.top);
-            app.style.setProperty('--mobile-readability-menu-top', `${Math.ceil(menuTop + 4)}px`);
-            app.style.setProperty('--mobile-readability-main-branch-offset', `${Math.max(0, Math.floor(actionsBottom - menuTop))}px`);
-            app.style.setProperty('--mobile-readability-right-branch-offset', '0px');
-            app.style.setProperty('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - menuBottomBoundary + 4))}px`);
-            app.style.setProperty('--mobile-readability-main-branch-bottom-inset', `${isLandscape && inputRect ? Math.max(0, Math.ceil(menuBottomBoundary - inputRect.top)) : 0}px`);
-            app.style.setProperty('--mobile-readability-right-branch-bottom-inset', `${isLandscape ? Math.max(0, Math.ceil(menuBottomBoundary - controlsRect.top)) : 0}px`);
+            setCss('--mobile-readability-menu-top', `${Math.ceil(menuTop + 4)}px`);
+            setCss('--mobile-readability-main-branch-offset', `${Math.max(0, Math.floor(actionsBottom - menuTop))}px`);
+            setCss('--mobile-readability-right-branch-offset', '0px');
+            setCss('--mobile-readability-menu-bottom', `${Math.max(4, Math.ceil(window.innerHeight - menuBottomBoundary + 4))}px`);
+            setCss('--mobile-readability-main-branch-bottom-inset', `${isLandscape && inputRect ? Math.max(0, Math.ceil(menuBottomBoundary - inputRect.top)) : 0}px`);
+            setCss('--mobile-readability-right-branch-bottom-inset', `${isLandscape ? Math.max(0, Math.ceil(menuBottomBoundary - controlsRect.top)) : 0}px`);
             if (isLandscape) {
-                app.style.setProperty('--landscape-command-input-clearance', `${Math.max(4, Math.ceil(window.innerHeight - (inputRect?.top ?? window.innerHeight) + 4))}px`);
+                setCss('--landscape-command-input-clearance', `${Math.max(4, Math.ceil(window.innerHeight - (inputRect?.top ?? window.innerHeight) + 4))}px`);
                 const mapSlotRect = app.querySelector<HTMLElement>('.command-tree-movement-map-slot')?.getBoundingClientRect();
                 const summaryRect = summary.getBoundingClientRect();
                 const laneRect = mapSlotRect && mapSlotRect.width > 0 ? mapSlotRect : summaryRect;
-                app.style.setProperty('--landscape-character-summary-left', `${Math.round(laneRect.left)}px`);
-                app.style.setProperty('--landscape-character-summary-right', `${Math.max(0, Math.round(window.innerWidth - laneRect.right))}px`);
-                app.style.setProperty('--landscape-character-summary-top', `${Math.round(mapSlotRect?.height ? mapSlotRect.top : menuTop + 4)}px`);
-                app.style.setProperty('--landscape-character-summary-bottom', `${Math.max(0, Math.round(window.innerHeight - summaryRect.bottom))}px`);
+                setCss('--landscape-character-summary-left', `${Math.round(laneRect.left)}px`);
+                setCss('--landscape-character-summary-right', `${Math.max(0, Math.round(window.innerWidth - laneRect.right))}px`);
+                setCss('--landscape-character-summary-top', `${Math.round(mapSlotRect?.height ? mapSlotRect.top : menuTop + 4)}px`);
+                setCss('--landscape-character-summary-bottom', `${Math.max(0, Math.round(window.innerHeight - summaryRect.bottom))}px`);
             }
+            pending.forEach((value, name) => {
+                if (app.style.getPropertyValue(name) !== value) app.style.setProperty(name, value);
+            });
+        };
+        const schedule = () => {
+            if (frame === null) frame = requestAnimationFrame(updateRegion);
         };
 
         updateRegion();
-        const observer = new ResizeObserver(updateRegion);
+        const observer = new ResizeObserver(schedule);
         const observeMapSlot = () => {
             const nextMapSlot = app.querySelector<HTMLElement>('.command-tree-movement-map-slot');
             const nextSummaryToggle = app.querySelector<HTMLElement>('.landscape-character-summary-overlay .command-tree-you-toggle');
@@ -78,7 +88,7 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
             if (observedSummaryToggle) observer.unobserve(observedSummaryToggle);
             observedSummaryToggle = nextSummaryToggle;
             if (observedSummaryToggle) observer.observe(observedSummaryToggle);
-            updateRegion();
+            schedule();
         };
         observer.observe(controls);
         observer.observe(actions);
@@ -94,15 +104,16 @@ export const useMobileReadabilityMenuBounds = (enabled: boolean, slots: DockSlot
         const mutationObserver = new MutationObserver(observeMapSlot);
         mutationObserver.observe(app, { childList: true, subtree: true });
         observeMapSlot();
-        window.addEventListener('resize', updateRegion);
-        window.visualViewport?.addEventListener('resize', updateRegion);
-        window.visualViewport?.addEventListener('scroll', updateRegion);
+        window.addEventListener('resize', schedule);
+        window.visualViewport?.addEventListener('resize', schedule);
+        window.visualViewport?.addEventListener('scroll', schedule);
         return () => {
+            if (frame !== null) cancelAnimationFrame(frame);
             observer.disconnect();
             mutationObserver.disconnect();
-            window.removeEventListener('resize', updateRegion);
-            window.visualViewport?.removeEventListener('resize', updateRegion);
-            window.visualViewport?.removeEventListener('scroll', updateRegion);
+            window.removeEventListener('resize', schedule);
+            window.visualViewport?.removeEventListener('resize', schedule);
+            window.visualViewport?.removeEventListener('scroll', schedule);
             app.style.removeProperty('--mobile-readability-menu-top');
             app.style.removeProperty('--mobile-readability-main-branch-offset');
             app.style.removeProperty('--mobile-readability-right-branch-offset');

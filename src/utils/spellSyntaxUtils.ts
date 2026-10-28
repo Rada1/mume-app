@@ -14,7 +14,7 @@ const SPELL_SYNTAX_OVERRIDES: Record<string, string> = {
     'detect poison': "cast 'detect poison' <target/item>",
     'locate': "cast 'locate' <item>",
     'identify': "cast 'identify' <item>",
-    'enchant': "cast 'enchant' <weapon>",
+    'enchant': "cast 'enchant' <weapon/arrow>",
     'portal': "cast 'portal' <target>",
     'scry': "cast 'scry' <target>",
     'ventriloquate': "cast 'ventriloquate' <target> <speech>",

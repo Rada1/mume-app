@@ -93,7 +93,7 @@ describe('commandTargetUtils', () => {
             ]);
         });
 
-        it('limits Enchant targets to weapons in inventory and worn', () => {
+        it('limits Enchant targets to weapons and arrows in inventory and worn', () => {
             expect(getCommandTargetMenuKind("cast 'enchant'")).toBe('inventory-and-worn-weapons');
 
             const line = (id: string, text: string) => ({ id, text, html: text, isItem: true });
@@ -105,6 +105,9 @@ describe('commandTargetUtils', () => {
                 roomObjects: [],
                 inventoryLines: [
                     line('sword', 'a steel sword'),
+                    line('arrow', 'a fletched arrow'),
+                    line('arrows', 'several war arrows'),
+                    line('bolt', 'an iron bolt'),
                     line('shoes', 'a pair of shoes'),
                     line('bow', 'a longbow')
                 ],
@@ -115,11 +118,20 @@ describe('commandTargetUtils', () => {
             });
 
             expect(result.suggestions.map(suggestion => suggestion.label)).toEqual([
-                'a steel sword', 'a longbow', 'a long sword'
+                'a steel sword', 'a fletched arrow', 'several war arrows', 'a longbow', 'a long sword'
             ]);
             expect(result.suggestions.map(suggestion => suggestion.meta)).toEqual([
-                'inventory', 'inventory', 'worn'
+                'inventory', 'inventory', 'inventory', 'inventory', 'worn'
             ]);
+        });
+
+        it('assigns distinct selectors to identical Enchant arrow suggestions', () => {
+            const inventoryLines = Array.from({length: 5}, (_, index) => ({
+                id:`arrow-${index}`, text:'an ash arrow', html:'an ash arrow', isItem:true
+            }));
+            const result = resolveCommandTargetSuggestions({command:"cast 'enchant' ", argumentText:'', menuKind:null,
+                roomOccupants:[], roomObjects:[], inventoryLines, wornLines:[]});
+            expect(result.suggestions.map(suggestion => suggestion.value)).toEqual(['1.arrow', '2.arrow', '3.arrow', '4.arrow', '5.arrow']);
         });
 
         it('identifies targeted spells', () => {

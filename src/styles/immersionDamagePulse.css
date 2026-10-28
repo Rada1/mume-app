@@ -1,7 +1,8 @@
 /** @file immersionDamagePulse.css */
 
 /* --- Logic Section --- */
-.app-container.immersion-mode.immersion-damage-pulse::after {
+.app-container.immersion-mode.immersion-damage-pulse:not(.is-mobile)::after,
+.app-container.is-mobile.immersion-mode.immersion-damage-pulse .mobile-log-frame::after {
     animation: immersion-edge-damage-pulse 1400ms ease-in-out both;
     transition: none;
 }

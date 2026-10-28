@@ -48,7 +48,9 @@ export const resolveButtonClickCommand = ({
     const bashDoorContext = (effectiveContext || '').replace(/^exit\s+/i, '').trim();
     let finalContext = isBashDoorTarget ? (bashDoorContext ? `exit ${bashDoorContext}` : 'exit')
         : ['cat-mount-object', 'cat-container-item'].includes(popoverAxes.categoryId || '') ? effectiveContext || '' : popoverAxes.isObject
-        ? extractMumeKeyword(effectiveContext || '')
+        ? /^\d+\./.test(effectiveContext?.trim() || '')
+            ? formatMumeTarget(effectiveContext) || ''
+            : extractMumeKeyword(effectiveContext || '')
         : formatMumeTarget(effectiveContext) || effectiveContext || '';
     let detectedParent = parentNoun;
 

@@ -111,9 +111,9 @@ export const PopoverManager: React.FC<PopoverManagerProps> = ({
     const isMobileCommandPanelMenu = isMobileEntityMenu && !isReadabilityMode;
 
     React.useEffect(() => {
-        if (isDesktopEntityMenu) openCommandPanel(true);
+        if (isDesktopEntityMenu && !isWorkspaceMenu) openCommandPanel(true);
         if (isMobileEntityMenu && !isMobileCommandPanelOpen) openMobileCommandPanel(true);
-    }, [isDesktopEntityMenu, isMobileEntityMenu, isMobileCommandPanelOpen, openCommandPanel, openMobileCommandPanel]);
+    }, [isDesktopEntityMenu, isWorkspaceMenu, isMobileEntityMenu, isMobileCommandPanelOpen, openCommandPanel, openMobileCommandPanel]);
 
     React.useEffect(() => {
         if (parentPopoverState) {

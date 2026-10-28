@@ -1,7 +1,6 @@
 /** @file ModalsLayer.tsx — Client modal and popover hosts. */
 import React from 'react';
 import { DesktopTargetWorkspaceHost } from '../Popovers/DesktopTargetWorkspace';
-import { isDesktopTargetWorkspaceRequest } from '../../utils/popoverPanelUtils';
 import EditButtonModal from '../Modals/EditButtonModal';
 import { PopoverManager } from '../Popovers/PopoverManager';
 import { DrawerManager } from '../Drawers/DrawerManager';
@@ -132,7 +131,6 @@ export const ModalsLayer: React.FC<ModalsLayerProps> = ({
     React.useEffect(() => {
         const handleClickOutside = (event: PointerEvent) => {
             if (!popoverState) return;
-            if (!viewport.isMobile && isDesktopTargetWorkspaceRequest(popoverState)) return;
             if (popoverState.type === 'help-card') return; // Exclude help card from global click-outside closure
             // Floating inspection reports stay open while other client panels are used.
             if (document.querySelector('[data-floating-panel="details"]')) return;

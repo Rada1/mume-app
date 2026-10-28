@@ -22,7 +22,7 @@ describe('spellSyntaxUtils', () => {
     it('generates item and direction overrides for special spells', () => {
         expect(getSpellSyntax('Block Door')).toBe("cast 'block door' <dir>");
         expect(getSpellSyntax('Identify')).toBe("cast 'identify' <item>");
-        expect(getSpellSyntax('Enchant')).toBe("cast 'enchant' <weapon>");
+        expect(getSpellSyntax('Enchant')).toBe("cast 'enchant' <weapon/arrow>");
     });
 
     it('generates skill typing syntax', () => {

@@ -10,7 +10,7 @@ import { ClientPanelStackResizeHandle } from './ClientPanelStackResizeHandle';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useUIStore } from '../../stores/useUIStore';
-import { useDesktopTargetWorkspaceStore } from '../../stores/useDesktopTargetWorkspaceStore';
+import { isDesktopTargetWorkspaceRequest } from '../../utils/popoverPanelUtils';
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 
 // --- Logic Section ---
@@ -27,9 +27,9 @@ export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mo
     const setDetailsEnabled = useClientPanelStackStore(state => state.setDetailsEnabled);
     const movePanel = useClientPanelStackStore(state => state.movePanel);
     const popoverState = useUIStore(state => state.popoverState);
-    const workspaceOpen = useDesktopTargetWorkspaceStore(state => state.request !== null);
-    const inlineActionsOpen = workspaceOpen || Boolean(popoverState?.entityId && popoverState.sourceRect
-        && !popoverState.commandPanelCapture && (!popoverState.type || popoverState.type === 'menu') && popoverState.menuDisplay !== 'dial');
+    const inlineActionsOpen = Boolean(popoverState?.entityId && popoverState.sourceRect
+        && !popoverState.commandPanelCapture && (!popoverState.type || popoverState.type === 'menu')
+        && popoverState.menuDisplay !== 'dial' && !isDesktopTargetWorkspaceRequest(popoverState));
 
     const isVisible = (panel: ClientPanelStackId) => mobileDetailsOnly
         ? panel === 'details' && detailsEnabled && detailsOpen

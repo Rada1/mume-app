@@ -6,6 +6,10 @@ Mobile family filtering in `useMobileCommandTiles.ts` is memoized separately fro
 
 Mobile family membership reuses `tree.sectionFor` and a weak cache keyed by immutable command buttons across room snapshots. Refresh live eligibility each snapshot, but do not repeat static family classification or walk a group's commands separately for every tile.
 
+`useCommandTreeEligibility.ts` owns lazy group/target snapshots independently of menu navigation. Its character invalidation uses race/subrace/class, so XP/gold/level updates reuse materialized groups and mobile family lists. Keep room, terrain, target, skills, catalog and trait-setting invalidation live. `useMobileReadabilityMenuBounds.ts` coalesces geometry notifications per animation frame, finishes reads before CSS writes, and skips unchanged values; cleanup cancels queued measurements.
+
+`useCommandActionTargets.ts` memoizes room/group/exit projections separately from personal gear through `getCommandRoomActionTargets` and `getCommandGearActionTargets`. Room arrivals must reuse gear entries; inventory/equipment updates must renumber both gear lists together. Eligibility reuses gear candidates across room snapshots and computes Get source availability once per eligibility snapshot.
+
 `useCommandTraitEligibility.ts` bounds category/name trait-action reuse to 256 entries, invalidated by custom trait settings and character race/subrace/class. XP/gold updates must not reset this cache. Keep per-button room/terrain/location validity live through `isButtonValidForEntity`; cached trait IDs are only classification inputs.
 
 Keep `useButtonLogic.ts` catalog identities stable across target and XP/gold changes: its character requirements depend only on race/subrace/class. `useButtons.ts` must reuse a stable empty abilities map before skills sync, so unsynced renders do not rebuild the downstream command catalog. Learned skill, practice, raw-button and eligibility edits must still refresh it.
@@ -21,6 +25,8 @@ Command previews are hover/keyboard behavior, not pre-click work: gate hover wit
 Terminal sizing lives in `src/hooks/useTerminalLayout.ts`, called by `useViewport.ts`. Coalesce resize notifications per animation frame, cache font probes, and avoid unchanged CSS writes. Font loading must invalidate the cached probe; cleanup must cancel scheduled work.
 
 Only GameProvider owns `useViewport()`. Replay/help consumers must read the shared viewport context to avoid duplicate layout/keyboard observers and competing terminal CSS writes. `/perf` isolated-command latency comes from `src/utils/commandLatency.ts`; send-to-text is browser-observed latency, and log commit is before paint. Do not attribute overlapping/spammed commands as isolated replies.
+
+`useLogAutoScroll.ts` coalesces live-follow requests into one animation-frame read/write and rechecks history ownership before scrolling. Preserve programmatic-scroll markers, explicit return-to-live and cancellation on unmount. `useLogSurfaceLayout.ts` owns log/map bounds CSS: internal log/menu/map scrolling must not trigger surface measurements or root CSS writes. Resize/ancestor-scroll notifications coalesce, unchanged CSS is skipped, and `/perf` separates Log follow layout from Log surface layout.
 
 This document is the primary onboarding and operational guide for AI agents (Gemini CLI, Jules, etc.) and human developers. It defines the system's "Mental Model" to ensure high-speed, high-accuracy contributions.
 
@@ -148,6 +154,7 @@ When you add a major feature or change a core API, you **MUST** update:
 
 
 ## Command Panel V2
+Desktop and mobile log target popovers use `MobileQuickTargetPopover.tsx` and `mobileQuickTargetActions.ts`: show a short contextual action list beside the selected text. Examine is explicit for all targets, with results captured in the popover through the shared examine pipeline; other actions execute once and close it. Keep the command menu and map mounted behind the popover, and preserve numbered target selectors and mount eligibility.
 Desktop Commands and Character dock toggles independently show floating control panels above the command bar. `useDesktopDockPanels.ts` persists their open states; `DesktopDockPanels.css` positions the panels while keeping the command input available. The desktop map and client panel stack reserve height for the open command grid and character controls respectively, but not their floating submenus. Keep the movement dock mounted when hidden, and close its command menus and the character quick menus when their parent panel closes.
 Mobile character details use the shared upward popover placement and `MobileCharacterPopover.css`; the group popover uses desktop-style member cards in both orientations and stays full-width in portrait. Preserve group hold-and-swipe targeting.
 Desktop map direction and Follow buttons open adjacent hover menus via `useDesktopMapMovementMenu.ts`. `DesktopMapMovementMenu.tsx` reuses the mobile `CommandTreeHeldDirectionActions` and Follow target rows through a lazily mounted command context. Preserve the hover bridge delay, mouse/focus-visible gating, shared eligibility and preview cleanup.

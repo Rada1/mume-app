@@ -1,0 +1,38 @@
+Object.defineProperty(__vite_ssr_exports__, "DOOR_BUTTONS", { enumerable: true, configurable: true, get(){ try { return DOOR_BUTTONS } catch {} }});
+Object.defineProperty(__vite_ssr_exports__, "EXIT_BUTTONS", { enumerable: true, configurable: true, get(){ try { return EXIT_BUTTONS } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/src/utils/buttonFactory.ts", {"importedNames":["createButton"]});
+const createDoorButton = (id, label, command) => (0,__vite_ssr_import_0__.createButton)({
+  id: `door-${id}`,
+  label,
+  command,
+  setId: "doors",
+  color: "#78350f",
+  shape: "circle",
+  width: 50,
+  height: 50
+});
+const createExitButton = (id, label, command) => (0,__vite_ssr_import_0__.createButton)({
+  id,
+  label,
+  command,
+  setId: "trait-exit",
+  color: "#78350f",
+  shape: "circle",
+  width: 50,
+  height: 50
+});
+const DOOR_BUTTONS = [
+  createDoorButton("open", "Open", "open %n|exit"),
+  createDoorButton("close", "Close", "close %n|exit"),
+  createDoorButton("lock", "Lock", "lock %n|exit"),
+  createDoorButton("unlock", "Unlock", "unlock %n|exit"),
+  createDoorButton("knock", "Knock", "knock %n|exit")
+];
+const EXIT_BUTTONS = [
+  createExitButton("door-scout", "Scout", "scout %n|exit"),
+  createExitButton("exit-point", "Point", "point %n")
+];
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsQ0FBQTs7QUFBQTtBQU9BLE1BQU0sbUJBQW1CLENBQUMsSUFBWSxPQUFlLGVBQ2pELG9DQUFhO0FBQUEsRUFDVCxJQUFJLFFBQVEsRUFBRTtBQUFBLEVBQ2Q7QUFBQSxFQUNBO0FBQUEsRUFDQSxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxRQUFRO0FBQ1osQ0FBQztBQUVMLE1BQU0sbUJBQW1CLENBQUMsSUFBWSxPQUFlLGVBQ2pELG9DQUFhO0FBQUEsRUFDVDtBQUFBLEVBQ0E7QUFBQSxFQUNBO0FBQUEsRUFDQSxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxPQUFPO0FBQUEsRUFDUCxRQUFRO0FBQ1osQ0FBQztBQUVFLE1BQU0sZUFBZTtBQUFBLEVBQ3hCLGlCQUFpQixRQUFRLFFBQVEsY0FBYztBQUFBLEVBQy9DLGlCQUFpQixTQUFTLFNBQVMsZUFBZTtBQUFBLEVBQ2xELGlCQUFpQixRQUFRLFFBQVEsY0FBYztBQUFBLEVBQy9DLGlCQUFpQixVQUFVLFVBQVUsZ0JBQWdCO0FBQUEsRUFDckQsaUJBQWlCLFNBQVMsU0FBUyxlQUFlO0FBQ3REO0FBRU8sTUFBTSxlQUFlO0FBQUEsRUFDeEIsaUJBQWlCLGNBQWMsU0FBUyxlQUFlO0FBQUEsRUFDdkQsaUJBQWlCLGNBQWMsU0FBUyxVQUFVO0FBQ3REIiwibmFtZXMiOltdLCJpZ25vcmVMaXN0IjpbXSwic291cmNlcyI6WyJkb29ycy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBjcmVhdGVCdXR0b24gfSBmcm9tICcuLi8uLi91dGlscy9idXR0b25GYWN0b3J5JztcclxuXHJcbi8qKlxyXG4gKiBAZmlsZSBkb29ycy50c1xyXG4gKiBAZGVzY3JpcHRpb24gRG9vciBtYW5pcHVsYXRpb24gYnV0dG9ucy5cclxuICovXHJcblxyXG5jb25zdCBjcmVhdGVEb29yQnV0dG9uID0gKGlkOiBzdHJpbmcsIGxhYmVsOiBzdHJpbmcsIGNvbW1hbmQ6IHN0cmluZykgPT4gXHJcbiAgICBjcmVhdGVCdXR0b24oe1xyXG4gICAgICAgIGlkOiBgZG9vci0ke2lkfWAsXHJcbiAgICAgICAgbGFiZWwsXHJcbiAgICAgICAgY29tbWFuZCxcclxuICAgICAgICBzZXRJZDogJ2Rvb3JzJyxcclxuICAgICAgICBjb2xvcjogJyM3ODM1MGYnLFxyXG4gICAgICAgIHNoYXBlOiAnY2lyY2xlJyxcclxuICAgICAgICB3aWR0aDogNTAsXHJcbiAgICAgICAgaGVpZ2h0OiA1MFxyXG4gICAgfSk7XHJcblxyXG5jb25zdCBjcmVhdGVFeGl0QnV0dG9uID0gKGlkOiBzdHJpbmcsIGxhYmVsOiBzdHJpbmcsIGNvbW1hbmQ6IHN0cmluZykgPT5cclxuICAgIGNyZWF0ZUJ1dHRvbih7XHJcbiAgICAgICAgaWQsXHJcbiAgICAgICAgbGFiZWwsXHJcbiAgICAgICAgY29tbWFuZCxcclxuICAgICAgICBzZXRJZDogJ3RyYWl0LWV4aXQnLFxyXG4gICAgICAgIGNvbG9yOiAnIzc4MzUwZicsXHJcbiAgICAgICAgc2hhcGU6ICdjaXJjbGUnLFxyXG4gICAgICAgIHdpZHRoOiA1MCxcclxuICAgICAgICBoZWlnaHQ6IDUwXHJcbiAgICB9KTtcclxuXHJcbmV4cG9ydCBjb25zdCBET09SX0JVVFRPTlMgPSBbXHJcbiAgICBjcmVhdGVEb29yQnV0dG9uKCdvcGVuJywgJ09wZW4nLCAnb3BlbiAlbnxleGl0JyksXHJcbiAgICBjcmVhdGVEb29yQnV0dG9uKCdjbG9zZScsICdDbG9zZScsICdjbG9zZSAlbnxleGl0JyksXHJcbiAgICBjcmVhdGVEb29yQnV0dG9uKCdsb2NrJywgJ0xvY2snLCAnbG9jayAlbnxleGl0JyksXHJcbiAgICBjcmVhdGVEb29yQnV0dG9uKCd1bmxvY2snLCAnVW5sb2NrJywgJ3VubG9jayAlbnxleGl0JyksXHJcbiAgICBjcmVhdGVEb29yQnV0dG9uKCdrbm9jaycsICdLbm9jaycsICdrbm9jayAlbnxleGl0JylcclxuXTtcclxuXHJcbmV4cG9ydCBjb25zdCBFWElUX0JVVFRPTlMgPSBbXHJcbiAgICBjcmVhdGVFeGl0QnV0dG9uKCdkb29yLXNjb3V0JywgJ1Njb3V0JywgJ3Njb3V0ICVufGV4aXQnKSxcclxuICAgIGNyZWF0ZUV4aXRCdXR0b24oJ2V4aXQtcG9pbnQnLCAnUG9pbnQnLCAncG9pbnQgJW4nKVxyXG5dO1xyXG5cclxuXHJcblxyXG5cclxuXHJcblxyXG5cclxuXHJcbiJdLCJmaWxlIjoiL3NyYy9jb25zdGFudHMvYnV0dG9ucy9kb29ycy50cyJ9
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvY29uc3RhbnRzL2J1dHRvbnMvZG9vcnMudHMiLCIvc3JjL2NvbnN0YW50cy9idXR0b25zL2Rvb3JzLnRzIixbXV0=

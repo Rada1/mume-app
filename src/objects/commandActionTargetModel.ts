@@ -9,6 +9,7 @@ import { sortWornGearRows, toGearRow, toNearbyGearRows } from '../utils/gearPane
 import { getRoomEntityMenuEntriesByKind } from './roomEntityMenuModel';
 import { isGroupMemberOccupant } from '../utils/groupTargetSuggestions';
 import { getRoomExitActionTargets } from './doorActionTargets';
+import { getGearObjectCandidates, getObjectSelectors } from './objectTargetModel';
 
 // --- Type Section ---
 export type CommandActionTargetGroup = 'players' | 'npcs' | 'objects' | 'worn' | 'inventory' | 'group' | 'weather';
@@ -33,13 +34,13 @@ type RoomSource = string | GmcpOccupant;
 type GearLocation = 'worn' | 'inventory';
 
 // --- Logic Section ---
-const toGearEntries = (lines: DrawerLine[], location: GearLocation): CommandActionTargetEntry[] => {
+const toGearEntries = (lines: DrawerLine[], location: GearLocation, selectors: Map<DrawerLine, string>): CommandActionTargetEntry[] => {
     const rows = lines.map(toGearRow).filter((row): row is GearRow => row !== null);
     return (location === 'worn' ? sortWornGearRows(rows) : rows).map(row => ({
         id: row.line.entityId || row.line.stableId || row.line.id,
         label: location === 'worn' && row.slotLabel ? `${row.slotLabel}: ${row.name}` : row.name,
-        keyword: row.noun,
-        context: row.noun,
+        keyword: selectors.get(row.line) || row.noun,
+        context: selectors.get(row.line) || row.noun,
         category: location === 'worn' ? 'cat-worn-object' : 'cat-inventory-object',
         group: location,
         scope: 'self',
@@ -47,12 +48,10 @@ const toGearEntries = (lines: DrawerLine[], location: GearLocation): CommandActi
     }));
 };
 
-export const getCommandActionTargetEntries = (
+export const getCommandRoomActionTargets = (
     players: RoomSource[],
     npcs: RoomSource[],
     roomObjects: RoomSource[],
-    wornLines: DrawerLine[],
-    inventoryLines: DrawerLine[],
     groupMembers: GroupMember[] = [],
     roomExits: Record<string, unknown> = {}
 ): CommandActionTargetEntry[] => {
@@ -93,11 +92,34 @@ export const getCommandActionTargetEntries = (
         gearRow: entry.group === 'objects' ? nearby.find(row => row.noun === entry.context) || toGearRow({ id: entry.id, text: entry.label, html: entry.label, isItem: true, context: entry.context }) || undefined : undefined
     })),
     ...groupEntries,
-    ...getRoomExitActionTargets(roomExits),
-    ...toGearEntries(wornLines, 'worn'),
-    ...toGearEntries(inventoryLines, 'inventory')
+    ...getRoomExitActionTargets(roomExits)
     ];
 };
+
+// --- Personal Gear Projection ---
+export const getCommandGearActionTargets = (wornLines: DrawerLine[], inventoryLines: DrawerLine[]): CommandActionTargetEntry[] => {
+    // Number against the complete gear snapshot, before any command filters its targets.
+    const candidates = [...getGearObjectCandidates(inventoryLines, 'inventory'), ...getGearObjectCandidates(wornLines, 'worn')];
+    const numbered = getObjectSelectors(candidates.map(candidate => ({
+        ...candidate, keyword: candidate.keyword.replace(/^\d+\./, '')
+    })), () => 'player-gear');
+    const selectors = new Map<DrawerLine, string>();
+    candidates.forEach((candidate, index) => {
+        const explicit = /^\d+\./.test(candidate.keyword) ? candidate.keyword : undefined;
+        const selector = numbered[index] || candidate.keyword;
+        selectors.set(candidate.source as DrawerLine, /^\d+\./.test(selector) ? selector : explicit || selector);
+    });
+    return [...toGearEntries(wornLines, 'worn', selectors), ...toGearEntries(inventoryLines, 'inventory', selectors)];
+};
+
+export const getCommandActionTargetEntries = (
+    players: RoomSource[], npcs: RoomSource[], roomObjects: RoomSource[],
+    wornLines: DrawerLine[], inventoryLines: DrawerLine[], groupMembers: GroupMember[] = [],
+    roomExits: Record<string, unknown> = {}
+): CommandActionTargetEntry[] => [
+    ...getCommandRoomActionTargets(players, npcs, roomObjects, groupMembers, roomExits),
+    ...getCommandGearActionTargets(wornLines, inventoryLines)
+];
 
 export const getGlobalWeatherActionTargets = (): CommandActionTargetEntry[] => [
     { id: 'command-weather-global', label: 'Precipitation / Clouds', keyword: 'global', context: 'global', category: 'cat-weather', group: 'weather', scope: 'global' },

@@ -72,12 +72,20 @@ export const MovementPad: FC<{
     const { exits, rawExits } = useActiveRoomExits();
     const { value: wimpyValue, canChange: canChangeWimpy, changeThreshold } = useWimpyThresholdControl();
     const [pressedCmd, setPressedCmd] = React.useState<string | null>(null);
+    const padRef = React.useRef<HTMLDivElement>(null);
     const pressTimerRef = React.useRef<number | undefined>(undefined);
     const beginDirectionHold = React.useCallback((direction: string) => onDirectionHold?.(direction), [onDirectionHold]);
     const endDirectionHold = React.useCallback((direction: string) => onDirectionRelease?.(direction), [onDirectionRelease]);
     const directionHold = usePressAndHold(beginDirectionHold, endDirectionHold, layout === 'menu' && Boolean(onDirectionHold && onDirectionRelease));
     const followHold = usePressAndHold(() => onFollowHold?.(), () => onFollowRelease?.(),
         layout === 'menu' && Boolean(onFollowHold), 220);
+    React.useEffect(() => {
+        const pad = padRef.current;
+        if (!pad) return;
+        const cancelHolds = () => { directionHold.cancel(); followHold.cancel(); };
+        pad.addEventListener('mume:movement-pad-map-gesture', cancelHolds);
+        return () => pad.removeEventListener('mume:movement-pad-map-gesture', cancelHolds);
+    }, [directionHold.cancel, followHold.cancel]);
     const { normalizedExitSet, getDoorState, isExitClosed } = useMovementPadExits(exits, rawExits);
 
     const getDoorActions = (cmd: string): Array<{ command: string; isApplicable: boolean }> => {
@@ -129,6 +137,7 @@ export const MovementPad: FC<{
 
     return (
         <div
+            ref={padRef}
             className={`movement-pad${layout === 'map' ? ' movement-pad-map' : layout === 'menu' ? ' movement-pad-menu' : ''}${doorSelectionOnly ? ' movement-pad-door-selector' : ''}`}
             style={layout === 'map' ? { '--movement-pad-dock-inset': '16px' } as React.CSSProperties : undefined}
             role="group"
@@ -175,13 +184,14 @@ export const MovementPad: FC<{
                     ref={heldTargetPreviewRef(() => { if (!doorSelectionOnly || hasDoor) onPreviewDirection?.(cell.cmd); })}
                     type="button"
                     className={`movement-pad-cell ${cell.className}${stateClass}${isPressed ? ' is-key-pressed' : ''}${heldDirection === cell.cmd ? ' is-gesture-held' : ''}${layout === 'menu' && onDirectionHold ? ' is-holdable-direction' : ''}`}
-                    onPointerDown={event => { event.stopPropagation(); if (isMovement) directionHold.onPointerDown(cell.cmd,event); }}
+                    onPointerDown={event => { event.stopPropagation(); if (isMovement && event.currentTarget.dataset.mapGesture !== 'true') directionHold.onPointerDown(cell.cmd,event); }}
                     onPointerMove={directionHold.onPointerMove}
                     onPointerUp={directionHold.onPointerUp}
                     onPointerCancel={directionHold.onPointerCancel}
                     onPointerEnter={event => { if (event.pointerType === 'mouse' && (!doorSelectionOnly || hasDoor)) { onPreviewDirection?.(cell.cmd); if (isMovement) onDirectionHover?.(cell.cmd, event.currentTarget); } }}
                     onFocus={event => { if (event.currentTarget.matches(':focus-visible') && (!doorSelectionOnly || hasDoor)) { onPreviewDirection?.(cell.cmd); if (isMovement) onDirectionHover?.(cell.cmd, event.currentTarget); } }}
                     onClick={event => {
+                        if (event.currentTarget.dataset.mapGesture === 'true' && event.detail !== 0) { delete event.currentTarget.dataset.mapGesture; event.preventDefault(); event.stopPropagation(); return; }
                         if (directionHold.shouldSuppressClick(cell.cmd)) { event.preventDefault(); event.stopPropagation(); return; }
                         fire(cell.cmd, event);
                     }}
@@ -214,13 +224,14 @@ export const MovementPad: FC<{
             {layout === 'menu' && onFollowClick && <button
                 type="button"
                 className={`movement-pad-cell pad-follow${followTargetsOpen ? ' is-follow-targets-open is-gesture-held' : ''}${onFollowHold ? ' is-holdable-direction' : ''}`}
-                onPointerDown={event => { event.stopPropagation(); followHold.onPointerDown('follow', event); }}
+                onPointerDown={event => { event.stopPropagation(); if (event.currentTarget.dataset.mapGesture !== 'true') followHold.onPointerDown('follow', event); }}
                 onPointerMove={followHold.onPointerMove}
                 onPointerUp={followHold.onPointerUp}
                 onPointerCancel={followHold.onPointerCancel}
                 onPointerEnter={event => { if (event.pointerType === 'mouse') onFollowHover?.(event.currentTarget); }}
                 onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onFollowHover?.(event.currentTarget); }}
                 onClick={event => {
+                    if (event.currentTarget.dataset.mapGesture === 'true' && event.detail !== 0) { delete event.currentTarget.dataset.mapGesture; event.preventDefault(); event.stopPropagation(); return; }
                     if (followHold.shouldSuppressClick('follow')) { event.preventDefault(); event.stopPropagation(); return; }
                     onFollowClick(event);
                 }}

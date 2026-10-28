@@ -8,8 +8,8 @@ import { getButtonIdsForTraits, getResolvedTraitSections, matchesKeyword } from 
 import { getInlineCategoryAxes, normalizeInlineCategoryId } from './inlineCategoryAxes';
 import { isButtonEligibleForCharacter } from './characterEligibility';
 import { isMountActionEligible } from './mountEligibility';
-import { hasObjectTrait } from '../objects/objectTargetModel';
 import { isDoorPresenceSpellCommand } from './doorCommandUtils';
+import { isEnchantableObject } from './enchantTargetEligibility';
 
 export interface ActionFilterDeps {
     buttons: CustomButton[];
@@ -76,7 +76,7 @@ export function isButtonValidForEntity(
     }
     const isPosessed = location === 'carried' || location === 'worn';
     if (/^cast\s+['"]?enchant['"]?(?:\s|$)/i.test(button.command.trim())
-        && (!axes.isObject || !isPosessed || !hasObjectTrait(entity?.name || context || '', 'trait-weapon'))) {
+        && (!axes.isObject || !isPosessed || !isEnchantableObject(entity?.name || context || ''))) {
         return false;
     }
     const isWornContainer = resolvedCategoryId === 'cat-worn-object'

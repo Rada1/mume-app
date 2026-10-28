@@ -1,13 +1,13 @@
 /** @file useCommandTree.social.test.tsx — Social is one themed command instead of a flat social list. */
 // @vitest-environment jsdom
 import React from 'react';
-import {cleanup,render,renderHook,screen,fireEvent} from '@testing-library/react';
+import {act,cleanup,render,renderHook,screen,fireEvent} from '@testing-library/react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {useCommandTree} from './useCommandTree';
 import type {useCommandTreeController} from './useCommandTreeController';
 import type {CommandActionTargetEntry} from '../objects/commandActionTargetModel';
 import {SOCIAL_BUTTONS} from '../constants/buttons/socials';
-import {COMMAND_TREE_SOCIAL_THEMES,isCommandTreeSocial} from '../utils/commandTreeSocial';
+import {COMMAND_TREE_SOCIAL_BUTTON,COMMAND_TREE_SOCIAL_THEMES,isCommandTreeSocial} from '../utils/commandTreeSocial';
 import {CommandTreeSocialTargets} from '../components/HUD/CommandTreeSocialTargets';
 
 vi.mock('./useRoomDrinkWater',()=>({useRoomDrinkWater:()=>false}));
@@ -58,4 +58,21 @@ it('replaces the flat social list with one Social command and themed columns',()
  expect(screen.queryByText('point %n|sword')).toBeNull();
  fireEvent.click(screen.getByText('North'));
  expect(controller.game.executeCommand).toHaveBeenCalledWith('point north',undefined,undefined,undefined,undefined,{fromUi:true});
+});
+
+it('previews desktop social targets but sends the untargeted social when its command is clicked',()=>{
+ const npc:CommandActionTargetEntry={id:'npc',label:'Gandalf',keyword:'gandalf',context:'gandalf',category:'cat-ally',group:'players',scope:'room'};
+ const executeCommand=vi.fn();
+ const onCommandExecuted=vi.fn();
+ const controller={game:{characterName:'Tester',viewport:{isMobile:false},executeCommand,initAudio:vi.fn(),isSoundEnabled:false},entries:[npc]} as unknown as ReturnType<typeof useCommandTreeController>;
+ render(<CommandTreeSocialTargets controller={controller} button={COMMAND_TREE_SOCIAL_BUTTON} targets={[npc]} onCommandExecuted={onCommandExecuted} desktopPin/>);
+ fireEvent.click(screen.getByText('Happy'));
+ const smile=screen.getByRole('button',{name:'Smile'});
+ vi.spyOn(smile,'matches').mockImplementation(selector => selector === ':focus-visible');
+ act(()=>smile.focus());
+ expect(screen.getByText('smile %n|Gandalf')).toBeTruthy();
+ expect(executeCommand).not.toHaveBeenCalled();
+ fireEvent.click(smile);
+ expect(executeCommand).toHaveBeenCalledExactlyOnceWith('smile',undefined,undefined,undefined,undefined,{fromUi:true});
+ expect(onCommandExecuted).toHaveBeenCalledOnce();
 });

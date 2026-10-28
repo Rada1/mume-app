@@ -6,6 +6,7 @@
 import type { DrawerLine, GmcpOccupant } from '../types';
 import { BLANK_TARGET_VALUE } from '../utils/commandTargetUtils';
 import { isFluidContainer, isItemContainer } from '../utils/gameUtils';
+import { isEnchantableObject } from '../utils/enchantTargetEligibility';
 import { getContainerCommand, getWornSlotLabel } from '../utils/gearPanelUtils';
 import {
     createObjectTargetEntries,
@@ -64,10 +65,12 @@ export const getInventoryAndWornTargetSuggestions = (
 export const getInventoryAndWornWeaponTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]
-): CommandTargetSuggestion[] => getInventoryAndWornTargetSuggestions(
-    inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon')),
-    wornLines.filter(line => hasObjectTrait(line, 'trait-weapon'))
-);
+): CommandTargetSuggestion[] => {
+    const eligibleIds = new Set([...inventoryLines, ...wornLines].filter(isEnchantableObject)
+        .map(line => line.stableId || line.entityId || line.id));
+    return getInventoryAndWornTargetSuggestions(inventoryLines, wornLines)
+        .filter(suggestion => eligibleIds.has(suggestion.objectId || suggestion.key));
+};
 
 export const getSheathTargetSuggestions = (wornLines: DrawerLine[]): CommandTargetSuggestion[] => [
     { key: 'sheath-no-target', label: 'No target', value: BLANK_TARGET_VALUE, meta: 'blank' },

@@ -1,0 +1,19 @@
+Object.defineProperty(__vite_ssr_exports__, "useGearPanelStore", { enumerable: true, configurable: true, get(){ try { return useGearPanelStore } catch {} }});
+const __vite_ssr_import_0__ = await __vite_ssr_import__("/node_modules/zustand/esm/index.mjs", {"importedNames":["create"]});
+const __vite_ssr_import_1__ = await __vite_ssr_import__("/node_modules/zustand/esm/middleware.mjs", {"importedNames":["persist"]});
+const __vite_ssr_import_2__ = await __vite_ssr_import__("/src/stores/useActiveDockedPanelStore.ts", {"importedNames":["useActiveDockedPanelStore"]});
+const useGearPanelStore = (0,__vite_ssr_import_0__.create)()(
+  (0,__vite_ssr_import_1__.persist)((set) => ({
+    isOpen: false,
+    setIsOpen: (isOpen) => {
+      set({ isOpen });
+      const activeStore = __vite_ssr_import_2__.useActiveDockedPanelStore.getState();
+      if (isOpen) activeStore.setActivePanel("gear");
+      else if (activeStore.activePanel === "gear") activeStore.setActivePanel(null);
+    }
+  }), { name: "mume-gear-panel" })
+);
+//# sourceMappingSource=vite-generated
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBQUEsQ0FBQTtBQUNBO0FBQ0E7QUFDQTtBQU9PLE1BQU0sdUJBQW9CLDhCQUF1QjtBQUFBLEtBQ3BELCtCQUFRLFVBQVE7QUFBQSxJQUNaLFFBQVE7QUFBQSxJQUNSLFdBQVcsWUFBVTtBQUNqQixVQUFJLEVBQUUsT0FBTyxDQUFDO0FBQ2QsWUFBTSxjQUFjLGdEQUEwQixTQUFTO0FBQ3ZELFVBQUksT0FBUSxhQUFZLGVBQWUsTUFBTTtBQUFBLGVBQ3BDLFlBQVksZ0JBQWdCLE9BQVEsYUFBWSxlQUFlLElBQUk7QUFBQSxJQUNoRjtBQUFBLEVBQ0osSUFBSSxFQUFFLE1BQU0sa0JBQWtCLENBQUM7QUFDbkMiLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbInVzZUdlYXJQYW5lbFN0b3JlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8qKiBAZmlsZSB1c2VHZWFyUGFuZWxTdG9yZS50cyDigJQgVmlzaWJpbGl0eSBvZiB0aGUgZXF1aXBtZW50IGFuZCBpbnZlbnRvcnkgcGFuZWwuICovXG5pbXBvcnQgeyBjcmVhdGUgfSBmcm9tICd6dXN0YW5kJztcbmltcG9ydCB7IHBlcnNpc3QgfSBmcm9tICd6dXN0YW5kL21pZGRsZXdhcmUnO1xuaW1wb3J0IHsgdXNlQWN0aXZlRG9ja2VkUGFuZWxTdG9yZSB9IGZyb20gJy4vdXNlQWN0aXZlRG9ja2VkUGFuZWxTdG9yZSc7XG5cbmludGVyZmFjZSBHZWFyUGFuZWxTdGF0ZSB7XG4gICAgaXNPcGVuOiBib29sZWFuO1xuICAgIHNldElzT3BlbjogKGlzT3BlbjogYm9vbGVhbikgPT4gdm9pZDtcbn1cblxuZXhwb3J0IGNvbnN0IHVzZUdlYXJQYW5lbFN0b3JlID0gY3JlYXRlPEdlYXJQYW5lbFN0YXRlPigpKFxuICAgIHBlcnNpc3Qoc2V0ID0+ICh7XG4gICAgICAgIGlzT3BlbjogZmFsc2UsXG4gICAgICAgIHNldElzT3BlbjogaXNPcGVuID0+IHtcbiAgICAgICAgICAgIHNldCh7IGlzT3BlbiB9KTtcbiAgICAgICAgICAgIGNvbnN0IGFjdGl2ZVN0b3JlID0gdXNlQWN0aXZlRG9ja2VkUGFuZWxTdG9yZS5nZXRTdGF0ZSgpO1xuICAgICAgICAgICAgaWYgKGlzT3BlbikgYWN0aXZlU3RvcmUuc2V0QWN0aXZlUGFuZWwoJ2dlYXInKTtcbiAgICAgICAgICAgIGVsc2UgaWYgKGFjdGl2ZVN0b3JlLmFjdGl2ZVBhbmVsID09PSAnZ2VhcicpIGFjdGl2ZVN0b3JlLnNldEFjdGl2ZVBhbmVsKG51bGwpO1xuICAgICAgICB9LFxuICAgIH0pLCB7IG5hbWU6ICdtdW1lLWdlYXItcGFuZWwnIH0pXG4pO1xuIl0sImZpbGUiOiIvc3JjL3N0b3Jlcy91c2VHZWFyUGFuZWxTdG9yZS50cyJ9
+
+//# vitestCache=W3siZmlsZSI6IjEiLCJpZCI6IjEiLCJ1cmwiOiIyIiwiaW1wb3J0ZWRVcmxzIjoiMyIsIm1hcHBpbmdzIjpmYWxzZX0sIkM6L1VzZXJzL3B3ZXR6L0Rvd25sb2Fkcy9tdW1lIGFwcC9zcmMvc3RvcmVzL3VzZUdlYXJQYW5lbFN0b3JlLnRzIiwiL3NyYy9zdG9yZXMvdXNlR2VhclBhbmVsU3RvcmUudHMiLFtdXQ==

@@ -6,7 +6,7 @@
 import { useCallback, useContext, useMemo } from 'react';
 import type { DrawerLine, GmcpOccupant, GroupMember, PopoverState } from '../types';
 import type { SelectedTargetInfo } from '../stores/useUIStore';
-import { getCommandActionTargetEntries, getGlobalWeatherActionTargets, type CommandActionTargetEntry } from '../objects/commandActionTargetModel';
+import { getCommandGearActionTargets, getCommandRoomActionTargets, getGlobalWeatherActionTargets, type CommandActionTargetEntry } from '../objects/commandActionTargetModel';
 import { useShallow } from 'zustand/react/shallow';
 import { useSettingsStore } from '../stores/useSettingsStore';
 import { getInlineGlowColor } from '../utils/inlineActionModel';
@@ -69,10 +69,12 @@ export const useCommandActionTargets = ({
             return [direction, { ...exit, doorName: mappedDoorName }];
         }));
     }, [mapperRoom, rawExits]);
-    const entries = useMemo(
-        () => [...getCommandActionTargetEntries(players, npcs, roomObjects, wornLines, inventoryLines, groupMembers, enrichedExits), ...getGlobalWeatherActionTargets()],
-        [enrichedExits, groupMembers, inventoryLines, npcs, players, roomObjects, wornLines]
-    );
+    // Room arrivals should not renumber and reclassify the unchanged personal
+    // gear snapshot. Inventory and equipment still share one selector scope.
+    const gearEntries = useMemo(() => getCommandGearActionTargets(wornLines, inventoryLines), [wornLines, inventoryLines]);
+    const roomEntries = useMemo(() => getCommandRoomActionTargets(players, npcs, roomObjects, groupMembers, enrichedExits),
+        [players, npcs, roomObjects, groupMembers, enrichedExits]);
+    const entries = useMemo(() => [...roomEntries, ...gearEntries, ...getGlobalWeatherActionTargets()], [roomEntries, gearEntries]);
     const selectEntity = useCallback((entry: CommandActionTargetEntry) => {
         const accentColor = getInlineGlowColor(entry.category, settings.inlineCategories, {
             player: settings.playerColor, ally: settings.playerColor, all: settings.playerColor,

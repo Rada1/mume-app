@@ -60,6 +60,27 @@ room snapshots. Trait-setting, race, subrace and class changes invalidate them;
 XP/gold updates do not. Per-button validity still checks the live room, terrain
 and entity location; cached trait IDs must never replace those checks.
 
+`useCommandTreeEligibility.ts` also retains the complete lazy group/target snapshot
+across XP/gold/level packets. Caching only trait classification still causes the
+twelve mobile families to walk every group again when the outer snapshot changes.
+Race/subrace/class, trait edits, learned buttons and live target inputs invalidate
+that snapshot. `useCommandTreeEligibility.test.tsx` checks both reuse and refreshes.
+
+Target projection separates room/group/exits from personal inventory/equipment.
+Room arrivals reuse the personal gear entries and their ordinal selectors. A real
+inventory or equipment change rebuilds both gear lists together, retaining the
+shared numbering scope. Eligibility also reuses gear candidate projections across
+room snapshots and resolves Get source availability only once within each live
+snapshot. `useCommandActionTargets.performance.test.tsx` and
+`useCommandTreeEligibility.test.tsx` guard these cache boundaries.
+
+Mobile menu bounds coalesce resize and visual-viewport notifications into one
+animation-frame measurement. All geometry reads precede CSS writes, and identical
+bounds cause no CSS writes. This avoids repeated forced layouts while the keyboard,
+command input and character controls resize; it does not measure or guarantee the
+total browser layout cost. `useMobileReadabilityMenuBounds.test.tsx` guards this
+scheduling, write ordering and unmount cancellation.
+
 The upstream `useButtonLogic.ts` catalog must retain its array and button identities
 across target and XP/gold updates. Only race/subrace/class affect its character
 requirements; target resolution belongs to execution and live action filtering.
@@ -124,6 +145,19 @@ not evidence of a frozen map; inspect actual worker render durations instead.
 Resize notifications schedule one animation-frame update. Geometry/padding checks
 skip unchanged work; the DOM font-width probe is cached until layout options or
 loaded fonts change. Preserve font-load invalidation and cleanup of pending work.
+
+**Log follow layout** times the animation-frame scroll-height read and live-follow
+write in `useLogAutoScroll.ts`. Multiple arrival/resize requests share one update;
+a reader who leaves live mode before that frame must stay in history. The scroll
+request returns before that update runs, even when its legacy `instant` argument
+is true; following still snaps directly rather than animating.
+
+**Log surface layout** times the log/map bounding-box reads and CSS updates in
+`useLogSurfaceLayout.ts`. Scrolling inside the log, map or menus does not move
+their outer surfaces and must not schedule this work. Ancestor scrolling and
+resize notifications coalesce per frame, and unchanged bounds cause no CSS writes.
+These scopes include any synchronous layout charged to their geometry reads;
+their times overlap with the browser's forced-layout attribution.
 
 Reset clears the UI, parser, dispatch, and main-thread diagnostic samples. The
 worker map counters have their own collection window. Toggle `/perf` off to stop

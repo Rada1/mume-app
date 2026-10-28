@@ -90,6 +90,9 @@
 }
 
 /* --- Fill the Movement Column in Mobile Readability Mode --- */
+.app-container.is-mobile .command-tree-mobile-readability-popup .is-movement-branch .movement-pad {
+    touch-action:none;
+}
 .app-container.is-mobile.readability-mode .command-tree-mobile-readability-popup .command-tree-branch.is-movement-branch {
     display:flex;
     flex-direction:column;

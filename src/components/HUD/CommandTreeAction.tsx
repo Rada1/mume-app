@@ -27,8 +27,10 @@ const targetColor = targetLabel ? isCommandTreeSelfTarget({
 }, game.characterName) ? COMMAND_TREE_SELF_COLOR
     : targetState?.category ? targetSelection.colorFor(targetState.category) : undefined : undefined;
 const displayColor = targetColor || (button.inlineSubgroup === 'Position' ? '#c9c5bc' : undefined);
+const numberedTarget = /^\d+\./.test(targetState?.context || '') ? targetState?.context : undefined;
 const displayContent = targetGearRow && targetState?.category
-    ? <CommandTreeObjectTargetLabel label={targetLabel || targetGearRow.name} row={targetGearRow} category={targetState.category} showSlot={targetShowSlot} />
+    ? <><CommandTreeObjectTargetLabel label={targetLabel || targetGearRow.name} row={targetGearRow} category={targetState.category} showSlot={targetShowSlot} />
+        {numberedTarget && <small className="command-tree-target-selector">{numberedTarget}</small>}</>
     : undefined;
 
                             const stateButton = isBerserkConfirmationPending && button.id === 'command-state-mood-berserk'

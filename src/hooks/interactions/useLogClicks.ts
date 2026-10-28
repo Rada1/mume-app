@@ -10,7 +10,6 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { handleLogHelpClick } from '../../utils/logHelpUtils';
-import { useDesktopTargetWorkspaceStore } from '../../stores/useDesktopTargetWorkspaceStore';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) return false;
@@ -147,10 +146,8 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
             lastBtnClickRef.current = now;
         } else {
             if (isLogBlankTapTarget(e.target)) {
-                if (viewport.isMobile || !useDesktopTargetWorkspaceStore.getState().request) {
-                    clearObjectSelection();
-                    setPopoverState(null);
-                }
+                clearObjectSelection();
+                setPopoverState(null);
                 useAccountTargetStore.getState().closeMenu();
                 lastLogClickRef.current = now;
                 return;

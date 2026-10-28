@@ -1,0 +1,49 @@
+/** @file MobileTargetPopover.css — Compact anchored actions for a selected log target. */
+
+/* --- Floating mobile action menu --- */
+.desktop-target-workspace.is-floating.is-mobile-target-workspace.is-inline-target-popover {
+ position:fixed; inset:auto!important;
+ left:var(--target-popover-left,8px)!important; top:var(--target-popover-top,8px)!important;
+ right:auto!important; bottom:auto!important; margin:0!important;
+ width:min(300px,var(--target-popover-max-width,calc(100vw - 16px)))!important;
+ max-width:var(--target-popover-max-width,calc(100vw - 16px))!important;
+ height:auto!important; max-height:var(--target-popover-max-height,360px)!important;
+ padding:6px!important; overflow:auto!important; overscroll-behavior:contain;
+ visibility:hidden; box-shadow:0 8px 24px #000a!important;
+}
+.is-inline-target-popover .desktop-target-workspace-header { gap:4px; padding-bottom:4px; }
+.is-inline-target-popover .desktop-target-workspace-header .desktop-target-workspace-name {
+ min-height:36px!important; height:36px!important; padding:6px 8px!important;
+}
+.is-inline-target-popover .desktop-target-workspace-header > button {
+ flex:0 0 36px; width:36px; min-height:36px!important; padding:0; font-size:20px;
+ background:var(--command-panel-surface-raised,#2d271e);
+}
+.desktop-target-workspace.is-inline-target-popover .desktop-target-columns.command-tree-gear-quick-menu {
+ display:block; flex:0 0 auto; overflow:visible;
+}
+.desktop-target-workspace.is-inline-target-popover .command-tree-gear-quick-details { overflow:visible; }
+.desktop-target-workspace.is-inline-target-popover .command-tree-gear-quick-actions {
+ grid-template-columns:minmax(70px,34%) minmax(0,1fr); gap:0 4px;
+}
+.desktop-target-workspace.is-inline-target-popover .workspace-action-categories,
+.desktop-target-workspace.is-inline-target-popover .workspace-action-flow { gap:3px; }
+.desktop-target-workspace.is-inline-target-popover .workspace-action-category,
+.desktop-target-workspace.is-inline-target-popover .workspace-action-flow :is(.command-tree-row,.popover-action-button) {
+ min-height:40px; padding:6px;
+}
+.desktop-target-workspace.is-inline-target-popover .command-tree-gear-quick-put-targets {
+ max-height:180px; overflow:auto; border:0; margin-top:4px;
+}
+
+/* --- Direct target actions --- */
+.is-inline-target-popover .mobile-quick-target { display:flex; flex-direction:column; gap:4px; }
+.is-inline-target-popover .mobile-quick-target-actions { display:flex; flex-wrap:wrap; gap:4px; }
+.is-inline-target-popover .mobile-quick-target-actions button {
+ flex:1 1 80px; min-height:40px; padding:8px 10px; border:0; border-radius:0;
+ background:var(--command-panel-surface-raised,#2d271e); color:var(--command-tree-text,#e2d7ba); font:inherit; cursor:pointer;
+}
+.is-inline-target-popover .mobile-quick-target-actions button:active { background:var(--command-tree-surface-hover,#4a3d30); }
+.is-inline-target-popover .mobile-quick-target-details { max-height:160px; overflow:auto; padding:8px; color:#c9c1b1; font-size:11px; line-height:1.45; overflow-wrap:anywhere; }
+.is-inline-target-popover .mobile-quick-target-caption { display:block; color:#998a6f; margin-bottom:4px; }
+.is-inline-target-popover .mobile-quick-target-empty { padding:8px; color:#a69b89; }

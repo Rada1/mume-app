@@ -95,10 +95,10 @@ export const getRoomObjectKeyword = (source: GmcpOccupant, fallbackLabel = ''): 
 
 // --- Shared Target Projection ---
 
-export const createObjectTargetEntries = (
+export const getObjectSelectors = (
     candidates: ObjectSelectorCandidate[],
     ordinalScope: (candidate: ObjectSelectorCandidate) => string = candidate => candidate.location
-): ObjectTargetEntry[] => {
+): string[] => {
     const totals = new Map<string, number>();
     candidates.forEach(candidate => {
         const key = `${ordinalScope(candidate)}\u0000${candidate.keyword.toLowerCase()}`;
@@ -110,13 +110,18 @@ export const createObjectTargetEntries = (
         const key = `${ordinalScope(candidate)}\u0000${candidate.keyword.toLowerCase()}`;
         const ordinal = (seen.get(key) || 0) + 1;
         seen.set(key, ordinal);
-        const selector = (totals.get(key) || 0) > 1 ? `${ordinal}.${candidate.keyword}` : candidate.keyword;
-        return {
-            ...candidate,
-            selector,
-            traits: getObjectTraits(candidate.source)
-        };
+        return (totals.get(key) || 0) > 1 ? `${ordinal}.${candidate.keyword}` : candidate.keyword;
     });
+};
+
+export const createObjectTargetEntries = (
+    candidates: ObjectSelectorCandidate[],
+    ordinalScope: (candidate: ObjectSelectorCandidate) => string = candidate => candidate.location
+): ObjectTargetEntry[] => {
+    const selectors = getObjectSelectors(candidates, ordinalScope);
+    return candidates.map((candidate, index) => ({
+        ...candidate, selector: selectors[index], traits: getObjectTraits(candidate.source)
+    }));
 };
 
 export const getGearObjectCandidates = (

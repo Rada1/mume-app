@@ -120,6 +120,7 @@
         width: 100% !important;
         height: 12px !important;
         cursor: row-resize;
+        background: transparent;
     }
 
     .app-container.is-mobile:not(.state-account) .command-tree-mobile-focus-popup.command-tree-v2 {
