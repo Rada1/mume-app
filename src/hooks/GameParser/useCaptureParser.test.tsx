@@ -8,6 +8,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { useUIStore } from '../../stores/useUIStore';
 import { CaptureParserDeps, useCaptureParser } from './useCaptureParser';
+import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 
 // --- Tests Section ---
 
@@ -32,6 +33,27 @@ const createDeps = (): CaptureParserDeps => ({
 });
 
 describe('inline inspection capture', () => {
+    it('stores silent corpse and inventory snapshots for the loot workflow', () => {
+        const deps = createDeps();
+        const {result} = renderHook(() => useCaptureParser(deps));
+        useCorpseContentsStore.getState().clearContents();
+        useCorpseContentsStore.getState().requestContents('loot-body', 'rider-corpse');
+        act(() => {
+            result.current.setPendingFlags(true, true, 'examine rider-corpse');
+            result.current.startSession('examine');
+            result.current.accumulateLine('In the corpse of a rider:');
+            result.current.accumulateLine('a steel sword');
+            result.current.finalizeSession();
+            result.current.setPendingFlags(true, true, 'inventory');
+            result.current.startSession('inventory');
+            result.current.accumulateLine('You are carrying:');
+            result.current.accumulateLine('a steel sword');
+            result.current.finalizeSession();
+        });
+        expect(useCorpseContentsStore.getState().contents['loot-body']?.map(line => line.text)).toContain('a steel sword');
+        expect(deps.setInventoryLines).toHaveBeenCalled();
+        useCorpseContentsStore.getState().clearContents();
+    });
     it.each(['inventory', 'equipment', 'container'] as const)('keeps an empty %s listing out of item registration', type => {
         const deps = createDeps();
         const {result} = renderHook(() => useCaptureParser(deps));

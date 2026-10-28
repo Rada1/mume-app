@@ -1,96 +1,66 @@
-/** @file RoomLootPanel.tsx — Command-style loot source and action surface. */
+/** @file RoomLootPanel.tsx — A direct Get list for room objects and corpse contents. */
 import React from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import type { DrawerLine } from '../../types';
-import type { CommandTargetSuggestion } from '../../objects/targetSuggestionTypes';
 import type { GroundLootCandidate } from '../../hooks/useRoomLootCandidates';
-import { RoomLootCorpseContents } from './RoomLootCorpseContents';
-import { RoomLootGroundItems } from './RoomLootGroundItems';
-import { GearSelectionCheckbox } from '../GearSelectionCheckbox';
+import type { CommandTargetSuggestion } from '../../objects/targetSuggestionTypes';
+import { useRoomLootPanel, type RoomLootSource } from '../../hooks/useRoomLootPanel';
 
-// --- Props Section ---
-interface LootSource { id: string; label: string; commandTarget: string; containerId: string; queuedCorpseId?: string; }
-interface RoomLootPanelProps {
-    isMobile: boolean; lootSourceCount: number; lootSummary: string;
-    selectedRecipientTarget: string; setRecipientTarget: (value: string) => void;
-    giveLootToMount: boolean; setGiveLootToMount: (enabled: boolean) => void;
-    detectedMountSuggestions: CommandTargetSuggestion[]; roomCorpses: LootSource[];
-    executeCorpseCommand: (corpse: LootSource, command: string) => void;
-    cargoBusy: boolean; lootCorpse: (corpse: LootSource) => void;
-    lootValuables: (id: string, target: string, recipient: string | null) => void;
-    corpseContents: Record<string, DrawerLine[]>;
-    examineCorpse: (corpse: LootSource) => void; executeCommand: (command: string) => void;
-    groundLootItems: GroundLootCandidate[]; onClose: () => void;
-}
 // --- Render Section ---
-export const RoomLootPanel: React.FC<RoomLootPanelProps> = ({ isMobile, lootSourceCount, lootSummary, selectedRecipientTarget, setRecipientTarget, giveLootToMount, setGiveLootToMount, detectedMountSuggestions, roomCorpses, cargoBusy, lootCorpse, lootValuables, corpseContents, examineCorpse, executeCommand, groundLootItems, executeCorpseCommand, onClose }) => {
-    const recipientLabel = detectedMountSuggestions.find(mount => mount.value === selectedRecipientTarget)?.label || 'My mount';
-    return <section className="room-loot-panel" role="dialog" aria-modal={isMobile || undefined} aria-label="Loot in this room">
-        <header className="room-loot-panel-header">
-            <div>
-                <strong title="Actions use creature-specific corpse keywords; duplicate bodies use ordinals.">Loot <small className="room-loot-count">{lootSourceCount}</small></strong>
-                {lootSummary && <span>{lootSummary}</span>}
-            </div>
-            <button type="button" onClick={() => onClose()} aria-label="Close loot list"><X size={17} /></button>
-        </header>
-        <div className="room-loot-transfer-mode">
-            <button type="button" role="switch" aria-checked={giveLootToMount}
-                className={`room-loot-mount-toggle${giveLootToMount ? ' is-enabled' : ''}`}
-                onClick={() => setGiveLootToMount(!giveLootToMount)}>
-                <span className="room-loot-toggle-track" aria-hidden="true"><span /></span>
-                <span>Give loot to mount</span>
-            </button>
-            {giveLootToMount && detectedMountSuggestions.length > 0 && <select aria-label="Mount recipient"
-                value={selectedRecipientTarget} onChange={event => setRecipientTarget(event.target.value)}>
-                <option value="mount">My mount</option>
-                {detectedMountSuggestions.map(mount => <option key={mount.key} value={mount.value}>{mount.label}</option>)}
-            </select>}
-        </div>
-        <div className="room-loot-list">
-            <RoomLootGroundItems
-                items={groundLootItems}
-                corpses={roomCorpses.map(corpse => ({
-                    id: corpse.id,
-                    label: corpse.label,
-                    commandTarget: corpse.commandTarget,
-                    kind: 'corpse'
-                }))}
-                recipientTarget={selectedRecipientTarget}
-                giveToMount={giveLootToMount}
-                recipientLabel={recipientLabel}
-                executeCommand={command => executeCommand(command)}
-            >{({ selectedIds, toggleSelected }) => roomCorpses.map(corpse => (
-                <div className="room-loot-ground-row room-loot-corpse-row" key={corpse.id}
-                    data-selected={selectedIds.has(corpse.id) || undefined}>
-                    <details className="room-loot-row" onToggle={event => { if (event.currentTarget.open) examineCorpse(corpse); }}>
-                        <summary className="room-loot-corpse-object"><span title={corpse.label}>{corpse.label}</span><small>&lt;{corpse.commandTarget}&gt;</small><ChevronDown size={12} /></summary>
-                        <div className="room-loot-corpse-loot">
-                            <div className="room-loot-section-heading"><span>Loot</span></div>
-                            <div className="room-loot-actions">
-                                <button type="button" className="room-loot-command" disabled={cargoBusy} onClick={() => lootCorpse(corpse)}><span>get all</span><small>&lt;get all {corpse.commandTarget}&gt;</small></button>
-                                <button type="button" className="room-loot-command" disabled={cargoBusy}
-                                    onClick={() => lootValuables(corpse.containerId, corpse.commandTarget, giveLootToMount ? selectedRecipientTarget : null)}>
-                                    <span>get valuables</span><small>{giveLootToMount ? `→ ${recipientLabel}` : 'to inventory'}</small>
-                                </button>
-                            </div>
-                            <RoomLootCorpseContents
-                                isBusy={cargoBusy}
-                                corpseId={corpse.containerId}
-                                corpseLabel={corpse.label}
-                                corpseTarget={corpse.commandTarget}
-                                contents={corpseContents[corpse.containerId]}
-                                recipientTarget={selectedRecipientTarget}
-                                giveToMount={giveLootToMount}
-                                recipientLabel={recipientLabel}
-                                executeCommand={command => executeCorpseCommand(corpse, command)}
-                            />
-                        </div>
-                    </details>
-                    <GearSelectionCheckbox checked={selectedIds.has(corpse.id)} label={`Select ${corpse.label}`} onChange={() => toggleSelected(corpse.id)} />
-                </div>
-            ))}
-            </RoomLootGroundItems>
-        </div>
-    </section>;
-
+export const RoomLootPanel: React.FC<{
+ isMobile: boolean; roomCorpses: RoomLootSource[]; groundLootItems: GroundLootCandidate[];
+ cargoBusy: boolean; corpseContents: Record<string, DrawerLine[]>;
+ examineCorpse: (corpse: RoomLootSource) => void; lootCorpse: (corpse: RoomLootSource) => void;
+ lootAllValuables: () => void;
+ giveLootToMount: boolean; setGiveLootToMount: (enabled: boolean) => void;
+ recipientTarget: string; setRecipientTarget: (target: string) => void; mounts: CommandTargetSuggestion[];
+ transferLootToMount: (items: Array<{target: string; label: string}>, mount: string, corpse?: RoomLootSource) => void;
+ executeCorpseCommand: (corpse: RoomLootSource, command: string) => void;
+ executeCommand: (command: string) => void; onClose: () => void;
+}> = ({isMobile, roomCorpses, groundLootItems, cargoBusy, corpseContents, examineCorpse, lootCorpse, lootAllValuables, executeCorpseCommand, executeCommand, onClose, giveLootToMount, setGiveLootToMount, recipientTarget, setRecipientTarget, mounts, transferLootToMount}) => {
+ const menu = useRoomLootPanel(roomCorpses, corpseContents, examineCorpse);
+ const wasBusy = React.useRef(cargoBusy);
+ React.useEffect(() => {
+  if (wasBusy.current && !cargoBusy && menu.corpse && !corpseContents[menu.corpse.containerId]) examineCorpse(menu.corpse);
+  wasBusy.current = cargoBusy;
+ }, [cargoBusy, corpseContents, examineCorpse, menu.corpse]);
+ return <section className="room-loot-panel room-loot-simple" role="dialog" aria-modal={isMobile || undefined} aria-label="Get items">
+  <header className="room-loot-panel-header">
+   {menu.corpse ? <button className="room-loot-back" type="button" onClick={menu.back} aria-label="Back to ground items"><ChevronLeft size={16}/><span>{menu.corpse.label}</span></button>
+    : <strong>Get</strong>}
+   <button type="button" onClick={onClose} aria-label="Close loot list"><X size={17}/></button>
+  </header>
+  <div className="room-loot-transfer-mode">
+   <button type="button" role="switch" aria-checked={giveLootToMount} className={`room-loot-mount-toggle${giveLootToMount ? ' is-enabled' : ''}`}
+    disabled={cargoBusy} onClick={() => setGiveLootToMount(!giveLootToMount)}>
+    <span className="room-loot-toggle-track" aria-hidden="true"><span /></span><span>Loot to mount</span>
+   </button>
+   {giveLootToMount && mounts.length > 0 && <select aria-label="Mount recipient" value={recipientTarget} disabled={cargoBusy} onChange={event => setRecipientTarget(event.target.value)}>
+    <option value="mount">My mount</option>{mounts.map(mount => <option key={mount.key} value={mount.value}>{mount.label}</option>)}
+   </select>}
+  </div>
+  <div className="room-loot-list">
+   {menu.corpse ? <>
+    <button className="room-loot-simple-row is-all" type="button" disabled={cargoBusy || (giveLootToMount && menu.loading)} onClick={() => {
+     if (!menu.corpse) return;
+     if (giveLootToMount) transferLootToMount(menu.items, recipientTarget, menu.corpse); else lootCorpse(menu.corpse);
+    }}>All</button>
+    {menu.loading ? <p className="room-loot-simple-empty">Examining…</p> : menu.items.length ? menu.items.map(item =>
+     <button className="room-loot-simple-row" type="button" key={item.id} disabled={cargoBusy}
+      onClick={() => { if (!menu.corpse) return; if (giveLootToMount) transferLootToMount([item], recipientTarget, menu.corpse);
+       else executeCorpseCommand(menu.corpse, `get ${item.target} ${menu.corpse.commandTarget}`); }}>{item.label}</button>)
+     : <p className="room-loot-simple-empty">Nothing inside.</p>}
+   </> : <>
+    <button className="room-loot-simple-row is-all" type="button" disabled={cargoBusy || (giveLootToMount && !groundLootItems.length)} onClick={() => {
+     if (giveLootToMount) transferLootToMount(groundLootItems.map(item => ({target:item.commandTarget,label:item.label})), recipientTarget);
+     else executeCommand('get all');
+    }}>All</button>
+    {roomCorpses.length > 0 && <button className="room-loot-simple-row" type="button" disabled={cargoBusy} onClick={lootAllValuables}>Valuables</button>}
+    {roomCorpses.map(corpse => <button className="room-loot-simple-row" type="button" key={corpse.id} disabled={cargoBusy}
+     onClick={() => menu.open(corpse)}><span>{corpse.label}</span><ChevronRight size={15} aria-hidden="true"/></button>)}
+    {groundLootItems.map(item => <button className="room-loot-simple-row" type="button" key={item.id} disabled={cargoBusy}
+     onClick={() => giveLootToMount ? transferLootToMount([{target:item.commandTarget,label:item.label}], recipientTarget) : executeCommand(`get ${item.commandTarget}`)}>{item.label}</button>)}
+   </>}
+  </div>
+ </section>;
 };

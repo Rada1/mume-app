@@ -21,3 +21,12 @@ it('resolves gear locations and preserves a clicked target until its snapshot lo
 it('uses the shared Self identity so personal actions remain available under Room', () => {
  expect(getDesktopWorkspaceTarget({...request, keyword:'self', context:'self'}, [])).toMatchObject({id:'command-panel-self', scope:'self'});
 });
+
+it('resolves corpse text to the corpse even if its id and keyword match a living animal', () => {
+ const pony: CommandActionTargetEntry = {id:'roomchars:17',label:'a pony',keyword:'pony',context:'pony',category:'cat-npc',group:'npcs',scope:'room'};
+ const corpse: CommandActionTargetEntry = {id:'room-object:3',label:'corpse of a pony',keyword:'pony-corpse',context:'pony-corpse',category:'cat-room-object',group:'objects',scope:'room'};
+ const clicked = {...request,entityId:pony.id,category:'cat-npc',displayName:'corpse of a pony',context:'pony',keyword:'pony'};
+ expect(getDesktopWorkspaceTarget(clicked,[pony,corpse])).toBe(corpse);
+ expect(getDesktopWorkspaceTarget(clicked,[pony])).toMatchObject({label:'corpse of a pony',context:'pony-corpse',category:'cat-room-object',group:'objects'});
+ expect(getDesktopWorkspaceTarget({...clicked,context:'2.pony',keyword:'2.pony'},[pony])).toMatchObject({context:'2.pony-corpse',group:'objects'});
+});

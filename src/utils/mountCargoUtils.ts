@@ -15,6 +15,14 @@ export interface ValuableLootTarget {
     isCurrency?: boolean;
 }
 
+export interface ValuableLootGroup {
+    keyword: string;
+    label: string;
+    targets: ValuableLootTarget[];
+    bulk: boolean;
+    isCurrency?: boolean;
+}
+
 const hasObjectToken = (tokens: Token[] | undefined): boolean => (tokens || []).some(token =>
     token.type === 'entity' && (token.metadata?.kind === 'object' || token.metadata?.category?.includes('object'))
 );
@@ -74,6 +82,30 @@ export const getValuableLootTargets = (lines: DrawerLine[] | undefined): Valuabl
         });
     });
     return targets;
+};
+
+// --- Safe bulk selection ---
+export const getValuableLootGroups = (lines: DrawerLine[] | undefined): ValuableLootGroup[] => {
+    const targets = getValuableLootTargets(lines);
+    const allItems = (lines || []).filter(line => line.isItem && !line.isHeader && !isCurrencyLine(line) && isLikelyCargoLine(line));
+    const mailTargets = targets.filter(target => !target.isCurrency && /\bmail\b/i.test(target.label));
+    const allMail = allItems.filter(line => /\bmail\b/i.test(`${line.text} ${line.context || ''}`));
+    const bulkMail = mailTargets.length > 1 && allMail.length === mailTargets.length;
+    const groups = new Map<string, ValuableLootGroup>();
+    for (const target of targets) {
+        const keyword = bulkMail && mailTargets.includes(target) ? 'mail' : target.keyword;
+        const key = `${target.isCurrency ? 'currency:' : ''}${keyword}`;
+        const group = groups.get(key);
+        if (group) group.targets.push(target);
+        else groups.set(key, {keyword, label:target.label, targets:[target], bulk:false, isCurrency:target.isCurrency});
+    }
+    for (const group of groups.values()) {
+        if (group.isCurrency || group.targets.length < 2) continue;
+        const matches = group.keyword === 'mail' && bulkMail ? allMail.length
+            : allItems.filter(line => getDrawerObjectKeyword(line) === group.keyword).length;
+        group.bulk = matches === group.targets.length;
+    }
+    return [...groups.values()];
 };
 
 export const makeItemSelector = (keyword: string, ordinal: number): string =>

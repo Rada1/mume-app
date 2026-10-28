@@ -57,6 +57,8 @@ import { useGameplayPager } from './useGameplayPager';
 import { hasXmlTag } from '../../utils/xmlTagUtils';
 import { parseWhereScanPlayers } from '../../services/parser/whereScan';
 import { stripAnsiControlSequences, stripNonSgrAnsiSequences } from '../../utils/ansi';
+import { isEnvironmentEventLine } from '../../utils/environmentEventUtils';
+import { shouldHideSilentLootCapture } from './silentLootCapture';
 import {
     isSilentEquipmentCaptureResponseLine,
     type EquipmentCaptureProgress,
@@ -1078,6 +1080,15 @@ export const useGameParser = (deps: UseGameParserDeps, session: ParserSession, s
         const commResult = comm.parseComm(lineToParse, textOnly, lower);
         if (commResult.isSuppressed) return;
         if (commResult.msgType !== 'game') msgType = commResult.msgType;
+        if (shouldHideSilentLootCapture({
+            activeType: capture.getActiveType(), expectedType: expectedCaptureBeforeTokenize,
+            activeSilent: capture.isSilent(), pendingSilent: capture.isPendingSilent(),
+            isSnoop, isPrompt: isEndPrompt,
+            isLive: isCombatMessage || roomType === 'room-name' || isEffectivelyRoomDesc || lower.startsWith('exits:')
+                || lower.startsWith('obvious exits') || isSelfPositionFeedback(lower) || isLiveCharacterStateOrMovement(lower)
+                || /\bis dead!\s*r\.?i\.?p\b|\byou have slain\b|\byou are dead\b/i.test(lower),
+            isCommunication: commResult.msgType !== 'game', isEnvironment: isEnvironmentEventLine(textOnly)
+        })) isVisible = false;
         const plainSpectateTell = textOnly.match(/^(.+?)\s+(?:tells?\s+you|whispers?\s+you)\s*[:,]?\s*['"]?(spectateon|spectateoff)['"]?[.!]?\s*$/i);
         const spectateTellCommand = normalizeSpectateTellCommand(commResult.commText || plainSpectateTell?.[2]);
         const tellSpectateControlEnabled = useSettingsStore.getState().enableTellSpectateControl;

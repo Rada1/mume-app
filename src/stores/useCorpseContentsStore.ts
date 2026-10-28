@@ -13,6 +13,7 @@ interface CorpseContentsState {
     pending: PendingCorpseExamine | null;
     pendingRequests: PendingCorpseExamine[];
     requestContents: (containerId: string, target: string) => void;
+    invalidateContents: (containerId: string) => void;
     updateContents: (containerId: string, update: (lines: DrawerLine[]) => DrawerLine[]) => void;
     captureContents: (command: string, lines: DrawerLine[]) => void;
     clearContents: () => void;
@@ -30,6 +31,9 @@ export const useCorpseContentsStore = create<CorpseContentsState>((set) => ({
         pending: { containerId, target },
         containerTargets: { ...state.containerTargets, [containerId]: target },
         pendingRequests: [...state.pendingRequests.filter(request => request.containerId !== containerId), { containerId, target }],
+        contents: Object.fromEntries(Object.entries(state.contents).filter(([id]) => id !== containerId))
+    })),
+    invalidateContents: containerId => set(state => ({
         contents: Object.fromEntries(Object.entries(state.contents).filter(([id]) => id !== containerId))
     })),
     updateContents: (containerId, update) => set(state => ({

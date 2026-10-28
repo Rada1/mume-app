@@ -7,9 +7,10 @@ import { DesktopTargetWorkspaceHost } from './DesktopTargetWorkspace';
 import { useDesktopTargetWorkspaceStore } from '../../stores/useDesktopTargetWorkspaceStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
+import type { CommandActionTargetEntry } from '../../objects/commandActionTargetModel';
 
 // --- Mobile workspace boundaries ---
-const state = vi.hoisted(() => ({ entries: [], executeCommand: vi.fn(), setPendingFlags: vi.fn() }));
+const state = vi.hoisted(() => ({ entries: [] as CommandActionTargetEntry[], executeCommand: vi.fn(), setPendingFlags: vi.fn() }));
 vi.mock('../../context/GameContext', () => ({
     useGame: () => ({ viewport: { isMobile: true } }),
     useUI: () => useUIStore()
@@ -31,6 +32,7 @@ afterEach(() => {
     useCorpseContentsStore.getState().clearContents();
     state.executeCommand.mockClear();
     state.setPendingFlags.mockClear();
+    state.entries = [];
 });
 
 it('opens beside the selected target without offering an unrelated target list', async () => {
@@ -81,4 +83,19 @@ it('examines a corpse using the corpse keyword rather than the living creature k
     await waitFor(() => expect(document.querySelector('[aria-label="Target commands"]')).not.toBeNull());
     fireEvent.click([...document.querySelectorAll('button')].find(button => button.textContent === 'Examine')!);
     expect(state.executeCommand).toHaveBeenCalledWith('examine rider-corpse', true, true, false, true, {shouldFocus:false, fromUi:true});
+});
+
+it('offers corpse actions when a living pony shares the clicked corpse identity', async () => {
+    state.entries = [{id:'pony', label:'a pony', keyword:'pony', context:'pony', category:'cat-npc', group:'npcs', scope:'room'},
+        {id:'corpse', label:'corpse of a pony', keyword:'pony-corpse', context:'pony-corpse', category:'cat-room-object', group:'objects', scope:'room'}];
+    useUIStore.setState({popoverState:{x:80,y:120,setId:'cat-npc',category:'cat-npc',entityId:'pony',context:'pony',displayName:'corpse of a pony'}});
+    render(<DesktopTargetWorkspaceHost />);
+    await waitFor(() => expect(document.querySelector('[aria-label="Target commands"]')).not.toBeNull());
+    const panel = document.querySelector<HTMLElement>('[aria-label="Target commands"]')!;
+    expect(panel.textContent).toContain('corpse of a pony');
+    expect(panel.textContent).toContain('Loot');
+    expect(panel.textContent).toContain('Butcher');
+    expect(panel.textContent).not.toContain('Ride');
+    fireEvent.click([...panel.querySelectorAll('button')].find(button => button.textContent === 'Examine')!);
+    expect(state.executeCommand).toHaveBeenCalledWith('examine pony-corpse', true, true, false, true, {shouldFocus:false, fromUi:true});
 });

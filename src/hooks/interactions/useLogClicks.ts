@@ -10,6 +10,7 @@ import { useUIStore } from '../../stores/useUIStore';
 import { useAccountTargetStore } from '../../stores/useAccountTargetStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { handleLogHelpClick } from '../../utils/logHelpUtils';
+import { getCorpseLogTarget } from '../../objects/corpseLogTarget';
 
 const isLogBlankTapTarget = (target: EventTarget | null): boolean => {
     if (!(target instanceof HTMLElement)) return false;
@@ -209,18 +210,20 @@ export const useLogClicks = (deps: InteractionDeps, lookModFiredRef: React.Mutab
         const action = targetEl.getAttribute('data-action');
         const fromDrawerStr = targetEl.getAttribute('data-from-drawer');
         const fromDrawer = fromDrawerStr === 'true';
-        const category = targetEl.getAttribute('data-category');
+        const rawCategory = targetEl.getAttribute('data-category');
         const parentNoun = targetEl.getAttribute('data-parent-noun') || undefined;
-        const categoryAxes = getInlineCategoryAxes(category || cmd);
         const menuDisplay = targetEl.getAttribute('data-menu-display') as 'dial' | 'list' || undefined;
         const rawContextStr = context || targetEl.innerText.trim();
         const effectiveContextStr = rawContextStr && keywordOverridesRef.current[rawContextStr] ? keywordOverridesRef.current[rawContextStr] : rawContextStr;
-        const contextStr = formatMumeTarget(effectiveContextStr) || effectiveContextStr;
         const displayName = stripAnsiCodes(targetEl.innerText.trim() || rawContextStr);
+        const corpse = getCorpseLogTarget(displayName, effectiveContextStr, rawCategory || cmd);
+        const category = corpse?.category || rawCategory;
+        const categoryAxes = getInlineCategoryAxes(category || cmd);
+        const contextStr = corpse?.context || formatMumeTarget(effectiveContextStr) || effectiveContextStr;
 
         const entityId = targetEl.getAttribute('data-id') || '';
 
-        const resolvedKeyword = getEffectiveKeyword(
+        const resolvedKeyword = corpse?.context || getEffectiveKeyword(
             displayName,
             targetEl.innerHTML,
             entityId ? entities[entityId] : undefined,

@@ -64,7 +64,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     const requestContents = useCorpseContentsStore(state => state.requestContents);
     const clearContents = useCorpseContentsStore(state => state.clearContents);
     const { displayInventoryLines } = useUI();
-    const { isBusy: cargoBusy, status: cargoStatus, lootValuables, sellMountLoot } = useMountCargoActions({ executeCommand, inventoryLines: displayInventoryLines });
+    const { isBusy: cargoBusy, status: cargoStatus, lootValuables, lootAllValuables, transferLootToMount, sellMountLoot } = useMountCargoActions({ executeCommand, inventoryLines: displayInventoryLines });
     const shopLabel = React.useMemo(() => {
         const rawId = String(mapper.currentRoomId || '').replace(/^m_/, '');
         return getShopRoomLabel(mapper.currentRoomId, mapper.rooms, mapper.preloadedCoordsRef.current?.[rawId]);
@@ -152,9 +152,6 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     }, [corpses, detectedRoomCorpses, isTargetSpectateView, roomNum]);
     const groundLootItems = useRoomLootCandidates(roomItems, dismissedGroundLootIds);
     const lootSourceCount = roomCorpses.length + groundLootItems.length;
-    const lootSummary = roomCorpses.length > 0
-        ? `${roomCorpses.length} ${roomCorpses.length === 1 ? 'corpse' : 'corpses'}`
-        : '';
 
     React.useEffect(() => {
         if (!isTargetSpectateView) retainRoom(roomNum);
@@ -218,13 +215,13 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         commandPanel.requestTargetSection('practice');
         triggerHaptic?.(10);
     };
-    const lootPanel = <RoomLootPanel isMobile={isMobile} lootSourceCount={lootSourceCount} lootSummary={lootSummary}
-        selectedRecipientTarget={selectedRecipientTarget} setRecipientTarget={setRecipientTarget}
-        giveLootToMount={giveLootToMount} setGiveLootToMount={setGiveLootToMount}
-        detectedMountSuggestions={detectedMountSuggestions} roomCorpses={roomCorpses} cargoBusy={cargoBusy || corpseLoot.isBusy}
-        lootCorpse={lootCorpse} lootValuables={lootValuables} corpseContents={corpseContents}
+    const lootPanel = <RoomLootPanel isMobile={isMobile} roomCorpses={roomCorpses} cargoBusy={cargoBusy || corpseLoot.isBusy}
+        lootCorpse={lootCorpse} corpseContents={corpseContents}
         examineCorpse={examineCorpse} executeCommand={command => executeCommand(command)} groundLootItems={groundLootItems}
-        executeCorpseCommand={corpseLoot.execute} onClose={() => setIsOpen(false)} />;
+        executeCorpseCommand={corpseLoot.execute} giveLootToMount={giveLootToMount} setGiveLootToMount={setGiveLootToMount}
+        recipientTarget={selectedRecipientTarget} setRecipientTarget={setRecipientTarget} mounts={detectedMountSuggestions}
+        transferLootToMount={transferLootToMount}
+        lootAllValuables={() => lootAllValuables(roomCorpses, giveLootToMount ? selectedRecipientTarget : null)} onClose={() => setIsOpen(false)} />;
 
     return (
         <div className={`room-loot-root${isMobile ? ' is-mobile' : ''}`}>

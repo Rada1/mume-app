@@ -5,7 +5,7 @@ import { useCorpseContentsStore } from '../stores/useCorpseContentsStore';
 import { useMessageStore } from '../stores/useMessageStore';
 import { useRoomStore } from '../stores/useRoomStore';
 import { getDrawerObjectKeyword } from '../objects/objectTargetModel';
-import { getCargoItemGroups, getValuableLootTargets, makeItemSelector } from '../utils/mountCargoUtils';
+import { getCargoItemGroups, getValuableLootGroups, makeItemSelector } from '../utils/mountCargoUtils';
 
 type ExecuteCommand = (command: string, silent?: boolean, isSystem?: boolean, isHistorical?: boolean, fromDrawer?: boolean) => void;
 
@@ -105,56 +105,112 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
         }
     }, []);
 
-    const lootValuables = useCallback((corpseId: string, corpseTarget: string, mountTarget: string | null) => {
-        void runAction('Looting valuables…', async startRoom => {
-            const initialInventory = await refreshInventory(startRoom);
-            const baseline = new Map<string, number>();
-            initialInventory.filter(line => line.isItem && !line.isHeader).forEach(line => {
-                const noun = getDrawerObjectKeyword(line);
-                if (noun) baseline.set(noun, (baseline.get(noun) || 0) + 1);
-            });
-            const contents = await examineContents(corpseId, corpseTarget, startRoom);
-            try {
-            const valuableTargets = getValuableLootTargets(contents);
-            if (!valuableTargets.length) return 'No valuable items found on this corpse.';
-
-            let transferred = 0;
-            let lootedItems = 0;
-            let lootedCoins = false;
-            const removedByKeyword = new Map<string, number>();
-            for (const item of valuableTargets) {
-                const corpseOrdinal = item.ordinal - (removedByKeyword.get(item.keyword) || 0);
-                const corpseSelector = makeItemSelector(item.keyword, corpseOrdinal);
-                const getLines = await sendAndWait(`get ${corpseSelector} ${corpseTarget}`, startRoom);
-                if (!hasGotItem(getLines)) return `Stopped at ${item.label}; remaining loot stayed on the corpse.`;
-                removedByKeyword.set(item.keyword, (removedByKeyword.get(item.keyword) || 0) + 1);
-                if (item.isCurrency) {
-                    lootedCoins = true;
-                    continue;
-                }
-                lootedItems += 1;
-                if (!mountTarget) continue;
-                const inventorySelector = makeItemSelector(item.keyword, (baseline.get(item.keyword) || 0) + 1);
-                const giveLines = await sendAndWait(`give ${inventorySelector} ${mountTarget}`, startRoom);
-                if (!hasGivenItem(giveLines)) {
-                    const verifiedInventory = await refreshInventory(startRoom);
-                    if (countKeyword(verifiedInventory, item.keyword) !== (baseline.get(item.keyword) || 0)) {
-                        return `Could not give ${item.label} to the mount; it remains in your inventory.`;
+    const collectValuables = useCallback(async (corpseId: string, corpseTarget: string, mountTarget: string | null,
+        startRoom: string, inventory: DrawerLine[]): Promise<string> => {
+        const contents = await examineContents(corpseId, corpseTarget, startRoom);
+        const groups = getValuableLootGroups(contents);
+        if (!groups.length) return 'No valuable items found on this corpse.';
+        let transferred = 0;
+        let lootedItems = 0;
+        let lootedCoins = false;
+        try {
+            for (const group of groups) {
+                const baseline = group.keyword === 'mail' && group.bulk
+                    ? inventory.filter(line => line.isItem && !line.isHeader && /\bmail\b/i.test(`${line.text} ${line.context || ''}`)).length
+                    : countKeyword(inventory, group.keyword);
+                const selections = group.bulk ? [`all.${group.keyword}`] : group.targets.map(target => makeItemSelector(target.keyword, target.ordinal));
+                let removed = 0;
+                for (const selector of selections) {
+                    const adjusted = group.bulk ? selector : makeItemSelector(group.keyword, Math.max(1, Number(selector.match(/^(\d+)\./)?.[1] || 1) - removed));
+                    const response = await sendAndWait(`get ${adjusted} ${corpseTarget}`, startRoom);
+                    if (!hasGotItem(response)) return `Stopped at ${group.label}; remaining loot stayed on the corpse.`;
+                    const count = group.bulk ? group.targets.length : 1;
+                    removed += count;
+                    if (group.isCurrency) { lootedCoins = true; continue; }
+                    lootedItems += count;
+                    if (!mountTarget) continue;
+                    for (let index = 0; index < count; index += 1) {
+                        const inventorySelector = makeItemSelector(group.keyword, baseline + 1);
+                        const given = await sendAndWait(`give ${inventorySelector} ${mountTarget}`, startRoom);
+                        if (!hasGivenItem(given)) {
+                            const verified = await refreshInventory(startRoom);
+                            const remaining = group.keyword === 'mail' && group.bulk
+                                ? verified.filter(line => line.isItem && !line.isHeader && /\bmail\b/i.test(`${line.text} ${line.context || ''}`)).length
+                                : countKeyword(verified, group.keyword);
+                            if (remaining !== baseline) return `Could not give ${group.label} to the mount; it remains in your inventory.`;
+                            break;
+                        }
+                        transferred += 1;
                     }
                 }
-                transferred += 1;
             }
             if (!mountTarget) {
                 const itemText = `${lootedItems} valuable ${lootedItems === 1 ? 'item' : 'items'}`;
-                return lootedCoins
-                    ? lootedItems ? `Looted ${itemText} and coins into your inventory.` : 'Looted coins into your inventory.'
+                return lootedCoins ? lootedItems ? `Looted ${itemText} and coins into your inventory.` : 'Looted coins into your inventory.'
                     : `Looted ${itemText} into your inventory.`;
             }
             if (lootedCoins && transferred === 0) return 'Looted coins; no other valuable items to give to the mount.';
             if (lootedCoins) return `Looted coins and gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
             return `Gave ${transferred} valuable ${transferred === 1 ? 'item' : 'items'} to the mount.`;
+        } finally {
+            useCorpseContentsStore.getState().invalidateContents(corpseId);
+        }
+    }, [examineContents, refreshInventory, sendAndWait]);
+
+    const lootValuables = useCallback((corpseId: string, corpseTarget: string, mountTarget: string | null) => {
+        void runAction('Looting valuables…', async startRoom => {
+            const inventory = mountTarget ? await refreshInventory(startRoom) : [];
+            return collectValuables(corpseId, corpseTarget, mountTarget, startRoom, inventory);
+        });
+    }, [collectValuables, refreshInventory, runAction]);
+
+    const lootAllValuables = useCallback((corpses: Array<{containerId: string; commandTarget: string}>, mountTarget: string | null = null) => {
+        void runAction('Looting valuables…', async startRoom => {
+            const inventory = mountTarget ? await refreshInventory(startRoom) : [];
+            let looted = 0;
+            for (const corpse of corpses) {
+                const result = await collectValuables(corpse.containerId, corpse.commandTarget, mountTarget, startRoom, inventory);
+                if (/^(?:Stopped|Could not|Unable)/i.test(result)) return result;
+                if (!/^No valuable/i.test(result)) looted += 1;
+            }
+            return looted ? `Looted valuables from ${looted} ${looted === 1 ? 'corpse' : 'corpses'}${mountTarget ? ' to the mount' : ''}.` : 'No valuable items found.';
+        });
+    }, [collectValuables, refreshInventory, runAction]);
+
+    const transferLootToMount = useCallback((items: Array<{target: string; label: string}>, mountTarget: string,
+        corpse?: {containerId: string; commandTarget: string}) => {
+        void runAction('Giving loot to mount…', async startRoom => {
+            const initialInventory = await refreshInventory(startRoom);
+            const baseline = new Map<string, number>();
+            initialInventory.filter(line => line.isItem && !line.isHeader).forEach(line => {
+                const keyword = getDrawerObjectKeyword(line);
+                if (keyword) baseline.set(keyword, (baseline.get(keyword) || 0) + 1);
+            });
+            const ordered = [...items].sort((a, b) => {
+                const noun = (target: string) => target.replace(/^\d+\./, '');
+                const ordinal = (target: string) => Number(target.match(/^(\d+)\./)?.[1] || 1);
+                return noun(a.target).localeCompare(noun(b.target)) || ordinal(b.target) - ordinal(a.target);
+            });
+            let transferred = 0;
+            try {
+                for (const item of ordered) {
+                    const keyword = item.target.replace(/^\d+\./, '');
+                    const response = await sendAndWait(`get ${item.target}${corpse ? ` ${corpse.commandTarget}` : ''}`, startRoom);
+                    if (!hasGotItem(response)) return `Stopped at ${item.label}; remaining loot was left in place.`;
+                    if (/^(?:coins?|gold|silver|copper|lauren|celeb|busc)$/i.test(keyword)) continue;
+                    const inventorySelector = makeItemSelector(keyword, (baseline.get(keyword) || 0) + 1);
+                    const given = await sendAndWait(`give ${inventorySelector} ${mountTarget}`, startRoom);
+                    if (!hasGivenItem(given)) {
+                        const verified = await refreshInventory(startRoom);
+                        if (countKeyword(verified, keyword) !== (baseline.get(keyword) || 0)) {
+                            return `Could not give ${item.label} to the mount; it remains in your inventory.`;
+                        }
+                    }
+                    transferred += 1;
+                }
+                return `Gave ${transferred} ${transferred === 1 ? 'item' : 'items'} to the mount.`;
             } finally {
-                await examineContents(corpseId, corpseTarget, startRoom);
+                if (corpse) await examineContents(corpse.containerId, corpse.commandTarget, startRoom);
             }
         });
     }, [examineContents, refreshInventory, runAction, sendAndWait]);
@@ -210,5 +266,5 @@ export const useMountCargoActions = ({ executeCommand, inventoryLines }: MountCa
         });
     }, [examineContents, refreshInventory, runAction, sendAndWait]);
 
-    return { isBusy, status, lootValuables, sellMountLoot };
+    return { isBusy, status, lootValuables, lootAllValuables, transferLootToMount, sellMountLoot };
 };
