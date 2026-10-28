@@ -20,7 +20,7 @@ export const CommandTreeItems = ({controller, tree}: {controller: ReturnType<typ
     {section.ready ? section.objects.map(entry => <button key={entry.id} className="command-tree-object" aria-expanded={items.selected?.id === entry.id}
      onMouseEnter={() => tree.defer(() => items.chooseObject(entry))} onFocus={() => items.chooseObject(entry)} onClick={() => items.chooseObject(entry)}>
      <span>{section.label === 'Room' ? getCommandActionTargetDisplayLabel(entry)
-      : entry.gearRow ? <GearItemLabel row={entry.gearRow} category={entry.category} showSlot={section.label === 'Equipment'}/> : entry.label}</span><span aria-hidden="true">&#8249;</span>
+      : entry.gearRow ? <GearItemLabel row={entry.gearRow} category={entry.category} showSlot={section.label === 'Equipment'}/> : entry.label}</span><span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
     </button>) : <PanelDataEmpty kind={section.kind} emptyLabel="No items here."/>}
     {section.ready && !section.objects.length && <p>No items here.</p>}
    </CommandTreeCollapsibleSection>)}

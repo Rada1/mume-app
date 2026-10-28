@@ -31,7 +31,7 @@
     padding: 4px 8px;
     border: 0;
     border-radius: 0;
-    background: #211b16;
+    background: var(--command-panel-surface, #211b16);
     color: #d4cdb8;
     cursor: pointer;
 }
@@ -67,7 +67,7 @@
     overscroll-behavior: contain;
     scrollbar-width: thin;
 }
-.client-time-control { min-width: 0; max-width: calc(100% - 48px); background: #211b16; }
+.client-time-control { min-width: 0; max-width: calc(100% - 48px); background: var(--command-panel-surface, #211b16); }
 .client-time-control[open] { width: min(360px, calc(100% - 48px)); }
 .client-time-control[open] .client-time-chip { position: relative; justify-content: center; width: 100%; padding: 14px 30px 4px; }
 .client-time-control[open] .client-time-chip .mobile-header-time-current { font-size: 22px; line-height: 1.25; }

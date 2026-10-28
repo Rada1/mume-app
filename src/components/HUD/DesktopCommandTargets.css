@@ -1,4 +1,9 @@
 /** @file DesktopCommandTargets.css — Mobile-style target cascades for desktop command menus. */
+/* --- Desktop submenu direction --- */
+.app-container:not(.is-mobile) :is(.command-tree-v2,.command-dock-shell) .command-tree-row-chevron {
+    display:inline-block; flex:none; width:18px; font-size:20px; line-height:1;
+    transform:scaleX(-1);
+}
 /* --- Flat target surfaces and compact branch titles --- */
 .app-container:not(.is-mobile) :is(.command-tree-v2 .command-tree-branches,.command-dock-shell .command-tree-dock-popup .command-tree-branches)
  :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.desktop-command-category-branch,.is-follow-target-branch,.is-access-target-menu) {

@@ -31,7 +31,7 @@ it('sets a default without executing the command row', () => {
  const view=render(<div onClick={parent}><DesktopCommandPin label="Look" selected={false} onSelect={select}>
   <button onClick={execute}>Look</button>
  </DesktopCommandPin></div>);
- fireEvent.click(view.getByRole('button',{name:'Set Look as click action'}));
+ fireEvent.click(view.getByRole('button',{name:'Set Look as default click action'}));
  expect(select).toHaveBeenCalledOnce();
  expect(execute).not.toHaveBeenCalled();
  expect(parent).not.toHaveBeenCalled();
@@ -64,8 +64,8 @@ it('pins required social options without sending a command', () => {
  </CommandTargetMenuContext.Provider>);
  fireEvent.click(view.getByRole('button',{name:'Signals'}));
  fireEvent.click(view.getByRole('button',{name:'Raise'}));
- expect(view.queryByRole('button',{name:'Set Raise as click action'})).toBeNull();
- fireEvent.click(view.getByRole('button',{name:'Set Raise hand as click action'}));
+ expect(view.queryByRole('button',{name:'Set Raise as default click action'})).toBeNull();
+ fireEvent.click(view.getByRole('button',{name:'Set Raise hand as default click action'}));
  expect(useDesktopCommandDefaultsStore.getState().characters.tester.social).toBe('raise hand');
  expect(executeCommand).not.toHaveBeenCalled();
 });

@@ -45,21 +45,22 @@
 
 /* --- Desktop click-action pins --- */
 .app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row {
- position:relative; min-width:0; width:100%;
+ display:flex; align-items:stretch; min-width:0; width:100%;
+ background:var(--mobile-target-cell-background,var(--desktop-control-surface,#2b241d));
 }
-.app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row :is(.command-tree-row,.popover-action-button) {
- padding-inline:26px!important;
+.app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > :not(.desktop-command-pin) {
+ flex:1 1 0; min-width:0;
 }
 .app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > .desktop-command-pin {
- position:absolute; z-index:2; top:50%; right:4px; display:flex; align-items:center; justify-content:center;
- width:24px; height:28px; min-height:0; padding:0; transform:translateY(-50%); border:0; border-radius:0;
- background:transparent!important; color:#c9a84c; opacity:0; pointer-events:none;
+ flex:0 0 36px; display:flex; align-items:center; justify-content:center;
+ width:36px; min-height:40px; padding:0; border:0; border-radius:0;
+ background:transparent; color:#a59b84; cursor:pointer;
 }
 .app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > .desktop-command-pin[aria-pressed="true"] {
- opacity:.55; pointer-events:auto;
+ color:#e4c46b;
 }
-.app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row:is(:hover,:focus-within) > .desktop-command-pin {
- opacity:1; pointer-events:auto;
+.app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > .desktop-command-pin:is(:hover,:focus-visible) {
+ color:#ffe39a; background:var(--desktop-control-hover,#43382a);
 }
 .app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > .desktop-command-pin:focus-visible {
  outline:1px solid #c9a84c; outline-offset:-1px;

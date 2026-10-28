@@ -43,7 +43,7 @@ export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabil
   data-target-kind={getEntityHighlightKind(entry.category)} data-targetable="true" data-target-id={entry.id}
   style={workspace?{color:controller.targetSelection.colorFor(entry.category)}:undefined}
   onPointerEnter={event=>{if(!workspace&&event.pointerType==='mouse')tree.defer(()=>{transfer.reset();chooseObject(entry);});}} onFocus={event=>{if(event.currentTarget.matches(':focus-visible')){tree.cancelPreview();transfer.reset();chooseObject(entry);}}} onClick={()=>{tree.cancelPreview();transfer.reset();chooseObject(entry);}}>
-  <span className={kind==='Equipment'&&entry.gearRow?'command-tree-gear-object-label':''}>{entry.gearRow?<GearItemLabel row={slotLabel?{...entry.gearRow,slotLabel}:entry.gearRow} category={entry.category} showSlot={kind==='Equipment'&&(!items.selected||!controller.game.viewport?.isMobile)}/>:entry.id==='command-panel-self'?'Self':entry.label}</span>{!workspace&&<span aria-hidden="true">&#8249;</span>}
+  <span className={kind==='Equipment'&&entry.gearRow?'command-tree-gear-object-label':''}>{entry.gearRow?<GearItemLabel row={slotLabel?{...entry.gearRow,slotLabel}:entry.gearRow} category={entry.category} showSlot={kind==='Equipment'&&(!items.selected||!controller.game.viewport?.isMobile)}/>:entry.id==='command-panel-self'?'Self':entry.label}</span>{!workspace&&<span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>}
  </button>;
  return container ? <div className="desktop-target-container" key={entry.id}>
   <div className="desktop-target-container-row">
