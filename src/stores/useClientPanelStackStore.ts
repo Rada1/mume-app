@@ -37,8 +37,8 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
     singleHeights: { entities: 1, chat: 1, actions: 1, details: 1, help: 1 },
     mobileDetailsHeight: 0.2,
     detailsOpen: false,
-    detailsEnabled: true,
-    desktopDetailsEnabled: true,
+    detailsEnabled: false,
+    desktopDetailsEnabled: false,
     mobileDetailsEnabled: false,
     isMobileDetailsMode: false,
     setDetailsViewport: isMobile => set(state => {
@@ -78,9 +78,9 @@ export const useClientPanelStackStore = create<ClientPanelStackState>()(persist<
         const saved = persisted as Partial<ClientPanelStackState>;
         const savedOrder = saved.order?.filter(panel => current.order.includes(panel)) ?? [];
         return { ...current, ...saved,
-            desktopDetailsEnabled: saved.detailsEnabled ?? true,
+            desktopDetailsEnabled: saved.detailsEnabled ?? false,
             mobileDetailsEnabled: saved.mobileDetailsEnabled ?? false,
-            detailsEnabled: current.isMobileDetailsMode ? saved.mobileDetailsEnabled ?? false : saved.detailsEnabled ?? true,
+            detailsEnabled: current.isMobileDetailsMode ? saved.mobileDetailsEnabled ?? false : saved.detailsEnabled ?? false,
             order: [...new Set([...savedOrder, ...current.order])],
             weights: { ...current.weights, ...saved.weights },
             singleHeights: { ...current.singleHeights, ...saved.singleHeights }
