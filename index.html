@@ -15,6 +15,7 @@
 
   <!-- Apple PWA -->
   <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="MUME">
   <link rel="apple-touch-icon" href="/icon-1.png">
@@ -24,8 +25,13 @@
   <meta name="msapplication-TileColor" content="#000000">
   <meta name="msapplication-TileImage" content="/icon-1.png">
 
-  <!-- Web App Manifest (auto-injected by vite-plugin-pwa in production, kept for dev fallback) -->
-  <link rel="manifest" href="/manifest.webmanifest">
+  <!-- Android's installed app uses immersive fullscreen; other platforms remain standalone. -->
+  <link rel="manifest" href="/manifest.webmanifest" id="app-manifest">
+  <script>
+    if (/Android/i.test(navigator.userAgent)) {
+      document.getElementById('app-manifest').setAttribute('href', '/manifest-android.webmanifest');
+    }
+  </script>
 
   <title>MUME - Multi-Users in Middle-earth</title>
   <script type="importmap">

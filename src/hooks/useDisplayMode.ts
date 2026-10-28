@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react';
 
 const getIsStandalone = () => {
     const navigatorStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
-    return navigatorStandalone || window.matchMedia('(display-mode: standalone)').matches;
+    return navigatorStandalone || window.matchMedia('(display-mode: standalone)').matches
+        || window.matchMedia('(display-mode: fullscreen)').matches;
 };
 
 export function useDisplayMode() {
@@ -15,15 +16,18 @@ export function useDisplayMode() {
 
     useEffect(() => {
         const standaloneQuery = window.matchMedia('(display-mode: standalone)');
+        const fullscreenQuery = window.matchMedia('(display-mode: fullscreen)');
         const browserQuery = window.matchMedia('(display-mode: browser)');
         const update = () => setIsStandalone(getIsStandalone());
 
         standaloneQuery.addEventListener('change', update);
+        fullscreenQuery.addEventListener('change', update);
         browserQuery.addEventListener('change', update);
         update();
 
         return () => {
             standaloneQuery.removeEventListener('change', update);
+            fullscreenQuery.removeEventListener('change', update);
             browserQuery.removeEventListener('change', update);
         };
     }, []);

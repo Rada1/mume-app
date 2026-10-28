@@ -317,31 +317,7 @@ export default defineConfig(({ mode }) => {
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         includeAssets: ['icon-1.png', 'icon-512.png', 'favicon.ico'],
-        manifest: {
-          name: 'MUME - Multi-Users in Middle-earth',
-          short_name: 'MUME',
-          description: 'A premium web client for MUME (Multi-Users in Middle-earth) — the classic MUD.',
-          start_url: '/',
-          display: 'standalone',
-          background_color: '#000000',
-          theme_color: '#000000',
-          orientation: 'any',
-          scope: '/',
-          icons: [
-            {
-              src: 'icon-1.png',
-              sizes: '1024x1024',
-              type: 'image/png',
-              purpose: 'any maskable',
-            },
-            {
-              src: 'icon-512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any maskable',
-            },
-          ],
-        },
+        manifest: false,
         workbox: {
           // Precache the app shell; raster assets are cached on first use below.
           globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
