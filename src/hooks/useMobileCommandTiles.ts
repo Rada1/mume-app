@@ -83,7 +83,7 @@ export const useMobileCommandTiles = (controller: ReturnType<typeof useCommandTr
   if (tile.id === 'combat' || tile.id === 'interact' || tile.id === 'consume') {
    const removed=tile.id === 'combat' ? /^flee(?:\s|$)/i
     : tile.id === 'consume' ? /^(?:fill|empty)(?:\s|$)/i
-    : /^(?:pick|group|follow)(?:\s|$)/i;
+    : /^(?:(?:pick|group|follow|butcher)(?:\s|$)|drain\s+%n(?:\s|$))/i;
    const bindings = [button.command,...Object.values(button.swipeCommands || {}),...Object.values(button.longSwipeCommands || {})];
    for (const command of bindings) {
     if (command && removed.test(command.trim())) button=removeMobileTileBinding(button,command);

@@ -3,7 +3,7 @@
 /* --- Desktop palette and dock proportions --- */
 .app-container:not(.is-mobile) {
  --desktop-control-panel:var(--command-panel-surface,#211b16);
- --desktop-control-surface:var(--command-panel-surface-raised,#2d271e);
+ --desktop-control-surface:var(--command-panel-surface,#211b16);
  --desktop-control-hover:var(--command-panel-surface-hover,#3b3024);
  --desktop-control-muted:#b0a58e;
  --desktop-command-category-height:184px;
@@ -12,8 +12,7 @@
  --desktop-command-category-height:230px;
 }
 .app-container:not(.is-mobile) .command-dock-shell:not(.command-dock-shell-mobile) {
- grid-template-columns:minmax(0,var(--message-log-left,25vw)) minmax(0,1fr)
-  minmax(0,min(720px,max(0px,calc(100vw - var(--message-log-left,25vw) - var(--message-log-width,50vw)))));
+ grid-template-columns:minmax(0,var(--message-log-left,25vw)) minmax(0,var(--message-log-width,50vw)) minmax(0,1fr);
 }
 .app-container:not(.is-mobile) .command-dock-shell .command-tree-dock-action-bar { gap:4px; }
 .app-container:not(.is-mobile) .command-dock-shell .command-tree-desktop-category-actions {

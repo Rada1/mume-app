@@ -62,6 +62,90 @@ export const KNOWN_ZONE_COLORS: Record<string, string> = {
 };
 
 export const DEFAULT_ZONE_COLOR = '#475569';
+const STRONGLY_GOOD_ZONE_AURA_COLOR = '#0a301b';
+const GOOD_ZONE_AURA_COLOR = '#0a2340';
+const NEUTRAL_ZONE_AURA_COLOR = '#3a210f';
+const SEMI_EVIL_ZONE_AURA_COLOR = '#291039';
+const EVIL_ZONE_AURA_COLOR = '#4f0d12';
+
+const STRONGLY_GOOD_ZONES = new Set([
+    'bree',
+    'fornost',
+    'lorien',
+    'rivendell',
+    'valinor',
+    'blue mountains',
+    'grey havens',
+    'shire',
+]);
+const GOOD_ZONES = new Set([
+    'fangorn',
+    'lorien surroundings',
+    'rohan',
+    'ettenmoors',
+    'gladden fields',
+    'lhun valley',
+    'midgewaters',
+    'old forest',
+    'road to fornost',
+    'road to grey havens',
+    'road to tharbad',
+    'tower hills',
+]);
+const NEUTRAL_ZONES = new Set([
+    'dunland',
+    'eregion',
+    'isengard',
+    'ost-in-edhil',
+    'tharbad',
+    'weathertop',
+    'ancient broken road',
+    'barrow-downs',
+    'central anduin vale',
+    'northern anduin vale',
+    'old east road',
+]);
+const SEMI_EVIL_ZONES = new Set([
+    'emyn-nu-fuin',
+    'southern mirkwood',
+    'misty mountains',
+    'old forest road',
+    'redhorn pass',
+    'trollshaws',
+]);
+const EVIL_ZONES = new Set([
+    'dol guldur',
+    'goblin-town',
+    'moria',
+    'troll warrens',
+]);
+
+const getZoneAlignmentKey = (zone: string | null | undefined): string => {
+    const normalizedZone = normalizeZoneName(zone);
+    return normalizedZone.startsWith('the ')
+        ? normalizedZone.slice(4).trim()
+        : normalizedZone;
+};
+
+const isStronglyGoodZone = (zone: string | null | undefined): boolean =>
+    STRONGLY_GOOD_ZONES.has(getZoneAlignmentKey(zone));
+const isGoodZone = (zone: string | null | undefined): boolean =>
+    GOOD_ZONES.has(getZoneAlignmentKey(zone));
+const isNeutralZone = (zone: string | null | undefined): boolean =>
+    NEUTRAL_ZONES.has(getZoneAlignmentKey(zone));
+const isSemiEvilZone = (zone: string | null | undefined): boolean =>
+    SEMI_EVIL_ZONES.has(getZoneAlignmentKey(zone));
+const isEvilZone = (zone: string | null | undefined): boolean =>
+    EVIL_ZONES.has(getZoneAlignmentKey(zone));
+
+const getZoneAuraPaletteColor = (zone: string | null | undefined): string | null => {
+    if (isStronglyGoodZone(zone)) return STRONGLY_GOOD_ZONE_AURA_COLOR;
+    if (isGoodZone(zone)) return GOOD_ZONE_AURA_COLOR;
+    if (isNeutralZone(zone)) return NEUTRAL_ZONE_AURA_COLOR;
+    if (isSemiEvilZone(zone)) return SEMI_EVIL_ZONE_AURA_COLOR;
+    if (isEvilZone(zone)) return EVIL_ZONE_AURA_COLOR;
+    return null;
+};
 
 // --- Logic Section ---
 
@@ -115,12 +199,13 @@ export const getZoneColor = (zone: string | null | undefined): string => {
 };
 
 /** Uses the zone palette as a translucent ambient glow behind the client. */
-export const getZoneAmbientGlow = (zone: string | null | undefined): string => {
-    const color = getZoneColor(zone);
+export const getZoneAmbientGlow = (zone: string | null | undefined, strength = 0.18): string => {
+    const color = getZoneAuraPaletteColor(zone) ?? getZoneColor(zone);
     const red = parseInt(color.slice(1, 3), 16);
     const green = parseInt(color.slice(3, 5), 16);
     const blue = parseInt(color.slice(5, 7), 16);
-    return `rgba(${red}, ${green}, ${blue}, 0.18)`;
+    const alpha = Number.isFinite(strength) ? Math.max(0, Math.min(1, strength)) : 0.18;
+    return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
 };
 
 /**
@@ -188,6 +273,13 @@ export const getZoneTextColor = (zone: string | null | undefined, isLightMode = 
 
 /** Keeps the client rim visible in dark zones while preserving the zone hue. */
 export const getZoneFrameColor = (zone: string | null | undefined): string => {
+    const auraPaletteColor = getZoneAuraPaletteColor(zone);
+    if (auraPaletteColor) {
+        const { h, s } = hexToHsl(auraPaletteColor);
+        const frameLightness = isNeutralZone(zone) ? 30 : isStronglyGoodZone(zone) || isGoodZone(zone) ? 28 : 25;
+        return hslToHex(h, s, frameLightness);
+    }
+
     const { h, s, l } = hexToHsl(getZoneColor(zone));
     return hslToHex(h, s, Math.max(l, 55));
 };

@@ -87,4 +87,12 @@ describe('MapSettings Component', () => {
         fireEvent.click(toggle);
         expect(useSettingsStore.getState().hideMapHeaderFooter).toBe(false);
     });
+
+    it('keeps immersion background controls out of Map settings', () => {
+        render(<MapSettings />);
+
+        expect(screen.queryByRole('switch', { name: 'Show Background Image' })).toBeNull();
+        expect(screen.queryByRole('switch', { name: 'Background Image Side Panel' })).toBeNull();
+        expect(screen.queryByText('Immersion Background Viewpoint')).toBeNull();
+    });
 });

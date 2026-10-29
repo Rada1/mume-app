@@ -9,7 +9,7 @@
     display: none;
 }
 
-@media (max-width: 1024px) {
+@media all {
     .app-container.is-mobile:not(.state-account) .message-log-wrapper {
         align-items: stretch !important;
         overflow: hidden !important;
@@ -110,7 +110,7 @@
     }
 }
 
-@media (max-width: 1024px) and (orientation: portrait) {
+@media (orientation: portrait) {
     .app-container.is-mobile:not(.state-account) .mobile-log-command-split {
         flex-direction: column !important;
     }
@@ -143,7 +143,7 @@
     }
 }
 
-@media (max-width: 1024px) and (orientation: landscape) {
+@media (orientation: landscape) {
     .app-container.is-mobile.is-landscape:not(.state-account) .content-layer .message-log-wrapper,
     .app-container.is-mobile.is-landscape:not(.state-account) .content-layer .message-log-wrapper.chat-window-active {
         flex-direction: column !important;
@@ -191,7 +191,7 @@
 }
 
 /* --- Portrait footer: state controls above character info --- */
-@media (max-width: 1024px) and (orientation: portrait) {
+@media (orientation: portrait) {
     .app-container.is-mobile:not(.state-account) .mobile-command-column .command-dock-controls {
         position: fixed;
         z-index: 65001;

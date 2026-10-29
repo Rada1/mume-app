@@ -10,12 +10,15 @@ import { useActiveVitals } from '../../stores/useActiveGameState';
 import { useMumeTime } from '../../hooks/useMumeTime';
 import { getMumeTimeOfDayClass, getNextSolarEventLabel, MUME_MONTH_DETAILS } from '../../utils/mumeTimeUtils';
 import './MobileHeaderTime.css';
-import { getWeatherLabel } from './customPromptHelpers';
+import { getLightingIcon, getLightingLabel, getWeatherIcon, getWeatherLabel } from './customPromptHelpers';
 
 export const MobileHeaderTime: FC<{ expanded?: boolean; showTime?: boolean }> = ({ expanded = false, showTime = true }) => {
-    const { gameTime, isFoggy } = useGame();
+    const { gameTime, isFoggy, lighting } = useGame();
     const { weather } = useActiveVitals();
     const weatherLabel = [getWeatherLabel(weather) || (isFoggy ? '' : 'None'), isFoggy ? 'Fog' : ''].filter(Boolean).join(' · ');
+    const lightingLabel = getLightingLabel(lighting) || 'Lighting not reported';
+    const lightingIcon = getLightingIcon(lighting);
+    const weatherIcon = getWeatherIcon(weather, isFoggy);
     const currentTime = useMumeTime(gameTime);
     const solarTimes = MUME_MONTH_DETAILS[currentTime.month];
     const hour = currentTime.hour ?? 12;
@@ -27,14 +30,17 @@ export const MobileHeaderTime: FC<{ expanded?: boolean; showTime?: boolean }> = 
         : getNextSolarEventLabel(currentTime.month, hour, minute);
 
     return (
-        <div className="mobile-header-time" aria-label={expanded ? undefined : `Time ${time}, ${solarLabel}, weather ${weatherLabel}`}>
+        <div className="mobile-header-time" aria-label={expanded ? undefined : `Time ${time}, ${solarLabel}, ${lightingLabel}, weather ${weatherLabel}`}>
             {showTime && <span className={`mobile-header-time-current ${timeOfDayClass}`}>{time}</span>}
             {expanded && <>
                 <span className="client-time-calendar">{currentTime.weekday}, {currentTime.day} {currentTime.month}</span>
                 <span className="client-time-weekday">{solarTimes?.season} · {currentTime.year} {currentTime.era}</span>
             </>}
             <span className="mobile-header-time-solar">{solarLabel}</span>
-            {!expanded && <span className="mobile-header-time-weather" title={`Weather: ${weatherLabel}`}>{weatherLabel}</span>}
+            {!expanded && <span className="mobile-header-time-icons">
+                {lightingIcon && <span title={lightingLabel}>{lightingIcon}</span>}
+                {weatherIcon && <span title={`Weather: ${weatherLabel}`}>{weatherIcon}</span>}
+            </span>}
         </div>
     );
 };

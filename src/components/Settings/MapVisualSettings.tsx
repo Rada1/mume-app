@@ -276,6 +276,11 @@ const MapVisualSettings: React.FC = () => {
                 zones.add(normalizedKey);
             }
         });
+
+        const activeZone = normalizeZoneBackgroundKey(currentZone);
+        if (activeZone && !BLACKLISTED_ZONES.has(activeZone)) {
+            zones.add(activeZone);
+        }
         
         Object.values(preloaded).forEach((rData: any) => {
             const zName = rData?.[9];
@@ -288,15 +293,16 @@ const MapVisualSettings: React.FC = () => {
         });
         
         return Array.from(zones).sort();
-    }, [preloaded, zoneFilters]);
+    }, [currentZone, preloaded, zoneFilters]);
 
     const [selectedZone, setSelectedZone] = React.useState('shire');
     const editMode = 'dark';
 
     React.useEffect(() => {
         if (currentZone) {
-            const normalized = currentZone.toLowerCase().trim().replace(/^the\s+/i, '').replace(/-/g, ' ');
-            const matchedKey = scannedZones.find(key => normalized.includes(key) || key.includes(normalized));
+            const normalized = normalizeZoneBackgroundKey(currentZone);
+            const matchedKey = scannedZones.find(key => key === normalized)
+                || scannedZones.find(key => normalized.includes(key) || key.includes(normalized));
             if (matchedKey) {
                 setSelectedZone(matchedKey);
             }
@@ -450,6 +456,9 @@ const MapVisualSettings: React.FC = () => {
                     <ZoneBackgroundPositionEditor
                         imageUrl={bgImage || '/assets/Pictures/UIPics/darkmap.png'}
                         position={zoneBackgroundPositions[normalizeZoneBackgroundKey(selectedZone)] || { x: 0, y: 0 }}
+                        brightness={mapBackgroundVisuals.brightness}
+                        blur={mapBackgroundVisuals.blur}
+                        zoom={mapBackgroundVisuals.zoom}
                         onCommit={(position) => setZoneBackgroundPosition(normalizeZoneBackgroundKey(selectedZone), position)}
                     />
                 </div>

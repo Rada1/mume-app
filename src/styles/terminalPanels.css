@@ -52,85 +52,85 @@
 /* --- Shared pane geometry --- */
 @media (min-width: 1025px) {
     /* Align the Map Find and Target dividers with minimized This Is You. */
-    .app-container .map-filter-bar:not(.floating-find-panel),
-    .app-container .right-panel-target-bar {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel),
+    .app-container.is-desktop .right-panel-target-bar {
         box-sizing: border-box;
         border-top: 2px solid rgba(255, 255, 255, 0.12) !important;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel) {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel) {
         height: 33px;
         min-height: 33px;
     }
 
-    .app-container .right-panel-target-bar {
+    .app-container.is-desktop .right-panel-target-bar {
         height: 41px;
         min-height: 41px;
     }
 
     /* Leave the center command divider visible while the two drawer dividers disappear. */
-    .app-container:has(.this-is-you-console:not(.is-mobile).is-minimized) .map-filter-bar:not(.floating-find-panel),
-    .app-container:has(.this-is-you-console:not(.is-mobile).is-minimized) .right-panel-target-bar {
+    .app-container.is-desktop:has(.this-is-you-console:not(.is-mobile).is-minimized) .map-filter-bar:not(.floating-find-panel),
+    .app-container.is-desktop:has(.this-is-you-console:not(.is-mobile).is-minimized) .right-panel-target-bar {
         border-top-color: transparent !important;
     }
 
     /* The open This Is You panel replaces the divider above the map Find bar. */
-    .app-container:has(.this-is-you-console:not(.is-mobile):not(.is-minimized)) .map-filter-bar:not(.floating-find-panel) {
+    .app-container.is-desktop:has(.this-is-you-console:not(.is-mobile):not(.is-minimized)) .map-filter-bar:not(.floating-find-panel) {
         border-top-color: transparent !important;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel).collapsed {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel).collapsed {
         justify-content: center;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel):not(.collapsed) {
         gap: 0;
         padding-top: 2px;
         padding-bottom: 1px;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-top-row {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-top-row {
         height: 14px;
         flex-shrink: 0;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chips-row {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chips-row {
         height: 12px;
         padding: 0;
         flex-shrink: 0;
     }
 
-    .app-container .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chip {
+    .app-container.is-desktop .map-filter-bar:not(.floating-find-panel):not(.collapsed) .map-filter-chip {
         height: 12px;
     }
 
-    .app-container .content-layer {
+    .app-container.is-desktop .content-layer {
         right: var(--terminal-panels-width, 0px) !important;
         padding-right: 0 !important;
     }
 
-    .app-container .content-layer.has-docked-panels {
+    .app-container.is-desktop .content-layer.has-docked-panels {
         max-width: none !important;
         margin: 0 !important;
     }
 
-    .app-container .content-layer .message-log-wrapper {
+    .app-container.is-desktop .content-layer .message-log-wrapper {
         align-items: flex-start;
     }
 
-    .app-container .desktop-center-column {
+    .app-container.is-desktop .desktop-center-column {
         max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px)) !important;
         margin: 0 !important;
     }
 
-    .app-container .content-layer.has-docked-panels .desktop-center-column {
+    .app-container.is-desktop .content-layer.has-docked-panels .desktop-center-column {
         width: 100% !important;
         min-width: 0 !important;
         margin: 0 !important;
     }
 
     /* Keep the preferred log width when the reserved panel lane becomes available. */
-    .app-container .content-layer .message-log-container {
+    .app-container.is-desktop .content-layer .message-log-container {
         width: 100% !important;
         min-width: 0 !important;
         max-width: var(--desktop-log-width, clamp(600px, 38vw, 1000px)) !important;
@@ -138,7 +138,7 @@
         margin-right: auto !important;
     }
 
-    .app-container .docked-panel {
+    .app-container.is-desktop .docked-panel {
         top: calc(env(safe-area-inset-top, 0px) + 52px) !important;
         bottom: 0 !important;
         max-width: 60vw !important;
@@ -152,7 +152,7 @@
         animation: terminal-pane-enter 180ms ease-out both !important;
     }
 
-    .app-container .docked-panel .drawer-resize-handle--left {
+    .app-container.is-desktop .docked-panel .drawer-resize-handle--left {
         left: 0 !important;
         top: 0 !important;
         bottom: 0 !important;
@@ -163,7 +163,7 @@
         border: 0 !important;
     }
 
-    .app-container .docked-panel .drawer-resize-handle--left::after {
+    .app-container.is-desktop .docked-panel .drawer-resize-handle--left::after {
         content: '';
         position: absolute;
         left: 0;
@@ -174,19 +174,19 @@
         pointer-events: none;
     }
 
-    .app-container .docked-panel .drawer-resize-handle--left:hover::after,
-    .app-container .docked-panel .drawer-resize-handle--left.is-hovered::after,
-    .app-container .docked-panel .drawer-resize-handle--left.is-active::after {
+    .app-container.is-desktop .docked-panel .drawer-resize-handle--left:hover::after,
+    .app-container.is-desktop .docked-panel .drawer-resize-handle--left.is-hovered::after,
+    .app-container.is-desktop .docked-panel .drawer-resize-handle--left.is-active::after {
         background: rgba(201, 168, 76, 0.55) !important;
     }
 
-    .app-container.immersion-mode .docked-panel {
+    .app-container.is-desktop.immersion-mode .docked-panel {
         background: transparent !important;
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
 
-    .app-container.light-mode .docked-panel {
+    .app-container.is-desktop.light-mode .docked-panel {
         background: transparent !important;
     }
 
@@ -287,7 +287,7 @@ body:not(:has(.app-container.immersion-mode)).has-unified-command-chat-history .
 }
 
 @media (min-width: 1025px) {
-    .app-container .help-panel.help-panel-split {
+    .app-container.is-desktop .help-panel.help-panel-split {
         width: var(--desktop-help-width, 28vw) !important;
     }
 }

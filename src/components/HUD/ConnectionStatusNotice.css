@@ -1,0 +1,56 @@
+/* @file ConnectionStatusNotice.css — Persistent connection feedback above the log. */
+.connection-status-notice {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    flex: none;
+    gap: 8px;
+    min-width: 0;
+    max-width: calc(100% - 16px);
+    min-height: 34px;
+    box-sizing: border-box;
+    margin-top: calc(var(--client-chrome-height, 32px) + 8px);
+    padding: 5px 9px;
+    border: 1px solid #704139;
+    background: #38211f;
+    color: #ffe7dc;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* Keep floating loot controls below the notice as well as the client controls. */
+.desktop-center-column:has(> .connection-status-notice) > .room-loot-root {
+    top: calc(var(--client-chrome-height, 32px) + 60px);
+}
+
+@media (max-width: 400px) {
+    .connection-status-notice__message > span { display: none; }
+}
+
+.connection-status-notice__message {
+    display: flex;
+    flex: 0 1 auto;
+    align-items: baseline;
+    gap: 3px 7px;
+    min-width: 0;
+}
+
+.connection-status-notice button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    padding: 4px 7px;
+    border: 0;
+    background: #794139;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.connection-status-notice button:hover,
+.connection-status-notice button:focus-visible {
+    background: #98564a;
+    outline: 2px solid #ffe7dc;
+    outline-offset: -2px;
+}

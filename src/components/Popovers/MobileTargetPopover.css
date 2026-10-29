@@ -40,10 +40,27 @@
 .is-inline-target-popover .mobile-quick-target { display:flex; flex-direction:column; gap:4px; }
 .is-inline-target-popover .mobile-quick-target-actions { display:flex; flex-wrap:wrap; gap:4px; }
 .is-inline-target-popover .mobile-quick-target-actions button {
+ display:flex; align-items:center; justify-content:center; gap:7px;
  flex:1 1 80px; min-height:40px; padding:8px 10px; border:0; border-radius:0;
  background:var(--command-panel-surface-raised,#2d271e); color:var(--command-tree-text,#e2d7ba); font:inherit; cursor:pointer;
 }
 .is-inline-target-popover .mobile-quick-target-actions button:active { background:var(--command-tree-surface-hover,#4a3d30); }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="examine"] { color:#ddd7c8; }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="hit"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="butcher"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="drop"] { color:var(--ansi-bright-red,#ef4444); }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="ride"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="lead"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="follow"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="group"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="eat"] { color:var(--ansi-bright-green,#44ff70); }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="drain"] { color:#7f1d1d; }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="get"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="loot"] { color:#f59e0b; }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="drink"] { color:#60a5fa; }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="wear"],
+.is-inline-target-popover .mobile-quick-target-actions [data-action="remove"] { color:#94a3b8; }
+.is-inline-target-popover .mobile-quick-target-actions [data-action="wield"] { color:#818cf8; }
 .is-inline-target-popover .mobile-quick-target-details { max-height:160px; overflow:auto; padding:8px; color:#c9c1b1; font-size:11px; line-height:1.45; overflow-wrap:anywhere; }
 .is-inline-target-popover .mobile-quick-target-caption { display:block; color:#998a6f; margin-bottom:4px; }
 .is-inline-target-popover .mobile-quick-target-empty { padding:8px; color:#a69b89; }

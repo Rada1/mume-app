@@ -146,8 +146,8 @@ export interface UIContextType {
     setIsSettingsOpen: (val: boolean) => void;
     isLibraryOpen: boolean;
     setIsLibraryOpen: (val: boolean) => void;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
-    setSettingsTab: (val: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
+    settingsTab: 'general' | 'appearance' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
+    setSettingsTab: (val: 'general' | 'appearance' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
     setIsMapExpanded: (open: boolean) => void;
     setIsSetManagerOpen: (open: boolean) => void;
     setManagerSelectedSet: (setId: string | null) => void;

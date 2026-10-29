@@ -15,9 +15,29 @@
 .parley-channel-chip.is-chat-icon .parley-action { display:flex; align-items:center; justify-content:center; width:30px; height:28px; padding:0; color:#c9c5bc; background:transparent; }
 .parley-channel-chip .parley-clear { padding:0 3px; border:0; background:transparent; color:#b7a77e; cursor:pointer; }
 /* --- Menu Surfaces Section --- */
-.parley-branch-menu { position:fixed; z-index:2147483500; width:180px; max-height:calc(100dvh - 70px); overflow:auto; box-sizing:border-box; padding:4px; background:#171717; color:#c9c5bc; font:11px var(--font-mono,monospace); }
-.parley-branch-menu > small { display:block; padding:8px; color:#9b927c; text-transform:uppercase; font-size:9px; }
-.parley-branch-menu > button { display:flex; justify-content:space-between; align-items:center; width:100%; min-height:33px; padding:8px; border:0; border-radius:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.parley-branch-menu > button:hover,.parley-branch-menu > button:focus-visible,.parley-branch-menu > button[aria-expanded=true] { background:#303030; outline:none; }
+.parley-communication-popover { position:fixed; z-index:2147483500; display:flex; flex-direction:row-reverse; height: min(420px, 65dvh); min-height:0; overflow:hidden; padding:4px; box-sizing:border-box; gap:4px; background:var(--command-panel-surface,#211b16); color:#c9c5bc; font:11px var(--font-mono,monospace); }
+.parley-branch-menu { display:flex; flex:0 0 160px; flex-direction:column; gap:4px; min-height:0; overflow:auto; overscroll-behavior:contain; box-sizing:border-box; border:0; border-radius:0; }
+.parley-branch-menu > button { display:flex; flex:none; justify-content:space-between; align-items:center; width:100%; min-height:40px; padding:8px; border:0; border-radius:0; background:var(--command-panel-surface-raised,#2b241d); color:inherit; font:inherit; text-align:left; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.parley-branch-menu > button:hover,.parley-branch-menu > button:focus-visible,.parley-branch-menu > button[aria-expanded=true],.parley-branch-menu > button[aria-pressed=true] { background:var(--command-panel-surface-hover,#43382a); outline:none; }
+.parley-branch-menu > button:focus-visible { outline:1px solid #dfbf6c; outline-offset:-2px; }
+.parley-branch-menu > .parley-channel-group-start { margin-top:8px; }
 .parley-recipient-menu { width:220px; }
 .parley-branch-menu p { padding:8px; color:#9b927c; }
+.parley-history { display:flex; flex:1; flex-direction:column; min-width:0; min-height:0; background:var(--command-panel-surface-raised,#2b241d); }
+.parley-history-heading { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:4px 8px; color:#b0a58e; }
+.parley-history-heading button { border:0; background:transparent; color:inherit; font:20px monospace; cursor:pointer; }
+.parley-history-scroll { flex:1; min-height:0; overflow:auto; padding:4px 8px; overscroll-behavior:contain; }
+.parley-history-scroll p { color:#a99c86; }
+.parley-history .chat-window-entry { display:block; margin:0; padding:4px 0; line-height:1.45; text-align:left; overflow-wrap:anywhere; }
+.parley-history .chat-window-time { display:inline; width:auto; min-width:0; margin:0 8px 0 0; padding:0; color:#a99c86; }
+.parley-history .message-content { display:inline; min-width:0; overflow-wrap:anywhere; text-align:left; }
+.parley-history .chat-window-entry-outgoing { text-align:right; }
+.parley-communication-popover.is-mobile { flex-direction:column; max-height:none; }
+.parley-communication-popover.is-mobile .parley-branch-menu { flex:0 0 auto; flex-direction:row; max-width:100%; max-height:92px; overflow:auto; }
+.parley-communication-popover.is-mobile .parley-branch-menu > button { width:auto; min-width:76px; }
+.parley-communication-popover.is-mobile .parley-branch-menu > .parley-channel-group-start { margin:0 0 0 8px; }
+.parley-communication-popover.is-mobile.is-split { inset:0; width:auto; height:auto; background:transparent; padding:0; pointer-events:none; }
+.parley-communication-popover.is-split :is(.parley-branch-menu,.parley-history) { position:fixed; box-sizing:border-box; padding:4px; background:var(--command-panel-surface,#211b16); pointer-events:auto; }
+.parley-communication-popover.is-mobile.is-split .parley-branch-menu { flex-direction:column; max-height:none; }
+.parley-communication-popover.is-mobile.is-split .parley-branch-menu > button { width:100%; }
+.parley-communication-popover.is-mobile.is-split .parley-branch-menu > .parley-channel-group-start { margin:8px 0 0; }

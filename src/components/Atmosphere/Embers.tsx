@@ -30,7 +30,9 @@ export const Embers: React.FC<EmbersProps> = ({ count, zone }) => {
         ? (lighting === 'artificial' ? 12 : 6)
         : (lighting === 'artificial' ? 8 : 4);
 
-    const emberCount = count ? Math.min(count, isMobile ? 30 : 60) : defaultCount;
+    const emberCount = count === undefined
+        ? defaultCount
+        : Math.max(0, Math.min(Math.floor(count), isMobile ? 30 : 60));
 
     const activityMultiplier = 1 + (messageActivity * 2.2); // 1x to 3.2x speed
     const containerRef = React.useRef<HTMLDivElement>(null);

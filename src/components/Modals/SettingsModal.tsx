@@ -4,9 +4,10 @@
  */
 
 import React from 'react';
-import { X, Music, Cog, Activity, HelpCircle, Map, Film } from 'lucide-react';
+import { X, Music, Cog, Activity, HelpCircle, Map, Film, Palette } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import GeneralSettings from '../Settings/GeneralSettings';
+import { AppearanceSettings } from '../Settings/AppearanceSettings';
 import DataManagement from '../Settings/DataManagement';
 import SoundSettings from '../Settings/SoundSettings';
 import { ClientMacroSettings } from '../Settings/ClientMacroSettings';
@@ -15,6 +16,7 @@ import ButtonSettings from '../Settings/ButtonSettings';
 import MapSettings from '../Settings/MapSettings';
 import HelpGuides from '../Settings/HelpGuides';
 import ReplaySettings from '../Settings/ReplaySettings';
+import { SpectateSettings } from '../Settings/SpectateSettings';
 import { SoundTrigger } from '../../types';
 
 // --- Interface ---
@@ -104,6 +106,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div className={`modal-tab ${settingsTab === 'general' ? 'active' : ''}`} onClick={() => setSettingsTab('general')}>
                         <Cog size={16} /> <span>General</span>
                     </div>
+                    <div className={`modal-tab ${settingsTab === 'appearance' ? 'active' : ''}`} onClick={() => setSettingsTab('appearance')}>
+                        <Palette size={16} /> <span>Appearance</span>
+                    </div>
                     <div className={`modal-tab ${settingsTab === 'sound' ? 'active' : ''}`} onClick={() => setSettingsTab('sound')}>
                         <Music size={16} /> <span>Sound</span>
                     </div>
@@ -138,17 +143,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 setLoginName={setLoginName}
                                 loginPassword={loginPassword}
                                 setLoginPassword={setLoginPassword}
-                                isImmersionMode={isImmersionMode}
-                                setIsImmersionMode={setIsImmersionMode}
-                                fontFamily={fontFamily}
-                                setFontFamily={setFontFamily}
-                                logFontSize={viewport.logFontSize}
-                                logFontSizePx={viewport.logFontSizePx}
-                                setLogFontSize={viewport.setLogFontSize}
                                 autoSaveSessions={autoSaveSessions ?? false}
                                 setAutoSaveSessions={setAutoSaveSessions ?? (() => {})}
-                                isPerformanceMode={isPerformanceMode}
-                                setIsPerformanceMode={setIsPerformanceMode}
                             />
                             <DataManagement
                                 exportSettings={exportSettings}
@@ -157,6 +153,20 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                 resetButtons={resetButtons}
                             />
                         </>
+                    )}
+
+                    {settingsTab === 'appearance' && (
+                        <AppearanceSettings
+                            fontFamily={fontFamily}
+                            setFontFamily={setFontFamily}
+                            logFontSize={viewport.logFontSize}
+                            logFontSizePx={viewport.logFontSizePx}
+                            setLogFontSize={viewport.setLogFontSize}
+                            isImmersionMode={isImmersionMode}
+                            setIsImmersionMode={setIsImmersionMode}
+                            isPerformanceMode={isPerformanceMode}
+                            setIsPerformanceMode={setIsPerformanceMode}
+                        />
                     )}
 
                     {settingsTab === 'sound' && (
@@ -202,7 +212,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     )}
 
                     {settingsTab === 'replays' && (
-                        <ReplaySettings />
+                        <>
+                            <SpectateSettings />
+                            <ReplaySettings />
+                        </>
                     )}
 
                     {settingsTab === 'help' && (

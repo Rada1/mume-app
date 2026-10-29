@@ -183,6 +183,8 @@ export interface MapTileVisualAdjustments {
 export interface MapBackgroundVisualAdjustments {
     opacity: number;
     brightness: number;
+    blur: number;
+    zoom: number;
     saturation: number;
     grayscale: number;
     contrast: number;

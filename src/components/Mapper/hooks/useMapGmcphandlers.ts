@@ -11,6 +11,7 @@ import { useTerrainHandler } from './useTerrainHandler';
 import { DIRS, getExitTargetId } from '../mapperUtils';
 import { formatMovementArrow, normalizeMovementDirection } from '../../../utils/movementDirections';
 import { uiPerformance } from '../../../utils/uiPerformance';
+import { useMapperMovementEvents } from './useMapperMovementEvents';
 
 interface UseMapGmcphandlersProps {
     roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
@@ -223,6 +224,26 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         mapEditMode: props.mapEditMode
     });
 
+    const takeMovementDirection = useMapperMovementEvents(direction => {
+        // A missing payload supplies no matching evidence: only follow a mapped
+        // exit with one destination, never guess by neighboring coordinates.
+        const alreadyConfirmed = xmlConfirmedRef.current;
+        xmlConfirmedRef.current = false;
+        const currentId = props.currentRoomIdRef.current;
+        const bundled = currentId ? props.preloadedCoordsRef.current[currentId.replace(/^m_/, '')]?.[4]?.[direction] : null;
+        const exit: unknown = bundled ?? (currentId ? props.roomsRef.current[currentId]?.exits[direction] : null);
+        const ambiguous = exit && typeof exit === 'object' && 'targets' in exit
+            && (!Array.isArray(exit.targets) || exit.targets.length !== 1);
+        const target = getExitTargetId(exit).replace(/^m_/, '');
+        const known = target && (props.preloadedCoordsRef.current[target] || props.roomsRef.current[`m_${target}`]);
+        if (alreadyConfirmed || ambiguous || !known) {
+            if (!alreadyConfirmed) props.pendingMovesRef.current.shift();
+            props.onRoomInfoProcessed?.(null);
+            return;
+        }
+        processRoomInfo({ num: 0, name: '' }, false, direction);
+    }, props.activeView === 'self');
+
     const handleRoomInfo = (data: GmcpRoomInfo) => {
         if (data.spectating || data.scouting) {
             processRoomInfo(data);
@@ -235,7 +256,8 @@ export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
         const alreadyConfirmed = xmlConfirmedRef.current;
         xmlConfirmedRef.current = false;
         const finish = uiPerformance.startWork('Mapper room matching');
-        try { processRoomInfo(data, alreadyConfirmed); }
+        const direction = data.source === 'text' ? undefined : takeMovementDirection();
+        try { processRoomInfo(data, alreadyConfirmed, direction); }
         finally { finish(); }
     };
 

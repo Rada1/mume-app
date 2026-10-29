@@ -63,3 +63,19 @@
 }
 .app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-branches :is(.command-tree-branch:not(.command-tree-main-branch):not(.is-movement-branch),.is-follow-target-branch,.is-access-target-menu)
  :is(.command-tree-category-section-selector,.command-tree-location-selector) button[aria-pressed="true"] { background:var(--mobile-command-chip-selected,#43382a); color:#ffdf81; }
+
+/* --- Held direction commands use the same flat target buttons. --- */
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-held-direction-actions {
+ background:var(--command-tree-surface,#211b16)!important; border:0; border-radius:0; padding:4px!important;
+}
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-held-direction-actions .command-tree-section-commands {
+ display:grid!important; grid-template-columns:minmax(0,1fr)!important; gap:4px; align-content:start;
+}
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-held-direction-actions .command-tree-row {
+ display:flex; align-items:center; justify-content:center; width:100%; min-height:40px; padding:6px 4px!important;
+ border:0!important; border-radius:0!important; box-shadow:none!important; text-align:center;
+ background:var(--mobile-command-chip-background,#2b241d)!important;
+}
+.app-container.is-mobile:is(.readability-mode,.mobile-command-tiles-mode) .command-tree-mobile-readability-popup .command-tree-held-direction-actions .command-tree-row:is(:active,:focus-visible,.mobile-target-held-hover) {
+ background:var(--mobile-command-chip-selected,#43382a)!important;
+}

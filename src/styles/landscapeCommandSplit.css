@@ -2,6 +2,13 @@
 
 /* --- Landscape command mockup: split controls around the centered log --- */
 
+/* Forced mobile mode must hide the same legacy overlays as a phone, even on a wide monitor. */
+.app-container.is-mobile.is-landscape:has(.content-layer.has-docked-panels) :is(.hud-clusters-absolute-layer, .mobile-tactical-buttons-persistent, .mobile-command-deck-persistent) {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
 .app-container.is-mobile.is-landscape:not(.state-account) {
     --landscape-command-grid-columns: minmax(128px, 0.9fr) minmax(0, 1.9fr) minmax(128px, 0.9fr);
 }

@@ -47,7 +47,9 @@ export const DEFAULT_MAP_TILE_VISUALS: MapTileVisualAdjustments = {
 
 export const DEFAULT_MAP_BACKGROUND_VISUALS: MapBackgroundVisualAdjustments = {
     opacity: 1,
-    brightness: 0.18,
+    brightness: 0.6,
+    blur: 3,
+    zoom: 1,
     saturation: 1,
     grayscale: 0.7,
     contrast: 1,
@@ -71,9 +73,20 @@ interface SettingsState {
     theme: 'dark' | 'light';
     drawerZoom: number;
     isImmersionMode: boolean;
+    isEdgeLightingEnabled: boolean;
     isReadabilityMode: boolean;
     hasCustomReadabilityMode: boolean;
     isImmersionWeatherEffectsEnabled: boolean;
+    /** Legacy parent toggle retained for settings hydration compatibility. */
+    isImmersionAmbientLightingEnabled: boolean;
+    isImmersionTerrainGlowEnabled: boolean;
+    isImmersionZoneAuraEnabled: boolean;
+    isImmersionEmbersEnabled: boolean;
+    immersionZoneAuraColorStrength: number;
+    immersionZoneAuraDarkness: number;
+    immersionEmberCount: number;
+    showImmersionBackgroundImage: boolean;
+    useImmersionBackgroundSidePanel: boolean;
     isImmersionTextAnimationsEnabled: boolean;
     isClassicMode: boolean;
     isPerformanceMode: boolean;
@@ -159,9 +172,19 @@ interface SettingsState {
     setTheme: (val: 'dark' | 'light') => void;
     setDrawerZoom: (val: number) => void;
     setIsImmersionMode: (val: boolean) => void;
+    setIsEdgeLightingEnabled: (val: boolean) => void;
     setIsReadabilityMode: (val: boolean) => void;
     setDefaultReadabilityMode: (val: boolean) => void;
     setIsImmersionWeatherEffectsEnabled: (val: boolean) => void;
+    setIsImmersionAmbientLightingEnabled: (val: boolean) => void;
+    setIsImmersionTerrainGlowEnabled: (val: boolean) => void;
+    setIsImmersionZoneAuraEnabled: (val: boolean) => void;
+    setIsImmersionEmbersEnabled: (val: boolean) => void;
+    setImmersionZoneAuraColorStrength: (val: number) => void;
+    setImmersionZoneAuraDarkness: (val: number) => void;
+    setImmersionEmberCount: (val: number) => void;
+    setShowImmersionBackgroundImage: (val: boolean) => void;
+    setUseImmersionBackgroundSidePanel: (val: boolean) => void;
     setIsImmersionTextAnimationsEnabled: (val: boolean) => void;
     setIsClassicMode: (val: boolean) => void;
     setIsPerformanceMode: (val: boolean) => void;
@@ -328,9 +351,19 @@ export const useSettingsStore = create<SettingsState>()(
             theme: 'dark',
             drawerZoom: 1.0,
             isImmersionMode: false,
+            isEdgeLightingEnabled: true,
             isReadabilityMode: !isDesktopViewport(),
             hasCustomReadabilityMode: false,
             isImmersionWeatherEffectsEnabled: false,
+            isImmersionAmbientLightingEnabled: false,
+            isImmersionTerrainGlowEnabled: false,
+            isImmersionZoneAuraEnabled: false,
+            isImmersionEmbersEnabled: false,
+            immersionZoneAuraColorStrength: 0.35,
+            immersionZoneAuraDarkness: 0.85,
+            immersionEmberCount: 24,
+            showImmersionBackgroundImage: true,
+            useImmersionBackgroundSidePanel: false,
             isImmersionTextAnimationsEnabled: false,
             isClassicMode: false,
             isPerformanceMode: false,
@@ -427,9 +460,24 @@ export const useSettingsStore = create<SettingsState>()(
             setTheme: (theme) => set({ theme }),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
+            setIsEdgeLightingEnabled: (isEdgeLightingEnabled) => set({ isEdgeLightingEnabled }),
             setIsReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode, hasCustomReadabilityMode: true }),
             setDefaultReadabilityMode: (isReadabilityMode) => set({ isReadabilityMode }),
             setIsImmersionWeatherEffectsEnabled: (isImmersionWeatherEffectsEnabled) => set({ isImmersionWeatherEffectsEnabled }),
+            setIsImmersionAmbientLightingEnabled: (isImmersionAmbientLightingEnabled) => set({
+                isImmersionAmbientLightingEnabled,
+                isImmersionTerrainGlowEnabled: isImmersionAmbientLightingEnabled,
+                isImmersionZoneAuraEnabled: isImmersionAmbientLightingEnabled,
+                isImmersionEmbersEnabled: isImmersionAmbientLightingEnabled
+            }),
+            setIsImmersionTerrainGlowEnabled: (isImmersionTerrainGlowEnabled) => set({ isImmersionTerrainGlowEnabled }),
+            setIsImmersionZoneAuraEnabled: (isImmersionZoneAuraEnabled) => set({ isImmersionZoneAuraEnabled }),
+            setIsImmersionEmbersEnabled: (isImmersionEmbersEnabled) => set({ isImmersionEmbersEnabled }),
+            setImmersionZoneAuraColorStrength: (immersionZoneAuraColorStrength) => set({ immersionZoneAuraColorStrength: Math.max(0, Math.min(0.5, immersionZoneAuraColorStrength)) }),
+            setImmersionZoneAuraDarkness: (immersionZoneAuraDarkness) => set({ immersionZoneAuraDarkness: Math.max(0, Math.min(0.85, immersionZoneAuraDarkness)) }),
+            setImmersionEmberCount: (immersionEmberCount) => set({ immersionEmberCount: Math.max(0, Math.min(60, Math.round(immersionEmberCount))) }),
+            setShowImmersionBackgroundImage: (showImmersionBackgroundImage) => set({ showImmersionBackgroundImage }),
+            setUseImmersionBackgroundSidePanel: (useImmersionBackgroundSidePanel) => set({ useImmersionBackgroundSidePanel }),
             setIsImmersionTextAnimationsEnabled: (isImmersionTextAnimationsEnabled) => set({ isImmersionTextAnimationsEnabled }),
             setIsClassicMode: (isClassicMode) => set({ isClassicMode }),
             setIsPerformanceMode: (isPerformanceMode) => set({ isPerformanceMode }),
@@ -588,8 +636,12 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 41,
+            version: 42,
             migrate: (persistedState: any, version: number) => {
+                if (version < 42 && persistedState.mapBackgroundVisuals?.brightness === 0.18) {
+                    persistedState.mapBackgroundVisuals.brightness = DEFAULT_MAP_BACKGROUND_VISUALS.brightness;
+                }
+
                 if (version < 41 && typeof persistedState.uiVolume !== 'number') {
                     persistedState.uiVolume = typeof persistedState.sfxVolume === 'number'
                         ? persistedState.sfxVolume
@@ -926,7 +978,17 @@ export const useSettingsStore = create<SettingsState>()(
                 merged.showGroupPanel = merged.showGroupPanel ?? false;
                 merged.showCommandSuggestions = merged.showCommandSuggestions ?? true;
                 merged.isImmersionWeatherEffectsEnabled = merged.isImmersionWeatherEffectsEnabled ?? false;
+                merged.isImmersionAmbientLightingEnabled = merged.isImmersionAmbientLightingEnabled ?? merged.isImmersionWeatherEffectsEnabled;
+                merged.isImmersionTerrainGlowEnabled = merged.isImmersionTerrainGlowEnabled ?? merged.isImmersionAmbientLightingEnabled;
+                merged.isImmersionZoneAuraEnabled = merged.isImmersionZoneAuraEnabled ?? merged.isImmersionAmbientLightingEnabled;
+                merged.isImmersionEmbersEnabled = merged.isImmersionEmbersEnabled ?? merged.isImmersionAmbientLightingEnabled;
+                merged.immersionZoneAuraColorStrength = Math.max(0, Math.min(0.5, merged.immersionZoneAuraColorStrength ?? 0.35));
+                merged.immersionZoneAuraDarkness = Math.max(0, Math.min(0.85, merged.immersionZoneAuraDarkness ?? 0.85));
+                merged.immersionEmberCount = Math.max(0, Math.min(60, Math.round(merged.immersionEmberCount ?? 24)));
+                merged.showImmersionBackgroundImage = merged.showImmersionBackgroundImage ?? true;
+                merged.useImmersionBackgroundSidePanel = merged.useImmersionBackgroundSidePanel ?? false;
                 merged.isImmersionTextAnimationsEnabled = merged.isImmersionTextAnimationsEnabled ?? false;
+                merged.isEdgeLightingEnabled = merged.isEdgeLightingEnabled ?? true;
                 let validFilters = merged.zoneFilters;
                 if (validFilters) {
                     const firstKey = Object.keys(validFilters)[0];

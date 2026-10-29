@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { LogDockedInput } from './LogDockedInput';
 import { useInputStore } from '../../stores/useInputStore';
+import { useMessageStore } from '../../stores/useMessageStore';
 
 const mockUseGame = vi.fn();
 const mockUseUI = vi.fn();
@@ -46,6 +47,8 @@ vi.mock('../Controls/CommandSuggestionPopup', () => ({
     )
 }));
 
+vi.mock('../Messages/TokenRenderer', () => ({ TokenRenderer: () => <span /> }));
+
 describe('LogDockedInput', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -81,6 +84,7 @@ describe('LogDockedInput', () => {
 
     afterEach(() => {
         cleanup();
+        useMessageStore.setState({ userChat: [], spectateChat: [] });
         vi.unstubAllGlobals();
     });
 
@@ -125,11 +129,34 @@ describe('LogDockedInput', () => {
         useInputStore.setState({ input: 'hello there' });
         render(<LogDockedInput handleSend={vi.fn()} />);
         fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
-        fireEvent.click(screen.getByRole('menuitem', { name: 'say' }));
+        fireEvent.click(screen.getByRole('button', { name: 'say' }));
         const update = setParley.mock.calls[0][0];
         expect(update({ active: false, mode: 'command', command: 'none', target: null, message: '' }))
             .toMatchObject({ active: true, mode: 'parley', command: 'say', target: null });
         expect(useInputStore.getState().input).toBe('hello there');
+    });
+
+    it('places desktop communications in the space to the left of the log', () => {
+        mockUseGame.mockReturnValue({ ...mockUseGame(), whoList: [] });
+        render(<div className="desktop-center-column"><LogDockedInput handleSend={vi.fn()} /></div>);
+        const column = document.querySelector('.desktop-center-column')!;
+        vi.spyOn(column, 'getBoundingClientRect').mockReturnValue({ left: 500, right: 1200, top: 0, bottom: 700, width: 700, height: 700, x: 500, y: 0, toJSON: () => ({}) });
+        fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
+        const popover = screen.getByRole('dialog', { name: 'Communication' });
+        expect(popover.style.left).toBe('8px');
+        expect(popover.style.width).toBe('484px');
+    });
+
+    it('shows combined history on mobile and keeps it open when choosing a channel', () => {
+        mockUseGame.mockReturnValue({ ...mockUseGame(), viewport: { isMobile: true, isLandscape: true }, whoList: [] });
+        render(<><div className="desktop-center-column" /><div className="mobile-command-column"><LogDockedInput handleSend={vi.fn()} /></div></>);
+        fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
+        const popover = screen.getByRole('dialog', { name: 'Communication' });
+        expect(popover.classList.contains('is-mobile')).toBe(true);
+        expect(popover.classList.contains('is-split')).toBe(true);
+        expect(screen.getByRole('region', { name: 'All communication history' })).toBeTruthy();
+        fireEvent.click(screen.getByRole('button', { name: 'say' }));
+        expect(screen.getByRole('dialog', { name: 'Communication' })).toBeTruthy();
     });
 
     it('chooses a room recipient for a directed chat channel', () => {
@@ -137,11 +164,24 @@ describe('LogDockedInput', () => {
         mockUseGame.mockReturnValue({ ...mockUseGame(), setParley, whoList: [], roomNpcs: [{ id: 7, name: 'pack horse', type: 'npc' }] });
         render(<LogDockedInput handleSend={vi.fn()} />);
         fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
-        fireEvent.click(screen.getByRole('menuitem', { name: /whisper/ }));
-        fireEvent.click(screen.getByRole('menuitem', { name: 'pack horse' }));
+        fireEvent.click(screen.getByRole('button', { name: /whisper/ }));
+        fireEvent.click(screen.getByRole('button', { name: 'pack horse' }));
         const update = setParley.mock.calls[0][0];
         expect(update({ active: false, mode: 'command', command: 'none', target: null, message: '' }))
             .toMatchObject({ active: true, mode: 'parley', command: 'whisper', target: 'horse' });
+    });
+
+    it('prepares a reply to a history message without closing the popover', () => {
+        const setParley = vi.fn();
+        mockUseGame.mockReturnValue({ ...mockUseGame(), setParley, whoList: [] });
+        useMessageStore.setState({ userChat: [{ id: 'tell-1', html: '', textRaw: 'Hello', type: 'comm', timestamp: Date.now(), isComm: true, replyCommand: 'tell', commSender: 'Sauron', commText: 'Hello' }] });
+        render(<LogDockedInput handleSend={vi.fn()} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Choose chat channel' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Reply to Sauron on tell' }));
+        const update = setParley.mock.calls[0][0];
+        expect(update({ active: false, mode: 'command', command: 'none', target: null, message: '' }))
+            .toMatchObject({ active: true, mode: 'parley', command: 'tell', target: 'Sauron' });
+        expect(screen.getByRole('dialog', { name: 'Communication' })).toBeTruthy();
     });
 
     it('shows the global target control and opens its editor when tapped', () => {

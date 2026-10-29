@@ -1,7 +1,7 @@
 /** @file RoomLootQueue.tsx — Persistent room loot entry point. */
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { BedDouble, Compass, Store } from 'lucide-react';
+import { BedDouble, Coins, Compass, Store } from 'lucide-react';
 import { useKillPromptStore } from '../../stores/useKillPromptStore';
 import { useActiveRoom } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
@@ -242,6 +242,11 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
                 triggerHaptic?.(10);
             }} aria-label="Seek Rivendell">
                 <Compass size={14} /><span>Seek</span>
+            </button>}
+            {hasRentService && <button className="room-context-trigger is-offer" type="button"
+                onClick={() => { executeCommand('offer'); triggerHaptic?.(10); }}
+                aria-label="Offer">
+                <Coins size={14} /><span>Offer</span>
             </button>}
             {hasRentService && <button className="room-context-trigger is-rent" type="button"
                 onClick={() => { executeCommand('rent'); triggerHaptic?.(10); }}

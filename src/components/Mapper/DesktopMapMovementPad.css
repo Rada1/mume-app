@@ -42,3 +42,12 @@
 }
 .desktop-map-movement-menu .command-tree-section-commands { display:flex; flex-direction:column; gap:4px; }
 .desktop-map-movement-menu :is(.command-tree-row,.popover-action-button) { width:100%; min-height:34px; }
+
+/* --- Held direction choices match the shared target surfaces. --- */
+.desktop-map-movement-menu .command-tree-held-direction-actions .command-tree-section-commands { display:grid; gap:4px; }
+.desktop-map-movement-menu .command-tree-held-direction-actions .command-tree-row {
+ min-height:40px; border:0; border-radius:0; background:var(--mobile-command-chip-background,#2b241d); text-align:center;
+}
+.desktop-map-movement-menu .command-tree-held-direction-actions .command-tree-row:is(:hover,:active,:focus-visible) {
+ background:var(--mobile-command-chip-selected,#43382a);
+}

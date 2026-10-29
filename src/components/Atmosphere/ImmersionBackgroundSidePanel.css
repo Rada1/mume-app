@@ -1,0 +1,65 @@
+/* @file ImmersionBackgroundSidePanel.css — Desktop side lane for the immersion map image. */
+
+@media (min-width: 769px) {
+    .app-container:not(.is-mobile) .content-layer .message-log-wrapper.has-immersion-background-side-panel {
+        flex-direction: row !important;
+        align-items: stretch !important;
+        justify-content: center;
+        gap: 8px !important;
+        overflow: hidden;
+    }
+
+    .app-container:not(.is-mobile) .message-log-wrapper.has-immersion-background-side-panel > .desktop-center-column {
+        box-sizing: border-box;
+        flex: 0 1 var(--desktop-log-width, clamp(420px, 38vw, 1000px));
+        width: var(--desktop-log-width, clamp(420px, 38vw, 1000px)) !important;
+        min-width: 320px !important;
+        max-width: var(--desktop-log-width, clamp(420px, 38vw, 1000px)) !important;
+        margin: 0 !important;
+    }
+
+    .immersion-background-side-panel-placeholder {
+        position: relative;
+        box-sizing: border-box;
+        flex: 1 1 180px;
+        min-width: 96px;
+        max-width: var(--desktop-map-width, 34vw);
+        min-height: 0;
+        visibility: hidden;
+    }
+
+    .environment-root.back > .immersion-background-side-panel-atmosphere {
+        position: absolute;
+        z-index: 2;
+        box-sizing: border-box;
+        overflow: hidden;
+        pointer-events: none;
+        isolation: isolate;
+        opacity: 0.72;
+        -webkit-mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0, 0, 0, 0.86) 68%, transparent 100%);
+        mask-image: radial-gradient(ellipse at center, #000 42%, rgba(0, 0, 0, 0.86) 68%, transparent 100%);
+    }
+
+    .immersion-background-side-panel-image {
+        position: absolute;
+        top: calc(50% + var(--background-pan-y, 0vh));
+        left: calc(50% + var(--background-pan-x, 0vw));
+        width: var(--immersion-panel-background-width, 800vw);
+        height: var(--immersion-panel-background-height, 800vh);
+        transform: translate(-50%, -50%);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        filter: sepia(0.35) brightness(var(--immersion-background-brightness, 0.6)) contrast(1.05) blur(var(--immersion-background-blur, 3px));
+        transition: left 0.4s ease, top 0.4s ease, filter 0.25s ease;
+    }
+
+    .light-mode .immersion-background-side-panel-image {
+        filter: invert(1) sepia(0.2) brightness(var(--immersion-background-brightness, 0.6)) blur(var(--immersion-background-blur, 3px));
+    }
+}
+
+@media (max-width: 768px) {
+    .immersion-background-side-panel-placeholder,
+    .immersion-background-side-panel-atmosphere { display: none; }
+}

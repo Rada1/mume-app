@@ -7,6 +7,8 @@ import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
 import { getMobileQuickTarget } from '../../utils/mobileQuickTargetActions';
 import { isLikelyCargoLine } from '../../utils/mountCargoUtils';
 import { stripAnsiCodes } from '../../utils/ansi';
+import { resolveActionIcon } from '../../utils/actionIcons';
+import { Eye } from 'lucide-react';
 
 // --- Inspection and actions ---
 export const MobileQuickTargetPopover = ({ entry, controller, close }: {
@@ -50,11 +52,11 @@ export const MobileQuickTargetPopover = ({ entry, controller, close }: {
   </div>}
   {model.kind !== 'corpse' && inspecting && lines !== undefined && <div className="mobile-quick-target-details">{inspection.length ? inspection.map((line, index) => <div key={`${index}:${line}`}>{line}</div>) : 'No description available.'}</div>}
   <div ref={actionsRef} className="mobile-quick-target-actions">
-   {model.target && !game.isSpectateMode && <button type="button" onClick={examine}>Examine</button>}
-   {model.actions.map(action => <button type="button" key={action.label} onClick={() => {
+   {model.target && !game.isSpectateMode && <button type="button" data-action="examine" onClick={examine}><Eye size={15} aria-hidden="true" />Examine</button>}
+   {model.actions.map(action => <button type="button" key={action.label} data-action={action.label.toLowerCase().replace(/\s+/g, '-')} onClick={() => {
     executeCommandPanelInput(game, action.command, false, false, false, false, {shouldFocus:false, fromUi:true});
     close();
-   }}>{action.label}</button>)}
+   }}><span aria-hidden="true">{React.createElement(resolveActionIcon(action.command, action.label), { size:15 })}</span>{action.label}</button>)}
    {!model.actions.length && (!model.target || game.isSpectateMode) && <span className="mobile-quick-target-empty">No quick actions available.</span>}
   </div>
  </div>;

@@ -41,7 +41,7 @@ export interface ChatReplyDetails {
 }
 
 export const CHAT_PARLEY_CHANNELS: ChatReplyDetails['command'][] = [
-    'tell', 'whisper', 'ask', 'say', 'narrate', 'shout', 'yell', 'sing', 'emote', 'act', 'group', 'pray'
+    'say', 'act', 'emote', 'whisper', 'tell', 'ask', 'yell', 'narrate', 'sing', 'shout', 'pray', 'group'
 ];
 
 // Strips leftover ANSI escapes/XML-ish tags from sender/target names so the
@@ -74,9 +74,9 @@ export const getChatChannelColor = (channel?: string, commColor?: string): strin
         ask: 'var(--ansi-bright-cyan, #38bdf8)',
         yell: 'var(--ansi-bright-magenta, #c084fc)',
         shout: 'var(--ansi-bright-red, #f87171)',
-        whisper: 'var(--ansi-bright-magenta, #a78bfa)',
+        whisper: 'var(--ansi-bright-green, #44ff70)',
         narrate: 'var(--ansi-bright-yellow, #f5f749)',
-        pray: 'var(--ansi-bright-yellow, #facc15)',
+        pray: 'var(--ansi-bright-white, #ffffff)',
         sing: 'var(--ansi-bright-yellow, #f5f749)',
         song: 'var(--ansi-bright-yellow, #f5f749)',
         group: 'var(--ansi-bright-green, #44ff70)',

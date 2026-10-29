@@ -9,6 +9,10 @@ import { getChatTranscriptPhrase, getWhoPlayerNames, parseOutgoingChatCommand, g
 // --- Logic Section ---
 
 describe('chat transcript', () => {
+    it('uses the requested colors for whisper and pray', () => {
+        expect(getChatChannelColor('whisper')).toContain('green');
+        expect(getChatChannelColor('pray')).toContain('white');
+    });
     it('recognizes prompted outgoing tells and preserves their recipient', () => {
         const details = parseOutgoingChatCommand('P8>tell Sauron I am heading east');
         expect(details).toMatchObject({ channel: 'tell', target: 'Sauron', text: 'I am heading east', isOutgoing: true });
@@ -26,9 +30,9 @@ describe('chat transcript', () => {
         expect(getChatChannelColor('say')).toContain('cyan');
         expect(getChatChannelColor('yell')).toContain('magenta');
         expect(getChatChannelColor('shout')).toContain('magenta');
-        expect(getChatChannelColor('whisper')).toContain('magenta');
+        expect(getChatChannelColor('whisper')).toContain('green');
         expect(getChatChannelColor('narrate')).toContain('yellow');
-        expect(getChatChannelColor('pray')).toContain('yellow');
+        expect(getChatChannelColor('pray')).toContain('white');
         expect(getChatChannelColor('sing')).toContain('magenta');
         expect(getChatChannelColor('group')).toContain('cyan');
     });

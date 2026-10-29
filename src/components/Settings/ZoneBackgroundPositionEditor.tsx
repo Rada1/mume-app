@@ -10,6 +10,9 @@ import type { ZoneBackgroundPosition } from '../../types';
 interface ZoneBackgroundPositionEditorProps {
     imageUrl: string;
     position: ZoneBackgroundPosition;
+    brightness: number;
+    blur: number;
+    zoom: number;
     onCommit: (position: ZoneBackgroundPosition) => void;
 }
 
@@ -26,6 +29,9 @@ const clampOffset = (value: number): number => Math.max(-300, Math.min(300, valu
 const ZoneBackgroundPositionEditor: React.FC<ZoneBackgroundPositionEditorProps> = ({
     imageUrl,
     position,
+    brightness,
+    blur,
+    zoom,
     onCommit
 }) => {
     const [draft, setDraft] = React.useState(position);
@@ -130,12 +136,12 @@ const ZoneBackgroundPositionEditor: React.FC<ZoneBackgroundPositionEditorProps> 
                         position: 'absolute',
                         left: `calc(50% + ${draft.x}%)`,
                         top: `calc(50% + ${draft.y}%)`,
-                        width: '800%',
-                        height: '800%',
+                        width: `${800 * zoom}%`,
+                        height: `${800 * zoom}%`,
                         objectFit: 'contain',
                         transform: 'translate(-50%, -50%)',
                         opacity: 0.75,
-                        filter: 'sepia(0.35) brightness(0.6) contrast(1.05) blur(1px)',
+                        filter: `sepia(0.35) brightness(${brightness}) contrast(1.05) blur(${blur}px)`,
                         pointerEvents: 'none',
                         userSelect: 'none'
                     }}

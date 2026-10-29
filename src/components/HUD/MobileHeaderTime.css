@@ -52,3 +52,17 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.mobile-header-time-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+    line-height: 0;
+}
+
+.mobile-header-time-icons > span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import type { useCommandTreeController } from './useCommandTreeController';
 import type { CustomButton } from '../types';
 import { ITEM_BUTTONS } from '../constants/buttons/inline/items';
+import { WORLD_BUTTONS } from '../constants/buttons/inline/world';
 import { SOCIAL_BUTTONS } from '../constants/buttons/socials';
 import { commandTreeGroup as classify } from '../utils/commandTreeGroups';
 import { getCommandTreeSection } from '../utils/commandTreeSections';
@@ -28,7 +29,7 @@ const isCommandTreeConverseButton = (button: CustomButton) => button.id === 'btn
  || /^(?:__parley__|converse)$/i.test(button.command.trim());
 export const useCommandTreeCatalog = (controller: ReturnType<typeof useCommandTreeController>, atShop: boolean) => {
  const {catalog, variantsByAction} = useMemo(() => {
- const catalog = [...controller.menuButtons, ...ITEM_BUTTONS, ...COMMAND_TREE_LIGHT_CAMP_BUTTONS].map(normalizeCommandTreeButton);
+ const catalog = [...controller.menuButtons, ...ITEM_BUTTONS, ...WORLD_BUTTONS.filter(button => button.id.startsWith('btn-corpse-')), ...COMMAND_TREE_LIGHT_CAMP_BUTTONS].map(normalizeCommandTreeButton);
  const variantsByAction = new Map<string, CustomButton[]>();
  for (const variant of catalog) {
   const key = commandTreeActionKey(variant);

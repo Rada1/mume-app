@@ -176,4 +176,14 @@ describe('MovementPad Component', () => {
         act(() => out('mouse'));
         expect(preview).toHaveBeenCalledExactlyOnceWith(null);
     });
+    it('flashes Follow on click and clears the feedback', () => {
+        const follow = vi.fn();
+        render(<MovementPad layout="menu" onFollowClick={follow}/>);
+        const button = screen.getByRole('button', {name:/Follow a room entity/i});
+        fireEvent.click(button);
+        expect(follow).toHaveBeenCalledOnce();
+        expect(button.classList.contains('is-key-pressed')).toBe(true);
+        act(() => vi.advanceTimersByTime(150));
+        expect(button.classList.contains('is-key-pressed')).toBe(false);
+    });
 });

@@ -11,6 +11,7 @@ import type { CommandTargetSuggestion } from '../../utils/commandSuggestionUtils
 import { getTargetItemTierClassName } from '../../utils/itemTier';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './LogDockedInput.css';
+import './TargetChipPicker.css';
 
 interface Props {
     isOpen: boolean;
@@ -128,7 +129,7 @@ export const TargetChipPicker: FC<Props> = ({
                 bottom: fitsAbove ? window.innerHeight - rect.top + 4 : undefined,
                 width,
                 maxHeight,
-                rowHeight: useLargeMobileLayout ? 44 : 34,
+                rowHeight: useLargeMobileLayout ? 48 : 38,
             });
         };
         updatePosition();
@@ -163,7 +164,7 @@ export const TargetChipPicker: FC<Props> = ({
     const rowsHeight = largestColumnLength > 0 ? largestColumnLength * position.rowHeight : 36;
     const pickerHeight = Math.min(
         position.maxHeight,
-        34 + (onToggleAutoTarget ? 40 : 0) + (commonTargets.length ? 18 : 0) + rowsHeight + (onManualEntry ? 40 : 0)
+        34 + (onToggleAutoTarget ? 44 : 0) + (commonTargets.length ? 18 : 0) + rowsHeight + 8 + (onManualEntry ? 44 : 0)
     );
 
     return createPortal(

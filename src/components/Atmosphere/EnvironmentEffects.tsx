@@ -28,15 +28,6 @@ const BACKGROUND_MAP_OPACITY = 0.18;
 const BACKGROUND_MAP_OPACITY_NO_IMMERSION = BACKGROUND_MAP_OPACITY * 0.35;
 const BACKGROUND_BLEND_MS = 5000;
 const ZONE_COLOR_TRANSITION_MS = 7000;
-const getLightingTint = (lighting: LightingType): string => {
-    switch (lighting) {
-        case 'sun': return 'rgba(255, 245, 210, 0.08)';
-        case 'moon': return 'rgba(28, 48, 115, 0.48)';
-        case 'artificial': return 'rgba(180, 30, 20, 0.15)';
-        case 'dark': return 'rgba(0, 0, 15, 0.6)';
-        default: return 'rgba(0, 0, 0, 0)';
-    }
-};
 interface EnvironmentEffectsProps {
     noLight?: boolean;
     lighting: LightingType;
@@ -72,14 +63,31 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
 }) => {
     const isPerformanceMode = useSettingsStore(s => s.isPerformanceMode);
     const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
+    const isTerrainGlowEnabled = useSettingsStore(s => s.isImmersionTerrainGlowEnabled);
+    const isZoneAuraEnabled = useSettingsStore(s => s.isImmersionZoneAuraEnabled);
+    const isEmbersEnabled = useSettingsStore(s => s.isImmersionEmbersEnabled);
+    const immersionEmberCount = useSettingsStore(s => s.immersionEmberCount);
+    const zoneAuraColorStrength = useSettingsStore(s => s.immersionZoneAuraColorStrength);
+    const zoneAuraDarkness = useSettingsStore(s => s.immersionZoneAuraDarkness);
+    const showImmersionBackgroundImage = useSettingsStore(s => s.showImmersionBackgroundImage);
+    const useImmersionBackgroundSidePanel = useSettingsStore(s => s.useImmersionBackgroundSidePanel);
     const zoneBackgroundPosition = useSettingsStore(s => s.zoneBackgroundPositions[normalizeZoneBackgroundKey(zone)]);
+    const backgroundBrightness = useSettingsStore(s => s.mapBackgroundVisuals.brightness);
+    const backgroundBlur = useSettingsStore(s => s.mapBackgroundVisuals.blur);
+    const backgroundZoom = useSettingsStore(s => s.mapBackgroundVisuals.zoom);
     const isIndoorTerrain = Boolean(terrain) && !isOutdoorTerrain(terrain);
     const backgroundPanStyle = {
         '--background-pan-x': `${zoneBackgroundPosition?.x ?? 0}vw`,
-        '--background-pan-y': `${zoneBackgroundPosition?.y ?? 0}vh`
+        '--background-pan-y': `${zoneBackgroundPosition?.y ?? 0}vh`,
+        '--immersion-background-brightness': backgroundBrightness,
+        '--immersion-background-blur': `${backgroundBlur}px`,
+        '--immersion-background-size': `${800 * backgroundZoom}%`
     } as React.CSSProperties;
-    const showImmersionWeatherEffects = isImmersionMode && isImmersionWeatherEffectsEnabled;
-    const showStars = !noLight && isImmersionMode && isOutdoorTerrain(terrain) && (
+    const showWeatherAndCornerLighting = isImmersionMode && isImmersionWeatherEffectsEnabled;
+    const showTerrainGlow = isImmersionMode && isTerrainGlowEnabled;
+    const showZoneAura = isImmersionMode && isZoneAuraEnabled;
+    const showEmbers = isImmersionMode && isEmbersEnabled;
+    const showStars = showWeatherAndCornerLighting && !noLight && isOutdoorTerrain(terrain) && (
         lighting === 'moon' || lighting === 'dark' || (lighting === 'artificial' && isNight)
     );
     const { lightingTransition, weatherTransition, starsOpacity } = useEnvironmentTransitions({
@@ -116,7 +124,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     }, [currentImage, triggerFade]);
 
     // Smooth cross-fade when moving between zone palettes.
-    const currentZoneGlow = getZoneAmbientGlow(zone);
+    const currentZoneGlow = getZoneAmbientGlow(zone, zoneAuraColorStrength);
     const [auraState, setAuraState] = React.useState({
         currentGlow: currentZoneGlow,
         prevGlow: null as string | null,
@@ -167,12 +175,13 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
     }, [bgImage]);
 
     const backgroundMapOpacity = isImmersionMode ? BACKGROUND_MAP_OPACITY : BACKGROUND_MAP_OPACITY_NO_IMMERSION;
+    const showFullImmersionBackground = isImmersionMode && showImmersionBackgroundImage && (isMobile || !useImmersionBackgroundSidePanel);
 
     return (
         <div style={{ '--lightning-x': `${lightningX}%` } as React.CSSProperties}>
             {/* --- BACK LAYER: Ambient & Lighting [z-index: 1] --- */}
             <div className={`environment-root back lighting-state-${lighting || 'none'} terrain-${(terrain || 'default').toLowerCase().replace(/\s+/g, '-')} ${isSleeping ? 'is-sleeping' : ''} ${isWater ? 'water-motion-active' : ''} ${isForest ? 'forest-motion-active' : ''}`}>
-                {isImmersionMode && !isMobile && prevImage && (
+                {showFullImmersionBackground && prevImage && (
                     <div
                         className="background-layer"
                         style={{
@@ -181,18 +190,9 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             opacity: triggerFade ? 0 : backgroundMapOpacity,
                             transition: `opacity ${BACKGROUND_BLEND_MS}ms ease-in-out, left 0.4s ease, top 0.4s ease`,
                         }}
-                    >
-                        <div style={{
-                            position: 'absolute',
-                            inset: 0,
-                            backgroundColor: getLightingTint(lighting),
-                            mixBlendMode: 'multiply',
-                            pointerEvents: 'none',
-                            transition: 'background-color 7s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                        }} />
-                    </div>
+                    />
                 )}
-                {isImmersionMode && !isMobile && currentImage && (
+                {showFullImmersionBackground && currentImage && (
                     <div
                         className="background-layer"
                         style={{
@@ -203,29 +203,13 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                                 ? `opacity ${BACKGROUND_BLEND_MS}ms ease-in-out, left 0.4s ease, top 0.4s ease`
                                 : 'left 0.4s ease, top 0.4s ease',
                         }}
-                    >
-                        <div style={{
-                            position: 'absolute',
-                            inset: 0,
-                            backgroundColor: getLightingTint(lighting),
-                            mixBlendMode: 'multiply',
-                            pointerEvents: 'none',
-                            transition: 'background-color 7s cubic-bezier(0.25, 0.1, 0.25, 1)',
-                        }} />
-                    </div>
+                    />
                 )}
-                {isImmersionMode && (
-                    <>
-                        {!noLight && <div className="client-lighting-overlay client-sun-overlay" />}
-                        {!noLight && <div className="client-lighting-overlay client-moon-overlay" />}
-                        <div className="client-lighting-overlay client-artificial-overlay" />
-                        <div className="client-sleep-overlay" />
-                    </>
-                )}
-                {isImmersionMode && (
+                {isImmersionMode && <div className="client-sleep-overlay" />}
+                {showTerrainGlow && (
                     <EnvironmentGlow terrain={terrain || undefined} zone={zone} lighting={lighting} />
                 )}
-                {isImmersionMode && (
+                {showZoneAura && (
                     <>
                         {auraState.prevGlow && (
                             <div
@@ -233,6 +217,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                                 aria-hidden="true"
                                 style={{
                                     '--terrain-glow-color': auraState.prevGlow,
+                                    '--zone-aura-darkness': zoneAuraDarkness,
                                     opacity: auraState.triggerFade ? 0 : 1,
                                     transition: `opacity ${ZONE_COLOR_TRANSITION_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`,
                                 } as React.CSSProperties}
@@ -243,6 +228,7 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                             aria-hidden="true"
                             style={{
                                 '--terrain-glow-color': auraState.currentGlow,
+                                '--zone-aura-darkness': zoneAuraDarkness,
                                 opacity: auraState.prevGlow ? (auraState.triggerFade ? 1 : 0) : 1,
                                 transition: auraState.prevGlow ? `opacity ${ZONE_COLOR_TRANSITION_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)` : 'none',
                             } as React.CSSProperties}
@@ -256,24 +242,23 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
             </div>
 
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
-            {isImmersionMode && !isMobile && !isPerformanceMode && (
+            {showEmbers && !isPerformanceMode && (
                 <div className={`embers-client-layer${lighting === 'dark' || (lighting === 'artificial' && showStars) ? ' avoids-top-right-vignette' : ''}`}>
-                    <Embers count={24} zone={zone} />
+                    <Embers count={immersionEmberCount} zone={zone} />
                 </div>
             )}
 
             {/* --- FRONT LAYER: Atmospheric & Interactive [z-index: 4500+] --- */}
             <div className={`environment-root front lighting-state-${lighting || 'none'} ${isIndoorTerrain ? 'is-indoor' : ''} ${showStars ? 'has-night-sky' : ''}`}>
-                {isImmersionMode && <div className="client-dark-overlay" aria-hidden="true" />}
-                {isImmersionMode && <div className="client-star-veil" style={{ opacity: starsOpacity, transition: 'none' }} aria-hidden="true" />}
+                {showWeatherAndCornerLighting && <div className="client-star-veil" style={{ opacity: starsOpacity, transition: 'none' }} aria-hidden="true" />}
                 <EnvironmentWeatherLayers
                     transition={weatherTransition}
                     isFoggy={isFoggy}
                     lightning={lightning}
-                    isEnabled={showImmersionWeatherEffects}
+                    isEnabled={showWeatherAndCornerLighting}
                     isPerformanceMode={isPerformanceMode}
                 />
-                <EnvironmentTwilight time={gameTime} isOutdoor={isOutdoorTerrain(terrain)} isEnabled={isImmersionMode && !noLight} />
+                <EnvironmentTwilight time={gameTime} isOutdoor={isOutdoorTerrain(terrain)} isEnabled={showWeatherAndCornerLighting && !noLight} />
                 <EnvironmentVignetteLayers
                     scenes={lightingTransition.scenes}
                     lighting={lighting}
@@ -285,10 +270,10 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                     isNight={isNight}
                     isFading={lightingTransition.isFading}
                     progress={lightingTransition.progress} gameTime={gameTime}
-                    isEnabled={isImmersionMode}
+                    isEnabled={showWeatherAndCornerLighting}
                     showVignette={!isMobile}
                 />
-                {isImmersionMode && !noLight && !isPerformanceMode && lighting === 'sun' && isOutdoorTerrain(terrain) && (
+                {showWeatherAndCornerLighting && !noLight && !isPerformanceMode && lighting === 'sun' && isOutdoorTerrain(terrain) && (
                     <div className="client-sunlight-birds" aria-hidden="true"><span /><span /><span /></div>
                 )}
             </div>

@@ -11,7 +11,7 @@ import {
     Eye, Tent, FlameKindling, Moon, Sunrise, Armchair, PersonStanding, Search,
     BookOpen, LogIn, LogOut, Mountain, Waves, Ear, Hand, Sparkles, ShoppingCart,
     Coins, Utensils, DoorOpen, DoorClosed, ScrollText, Swords, Play, Flag, MapPin,
-    Droplets
+    Droplets, Shield, Package, PackageOpen, UserRound, Users, Skull, Footprints, ArrowDown
 } from 'lucide-react';
 
 export type ActionIcon = React.ComponentType<{ size?: number; strokeWidth?: number }>;
@@ -46,7 +46,10 @@ const VERB_ICONS: Record<string, ActionIcon> = {
     drink: Droplets,
     open: DoorOpen, unlock: DoorOpen,
     close: DoorClosed, lock: DoorClosed,
-    kill: Swords, attack: Swords, consider: Swords,
+    kill: Swords, hit: Swords, attack: Swords, consider: Swords,
+    remove: Shield, wear: Shield, wield: Shield, drop: Shield,
+    get: Package, loot: PackageOpen, butcher: Skull, drain: Skull,
+    ride: Footprints, lead: Hand, unsaddle: ArrowDown, follow: UserRound, group: Users,
     recall: MapPin, where: MapPin,
     quest: Flag
 };
@@ -58,6 +61,7 @@ const VERB_ICONS: Record<string, ActionIcon> = {
 export const resolveActionIcon = (command: string, label?: string): ActionIcon => {
     const normalized = (command || '').trim().toLowerCase().replace(/\s+/g, ' ');
     if (COMMAND_ICONS[normalized]) return COMMAND_ICONS[normalized];
+    if (normalized.startsWith('get all ')) return PackageOpen;
     const verb = normalized.split(' ')[0];
     if (verb && VERB_ICONS[verb]) return VERB_ICONS[verb];
     const labelKey = (label || '').trim().toLowerCase();

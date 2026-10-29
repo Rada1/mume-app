@@ -178,3 +178,10 @@
     .movement-pad-menu .movement-pad-cell svg { width:9px; height:9px; }
     .movement-pad-menu .movement-pad-label { font-size:6px; line-height:1; }
 }
+
+/* --- Movement press feedback remains visible over map tiles. --- */
+:is(.command-tree-v2,.desktop-map-movement-pad) .movement-pad-menu .movement-pad-cell:is(:active,.is-key-pressed):not(:disabled) {
+ background:rgba(201,168,76,.48)!important;
+ box-shadow:inset 0 0 0 2px rgba(255,215,0,.55)!important;
+ opacity:1;
+}

@@ -15,11 +15,11 @@ export const MOBILE_COMMAND_TILES = [
  {id:'ranger', label:'Ranger', groups:[0], sections:['Ranger'], preferred:'track'},
  {id:'observe', label:'Observe', groups:[2], sections:['Observation'], preferred:'look'},
  {id:'information', label:'Information', groups:[2], sections:['Character','Game','Navigation','People','Weather'], preferred:'info'},
- {id:'consume', label:'Consume', groups:[3], sections:['Move','Use'], preferred:'eat'},
+ {id:'consume', label:'Consume', groups:[3], sections:['Move','Use','Corpses'], preferred:'eat'},
  {id:'gear', label:'Gear', groups:[3], sections:['Move'], preferred:'get'},
  {id:'mounts', label:'Mounts', groups:[1,3], sections:['Mounts','Mount equipment'], preferred:'ride'},
  {id:'social', label:'Social', groups:[4], sections:['Social actions'], preferred:'smile'},
- {id:'interact', label:'Interact', groups:[3,4], sections:['Modify','Use'], preferred:'open'}
+ {id:'interact', label:'Interact', groups:[3,4], sections:['Modify','Use','Corpses'], preferred:'open'}
 ];
 export const MOBILE_TILE_DIRECTIONS: SwipeDirection[] = ['up','right','down','left','nw','ne','sw','se'];
 export const isMobileCommandTargetless = (button:CustomButton): boolean => {
@@ -35,6 +35,7 @@ export const tileContainsCommand = (tile: typeof MOBILE_COMMAND_TILES[number], b
  if (isCommandTreePracticeAction(button)) return tile.id === 'information';
  const verb=button.command.trim().split(/\s+/)[0].toLowerCase();
  if (['pick','recover'].includes(verb)) return tile.id === 'thief';
+ if (section === 'Corpses' && ['butcher','drain'].includes(verb)) return tile.id === 'consume';
  const gear=['get','take','drop','give','put','wear','remove','wield','hold','fill','empty'].includes(verb);
  const consume=['eat','drink','taste','sip','quaff','pour'].includes(verb);
  if (tile.id === 'gear') return gear && tile.sections.includes(section);

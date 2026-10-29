@@ -58,7 +58,10 @@ void main() {
   vec4 t = uWhite ? vec4(1.0) : texture(uTex, vTc);
   oColor = vColor * uColor * t;
   oColor.rgb *= uBrightness;
-  if (vRoomState == 2) oColor.rgb = vec3(dot(oColor.rgb, vec3(0.299, 0.587, 0.114)));
+  if (vRoomState == 2) {
+    float gray = dot(oColor.rgb, vec3(0.299, 0.587, 0.114));
+    oColor.rgb = vec3(gray * 0.68);
+  }
 }`;
 
 /** Coloured world-space triangles (plain/acolor). */

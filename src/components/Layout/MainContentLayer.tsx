@@ -1,6 +1,7 @@
 /** @file MainContentLayer.tsx — Main log, map, command and docked panel surfaces. */
 import React, { FC } from 'react';
 import Header from '../HUD/Header';
+import { ConnectionStatusNotice } from '../HUD/ConnectionStatusNotice';
 import MessageLog from '../Messages/MessageLog';
 import GearPanel from '../GearPanel';
 import { LogDockedInput } from '../HUD/LogDockedInput';
@@ -48,6 +49,7 @@ import { useDockedPanelLayout } from '../../hooks/useDockedPanelLayout';
 import { useClientDetailsViewport } from '../../hooks/useClientDetailsViewport';
 import { SwipeWheelCellDialogHost } from '../Controls/GameButton/SwipeWheelCellDialog';
 import { MobileLogCommandResizeHandle } from './MobileLogCommandResizeHandle';
+import { ImmersionBackgroundSidePanel } from '../Atmosphere/ImmersionBackgroundSidePanel';
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 const MumeEditor = React.lazy(() => import('../Utility/MumeEditor'));
 const MumeArchive = React.lazy(() => import('../Utility/MumeArchive').then(module => ({ default: module.MumeArchive })));
@@ -115,6 +117,9 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const isCharacterCardOpen = useCharacterCardStore(s => s.isOpen);
 
     const isImmersionMode = useSettingsStore(s => s.isImmersionMode);
+    const showImmersionBackgroundImage = useSettingsStore(s => s.showImmersionBackgroundImage);
+    const useImmersionBackgroundSidePanel = useSettingsStore(s => s.useImmersionBackgroundSidePanel);
+    const showImmersionBackgroundSidePanel = showImmersionBackgroundImage && useImmersionBackgroundSidePanel && isImmersionMode && !viewport.isMobile && !isAccountScreen;
     const isReadabilityMode = useSettingsStore(s => s.isReadabilityMode);
     const useTacticalPanelBlur = useSettingsStore(s => s.useTacticalPanelBlur);
 
@@ -170,6 +175,11 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     // Account mode keeps the log transparent (environment shows through) like the
     // in-game view, rather than a dark account splash behind the menu text.
     const resolvedBgImage = manualBgImage || null;
+    const showLogBackgroundImage = Boolean(
+        resolvedBgImage &&
+        (!isImmersionMode || isAccountScreen || showImmersionBackgroundImage) &&
+        !showImmersionBackgroundSidePanel
+    );
     React.useEffect(() => {
         const root = document.documentElement;
         if (!resolvedBgImage) {
@@ -473,7 +483,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
             {showGroupPanel && !isAccountScreen && viewport.isMobile && <GroupStatusWindow />}
             <ReplayHUD />
 
-            <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
+            <div className={`message-log-wrapper${hasDockedPanels && !isAccountScreen ? ' chat-window-active' : ''}${showImmersionBackgroundSidePanel ? ' has-immersion-background-side-panel' : ''}`} style={{ display: 'flex', flex: 1, minHeight: 0, position: 'relative', gap: '8px' }}>
                 {isCharacterCardOpen && !isAccountScreen && viewport.isMobile && <CharacterCard />}
                 <div className="mobile-log-command-split">
                 {mobileDetailsLayout && <ClientPanelStack mobileDetailsOnly />}
@@ -492,6 +502,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     }}
                 >
                     <Header />
+                    <ConnectionStatusNotice />
                     {!isAccountScreen && (
                         <RoomLootQueue
                             isMobile={viewport.isMobile}
@@ -531,8 +542,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                         } as React.CSSProperties}
                     >
                         <div className="log-opaque-backdrop" />
-                        {viewport.isMobile && isImmersionMode && <div className="mobile-log-frame" aria-hidden="true" />}
-                        {resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
+                        {showLogBackgroundImage && resolvedBgImage && <div className="log-background-layer" style={{ backgroundImage: `url(${resolvedBgImage})` }} />}
                         <CounterRotatedContent active={viewport.isRotatedLandscape} className="rotated-log-display">
                         {!viewport.isMobile && <DrawerResizeHandle handleType="log-right" widthVar="--desktop-log-width" label="Resize log right edge" />}
                         {/* Room card hidden for now */}
@@ -575,6 +585,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                     </>
                 )}
                 </div>
+                {showImmersionBackgroundSidePanel && <ImmersionBackgroundSidePanel />}
                 {!viewport.isMobile && !isAccountScreen && <ClientPanelStack />}
                 {!useMobileLogCommandSplit && !isLandscapeCommandLayout && commandPanel}
                 {isGearPanelOpen && !isAccountScreen && (

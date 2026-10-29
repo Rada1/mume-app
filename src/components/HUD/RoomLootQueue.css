@@ -92,6 +92,10 @@
     color: #f1d998;
 }
 
+.room-context-trigger.is-offer {
+    color: #dfbf6c;
+}
+
 .room-context-trigger.is-guild {
     color: #c7dcfa;
 }

@@ -82,7 +82,9 @@
 }
 
 .app-container.immersion-mode .environment-root.back .background-layer {
-    filter: sepia(0.35) brightness(0.60) contrast(1.05) blur(3px) !important;
+    width: var(--immersion-background-size, 800%);
+    height: var(--immersion-background-size, 800%);
+    filter: sepia(0.35) brightness(var(--immersion-background-brightness, 0.6)) contrast(1.05) blur(var(--immersion-background-blur, 3px)) !important;
 }
 
 /* The image is zoomed in (800% + contain + centered), so whatever point sits
@@ -103,6 +105,12 @@
    reads as the same paper as the log rather than a separate white sheet. */
 .light-mode .environment-root.back .background-layer {
     filter: invert(1) brightness(0.95) sepia(0.2) brightness(0.95) !important;
+}
+
+.app-container.immersion-mode.light-mode .environment-root.back .background-layer {
+    width: var(--immersion-background-size, 800%);
+    height: var(--immersion-background-size, 800%);
+    filter: invert(1) sepia(0.2) brightness(var(--immersion-background-brightness, 0.6)) blur(var(--immersion-background-blur, 3px)) !important;
 }
 
 .app-viewport-shell {

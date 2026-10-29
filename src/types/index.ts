@@ -40,3 +40,4 @@ export * from './clientMacros';
 export type { ClientPanelStackId, ClientPanelStackWeights, ClientPanelStackHeights } from './clientPanelStack';
 
 export * from './telnet';
+export * from './mapperRoomTracking';

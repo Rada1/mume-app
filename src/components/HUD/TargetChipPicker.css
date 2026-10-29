@@ -1,0 +1,37 @@
+/** @file TargetChipPicker.css — Target chip menus use the command-panel surfaces. */
+/* --- Menu surfaces and spaced target buttons --- */
+.docked-target-picker {
+    padding: 4px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 0;
+    background: var(--command-panel-surface, #211b16);
+}
+.docked-target-picker-list,
+.docked-target-picker-columns.has-common-targets .docked-target-picker-list {
+    gap: 4px;
+    padding: 4px 0;
+}
+.docked-target-picker-columns { gap: 4px; }
+.docked-target-picker-item,
+.docked-target-picker-auto,
+.docked-target-picker-manual {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: 0;
+    background: var(--command-panel-surface-raised, #2b241d);
+}
+.docked-target-picker-auto { margin-bottom: 4px; }
+.docked-target-picker-manual { min-height: 40px; margin-top: 4px; }
+.docked-target-picker :is(.docked-target-picker-item, .docked-target-picker-auto, .docked-target-picker-manual):is(:hover, :focus-visible) {
+    background: var(--command-panel-surface-hover, #43382a);
+}
+.docked-target-picker :is(.docked-target-picker-item, .docked-target-picker-auto, .docked-target-picker-manual):focus-visible {
+    outline: 1px solid #dfbf6c;
+    outline-offset: -2px;
+}
+.docked-target-picker-item.is-selected { background: var(--active-target-highlight-background, rgba(127, 29, 29, .4)); }
+@media (max-width: 768px) {
+    .docked-target-picker.is-large-on-mobile { border-radius: 0; }
+}

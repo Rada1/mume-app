@@ -9,6 +9,7 @@ import { ToggleRow } from './SettingHelpers';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { AliasSyncControl } from '../Controls/AliasSyncControl';
 import { FullscreenSetting } from './FullscreenSetting';
+import ImmersionBackgroundSettings from './ImmersionBackgroundSettings';
 
 interface AppearanceSettingsProps {
     fontFamily: string;
@@ -21,6 +22,34 @@ interface AppearanceSettingsProps {
     isPerformanceMode: boolean;
     setIsPerformanceMode: (val: boolean) => void;
 }
+
+const SettingSlider: React.FC<{
+    label: string;
+    description: string;
+    value: number;
+    max: number;
+    onChange: (value: number) => void;
+    step?: number;
+    displayValue?: string;
+}> = ({ label, description, value, max, onChange, step = 0.01, displayValue }) => (
+    <label style={{ display: 'grid', gridTemplateColumns: 'minmax(130px, 1fr) minmax(100px, 1.4fr) 42px', alignItems: 'center', gap: '8px', padding: '7px 0' }}>
+        <span>
+            <span className="setting-label" style={{ display: 'block', margin: 0 }}>{label}</span>
+            <span style={{ display: 'block', color: 'var(--text-dim)', fontSize: '0.68rem', marginTop: '3px' }}>{description}</span>
+        </span>
+        <input
+            type="range"
+            aria-label={label}
+            min={0}
+            max={max}
+            step={step}
+            value={value}
+            onChange={event => onChange(Number(event.target.value))}
+            style={{ width: '100%' }}
+        />
+        <output style={{ color: 'var(--text-dim)', fontSize: '0.72rem', textAlign: 'right' }}>{displayValue ?? `${Math.round(value * 100)}%`}</output>
+    </label>
+);
 
 export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     fontFamily,
@@ -37,11 +66,25 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
     const setUiMode = useSettingsStore(s => s.setUiMode);
     const keepScreenAwake = useSettingsStore(s => s.keepScreenAwake);
     const setKeepScreenAwake = useSettingsStore(s => s.setKeepScreenAwake);
+    const isEdgeLightingEnabled = useSettingsStore(s => s.isEdgeLightingEnabled);
+    const setIsEdgeLightingEnabled = useSettingsStore(s => s.setIsEdgeLightingEnabled);
     const screenWakeLockStatus = useSettingsStore(s => s.screenWakeLockStatus);
     const isImmersionTextAnimationsEnabled = useSettingsStore(s => s.isImmersionTextAnimationsEnabled);
     const setIsImmersionTextAnimationsEnabled = useSettingsStore(s => s.setIsImmersionTextAnimationsEnabled);
     const isImmersionWeatherEffectsEnabled = useSettingsStore(s => s.isImmersionWeatherEffectsEnabled);
     const setIsImmersionWeatherEffectsEnabled = useSettingsStore(s => s.setIsImmersionWeatherEffectsEnabled);
+    const isTerrainGlowEnabled = useSettingsStore(s => s.isImmersionTerrainGlowEnabled);
+    const setIsTerrainGlowEnabled = useSettingsStore(s => s.setIsImmersionTerrainGlowEnabled);
+    const isZoneAuraEnabled = useSettingsStore(s => s.isImmersionZoneAuraEnabled);
+    const setIsZoneAuraEnabled = useSettingsStore(s => s.setIsImmersionZoneAuraEnabled);
+    const isEmbersEnabled = useSettingsStore(s => s.isImmersionEmbersEnabled);
+    const setIsEmbersEnabled = useSettingsStore(s => s.setIsImmersionEmbersEnabled);
+    const immersionEmberCount = useSettingsStore(s => s.immersionEmberCount);
+    const setImmersionEmberCount = useSettingsStore(s => s.setImmersionEmberCount);
+    const zoneAuraColorStrength = useSettingsStore(s => s.immersionZoneAuraColorStrength);
+    const setZoneAuraColorStrength = useSettingsStore(s => s.setImmersionZoneAuraColorStrength);
+    const zoneAuraDarkness = useSettingsStore(s => s.immersionZoneAuraDarkness);
+    const setZoneAuraDarkness = useSettingsStore(s => s.setImmersionZoneAuraDarkness);
     const showCommandSuggestions = useSettingsStore(s => s.showCommandSuggestions);
     const setShowCommandSuggestions = useSettingsStore(s => s.setShowCommandSuggestions);
     const isTimestampEnabled = useSettingsStore(s => s.isTimestampEnabled);
@@ -102,11 +145,68 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                 {isImmersionMode && (
                     <>
                         <ToggleRow
-                            label="Immersion Weather Effects"
-                            description="Show clouds, rain, snow, and lightning in immersion mode. Off by default."
+                            label="Edge Lighting"
+                            description="Show the zone-colored glow around the client, including in Performance Mode."
+                            value={isEdgeLightingEnabled}
+                            onToggle={() => setIsEdgeLightingEnabled(!isEdgeLightingEnabled)}
+                        />
+                        <ToggleRow
+                            label="Weather, Vignettes & Sky"
+                            description="Show weather, corner lighting, sun and moon, stars, and twilight in immersion mode."
                             value={isImmersionWeatherEffectsEnabled}
                             onToggle={() => setIsImmersionWeatherEffectsEnabled(!isImmersionWeatherEffectsEnabled)}
                         />
+                        <div style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid var(--border-modal)' }}>
+                            <label className="setting-label" style={{ color: 'var(--text-primary)', fontWeight: 'bold', margin: 0 }}>Ambient Lighting Effects</label>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>Turn each background effect on or off independently.</div>
+                            <ToggleRow
+                                label="Terrain Glow"
+                                description="Show the terrain and lighting color wave; Performance Mode uses a static gradient."
+                                value={isTerrainGlowEnabled}
+                                onToggle={() => setIsTerrainGlowEnabled(!isTerrainGlowEnabled)}
+                            />
+                            <ToggleRow
+                                label="Zone Aura"
+                                description="Show the zone-colored wash and darkening across the background."
+                                value={isZoneAuraEnabled}
+                                onToggle={() => setIsZoneAuraEnabled(!isZoneAuraEnabled)}
+                            />
+                            {isZoneAuraEnabled && (
+                                <div style={{ margin: '4px 0 0 12px', padding: '4px 12px', borderLeft: '2px solid var(--border-modal)' }}>
+                                    <SettingSlider
+                                        label="Zone aura color strength"
+                                        description="Raise it for deeper, more visible zone colors."
+                                        value={zoneAuraColorStrength}
+                                        max={0.5}
+                                        onChange={setZoneAuraColorStrength}
+                                    />
+                                    <SettingSlider
+                                        label="Background darkening"
+                                        description="Raise it to make the aura’s dark wash stronger."
+                                        value={zoneAuraDarkness}
+                                        max={0.85}
+                                        onChange={setZoneAuraDarkness}
+                                    />
+                                </div>
+                            )}
+                            <ToggleRow
+                                label="Embers"
+                                description="Show floating embers on desktop and mobile outside Performance Mode."
+                                value={isEmbersEnabled}
+                                onToggle={() => setIsEmbersEnabled(!isEmbersEnabled)}
+                            />
+                            {isEmbersEnabled && (
+                                <SettingSlider
+                                    label="Ember count"
+                                    description="Set the number of floating embers."
+                                    value={immersionEmberCount}
+                                    max={60}
+                                    step={1}
+                                    displayValue={`${immersionEmberCount}`}
+                                    onChange={setImmersionEmberCount}
+                                />
+                            )}
+                        </div>
                         <ToggleRow
                             label="Immersion Text Animations"
                             description="Animate text effects in the game log, including word waves, spell blooms, and room-arrival motion."
@@ -190,6 +290,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     onToggle={() => setKeepScreenAwake(!keepScreenAwake)}
                 />
             </div>
+            <ImmersionBackgroundSettings />
         </>
     );
 };

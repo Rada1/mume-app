@@ -223,7 +223,7 @@ export const MovementPad: FC<{
             })}
             {layout === 'menu' && onFollowClick && <button
                 type="button"
-                className={`movement-pad-cell pad-follow${followTargetsOpen ? ' is-follow-targets-open is-gesture-held' : ''}${onFollowHold ? ' is-holdable-direction' : ''}`}
+                className={`movement-pad-cell pad-follow${pressedCmd === 'follow' ? ' is-key-pressed' : ''}${followTargetsOpen ? ' is-follow-targets-open is-gesture-held' : ''}${onFollowHold ? ' is-holdable-direction' : ''}`}
                 onPointerDown={event => { event.stopPropagation(); if (event.currentTarget.dataset.mapGesture !== 'true') followHold.onPointerDown('follow', event); }}
                 onPointerMove={followHold.onPointerMove}
                 onPointerUp={followHold.onPointerUp}
@@ -233,6 +233,7 @@ export const MovementPad: FC<{
                 onClick={event => {
                     if (event.currentTarget.dataset.mapGesture === 'true' && event.detail !== 0) { delete event.currentTarget.dataset.mapGesture; event.preventDefault(); event.stopPropagation(); return; }
                     if (followHold.shouldSuppressClick('follow')) { event.preventDefault(); event.stopPropagation(); return; }
+                    flashPressed('follow');
                     onFollowClick(event);
                 }}
                 title="Follow a room entity. Hold to choose."

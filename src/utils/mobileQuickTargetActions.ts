@@ -6,6 +6,7 @@ import { getInlineCategoryAxes } from './inlineCategoryAxes';
 import { getResolvedTraitSections } from './inlineActionModel';
 import { formatMumeTarget } from './keywordUtils';
 import { isMountEligibleForCharacter } from './mountEligibility';
+import { isButtonEligibleForCharacter } from './characterEligibility';
 
 export type MobileQuickAction = { label: string; command: string };
 export type MobileQuickTarget = { kind: 'corpse' | 'character' | 'mount' | 'object' | 'other'; target: string; actions: MobileQuickAction[] };
@@ -36,6 +37,7 @@ export const getMobileQuickTarget = (entry: CommandActionTargetEntry, configs: I
   const corpseTarget = /^(?:\d+\.)?[\w'-]+-corpse$/i.test(target)
    ? target : `${ordinal}${getCorpseCommandKeyword(entry.label).replace(/^\d+\./, '')}`;
   add('Loot', `get all ${corpseTarget}`); add('Butcher', `butcher ${corpseTarget}`);
+  if (isButtonEligibleForCharacter({race:['Orc']}, character)) add('Drain', `drain ${corpseTarget}`);
   return {kind:'corpse', target:corpseTarget, actions};
  }
  if (entry.group === 'worn' || axes.location === 'worn') add('Remove', `remove ${target}`);

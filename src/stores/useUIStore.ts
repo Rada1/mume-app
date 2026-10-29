@@ -44,7 +44,7 @@ export interface UIState {
     isButtonsOpen: boolean;
     isShaperOpen: boolean;
     isShaperAccessOpen: boolean;
-    settingsTab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
+    settingsTab: 'general' | 'appearance' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays';
     diagnosticLogs: string[];
     showReplayHud: boolean;
     characterTab: 'info' | 'practice' | 'quests';
@@ -109,7 +109,7 @@ export interface UIState {
     setIsButtonsOpen: (open: boolean) => void;
     setIsShaperOpen: (open: boolean) => void;
     setIsShaperAccessOpen: (open: boolean) => void;
-    setSettingsTab: (tab: 'general' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
+    setSettingsTab: (tab: 'general' | 'appearance' | 'sound' | 'actions' | 'buttons' | 'map' | 'help' | 'replays') => void;
     addDiagnosticLog: (msg: string) => void;
     setShowReplayHud: (show: boolean) => void;
     setKeywordEditState: (state: { context: string; displayText: string } | null) => void;

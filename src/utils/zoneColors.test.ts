@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getZoneColor, getZoneAmbientGlow, DEFAULT_ZONE_COLOR, hashStringToColor, getZoneTextColor, hexToHsl } from './zoneColors';
+import { getZoneColor, getZoneAmbientGlow, getZoneFrameColor, DEFAULT_ZONE_COLOR, hashStringToColor, getZoneTextColor, hexToHsl } from './zoneColors';
 
 describe('zoneColors', () => {
     it('returns default color for null, undefined, or empty string', () => {
@@ -28,7 +28,34 @@ describe('zoneColors', () => {
         expect(getZoneColor('the Road to Tharbad')).toBe('#75b2e8');
         expect(getZoneColor('the Old Forest')).toBe('#75b2e8');
         expect(getZoneColor('the Central Anduin Vale')).toBe('#968894');
-        expect(getZoneAmbientGlow('Moria')).toBe('rgba(165, 28, 36, 0.18)');
+        expect(getZoneAmbientGlow('Valinor')).toBe('rgba(10, 48, 27, 0.18)');
+        expect(getZoneAmbientGlow('(The Shire)', 0.32)).toBe('rgba(10, 48, 27, 0.32)');
+        const stronglyGoodZoneFrame = hexToHsl(getZoneFrameColor('Valinor'));
+        expect(stronglyGoodZoneFrame.h).toBeGreaterThanOrEqual(130);
+        expect(stronglyGoodZoneFrame.h).toBeLessThanOrEqual(150);
+        expect(stronglyGoodZoneFrame.l).toBe(28);
+        expect(getZoneAmbientGlow('Fangorn')).toBe('rgba(10, 35, 64, 0.18)');
+        expect(getZoneAmbientGlow('the Lorien Surroundings', 0.32)).toBe('rgba(10, 35, 64, 0.32)');
+        const goodZoneFrame = hexToHsl(getZoneFrameColor('Fangorn'));
+        expect(goodZoneFrame.h).toBeGreaterThanOrEqual(200);
+        expect(goodZoneFrame.h).toBeLessThanOrEqual(225);
+        expect(goodZoneFrame.l).toBe(28);
+        expect(getZoneAmbientGlow('Dunland')).toBe('rgba(58, 33, 15, 0.18)');
+        const neutralZoneFrame = hexToHsl(getZoneFrameColor('Dunland'));
+        expect(neutralZoneFrame.h).toBeGreaterThanOrEqual(20);
+        expect(neutralZoneFrame.h).toBeLessThanOrEqual(35);
+        expect(neutralZoneFrame.s).toBeGreaterThanOrEqual(50);
+        expect(neutralZoneFrame.l).toBe(30);
+        expect(getZoneAmbientGlow('the Trollshaws')).toBe('rgba(41, 16, 57, 0.18)');
+        const semiEvilZoneFrame = hexToHsl(getZoneFrameColor('Trollshaws'));
+        expect(semiEvilZoneFrame.h).toBeGreaterThanOrEqual(260);
+        expect(semiEvilZoneFrame.h).toBeLessThanOrEqual(300);
+        expect(semiEvilZoneFrame.l).toBe(25);
+        expect(getZoneAmbientGlow('Moria')).toBe('rgba(79, 13, 18, 0.18)');
+        expect(getZoneAmbientGlow('Moria', 0.32)).toBe('rgba(79, 13, 18, 0.32)');
+        const evilZoneFrame = hexToHsl(getZoneFrameColor('Moria'));
+        expect(evilZoneFrame.h >= 345 || evilZoneFrame.h <= 10).toBe(true);
+        expect(evilZoneFrame.l).toBe(25);
     });
 
     it('generates a consistent deterministic color for unlisted zones', () => {
@@ -63,12 +90,12 @@ describe('zoneColors', () => {
         expect(getZoneTextColor(null)).toBe('#c9a84c');
         expect(getZoneTextColor('', true)).toBe('#8b6b10');
 
-        // Dark mode: lightness boosted to ~68%
+        // Dark mode: lightness boosted to ~68%, preserving the current green hue.
         const shireText = getZoneTextColor('Shire');
         const shireHsl = hexToHsl(shireText);
         expect(shireHsl.l).toBeGreaterThanOrEqual(68);
-        expect(shireHsl.h).toBeGreaterThanOrEqual(90);
-        expect(shireHsl.h).toBeLessThanOrEqual(115);
+        expect(shireHsl.h).toBeGreaterThanOrEqual(145);
+        expect(shireHsl.h).toBeLessThanOrEqual(165);
 
         const rivendellText = getZoneTextColor('Rivendell');
         const rivendellHsl = hexToHsl(rivendellText);

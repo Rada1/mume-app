@@ -1,5 +1,5 @@
 /** @file ClientSettingsMenu.tsx — Settings, replay and session actions in the compact menu. */
-import { Activity, Cog, DraftingCompass, Film, HelpCircle, Layers, LogOut, Map, Music, Settings } from 'lucide-react';
+import { Activity, Cog, DraftingCompass, Film, HelpCircle, Layers, LogOut, Map, Music, Palette, Settings } from 'lucide-react';
 import { useGame, useUI } from '../../context/GameContext';
 import { useModeStore } from '../../stores/useModeStore';
 import { useClientSessionMenu } from '../../hooks/useClientSessionMenu';
@@ -12,6 +12,7 @@ export const ClientSettingsMenu = ({ close }: { close: () => void }) => {
     const mode = useModeStore();
     const settings = [
         { tab: 'general', label: 'General', icon: Cog },
+        { tab: 'appearance', label: 'Appearance', icon: Palette },
         { tab: 'sound', label: 'Sound', icon: Music },
         { tab: 'actions', label: 'Actions / macros', icon: Activity },
         { tab: 'buttons', label: 'Buttons', icon: Settings },

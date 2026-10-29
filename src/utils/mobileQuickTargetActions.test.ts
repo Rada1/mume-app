@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
 import { getMobileQuickTarget } from './mobileQuickTargetActions';
+import type { CharacterInfo } from '../types';
 
 // --- Contextual action selection ---
 const entry = (overrides: Partial<CommandActionTargetEntry>): CommandActionTargetEntry => ({
@@ -16,6 +17,10 @@ describe('mobile quick actions', () => {
   expect(rider.target).toBe('2.rider-corpse');
   expect(rider.actions.map(action => action.command)).toEqual(['get all 2.rider-corpse', 'butcher 2.rider-corpse']);
   expect(getMobileQuickTarget(entry({label:'corpse of an Ohurk-uai warg-rider', context:'rider'}), []).target).toBe('rider-corpse');
+  const orc = {race:'Orc'} as CharacterInfo;
+  expect(getMobileQuickTarget(entry({label:'the corpse of a pony', context:'2.pony-corpse'}), [], orc).actions)
+   .toContainEqual({label:'Drain', command:'drain 2.pony-corpse'});
+  expect(getMobileQuickTarget(entry({label:'the corpse of a pony', context:'pony-corpse'}), [], {race:'Elf'} as CharacterInfo).actions.map(action => action.label)).not.toContain('Drain');
  });
  it('distinguishes mounts, allies and enemies', () => {
   expect(actions(entry({label:'a pack horse', context:'2.horse', category:'cat-npc', group:'npcs'})).map(a => a.command))
