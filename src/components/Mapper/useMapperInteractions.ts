@@ -499,6 +499,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
         const onDown = (e: PointerEvent, padButton?: HTMLElement) => {
             if (!padButton && e.target !== currentCanvas()) return;
+            if (Array.from(padPointersRef.current.values()).some(button => button.dataset.activeMovementHold === 'true')) return;
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;
             lastMapPointerTypeRef.current = e.pointerType;
@@ -644,6 +645,7 @@ export const useMapperInteractions = (deps: InteractionDeps) => {
 
         const onMove = (e: PointerEvent) => {
             if (!activePointersRef.current.has(e.pointerId)) return;
+            if (padPointersRef.current.get(e.pointerId)?.dataset.activeMovementHold === 'true') return;
             
             // IGNORE all internal map interactions if a window/cluster drag is in progress
             if (document.body.classList.contains('global-dragging')) return;

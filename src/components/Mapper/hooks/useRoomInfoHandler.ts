@@ -1,14 +1,16 @@
 /** @file Resolves room observations and consumes one queued input per arrival. */
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type { GmcpRoomInfo } from '../mapperTypes';
 import { generateId, DIRS, getExitTargetId } from '../mapperUtils';
 import type { MapperRoomInfoInput, MapperRoomInfoProps } from '../../../types';
 import { resolveMovingRoom } from './resolveMovingRoom';
 import { applyRoomInfoObservation } from './applyRoomInfoObservation';
+import { useMapperLocationState } from '../../../hooks/useMapperLocationState';
 
 // --- Room observation lifecycle ---
 export const useRoomInfoHandler = (input: MapperRoomInfoInput) => {
     const props = input as MapperRoomInfoProps;
+    const location = useMapperLocationState(props);
     const { roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef,
     nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef,
     firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef,
@@ -19,10 +21,12 @@ export const useRoomInfoHandler = (input: MapperRoomInfoInput) => {
     // walking burst into a single Set clone after the player settles, instead of one
     // clone per room (which was O(n) per step → O(n²) over a session).
     const exploredSyncTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    useEffect(() => () => { if (exploredSyncTimerRef.current !== null) clearTimeout(exploredSyncTimerRef.current); }, []);
 
     // --- Logic Section ---
     const handleRoomInfo = useCallback((data: GmcpRoomInfo, movementAlreadyConfirmed = false, confirmedDirection?: string | null) => {
-        const resolved = resolveMovingRoom(props, data, movementAlreadyConfirmed, confirmedDirection);
+        const resolved = resolveMovingRoom(props, data, movementAlreadyConfirmed, confirmedDirection, location.current);
+        if (!data.spectating && !data.scouting) discoverySourceRef.current = resolved.discoverySource;
         let { gmcpId, gmcpName, targetId, ghostData, matchedInternalId, discoverySource, isSpectateUpdate, isTextRoomEvent, isScoutObservation, activeRoomId, currentActiveRoom, now, dirUsed, isVnumZero, isLikelyMove } = resolved;
 
         // A scout reports another room's details without moving the character. Resolve
@@ -67,51 +71,6 @@ export const useRoomInfoHandler = (input: MapperRoomInfoInput) => {
                 predX = Math.round(predX + (d.dx || 0)); 
                 predY = Math.round(predY + (d.dy || 0)); 
                 predZ = Math.round(predZ + (d.dz || 0)); 
-            }
-        }
-
-        // Prioritize finding a room that's an existing exit from our current location
-        if (!targetId && !matchedInternalId && !isSpectateUpdate && currentActiveRoom && dirUsed && currentActiveRoom.exits[dirUsed]) {
-            const ex = currentActiveRoom.exits[dirUsed];
-            if (ex.target) {
-                const existingTarget = roomsRef.current[ex.target];
-                // Double check it's likely the right room
-                const coordsMatch = existingTarget && Math.round(existingTarget.x) === predX && Math.round(existingTarget.y) === predY;
-                
-                if (!isVnumZero && ex.gmcpDestId && String(ex.gmcpDestId) !== String(gmcpId)) {
-                    // VNUM Mismatch - ignore this exit
-                } else if (isVnumZero && !coordsMatch) {
-                    // In the dark, we only trust an existing exit if it's actually adjacent.
-                    // This prevents "jumping" to distant rooms that also have VNUM 0.
-                } else {
-                    targetId = ex.target;
-                }
-            }
-        }
-
-        // If not found via exits, try global search (only for non-zero unique IDs)
-        if (!targetId && !matchedInternalId && !isVnumZero) {
-            targetId = Object.keys(roomsRef.current).find(key => String(roomsRef.current[key].gmcpId) === String(gmcpId)) || null;
-        }
-
-        // Final fallback for dark rooms: look for ANY room at the exact predicted coordinates
-        if (!targetId && !matchedInternalId && isVnumZero && currentActiveRoom) {
-            targetId = Object.keys(roomsRef.current).find(key => {
-                const r = roomsRef.current[key];
-                return Math.round(r.x) === predX && Math.round(r.y) === predY && Math.abs(Math.round(r.z || 0) - predZ) < 0.5 && r.zone === currentActiveRoom.zone;
-            }) || null;
-
-            if (!targetId) {
-                const preloadedMatchVnum = Object.keys(preloadedCoordsRef.current).find(vnum => {
-                    const p = preloadedCoordsRef.current[vnum];
-                    return Math.round(p[0]) === predX && Math.round(p[1]) === predY && Math.abs(Math.round(p[2] || 0) - predZ) < 0.5 && p[9] === currentActiveRoom.zone;
-                });
-                if (preloadedMatchVnum) {
-                    targetId = `m_${preloadedMatchVnum}`;
-                    matchedInternalId = preloadedMatchVnum;
-                    ghostData = preloadedCoordsRef.current[preloadedMatchVnum];
-                    discoverySource = 'DARK_PRELOADED_MATCH';
-                }
             }
         }
 
@@ -173,7 +132,7 @@ export const useRoomInfoHandler = (input: MapperRoomInfoInput) => {
             addMessage?.('system', debugMsg);
         }
 
-        const observation = applyRoomInfoObservation(props, data, { ...resolved, targetId, ghostData, matchedInternalId, discoverySource, predX, predY, predZ });
+        const observation = applyRoomInfoObservation(props, data, { ...resolved, targetId, ghostData, matchedInternalId, discoverySource, dirUsed: resolved.isRelocation ? null : dirUsed, predX, predY, predZ });
         if (!observation) return;
         const { newRooms, topologyChanged } = observation;
 
@@ -248,5 +207,5 @@ export const useRoomInfoHandler = (input: MapperRoomInfoInput) => {
         }
     }, [roomsRef, setRooms, currentRoomIdRef, setCurrentRoomId, pendingMovesRef, preloadedCoordsRef, spatialIndexRef, nameIndexRef, serverIdIndexRef, discoverySourceRef, exploredRef, setExploredVnums, lastDetectedTerrainRef, firstExploredAtRef, triggerRender, onRoomInfoProcessed, onFirstVisitLoadFlag, onMoveConfirmed, addMessage, showDebugEchoes, preMoveRef, activeView, mapEditMode]);
 
-    return { handleRoomInfo };
+    return { handleRoomInfo, locationState:location };
 };

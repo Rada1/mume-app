@@ -15,6 +15,7 @@ import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { DesktopCommandPin } from './DesktopCommandPin';
 import { useDesktopCommandDefaults } from '../../hooks/useDesktopCommandDefaults';
 import { DESKTOP_SOCIAL_COMMANDS } from '../../utils/desktopSocialCommands';
+import { useMobileCommandTilesStore } from '../../stores/useMobileCommandTilesStore';
 import './CommandTreeSocialTargets.css';
 
 // --- Render Section ---
@@ -28,6 +29,13 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
 }) => {
     const [themeId, setThemeId] = React.useState<string | null>(null);
     const [selected, setSelected] = React.useState<CommandTreeSocialEntry | null>(null);
+    const character = controller.game.characterName?.toLowerCase() || 'guest';
+    const recent = useMobileCommandTilesStore(state => state.socialRecent[character]);
+    const recordSocial = useMobileCommandTilesStore(state => state.recordSocial);
+    const record = (entry: CommandTreeSocialEntry) => {
+        if (controller.game.viewport.isMobile && !controller.isHelpMode && controller.game.gameState === 'playing' && !controller.game.isSpectateMode)
+            recordSocial(character, entry.command);
+    };
     const touchActivation = useSecondaryTouchActivation();
     const defaults = useDesktopCommandDefaults(controller.game.characterName);
     const defaultSocial = defaults.resolve('social', DESKTOP_SOCIAL_COMMANDS);
@@ -41,6 +49,7 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
     const chooseTheme = (id: string) => { if (heldSocialRelease) heldSocialRelease.current = null; setThemeId(id); setSelected(null); };
     const sendBare = (entry: CommandTreeSocialEntry) => {
         executeCommandPanelInput(controller.game, entry.command);
+        record(entry);
         onCommandExecuted?.();
     };
     const chooseSocial = (entry: CommandTreeSocialEntry) => {
@@ -62,7 +71,10 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
         {theme && <section className={branchClass} aria-label={`${theme.label} socials`} {...touchActivation}>
             <CommandTreeCollapsibleSection label={theme.label}>
                 <div className="command-tree-section-commands" role="group" aria-label={`${theme.label} socials`} tabIndex={0}>
-                    {theme.socials.map(entry => {
+                    {(controller.game.viewport.isMobile && recent?.length ? [...theme.socials].sort((a, b) => {
+                        const aIndex = recent.indexOf(a.command), bIndex = recent.indexOf(b.command);
+                        return (aIndex < 0 ? recent.length : aIndex) - (bIndex < 0 ? recent.length : bIndex);
+                    }) : theme.socials).map(entry => {
                         const row = <button key={entry.command} type="button" data-menu-item="true" className="command-tree-row"
                         aria-expanded={entry.targeted ? selected?.command === entry.command : undefined}
                         onClick={() => entry.targeted && controller.game.viewport.isMobile ? chooseSocial(entry) : sendBare(entry)}
@@ -84,7 +96,7 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
                         const command = `${selected.command} ${option}`;
                         const label = `${selected.label} ${option}`;
                         const row = <button key={option} type="button" data-menu-item="true" className="command-tree-row"
-                            onClick={() => { executeCommandPanelInput(controller.game, command); onCommandExecuted?.(); }}>
+                            onClick={() => { executeCommandPanelInput(controller.game, command); record(selected); onCommandExecuted?.(); }}>
                             <span className="command-tree-row-label">{option[0].toUpperCase() + option.slice(1)}</span>
                         </button>;
                         return desktopPin ? <DesktopCommandPin key={option} label={label} selected={defaultSocial?.command === command}
@@ -94,12 +106,12 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
                         <span className="command-tree-row-label">No target</span>
                     </button>}
                     {isPoint && POINT_DIRECTIONS.map(direction => <button key={direction} type="button" data-menu-item="true" className="command-tree-row"
-                        onClick={() => { executeCommandPanelInput(controller.game, `point ${direction}`); onCommandExecuted?.(); }}>
+                        onClick={() => { executeCommandPanelInput(controller.game, `point ${direction}`); record(selected); onCommandExecuted?.(); }}>
                         <span className="command-tree-row-label">{direction[0].toUpperCase() + direction.slice(1)}</span>
                     </button>)}
                     {!selected.targetOptions && roomTargets.map(entry => {
                         const label = getCommandActionTargetDisplayLabel(entry);
-                        return <div key={entry.id} onClick={() => onCommandExecuted?.()}>
+                        return <div key={entry.id} onClick={() => { record(selected); onCommandExecuted?.(); }}>
                             <CommandTreeAction controller={controller} button={createSocialEmoteButton(selected, true)} targetLabel={label}
                                 targetState={{x: 0, y: 0, type: 'menu', setId: entry.category, category: entry.category, context: entry.context,
                                     keyword: entry.keyword, displayName: label, entityId: entry.id}}/>

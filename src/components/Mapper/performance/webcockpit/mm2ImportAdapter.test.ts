@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { mapDataToLegacyImport } from './mm2ImportAdapter';
 import { DIR_COUNT, EXIT_FLAG, type MapData } from './model';
+import { getSmartWalkExits } from '../../hooks/smartWalkPath';
 
 function tinyMap(): MapData {
   const slots = 2 * DIR_COUNT;
@@ -34,6 +35,14 @@ function tinyMap(): MapData {
 }
 
 describe('MM2 import adapter', () => {
+  it('retains random-exit candidates without making them autowalk destinations', () => {
+    const map = tinyMap();
+    map.outStart.fill(2, 1);
+    map.outTo = new Uint32Array([0,1]);
+    const result = mapDataToLegacyImport(map);
+    expect(result.rooms['11']?.[4]).toMatchObject({north:{target:'',targets:['11','12']}});
+    expect(getSmartWalkExits('m_11',{},result.rooms)).toBeNull();
+  });
   it('preserves room IDs, links, descriptions, and text infomarks', () => {
     const result = mapDataToLegacyImport(tinyMap());
     expect(result.rooms['11']?.[4]).toMatchObject({ north: { target: '12', hasDoor: true, doorName: 'oak door' } });

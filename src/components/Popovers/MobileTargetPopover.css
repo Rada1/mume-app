@@ -17,6 +17,7 @@
 }
 .is-inline-target-popover .desktop-target-workspace-header > button {
  flex:0 0 36px; width:36px; min-height:36px!important; padding:0; font-size:20px;
+ display:flex; align-items:center; justify-content:center; text-align:center; line-height:1;
  background:var(--command-panel-surface-raised,#2d271e);
 }
 .desktop-target-workspace.is-inline-target-popover .desktop-target-columns.command-tree-gear-quick-menu {

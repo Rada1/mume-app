@@ -35,6 +35,16 @@ is adapted from MMapper's `src/display/ConnectionLineBuilder.cpp` and
 MMapper is licensed under GPL-2.0-or-later; see
 [`MUME/MMapper`](https://github.com/MUME/MMapper).
 
+## MMapper room location methods
+
+Room location matching in `roomLocationMachine.ts`, `roomObservationIndex.ts`
+and `roomObservationMatch.ts` adapts the methods of MMapper's path machine,
+ParseTree and room comparison routines (reference commit
+`90eb09d428f94089ffae5e15e6b33d91e299dc75`). The reference files identify
+The MMapper Authors, Ulf Hermann, Marek Krejza and Nils Schimmelmann and are
+licensed GPL-2.0-or-later. The TypeScript implementation is distributed with
+this application's GPL-3.0-or-later source.
+
 ## Corresponding source for releases
 
 The application is licensed `GPL-3.0-or-later`. For every release that

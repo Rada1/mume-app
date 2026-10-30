@@ -418,8 +418,8 @@ export const useSettingsStore = create<SettingsState>()(
             favorites: [],
             zoneMusic: [],
             masterVolume: 1.0,
-            sfxVolume: 0.5,
-            uiVolume: 0.5,
+            sfxVolume: 0.3,
+            uiVolume: 0.2,
             musicVolume: 0.1,
             drumVolume: 0.65,
             customSoundEffects: {},
@@ -636,7 +636,7 @@ export const useSettingsStore = create<SettingsState>()(
         }),
         {
             name: 'mume-settings-storage',
-            version: 42,
+            version: 44,
             migrate: (persistedState: any, version: number) => {
                 if (version < 42 && persistedState.mapBackgroundVisuals?.brightness === 0.18) {
                     persistedState.mapBackgroundVisuals.brightness = DEFAULT_MAP_BACKGROUND_VISUALS.brightness;
@@ -924,6 +924,34 @@ export const useSettingsStore = create<SettingsState>()(
                             ...mapping,
                             url: Array.isArray(mapping.url) ? mapping.url[0] || '' : mapping.url
                         }));
+                }
+
+                if (version < 44) {
+                    const previousSfxVolume = persistedState.sfxVolume;
+                    if (typeof previousSfxVolume === 'number' && previousSfxVolume === 0.5) {
+                        persistedState.sfxVolume = 0.3;
+                    }
+                    if (persistedState.uiVolume === undefined) {
+                        if (previousSfxVolume === undefined || previousSfxVolume === 0.5) {
+                            persistedState.uiVolume = 0.2;
+                        }
+                    } else if (persistedState.uiVolume === 0.5) {
+                        persistedState.uiVolume = 0.2;
+                    }
+                }
+
+                if (version < 43) {
+                    if (String(persistedState.playerColor || '').toLowerCase() === '#61c290') persistedState.playerColor = COLOR_ALLY;
+                    if (String(persistedState.npcColor || '').toLowerCase() === '#ababab') persistedState.npcColor = COLOR_NPC;
+                    if (Array.isArray(persistedState.categoryOverrides)) {
+                        persistedState.categoryOverrides = persistedState.categoryOverrides.map((override: CategoryOverride) => {
+                            const id = toCategoryId(override.id) || override.id;
+                            const color = String(override.color || '').toLowerCase();
+                            if ((id === 'cat-ally' || id === 'cat-ally-remote') && color === '#61c290') return { ...override, color: COLOR_ALLY };
+                            if (id === 'cat-npc' && color === '#ababab') return { ...override, color: COLOR_NPC };
+                            return override;
+                        });
+                    }
                 }
 
                 return persistedState;

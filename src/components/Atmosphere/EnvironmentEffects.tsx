@@ -5,6 +5,7 @@
 
 // --- Logic Section ---
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { LightingType, WeatherType, MumeTime } from '../../types';
 import { EnvironmentWeatherLayers } from './EnvironmentWeatherLayers';
 import { EnvironmentVignetteLayers } from './EnvironmentVignetteLayers';
@@ -235,11 +236,11 @@ export const EnvironmentEffects: React.FC<EnvironmentEffectsProps> = ({
                         />
                     </>
                 )}
-                <div
-                    className={`client-death-background ${deathFadePhase === 'flash' ? 'is-flashing' : deathFadePhase === 'black' ? 'is-black' : deathFadePhase === 'fading' ? 'is-fading' : ''}`}
-                    aria-hidden="true"
-                />
             </div>
+            {createPortal(<div
+                className={`client-death-background ${deathFadePhase === 'flash' ? 'is-flashing' : deathFadePhase === 'black' ? 'is-black' : deathFadePhase === 'fading' ? 'is-fading' : ''}`}
+                aria-hidden="true"
+            />, document.body)}
 
             {/* --- EMBER LAYER: Full-client particles above the map/drawer surface --- */}
             {showEmbers && !isPerformanceMode && (

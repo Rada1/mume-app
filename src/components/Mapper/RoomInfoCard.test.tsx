@@ -34,6 +34,26 @@ beforeEach(() => { localStorage.clear(); vi.useFakeTimers(); });
 afterEach(() => { cleanup(); vi.useRealTimers(); });
 
 describe('room info notes in play mode', () => {
+    it('drags the desktop card by its header without dragging from its buttons', () => {
+        const {container} = render(<Harness roomId="m_1" />);
+        const panel = document.body.querySelector<HTMLElement>('.mapper-room-info-panel')!;
+        const header = panel.querySelector<HTMLElement>('.room-info-card-header')!;
+        expect(container.contains(panel)).toBe(false);
+        vi.spyOn(panel, 'getBoundingClientRect').mockReturnValue({left:100,top:80,right:500,bottom:600,width:400,height:520,x:100,y:80,toJSON:()=>({})});
+        const pointer = (target: Element | Document | Window, type: string, x: number, y: number) => {
+            const event = new MouseEvent(type,{bubbles:true,button:0,clientX:x,clientY:y});
+            Object.defineProperty(event,'pointerId',{value:1});
+            fireEvent(target,event);
+        };
+        pointer(header,'pointerdown',150,100);
+        pointer(window,'pointermove',210,140);
+        pointer(window,'pointerup',210,140);
+        expect(panel.style.transform).toBe('translate(60px, 40px)');
+        pointer(screen.getByRole('button',{name:'Close room info'}),'pointerdown',150,100);
+        pointer(window,'pointermove',250,200);
+        pointer(window,'pointerup',250,200);
+        expect(panel.style.transform).toBe('translate(60px, 40px)');
+    });
     it('always shows an editable notes field and keeps notes isolated when selecting another room', () => {
         const { rerender } = render(<Harness roomId="m_2" />);
         const notes = screen.getByRole('textbox', { name: 'Notes' });

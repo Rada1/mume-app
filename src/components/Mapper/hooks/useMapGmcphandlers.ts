@@ -1,279 +1,61 @@
-/**
- * @file useMapGmcphandlers.ts
- * @description Coordinates mapper GMCP, XML movement, and pending move queue handlers.
- */
-
+/** @file Coordinates protocol arrival ownership and candidate-based mapper observations. */
 import { useRef } from 'react';
-import { GmcpRoomInfo, MapperPrediction, MapperRoom } from '../mapperTypes';
+import type { MapperTrackingInput, MapperMovementDetail } from '../../../types';
 import { useRoomInfoHandler } from './useRoomInfoHandler';
 import { useUpdateExitsHandler } from './useUpdateExitsHandler';
 import { useTerrainHandler } from './useTerrainHandler';
-import { DIRS, getExitTargetId } from '../mapperUtils';
+import { getExitTargetId } from '../mapperUtils';
 import { formatMovementArrow, normalizeMovementDirection } from '../../../utils/movementDirections';
-import { uiPerformance } from '../../../utils/uiPerformance';
 import { useMapperMovementEvents } from './useMapperMovementEvents';
+import { confirmXmlMovement } from './mapperXmlMovement';
+import { useMapperRoomObservations } from './useMapperRoomObservations';
 
-interface UseMapGmcphandlersProps {
-    roomsRef: React.MutableRefObject<Record<string, MapperRoom>>;
-    setRooms: React.Dispatch<React.SetStateAction<Record<string, MapperRoom>>>;
-    currentRoomIdRef: React.MutableRefObject<string | null>;
-    setCurrentRoomId: React.Dispatch<React.SetStateAction<string | null>>;
-    pendingMovesRef: React.MutableRefObject<{ dir: string; time: number }[]>;
-    preloadedCoordsRef: React.MutableRefObject<Record<string, any>>;
-    spatialIndexRef?: React.MutableRefObject<Record<number, Record<string, string[]>>>;
-    nameIndexRef: React.MutableRefObject<Record<string, string[]>>;
-    serverIdIndexRef: React.MutableRefObject<Record<string, string>>;
-    discoverySourceRef: React.MutableRefObject<string | null>;
-    exploredRef: React.MutableRefObject<Set<string>>;
-    setExploredVnums: React.Dispatch<React.SetStateAction<Set<string>>>;
-    lastDetectedTerrainRef: React.MutableRefObject<string | null>;
-    firstExploredAtRef: React.MutableRefObject<Record<string, number>>;
-    triggerRender?: () => void;
-    onRoomInfoProcessed?: (confirmedRoomId?: string | null) => void;
-    onFirstVisitLoadFlag?: (roomId: string) => void;
-    addMessage?: (type: string, msg: string) => void;
-    showDebugEchoes?: boolean;
-    preMoveRef?: React.MutableRefObject<{ dir: string; targetId: string; time: number } | null>;
-    deathRoomId?: string | null;
-    setDeathRoomId?: (val: string | null) => void;
-    baseMapExitsRef?: React.MutableRefObject<Record<string, any>>;
-    clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
-    characterName: string | null;
-    executeCommand?: (cmd: string, silent?: boolean) => void;
-    activeView: string;
-    mapEditMode?: boolean;
-}
-
-// --- Logic Section ---
-const normalizeMoveDir = (dir: string | null | undefined): string | null => {
-    return normalizeMovementDirection(dir);
-};
-
-export const useMapGmcphandlers = (props: UseMapGmcphandlersProps) => {
+// --- Protocol coordination ---
+export const useMapGmcphandlers = (props: MapperTrackingInput) => {
     const lastMovementLogRef = useRef<{ dir: string; time: number } | null>(null);
-    // GMCP owns arrivals once available. XML and rendered room text describe the
-    // same responses and must never dequeue additional commands, even if delayed.
     const hasGmcpRoomsRef = useRef(false);
     const xmlConfirmedRef = useRef(false);
-
-    const pushPendingMove = (dir: string) => {
-        props.pendingMovesRef.current.push({ dir, time: Date.now() });
-    };
-
+    const xmlUnresolvedDirection = useRef<string | null>(null);
+    const pushPendingMove = (dir: string) => { props.pendingMovesRef.current.push({dir,time:Date.now()}); };
     const emitMovementLog = (dir: string | null | undefined) => {
-        const normalized = normalizeMovementDirection(dir);
-        const arrow = formatMovementArrow(normalized);
+        const normalized = normalizeMovementDirection(dir), arrow = formatMovementArrow(normalized);
         if (!arrow) return;
-
         const now = Date.now();
-        if (lastMovementLogRef.current?.dir === arrow && now - lastMovementLogRef.current.time < 150) {
-            return;
-        }
-
-        lastMovementLogRef.current = { dir: arrow, time: now };
+        if (lastMovementLogRef.current?.dir === arrow && now - lastMovementLogRef.current.time < 150) return;
+        lastMovementLogRef.current = {dir:arrow,time:now};
         props.addMessage?.('movement', normalized || arrow);
     };
-
-    const handleMoveConfirmed = (e?: any) => {
-        const isDark = e?.detail?.isDark;
-        const eventDir = normalizeMoveDir(typeof e?.detail?.dir === 'string' ? e.detail.dir : null);
-        const isXmlMovement = e?.detail?.source === 'xml';
-        const isGmcpMovement = e?.detail?.source === 'gmcp';
-        const hasDirectedMovement = eventDir !== null;
-        const pending = props.pendingMovesRef.current;
-        // MMapper's GMCP Event.Moved only records direction for the following room
-        // payload; it does not dequeue prespam by itself. Room.Info remains the
-        // authoritative GMCP consumer below.
-        if (isGmcpMovement) {
-            return;
-        }
-
-        if (hasGmcpRoomsRef.current || (!isXmlMovement && xmlConfirmedRef.current)) return;
-
-        // MMapper treats its prespammed path as a FIFO command queue: each movement
-        // confirmation consumes the head only. If the confirmed direction differs
-        // from that head, the queue is stale, so clear it rather than preserving a
-        // detached tail that can point the prediction line down the wrong branch.
-        if (hasDirectedMovement && pending.length === 0) {
-            return;
-        }
-
-        const nextMove = pending[0];
-        const queuedDir = normalizeMoveDir(nextMove?.dir);
-        const confirmedDir = eventDir || queuedDir;
-        const clearQueueAfterConfirm = !!eventDir && !!queuedDir && eventDir !== queuedDir;
-
-        let resolvedTargetId: string | null = null;
-
-        if ((isDark || isXmlMovement || hasDirectedMovement) && confirmedDir) {
-            const currentId = props.currentRoomIdRef.current;
-            if (currentId) {
-                const currentRoom = props.roomsRef.current[currentId];
-                let targetId: string | null = null;
-
-                // 1. Try to find in memory exits
-                const liveExit = currentRoom?.exits?.[confirmedDir];
-                const liveTarget = getExitTargetId(liveExit);
-                if (liveTarget) {
-                    targetId = liveTarget.startsWith('m_') ? liveTarget : `m_${liveTarget}`;
-                }
-
-                // 2. Fallback to ArdaMap preloaded exits
-                if (!targetId && currentId.startsWith('m_')) {
-                    const prevVnum = currentId.substring(2);
-                    const ardaData = props.preloadedCoordsRef.current[prevVnum];
-                    if (ardaData && ardaData[4]) {
-                        const targetVnum = getExitTargetId(ardaData[4][confirmedDir]);
-                        if (targetVnum) {
-                            targetId = `m_${targetVnum}`;
-                        }
-                    }
-                }
-
-                // 3. Last resort: snap to an already-known room at the predicted coordinates.
-                if (!targetId && currentRoom && DIRS[confirmedDir]) {
-                    const d = DIRS[confirmedDir];
-                    const nx = Math.round(currentRoom.x + (d.dx || 0));
-                    const ny = Math.round(currentRoom.y + (d.dy || 0));
-                    const nz = Math.round((currentRoom.z || 0) + (d.dz || 0));
-
-                    const localMatch = Object.values(props.roomsRef.current).find(room =>
-                        Math.round(room.x) === nx &&
-                        Math.round(room.y) === ny &&
-                        Math.abs(Math.round(room.z || 0) - nz) < 0.5 &&
-                        room.zone === currentRoom.zone
-                    );
-                    if (localMatch) {
-                        targetId = localMatch.id;
-                    } else {
-                        const preloadedMatchVnum = Object.keys(props.preloadedCoordsRef.current).find(vnum => {
-                            const p = props.preloadedCoordsRef.current[vnum];
-                            return Math.round(p[0]) === nx &&
-                                Math.round(p[1]) === ny &&
-                                Math.abs(Math.round(p[2] || 0) - nz) < 0.5 &&
-                                (!currentRoom.zone || p[9] === currentRoom.zone);
-                        });
-                        if (preloadedMatchVnum) targetId = `m_${preloadedMatchVnum}`;
-                    }
-                }
-
-                if (targetId) {
-                    if (props.showDebugEchoes) {
-                        const source = isXmlMovement ? 'XML' : (hasDirectedMovement ? 'GMCP movement' : 'dark text');
-                        props.addMessage?.('system', `[Mapper] ${source} dead-reckoned move ${confirmedDir} to ${targetId}`);
-                    }
-                    props.setCurrentRoomId(targetId);
-                    resolvedTargetId = targetId;
-                }
-            }
-        }
-
-        if (clearQueueAfterConfirm) {
-            props.pendingMovesRef.current = [];
-            if (props.showDebugEchoes) {
-                props.addMessage?.('system', `[Mapper] Movement ${confirmedDir} did not match queued ${queuedDir}; clearing stale prediction queue.`);
-            }
-        } else if (pending.length > 0) {
-            props.pendingMovesRef.current.shift();
-        }
-
-        if (isXmlMovement) xmlConfirmedRef.current = true;
-
-        if (confirmedDir) {
-            emitMovementLog(confirmedDir);
-        }
-
-        // Pass the dead-reckoned targetId (if any) — NOT currentRoomIdRef.current, which is
-        // stale here because setCurrentRoomId above is async and the ref hasn't synced yet.
-        // For non-dead-reckoned events (plain text room-name match), pass null so the reconciler
-        // leaves the queue alone; the authoritative GMCP handleRoomInfo will reconcile properly.
-        if (props.onRoomInfoProcessed) props.onRoomInfoProcessed(resolvedTargetId);
-        else {
-            if (props.preMoveRef) props.preMoveRef.current = null;
-            if (props.clientPredictionsRef) props.clientPredictionsRef.current = [];
-        }
-        props.triggerRender?.();
+    const {handleRoomInfo:processRoomInfo, locationState} = useRoomInfoHandler({...props,onMoveConfirmed:emitMovementLog});
+    const handleMoveConfirmed = (event?: CustomEvent<MapperMovementDetail>) => {
+        const result = confirmXmlMovement(props,event,hasGmcpRoomsRef.current,xmlConfirmedRef,emitMovementLog,locationState.current.confidence === 'confirmed');
+        if (result && event?.detail.source === 'xml') xmlUnresolvedDirection.current = result.target ? null : result.direction;
     };
-
-    const { handleRoomInfo: processRoomInfo } = useRoomInfoHandler({
-        roomsRef: props.roomsRef,
-        setRooms: props.setRooms,
-        currentRoomIdRef: props.currentRoomIdRef,
-        setCurrentRoomId: props.setCurrentRoomId,
-        pendingMovesRef: props.pendingMovesRef,
-        preloadedCoordsRef: props.preloadedCoordsRef,
-        spatialIndexRef: props.spatialIndexRef,
-        baseMapExitsRef: props.baseMapExitsRef,
-        nameIndexRef: props.nameIndexRef,
-        serverIdIndexRef: props.serverIdIndexRef,
-        discoverySourceRef: props.discoverySourceRef,
-        exploredRef: props.exploredRef,
-        setExploredVnums: props.setExploredVnums,
-        lastDetectedTerrainRef: props.lastDetectedTerrainRef,
-        firstExploredAtRef: props.firstExploredAtRef,
-        triggerRender: props.triggerRender,
-        onRoomInfoProcessed: props.onRoomInfoProcessed,
-        onFirstVisitLoadFlag: props.onFirstVisitLoadFlag,
-        onMoveConfirmed: emitMovementLog,
-        addMessage: props.addMessage,
-        showDebugEchoes: props.showDebugEchoes,
-        preMoveRef: props.preMoveRef,
-        deathRoomId: props.deathRoomId,
-        setDeathRoomId: props.setDeathRoomId,
-        activeView: props.activeView,
-        mapEditMode: props.mapEditMode
-    });
-
     const takeMovementDirection = useMapperMovementEvents(direction => {
-        // A missing payload supplies no matching evidence: only follow a mapped
-        // exit with one destination, never guess by neighboring coordinates.
-        const alreadyConfirmed = xmlConfirmedRef.current;
+        const confirmed = xmlConfirmedRef.current;
         xmlConfirmedRef.current = false;
         const currentId = props.currentRoomIdRef.current;
-        const bundled = currentId ? props.preloadedCoordsRef.current[currentId.replace(/^m_/, '')]?.[4]?.[direction] : null;
-        const exit: unknown = bundled ?? (currentId ? props.roomsRef.current[currentId]?.exits[direction] : null);
+        const tuple = currentId ? props.preloadedCoordsRef.current[currentId.replace(/^m_/, '')] : undefined;
+        const exits = tuple?.[4] as Record<string, unknown> | undefined;
+        const exit: unknown = exits?.[direction] ?? (currentId ? props.roomsRef.current[currentId]?.exits[direction] : null);
         const ambiguous = exit && typeof exit === 'object' && 'targets' in exit
             && (!Array.isArray(exit.targets) || exit.targets.length !== 1);
         const target = getExitTargetId(exit).replace(/^m_/, '');
         const known = target && (props.preloadedCoordsRef.current[target] || props.roomsRef.current[`m_${target}`]);
-        if (alreadyConfirmed || ambiguous || !known) {
-            if (!alreadyConfirmed) props.pendingMovesRef.current.shift();
+        if (confirmed || ambiguous || !known || locationState.current.confidence !== 'confirmed') {
+            if (!confirmed) props.pendingMovesRef.current.shift();
             props.onRoomInfoProcessed?.(null);
             return;
         }
-        processRoomInfo({ num: 0, name: '' }, false, direction);
+        processRoomInfo({num:0,name:''}, false, direction);
     }, props.activeView === 'self');
-
-    const handleRoomInfo = (data: GmcpRoomInfo) => {
-        if (data.spectating || data.scouting) {
-            processRoomInfo(data);
-            return;
-        }
-        if (data.source === 'text' && hasGmcpRoomsRef.current) return;
-        if (data.source !== 'text') hasGmcpRoomsRef.current = true;
-        // With XML-only output, the movement tag has already advanced the FIFO
-        // and dead-reckoned position. Room details refine that arrival, not the next.
-        const alreadyConfirmed = xmlConfirmedRef.current;
-        xmlConfirmedRef.current = false;
-        const finish = uiPerformance.startWork('Mapper room matching');
-        const direction = data.source === 'text' ? undefined : takeMovementDirection();
-        try { processRoomInfo(data, alreadyConfirmed, direction); }
-        finally { finish(); }
+    const handleRoomInfo = useMapperRoomObservations(processRoomInfo,takeMovementDirection,hasGmcpRoomsRef,xmlConfirmedRef,xmlUnresolvedDirection,props.characterName);
+    const updates = useUpdateExitsHandler(props);
+    const terrain = useTerrainHandler(props);
+    const handleUpdateExits = (...args: Parameters<typeof updates.handleUpdateExits>) => {
+        if (locationState.current.confidence === 'confirmed') updates.handleUpdateExits(...args);
     };
-
-    const { handleUpdateExits } = useUpdateExitsHandler({
-        setRooms: props.setRooms,
-        currentRoomIdRef: props.currentRoomIdRef,
-        preloadedCoordsRef: props.preloadedCoordsRef,
-        serverIdIndexRef: props.serverIdIndexRef,
-        triggerRender: props.triggerRender
-    });
-
-    const { handleTerrain } = useTerrainHandler({
-        setRooms: props.setRooms,
-        currentRoomIdRef: props.currentRoomIdRef,
-        lastDetectedTerrainRef: props.lastDetectedTerrainRef
-    });
-
-    return { handleRoomInfo, handleUpdateExits, handleTerrain, pushPendingMove, handleMoveConfirmed };
+    const handleTerrain = (...args: Parameters<typeof terrain.handleTerrain>) => {
+        if (locationState.current.confidence === 'confirmed') terrain.handleTerrain(...args);
+    };
+    return {handleRoomInfo,handleUpdateExits,handleTerrain,pushPendingMove,handleMoveConfirmed,locationState};
 };

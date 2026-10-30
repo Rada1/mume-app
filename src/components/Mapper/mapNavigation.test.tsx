@@ -18,6 +18,8 @@ import { useRoomInfoHandler } from './hooks/useRoomInfoHandler';
 import { alignMappedRooms } from '../../hooks/useMapperRoomCoordinates';
 import { findClosestMatchingRoomPath, GRID_SIZE } from './mapperUtils';
 import type { MapperRoom } from './mapperTypes';
+import type { MapperPreloadedRoom } from '../../types';
+import { createRoomLocationState, resetRoomLocation, locateRoomObservation } from './roomLocationMachine';
 
 // --- Logic Section ---
 let map: MapData;
@@ -31,6 +33,16 @@ beforeAll(async () => {
 afterEach(cleanup);
 
 describe('reported rooms in the bundled MMapper map', () => {
+    it('reacquires the actual Halls of the Morruhk after death without a server room ID', () => {
+        const index = map.names.indexOf('Halls of the Morruhk');
+        expect(index).toBeGreaterThanOrEqual(0);
+        const raw = String(map.extId[index]), room = tuples[raw] as MapperPreloadedRoom;
+        const state = createRoomLocationState(); resetRoomLocation(state);
+        const match = locateRoomObservation({roomsRef:{current:{}},preloadedCoordsRef:{current:tuples as Record<string, MapperPreloadedRoom>},
+            serverIdIndexRef:{current:{}}},state,{id:0,name:'Halls of the Morruhk',desc:String(room[17]),exits:{u:1}},'m_8437',null);
+        expect(match.id).toBe(`m_${raw}`);
+        expect(state.confidence).toBe('confirmed');
+    });
     it('follows live server room IDs through an entirely unvisited route', () => {
         const shop = idFor(names[0]);
         const meadow = idFor(names[1]);

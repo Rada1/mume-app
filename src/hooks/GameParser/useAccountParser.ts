@@ -58,6 +58,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
 
     // --- State for Automated Gathering ---
     const isSilentListingRef = useRef(false);
+    const characterListDirtyRef = useRef(false);
     const hasSentGameEntrySetupRef = useRef(false);
 
     // --- Char Data Capture (info/practice/link/lag/time in account mode) ---
@@ -78,6 +79,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
     const parseAccountLine = useCallback((line: string, isPrompt: boolean = false): boolean => {
         const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '');
         const trimmedLine = cleanLine.trim();
+        if (accountStageRef.current === 'character-creation' || accountStageRef.current === 'stat-editing') {
+            characterListDirtyRef.current = true;
+        }
 
         if (!trimmedLine) {
             if (isSilentListingRef.current) return true;
@@ -91,6 +95,7 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
         const numberedCreationOption = trimmedLine.match(/^\s*\((\d{1,3})\)\s+(.+)$/);
         if (gameStateRef.current === 'account' && numberedCreationOption
             && accountStageRef.current !== 'stat-editing') {
+            characterListDirtyRef.current = true;
             const [, id, label] = numberedCreationOption;
             accountStageRef.current = 'character-creation';
             setAccountState(prev => {
@@ -224,8 +229,9 @@ export function useAccountParser({ accountState, setAccountState, accountStageRe
             setIsPasswordMode(false);
             setGameState('account');
 
-            if (isMobileRef.current) {
-                if (charsRef.current.length === 0) {
+            if (isMobileRef.current || characterListDirtyRef.current) {
+                if (charsRef.current.length === 0 || characterListDirtyRef.current) {
+                    characterListDirtyRef.current = false;
                     isSilentListingRef.current = true;
                     setAccountState(prev => ({ ...prev, selectedMenuCommand: 'play', characters: [], selectedCharacter: null, charSelectTab: null, isGathering: true }));
                     setTimeout(() => executeCommandRef.current?.('list', true), 50);

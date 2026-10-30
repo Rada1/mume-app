@@ -78,6 +78,8 @@ To maintain UI precision and prevent "highlight sprawl," the text parsing pipeli
 
 ## Map Annotation Overrides
 
+Mapper location matching is a headless candidate state machine under `src/components/Mapper/roomLocationMachine.ts`, with shared indexed room evidence and comparison modules. Location confidence is independent of movement queue ownership. Death and session/character boundaries invalidate confidence; ambiguous observations retain candidates instead of committing coordinate guesses. Only confirmed identities may update room data. See `docs/mapper-movement-correlation.md` for the MMapper reference and protocol adaptation.
+
 Marker editing uses `useMapMarkerEditor.ts` with a thin `MapMarkerManager.tsx` view. Persist deletion tombstones separately so bundled text markers cannot resurrect after reload. Room flag edits use `MapperRoom.mapFlagsEdited` to make local selections, including empty arrays, authoritative over imported flags. Preserve this field during room updates, honor it in both renderers, and invalidate cached room icons when an explicit selection changes. See `docs/map-annotations.md`.
 
 Room Info owns attribute editing in play mode; `mapAttributesEdited` records overrides per field. Marker clicks open the marker editor directly, while room context menus expose room actions.

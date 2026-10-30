@@ -232,7 +232,8 @@ export class AudioManager {
                     ? settings.uiVolume
                     : settings.sfxVolume);
         const subVolume = Math.pow(channelVolume, 2);
-        return baseVolume * master * subVolume * SHARED_AUDIO_OUTPUT_GAIN;
+        const gameEffects = isDrum ? Math.pow(settings.sfxVolume, 2) : 1;
+        return baseVolume * master * subVolume * gameEffects * SHARED_AUDIO_OUTPUT_GAIN;
     }
 
     private getHealthDrumVolume(): number {
@@ -638,7 +639,7 @@ export class AudioManager {
         this.healthPercent = Math.max(0, Math.min(100, healthPercent));
         this.isHealthMixActive = isActive;
         this.healthDrumProgress = isActive
-            ? Math.max(0, Math.min(1, (70 - this.healthPercent) / 40))
+            ? Math.max(0, Math.min(1, (51 - this.healthPercent) / 21))
             : 0;
         if (!isActive) this.drumStartRequestId += 1;
 

@@ -7,6 +7,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMapper } from '../context/useMapper';
 import type { GmcpOccupant, PracticeData, PracticeSkill } from '../types';
 import { getGuildClassFromFlags } from '../utils/practiceClassCatalog';
+import { hasRoamingGuildmaster } from '../utils/roamingGuildmasters';
+import { useVitalsStore } from '../stores/useVitalsStore';
 
 type PracticeCommand = (command: string, silent?: boolean, hideInHistory?: boolean, skipHistory?: boolean, system?: boolean) => void;
 
@@ -21,6 +23,7 @@ export const useGuildPracticeActions = (
     requestOnOpen = true
 ) => {
     const mapper = useMapper();
+    const subrace = useVitalsStore(state => state.characterInfo.subrace);
     const roomKey = String(roomNum ?? mapper.currentRoomId ?? '');
     const mapRoomKey = mapper.currentRoomId || '';
     const roomIdVnum = mapRoomKey.replace(/^m_/, '');
@@ -31,7 +34,7 @@ export const useGuildPracticeActions = (
         ...(preloadedRoom?.[7] || []), ...(mapRoom?.mobFlags || []),
         ...(preloadedRoom?.[8] || []), ...(mapRoom?.loadFlags || [])
     ]);
-    const hasGuildmaster = detectedGuildmaster || Boolean(guildClass) || roomNpcs.some(npc => /guild\s?master/i.test(npc.name || ''));
+    const hasGuildmaster = detectedGuildmaster || Boolean(guildClass) || hasRoamingGuildmaster(roomNpcs, subrace) || roomNpcs.some(npc => /guild\s?master/i.test(npc.name || ''));
     const requestKey = isPlaying && hasGuildmaster && requestOnOpen ? roomKey : null;
     const requestedRoomRef = useRef<string | null>(null);
     const previousDataRef = useRef<PracticeData | null | undefined>(null);

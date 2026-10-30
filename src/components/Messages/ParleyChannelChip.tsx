@@ -3,7 +3,7 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { MessageCircle } from 'lucide-react';
 import type { ParleyChannelChipProps } from '../../types/commandChat';
-import { CHAT_PARLEY_CHANNELS, getChatChannelColor } from '../../utils/chatWindowUtils';
+import { getChatChannelColor } from '../../utils/chatWindowUtils';
 import { useParleyChannelMenu, isDirectedParleyChannel } from '../../hooks/useParleyChannelMenu';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import { getInlineGlowColor } from '../../utils/inlineActionModel';
@@ -36,16 +36,16 @@ export const ParleyChannelChip: React.FC<ParleyChannelChipProps> = props => {
                         style={{ color: getInlineGlowColor(entry.category, settings.inlineCategories, { player:settings.playerColor, ally:settings.playerColor, npc:settings.npcColor, enemy:settings.enemyColor, neutral:settings.neutralColor }, settings.theme) }} title={entry.label}>{entry.label}</button>)}
                     {!menu.recipients.length && <p>No recipients available.</p>}
                 </> : <>
-                {CHAT_PARLEY_CHANNELS.filter(channel => channel !== 'group').map(channel => <button type="button" key={channel}
+                {menu.orderedChannels.map(channel => <button type="button" key={channel}
                     aria-pressed={props.command === channel}
-                    className={['whisper', 'yell', 'narrate', 'pray'].includes(channel) ? 'parley-channel-group-start' : undefined}
+                    className={!viewport?.isMobile && ['whisper', 'yell', 'narrate', 'pray'].includes(channel) ? 'parley-channel-group-start' : undefined}
                     data-channel={channel}
                     onClick={() => isDirectedParleyChannel(channel) ? menu.previewChannel(channel) : menu.choose(channel)}>
                     <span style={{ color: getChatChannelColor(channel) }}>{channel}</span>{isDirectedParleyChannel(channel) && <span aria-hidden="true">›</span>}
                 </button>)}
                 </>}
             </section>
-            <ParleyHistory onClose={menu.close} onReply={reply => { menu.clearPreview(); props.onChoose(reply.command, reply.target); }} style={mobileBounds?.landscape ? mobileBounds.history : undefined} />
+            <ParleyHistory onClose={menu.close} onReply={reply => { menu.clearPreview(); menu.choose(reply.command, reply.target); }} style={mobileBounds?.landscape ? mobileBounds.history : undefined} />
         </div>, document.body)}
     </>;
 };

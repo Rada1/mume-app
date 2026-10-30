@@ -10,6 +10,7 @@ interface ActiveHold<T> {
     startY: number;
     timer: number;
     activated: boolean;
+    element: HTMLElement;
     cleanupTracking: () => void;
 }
 
@@ -28,6 +29,7 @@ export const usePressAndHold = <T,>(
         if (!activeHold || activeHold.pointerId !== pointerId) return;
         window.clearTimeout(activeHold.timer);
         activeHold.cleanupTracking();
+        delete activeHold.element.dataset.activeMovementHold;
         activeHoldRef.current = null;
         if (!activeHold.activated) return;
         if (!canceled) suppressedClickRef.current = activeHold.value;
@@ -45,6 +47,8 @@ export const usePressAndHold = <T,>(
     }, []);
 
     const onPointerDown = useCallback((value: T, event: ReactPointerEvent<HTMLElement>) => {
+        // A new gesture cannot produce the click belonging to an earlier hold.
+        suppressedClickRef.current = null;
         if (!enabled || !['touch', 'pen'].includes(event.pointerType) || event.button !== 0 || activeHoldRef.current) return;
         const activeHold: ActiveHold<T> = {
             value,
@@ -53,6 +57,7 @@ export const usePressAndHold = <T,>(
             startY:event.clientY,
             timer:0,
             activated:false,
+            element:event.currentTarget,
             cleanupTracking:() => undefined
         };
         const handleMove = (pointerEvent: PointerEvent) => cancelMovedHold(pointerEvent.pointerId, pointerEvent.clientX, pointerEvent.clientY);
@@ -69,6 +74,7 @@ export const usePressAndHold = <T,>(
         activeHold.timer = window.setTimeout(() => {
             if (activeHoldRef.current !== activeHold) return;
             activeHold.activated = true;
+            activeHold.element.dataset.activeMovementHold = 'true';
             onHold(value);
         }, delayMs);
     }, [cancelMovedHold, delayMs, enabled, finishPointer, onHold]);
@@ -93,6 +99,7 @@ export const usePressAndHold = <T,>(
         if (activeHoldRef.current) {
             window.clearTimeout(activeHoldRef.current.timer);
             activeHoldRef.current.cleanupTracking();
+            delete activeHoldRef.current.element.dataset.activeMovementHold;
         }
         activeHoldRef.current = null;
     }, []);

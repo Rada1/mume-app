@@ -5,12 +5,14 @@ import { BedDouble, Coins, Compass, Store } from 'lucide-react';
 import { useKillPromptStore } from '../../stores/useKillPromptStore';
 import { useActiveRoom } from '../../stores/useActiveGameState';
 import { useModeStore } from '../../stores/useModeStore';
+import { useVitalsStore } from '../../stores/useVitalsStore';
 import { useUIStore } from '../../stores/useUIStore';
 import { useCommandPanelStore } from '../../stores/useCommandPanelStore';
 import { useGearPanelStore } from '../../stores/useGearPanelStore';
 import { useMapper } from '../../context/MapperContext';
 import { getShopRoomLabel } from '../../utils/shopRoomUtils';
 import { getGuildClassFromFlags } from '../../utils/practiceClassCatalog';
+import { hasRoamingGuildmaster } from '../../utils/roamingGuildmasters';
 import { getRoomCorpseTargetSuggestions } from '../../objects/roomTargetSuggestions';
 import { getCorpseCommandKeyword } from '../../objects/objectTargetModel';
 import { getMountTargetSuggestions } from '../../utils/commandSuggestionUtils';
@@ -48,6 +50,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
     isMobile, executeCommand, roomNpcs, parser, triggerHaptic
 }) => {
     const mapper = useMapper();
+    const subrace = useVitalsStore(state => state.characterInfo.subrace);
     const setIsShopOpen = useUIStore(state => state.setIsShopOpen);
     const activeRoom = useActiveRoom();
     const roomNum = activeRoom.roomNum;
@@ -92,7 +95,7 @@ export const RoomLootQueue: React.FC<RoomLootQueueProps> = ({
         ].map(flag => String(flag).toUpperCase());
     }, [mapper.currentRoomId, mapper.preloadedCoordsRef, mapper.renderVersion, mapper.rooms]);
     const hasRentService = roomFlags.includes('RENT');
-    const hasGuildService = roomFlags.includes('GUILD') || Boolean(getGuildClassFromFlags(roomFlags));
+    const hasGuildService = roomFlags.includes('GUILD') || Boolean(getGuildClassFromFlags(roomFlags)) || hasRoamingGuildmaster(roomNpcs, subrace);
     const [isOpen, setIsOpen] = React.useState(false);
     const lootTriggerRef = React.useRef<HTMLButtonElement | null>(null);
     const [mobilePanelPosition, setMobilePanelPosition] = React.useState({ top: 0, right: 8 });

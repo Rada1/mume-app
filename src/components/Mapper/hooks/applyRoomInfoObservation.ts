@@ -7,14 +7,16 @@ import { mergeExitDoorState } from './exitDoorState';
 import { normalizeMapRoomFlag } from '../../../utils/mapRoomFlags';
 import type { MapperRoomInfoProps } from '../../../types';
 import type { resolveMovingRoom } from './resolveMovingRoom';
+import { observedRoomName } from '../roomObservationMatch';
 
 // --- Observation updates ---
 export function applyRoomInfoObservation(props: MapperRoomInfoProps, data: GmcpRoomInfo, resolved: ReturnType<typeof resolveMovingRoom> & { predX: number; predY: number; predZ: number }) {
     const { roomsRef, preloadedCoordsRef, serverIdIndexRef, discoverySourceRef, lastDetectedTerrainRef, baseMapExitsRef, mapEditMode, onRoomInfoProcessed } = props;
     const { gmcpId, gmcpName, targetId, ghostData, matchedInternalId, discoverySource, isSpectateUpdate, isTextRoomEvent, isScoutObservation, activeRoomId, currentActiveRoom, now, dirUsed, isVnumZero, isLikelyMove, predX, predY, predZ } = resolved;
-    const name = stripAnsi(data.name) || 'Unknown Room';
-    const desc = data.desc || '';
-    let zone = data.area || data.zone || (ghostData ? ghostData[9] : 'Unknown Zone');
+    const previous = targetId ? roomsRef.current[targetId] : undefined;
+    const name = observedRoomName(data) ? stripAnsi(data.name) : previous?.name || ghostData?.[5] || 'Unknown Room';
+    const desc = data.desc || previous?.desc || String(ghostData?.[17] || '');
+    let zone = data.area || data.zone || previous?.zone || (ghostData ? ghostData[9] : 'Unknown Zone');
     const freshTerrain = normalizeTerrain(data.terrain || data.environment || null);
     const questFlags = data.room_quest_flags || [];
     const details = data.details || [];
@@ -106,10 +108,15 @@ export function applyRoomInfoObservation(props: MapperRoomInfoProps, data: GmcpR
         const mSundeath = mData ? (Array.isArray(mData) ? mData[11] : mData.sundeath) : undefined;
 
         const newRoom: MapperRoom = {
-            id: targetId!, gmcpId: Number(gmcpId) || 0, name, desc,
+            id: targetId!, gmcpId: Number(gmcpId) || Number(ghostData?.[6]) || 0, name, desc,
             x: nx, y: ny, z: nz,
-            zone, terrain: freshTerrain || lastDetectedTerrainRef.current || 'Unknown Terrain',
-            exits: {}, notes: "",
+            zone, terrain: freshTerrain || normalizeTerrain(ghostData?.[3] ?? null) || lastDetectedTerrainRef.current || 'Unknown Terrain',
+            exits: Object.fromEntries(Object.entries(ghostData?.[4] || {}).map(([dir,exit]) => [dir,{
+                target:getExitTargetId(exit) ? `m_${getExitTargetId(exit).replace(/^m_/, '')}` : '',closed:false,
+                hasDoor:typeof exit === 'object' && exit.hasDoor,flags:typeof exit === 'object' ? exit.flags : [],
+                doorFlags:typeof exit === 'object' ? exit.doorFlags : [],
+                targets:typeof exit === 'object' ? exit.targets?.map(id => `m_${String(id).replace(/^m_/, '')}`) : undefined
+            }])), notes: "",
             mobFlags: Array.from(new Set(ghostData ? ghostData[7] : [])),
             loadFlags: Array.from(new Set(ghostData ? ghostData[8] : [])),
             roomQuestFlags: questFlags,
@@ -132,10 +139,10 @@ export function applyRoomInfoObservation(props: MapperRoomInfoProps, data: GmcpR
         }
     } else {
         const finalTerrain = (data.terrain || data.environment) ? normalizeTerrain(data.terrain || data.environment) : existingRoom.terrain;
-        const sourceMobFlags: string[] = existingRoom.mapFlagsEdited ? existingRoom.mobFlags || [] : ghostData ? ghostData[7] : existingRoom.mobFlags || [];
+        const sourceMobFlags: string[] = existingRoom.mapFlagsEdited ? existingRoom.mobFlags || [] : ghostData ? ghostData[7] || [] : existingRoom.mobFlags || [];
         const newMobFlags = existingRoom.mapAttributesEdited?.includes('light')
             ? sourceMobFlags.filter(flag => !['DARK', 'NOLIGHT'].includes(normalizeMapRoomFlag(flag))) : sourceMobFlags;
-        const newLoadFlags = existingRoom.mapFlagsEdited ? existingRoom.loadFlags || [] : ghostData ? ghostData[8] : existingRoom.loadFlags || [];
+        const newLoadFlags = existingRoom.mapFlagsEdited ? existingRoom.loadFlags || [] : ghostData ? ghostData[8] || [] : existingRoom.loadFlags || [];
         const newRoomQuestFlags = questFlags.length > 0 ? questFlags : existingRoom.roomQuestFlags || [];
         const newDetails = details.length > 0 ? details : existingRoom.details;
 
@@ -148,8 +155,8 @@ export function applyRoomInfoObservation(props: MapperRoomInfoProps, data: GmcpR
         const arraysDiffer = (a: readonly unknown[], b: readonly unknown[]) => a.length !== b.length || a.some((v, i) => v !== b[i]);
 
         const isDark = isVnumZero;
-        const needsUpdate = !isDark && (
-            existingRoom.gmcpId !== gmcpIdNumber ||
+        const needsUpdate = (
+            (!isDark && existingRoom.gmcpId !== gmcpIdNumber) ||
             existingRoom.terrain !== finalTerrain ||
             existingRoom.name !== name ||
             existingRoom.desc !== desc ||

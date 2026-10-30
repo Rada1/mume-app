@@ -34,6 +34,8 @@ export interface MapperRoom {
 }
 
 export interface MapperExit {
+    /** Multiple possible destinations are location candidates, never a safe walk step. */
+    targets?: string[];
     /** Local exit/door flag selection overrides imported flag metadata. */
     mapFlagsEdited?: boolean;
     target: string;
@@ -47,6 +49,7 @@ export interface MapperExit {
 }
 
 export interface CompactMapExit {
+    targets?: string[];
     target: string;
     hasDoor: boolean;
     doorName?: string;

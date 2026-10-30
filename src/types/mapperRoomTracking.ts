@@ -1,6 +1,6 @@
 /** @file Shared inputs for mapper arrival matching and room observation updates. */
 import type React from 'react';
-import type { MapperRoom } from '../components/Mapper/mapperTypes';
+import type { MapperRoom, MapperPrediction } from '../components/Mapper/mapperTypes';
 // --- Tracking contracts ---
 export type MapperPreloadedExit = string | number | {
     target?: string | number;
@@ -10,6 +10,7 @@ export type MapperPreloadedExit = string | number | {
     to_vnum?: string | number;
     hasDoor?: boolean;
     flags?: string[];
+    doorFlags?: string[];
 };
 export type MapperPreloadedRoom = [
     number, number, number, string | number,
@@ -46,6 +47,8 @@ export interface MapperRoomInfoProps {
     setDeathRoomId?: (val: string | null) => void;
     baseMapExitsRef?: React.MutableRefObject<Record<string, MapperPreloadedRoom | { light?: string | number; sundeath?: number }>>;
     activeView: string;
+    characterName?: string | null;
+    clientPredictionsRef?: React.MutableRefObject<MapperPrediction[]>;
     // When false (default / "play mode"), the mapper only TRACKS position against the
     // preloaded base map and never fabricates a brand-new room. When true ("map edit
     // mode"), unmatched room events may create new rooms/exits for manual mapping.

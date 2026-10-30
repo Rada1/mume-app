@@ -25,7 +25,9 @@ export function useMapperMovementEvents(onMissingRoom: (direction: string) => vo
         });
         const offDisconnect = gmcpBus.on('Connection.Disconnect', reset);
         const offSession = gmcpBus.on('Session.Reset', reset);
-        return () => { offMove(); offDisconnect(); offSession(); reset(); };
+        const offStart = gmcpBus.on('Session.Start', reset);
+        const offDeath = gmcpBus.on('Game.PlayerDeath', () => { pending.current = null; });
+        return () => { offMove(); offDisconnect(); offSession(); offStart(); offDeath(); reset(); };
     }, [active]);
 
     return () => {

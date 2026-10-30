@@ -36,7 +36,7 @@ export const tileContainsCommand = (tile: typeof MOBILE_COMMAND_TILES[number], b
  const verb=button.command.trim().split(/\s+/)[0].toLowerCase();
  if (['pick','recover'].includes(verb)) return tile.id === 'thief';
  if (section === 'Corpses' && ['butcher','drain'].includes(verb)) return tile.id === 'consume';
- const gear=['get','take','drop','give','put','wear','remove','wield','hold','fill','empty'].includes(verb);
+ const gear=['get','take','drop','give','put','wear','remove','wield','hold','draw','sheath','fill','empty'].includes(verb);
  const consume=['eat','drink','taste','sip','quaff','pour'].includes(verb);
  if (tile.id === 'gear') return gear && tile.sections.includes(section);
  if (tile.id === 'consume') return consume && tile.sections.includes(section);

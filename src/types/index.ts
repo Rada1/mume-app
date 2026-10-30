@@ -41,3 +41,4 @@ export type { ClientPanelStackId, ClientPanelStackWeights, ClientPanelStackHeigh
 
 export * from './telnet';
 export * from './mapperRoomTracking';
+export * from './mapperLocation';

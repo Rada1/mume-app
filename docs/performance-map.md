@@ -77,7 +77,8 @@ placement. Exit connectors use MMapper's direction-specific endpoint geometry,
 with a segmented middle span and filled direction triangles at 50% opacity.
 One-way links show an arrow at the destination; two-way links show arrows at
 both ends. Cross-floor links appear from either connected floor at the same
-opacity.
+opacity. Up/down icons do not emit additional connectors; the shared
+MMapper connection builder owns those links.
 The live current-room overlay keeps bundled exits that are absent from
 partial GMCP updates, and an exit remains visually open even if its destination
 is not in the loaded map. User and region label changes use a

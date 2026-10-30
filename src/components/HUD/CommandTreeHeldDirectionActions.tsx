@@ -13,9 +13,11 @@ import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActiva
 import { EXIT_BUTTONS } from '../../constants/buttons/doors';
 import { COMMAND_TREE_OBSERVATION_BUTTONS } from '../../utils/commandTreeObservation';
 import { isCommandTreeCallAction } from '../../utils/commandTreeAccess';
+import { createButton } from '../../utils/buttonFactory';
 
 // --- Held Direction Actions Section ---
 const DIRECTION_LABELS: Record<string, string> = {n:'North', s:'South', e:'East', w:'West', u:'Up', d:'Down'};
+const SAY_OPEN = createButton({id:'held-direction-say-open', label:'Say open', command:'say open', setId:'trait-door-actions'});
 
 export const CommandTreeHeldDirectionActions = ({controller, tree, direction, onCommandExecuted}: {
     controller: ReturnType<typeof useCommandTreeController>;
@@ -31,14 +33,16 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction, on
             && !isCommandTreeMoveAction(button) && !/^flee(?:\s|$)/i.test(button.command.trim())),
         ...directionalObservationButtons
     ];
-    const doorButtons = (tree.grouped[1]?.buttons ?? []).filter(button => tree.sectionFor(button) === 'Doors');
+    const hasDoor = controller.entries.some(entry => entry.category === 'cat-exit' && entry.hasDoor === true
+        && normalizeExitKey(entry.keyword || entry.context.replace(/^exit\s+/i, '')) === normalizeExitKey(direction));
+    const doorButtons = [...(tree.grouped[1]?.buttons ?? []).filter(button => tree.sectionFor(button) === 'Doors'), ...(hasDoor ? [SAY_OPEN] : [])];
     const sections = [{label:'Movement',buttons:movementButtons},{label:'Doors',buttons:doorButtons}]
         .filter(section => section.buttons.length > 0);
     const movementDisabled = controller.game.gameState !== 'playing' || controller.game.isSpectateMode;
     const targetForDirection = (button: CustomButton): CommandActionTargetEntry | undefined => {
         const matchesDirection = (entry: CommandActionTargetEntry) => entry.category === 'cat-exit'
             && normalizeExitKey(entry.keyword || entry.context.replace(/^exit\s+/i, '')) === normalizeExitKey(direction);
-        if (isCommandTreeCallAction(button)) {
+        if (isCommandTreeCallAction(button) || button.id === SAY_OPEN.id) {
             return controller.entries.find(entry => matchesDirection(entry) && entry.hasDoor === true);
         }
         return (tree.targetsFor(button) ?? []).find(matchesDirection);
@@ -46,7 +50,10 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction, on
     const execute = (button: CustomButton, target: CommandActionTargetEntry | undefined, event: React.MouseEvent<HTMLButtonElement>) => {
         const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
         const normalizedDirection = normalizeExitKey(direction);
-        if (verb === 'look' || verb === 'scout') {
+        if (button.id === SAY_OPEN.id) {
+            if (controller.isHelpMode) controller.executeHelp('say open', button.label);
+            else { controller.game.executeCommand('say open'); controller.game.setCommandPreview?.(null); }
+        } else if (verb === 'look' || verb === 'scout') {
             const command = `${verb} ${normalizedDirection}`;
             if (controller.isHelpMode) controller.executeHelp(command, button.label);
             else {
@@ -83,7 +90,7 @@ export const CommandTreeHeldDirectionActions = ({controller, tree, direction, on
                     const disabled = section.label === 'Movement'
                         ? movementDisabled || (verb === 'scout' && !target)
                         : !target;
-                    const command = isCommandTreeCallAction(button) ? 'call' : verb === 'look' || verb === 'scout' ? `${verb} ${normalizeExitKey(direction)}`
+                    const command = button.id === SAY_OPEN.id ? 'say open' : isCommandTreeCallAction(button) ? 'call' : verb === 'look' || verb === 'scout' ? `${verb} ${normalizeExitKey(direction)}`
                         : section.label === 'Movement' ? direction
                         : `${verb} exit ${normalizeExitKey(direction)}`;
                     return <button type="button" key={button.id} className="command-tree-row" data-menu-item="true"

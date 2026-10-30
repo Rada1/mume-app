@@ -93,17 +93,19 @@ export const getMeatTargetSuggestions = (inventoryLines: DrawerLine[]): CommandT
         && /\b(?:meat|mutton)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)
         && !/\b(?:cooked|roasted|fried)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`)), 'inventory');
 
+export const isDrawBow = (line: DrawerLine): boolean =>
+    /\b(?:crossbow|longbow|shortbow|bow)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`);
+
 export const getDrawTargetSuggestions = (
     inventoryLines: DrawerLine[],
     wornLines: DrawerLine[]
 ): CommandTargetSuggestion[] => {
-    const inventoryWeapons = inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon'));
+    const inventoryWeapons = inventoryLines.filter(line => hasObjectTrait(line, 'trait-weapon') || isDrawBow(line));
     const wornDrawItems = wornLines.filter(line => {
         const wornSlot = line.prefix?.replace(/[<>]/g, '').trim().toLowerCase().replace(/\s+/g, ' ') || '';
         if (/^(?:wielded|held(?: in weapon hand)?)$/.test(wornSlot)) return false;
         if (hasObjectTrait(line, 'trait-sheath')) return true;
-        const isWornAcrossBack = /^worn across(?: the)? back$/.test(wornSlot);
-        return isWornAcrossBack && /\b(?:(?:cross|long|short)?bow)\b/i.test(`${line.text} ${line.rawText || ''} ${line.context || ''}`);
+        return isDrawBow(line);
     });
     return getInventoryAndWornTargetSuggestions(inventoryWeapons, wornDrawItems);
 };

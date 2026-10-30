@@ -35,7 +35,7 @@ export const getCommandTreeSection = (button: CustomButton) => {
   if (classify(button) === 3) {
    if (/corpse/i.test(button.setId)) return 'Corpses';
    if (['buy','sell','value','mend','list'].includes(verb)) return 'Shop';
-   if (['wear','wield','hold','remove','get','take','put','give','drop','pour','fill','empty'].includes(verb)) return 'Move';
+   if (['wear','wield','hold','remove','draw','sheath','get','take','put','give','drop','pour','fill','empty'].includes(verb)) return 'Move';
    if (verb === 'camp' || ['light','snuff','cover','uncover'].includes(verb)) return 'Modify';
    return 'Use';
   }

@@ -19,10 +19,13 @@
 
     .is-mobile.is-landscape .mobile-account-create.has-context:not(.is-stat-editing) {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-        align-items: start;
-        gap: 24px;
-        width: min(100%, 900px);
+        flex: 1 1 auto;
+        grid-template-columns: minmax(0, 1fr) minmax(0, clamp(210px, 28vw, 300px));
+        grid-template-rows: minmax(0, 1fr);
+        align-items: stretch;
+        gap: 16px;
+        width: 100%;
+        overflow: hidden;
     }
 
     .is-mobile.is-landscape .mobile-account-create-overview {
@@ -31,6 +34,11 @@
         gap: 12px;
         min-width: 0;
         min-height: 0;
+    }
+
+    .is-mobile.is-landscape .mobile-account-create.has-context:not(.is-stat-editing) :is(.mobile-account-create-overview, .cmd-action-panel) {
+        overflow-y: auto;
+        overscroll-behavior: contain;
     }
 
     .is-mobile.is-landscape .mobile-account-create-context {
@@ -94,11 +102,12 @@
     /* --- Vertical Stats with a Visible Footer --- */
     .is-mobile.is-landscape .mobile-account-create.is-stat-editing {
         flex: 1 1 auto;
+        width: 100%;
         overflow: hidden;
         gap: 10px;
     }
 
-    .is-mobile.is-landscape .mobile-account-create.is-stat-editing:not(.has-context) .mobile-account-create-overview {
+    .is-mobile.is-landscape .mobile-account-create.is-stat-editing .mobile-account-create-overview {
         display: none;
     }
 

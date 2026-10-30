@@ -21,15 +21,16 @@ function exitsForRoom(map: MapData, room: number): Record<string, CompactMapExit
     const slot = room * DIR_COUNT + dir;
     const start = map.outStart[slot]!;
     const end = map.outStart[slot + 1]!;
-    // Like MMapper's shortestPathSearch, a random exit has no safe walk direction.
-    if (end - start !== 1) continue;
-    const targetRoom = map.outTo[start]!;
     const exitFlags = map.exitFlags[slot]!;
+    if (end === start && !(exitFlags & EXIT_FLAG.EXIT)) continue;
+    const targets = Array.from(map.outTo.subarray(start, end), target => String(map.extId[target]));
     const doorFlags = map.doorFlags[slot]!;
     const doorName = map.doorNames.get(slot);
     const direction = dir === 6 ? 'out' : DIR_NAMES[dir]!;
     exits[direction] = {
-      target: String(map.extId[targetRoom]),
+      // Preserve uncertain topology for matching, but expose no single walk target.
+      target: targets.length === 1 ? targets[0]! : '',
+      ...(targets.length > 1 ? {targets} : {}),
       hasDoor: (exitFlags & EXIT_FLAG.DOOR) !== 0 || doorFlags !== 0 || !!doorName,
       doorName,
       flags: Object.entries(EXIT_FLAG)

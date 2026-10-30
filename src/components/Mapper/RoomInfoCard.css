@@ -38,6 +38,8 @@
     padding-bottom: 7px;
     border-bottom: 1px solid var(--room-info-border);
 }
+.room-info-card-header.is-draggable { cursor: grab; user-select: none; }
+.room-info-card-header.is-draggable:active { cursor: grabbing; }
 
 .room-info-card-header h3 {
     color: var(--room-info-accent) !important;

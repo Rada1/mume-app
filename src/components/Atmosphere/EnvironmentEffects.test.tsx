@@ -59,6 +59,8 @@ describe('EnvironmentEffects immersion background', () => {
             zone: 'Shire'
         };
         const { container, rerender } = render(<EnvironmentEffects {...props} />);
+        expect(document.body.querySelector('.client-death-background')?.parentElement).toBe(document.body);
+        expect(container.querySelector('.client-death-background')).toBeNull();
 
         const imageLayer = container.querySelector('.background-layer');
         expect(imageLayer).not.toBeNull();

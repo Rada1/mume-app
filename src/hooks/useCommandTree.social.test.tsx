@@ -9,12 +9,32 @@ import type {CommandActionTargetEntry} from '../objects/commandActionTargetModel
 import {SOCIAL_BUTTONS} from '../constants/buttons/socials';
 import {COMMAND_TREE_SOCIAL_BUTTON,COMMAND_TREE_SOCIAL_THEMES,isCommandTreeSocial} from '../utils/commandTreeSocial';
 import {CommandTreeSocialTargets} from '../components/HUD/CommandTreeSocialTargets';
+import {useMobileCommandTilesStore} from '../stores/useMobileCommandTilesStore';
 
 vi.mock('./useRoomDrinkWater',()=>({useRoomDrinkWater:()=>false}));
 vi.mock('./useGearPanelData',()=>({useGearPanelData:()=>({status:{skills:'ready'}})}));
 vi.mock('./useCommandTreeAutomaticTarget',()=>({useCommandTreeAutomaticTarget:()=>null}));
 vi.mock('../components/HUD/CommandTreeAction',()=>({CommandTreeAction:({targetLabel,button}:{targetLabel?:string;button:{command:string}})=><button type="button" data-social-target="true">{`${button.command}|${targetLabel}`}</button>}));
 afterEach(cleanup);
+
+it('moves executed mobile socials to the top of their theme and keeps character histories separate',()=>{
+ useMobileCommandTilesStore.setState({socialRecent:{}});
+ const controller={game:{characterName:'RecentTester',gameState:'playing',viewport:{isMobile:true},executeCommand:vi.fn(),initAudio:vi.fn(),isSoundEnabled:false},entries:[]} as unknown as ReturnType<typeof useCommandTreeController>;
+ const view=render(<CommandTreeSocialTargets controller={controller} button={COMMAND_TREE_SOCIAL_BUTTON} targets={[]}/>);
+ fireEvent.click(screen.getByText('Happy'));
+ fireEvent.click(screen.getByText('Laugh'));
+ fireEvent.click(screen.getByText('No target'));
+ fireEvent.click(screen.getByText('Grin'));
+ fireEvent.click(screen.getByText('No target'));
+ const labels=()=>Array.from(screen.getByRole('group',{name:'Happy socials'}).querySelectorAll('button')).map(button=>button.textContent);
+ expect(labels().slice(0,2)).toEqual(['Grin‹','Laugh‹']);
+ view.unmount();
+ render(<CommandTreeSocialTargets controller={controller} button={COMMAND_TREE_SOCIAL_BUTTON} targets={[]}/>);
+ fireEvent.click(screen.getByText('Happy'));
+ expect(labels().slice(0,2)).toEqual(['Grin‹','Laugh‹']);
+ expect(useMobileCommandTilesStore.getState().socialRecent.recenttester).toEqual(['grin','laugh']);
+ expect(useMobileCommandTilesStore.getState().socialRecent.other).toBeUndefined();
+});
 
 it('replaces the flat social list with one Social command and themed columns',()=>{
  const npc:CommandActionTargetEntry={id:'npc',label:'Gandalf',keyword:'gandalf',context:'gandalf',category:'cat-ally',group:'players',scope:'room'};

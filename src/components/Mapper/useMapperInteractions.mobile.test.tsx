@@ -129,6 +129,27 @@ describe('desktop map target interactions', () => {
 });
 
 describe('mobile movement pad map gestures', () => {
+    it('keeps an activated direction hold through movement and a second touch on the map', () => {
+        vi.useFakeTimers();
+        try {
+            const map = mountMap(true, true, false, true);
+            touch(map.padButton, 'pointerdown', 1, 25, 25);
+            act(() => vi.advanceTimersByTime(120));
+            expect(map.padButton.dataset.activeMovementHold).toBe('true');
+            touch(map.padButton, 'pointermove', 1, 45, 25);
+            touch(map.canvas, 'pointerdown', 2, 75, 25);
+            touch(map.canvas, 'pointermove', 2, 100, 25);
+            touch(map.canvas, 'pointerup', 2, 100, 25);
+            expect(map.padButton.dataset.activeMovementHold).toBe('true');
+            expect(map.padButton.dataset.mapGesture).toBeUndefined();
+            expect(map.camera.current.x).toBe(0);
+            expect(map.camera.current.zoom).toBe(1);
+            touch(map.padButton, 'pointerup', 1, 45, 25);
+            expect(map.padButton.dataset.activeMovementHold).toBeUndefined();
+        } finally {
+            vi.useRealTimers();
+        }
+    });
     it('keeps a direction tap available and pans when the finger moves', () => {
         const map = mountMap(true, true, false, true);
         expect(touch(map.padButton, 'pointerdown', 1, 25, 25).defaultPrevented).toBe(false);

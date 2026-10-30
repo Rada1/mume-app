@@ -21,6 +21,7 @@ import { isCommandTreeSelfTarget } from '../utils/commandTreeTargetColor';
 import { useCommandTreeAutomaticTarget } from './useCommandTreeAutomaticTarget';
 import { createObjectTargetEntries, getGearObjectCandidates, getRoomObjectCandidates, hasObjectTrait } from '../objects/objectTargetModel';
 import { isCommandTreeSearchAction, getCommandTreeSearchTargets } from '../utils/commandTreeSearch';
+import { isDrawBow } from '../objects/gearTargetSuggestions';
 import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
 import type { CustomButton } from '../types';
 // --- Eligibility Snapshot Section ---
@@ -128,6 +129,17 @@ export const useCommandTreeEligibility = (
      && isButtonValidForEntity(variant, entry.id, entry.category, deps, entry.category, entry.label, allowedFor(entry))));
    targetCache.set(key, matches); return matches;
   }
+  if (/^draw\s+%n(?:\||\s|$)/i.test(button.command.trim())) {
+   const matches = controller.entries.filter(entry => {
+    if (!entry.gearRow || !['inventory','worn'].includes(entry.group)) return false;
+    const line = entry.gearRow.line;
+    const slot = (line.prefix || '').replace(/[<>]/g, '').trim().toLowerCase().replace(/\s+/g, ' ');
+    if (entry.group === 'worn' && /^(?:wielded|held(?: in weapon hand)?)$/.test(slot)) return false;
+    return isDrawBow(line) || (entry.group === 'worn' && hasObjectTrait(line, 'trait-sheath'))
+     || (entry.group === 'inventory' && hasObjectTrait(line, 'trait-weapon'));
+   });
+   targetCache.set(key, matches); return matches;
+  }
   if (/^whet\s+%n(?:\||\s|$)/i.test(button.command.trim())) {
    const variants = [button, ...(variantsByAction.get(key) || [])];
    const matches = controller.entries.filter(entry => {
@@ -228,6 +240,7 @@ export const useCommandTreeEligibility = (
  const isAvailable = (button: CustomButton) => {
   if (/^(?:light|snuff)\s+%n$/i.test(button.command.trim()) && !hasWornLantern(controller.ui.displayEqLines || [])) return false;
   const verb = button.command.trim().split(/\s+/)[0].toLowerCase();
+  if (verb === 'sheath' && !wornCandidates.some(candidate => hasObjectTrait(candidate.source, 'trait-sheath'))) return false;
   if (verb === 'whet' && !hasWornWhetstone()) return false;
   if (['wear', 'put', 'give', 'drop'].includes(verb)
    && !hasInventory) return false;

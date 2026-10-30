@@ -4,6 +4,7 @@ import { Pencil } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import type { RoomInfoCardProps } from '../../types';
 import { useRoomInfoCard } from '../../hooks/useRoomInfoCard';
+import { useRoomInfoDrag } from '../../hooks/useRoomInfoDrag';
 import { TERRAIN_MAP, stripAnsi } from './mapperUtils';
 import { RoomInfoFlags } from './RoomInfoFlags';
 import { RoomInfoExits } from './RoomInfoExits';
@@ -15,6 +16,12 @@ import './MapLandscapePanels.css';
 export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
     const {roomId, mode, onClose, cardRef, isDarkMode, onWalkStart, stopWalking, walkTargetId, isMobile = false} = props;
     const editor = useRoomInfoCard(props);
+    const drag = useRoomInfoDrag(cardRef, isMobile);
+    const anchorRef = React.useRef<HTMLDivElement>(null);
+    const [desktopBounds, setDesktopBounds] = React.useState<DOMRect | null>(null);
+    React.useLayoutEffect(() => {
+        if (!isMobile && anchorRef.current) setDesktopBounds(anchorRef.current.getBoundingClientRect());
+    }, [isMobile, roomId]);
     const {room, terrainLabel, updateRoom, updateNotes, editExit, noteBadges} = editor;
     if (!room) return null;
     const staticContents = room.contents || '';
@@ -23,14 +30,17 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
             ref={cardRef}
             className="mapper-room-info-panel"
             style={{
-                position: isMobile ? 'fixed' : 'absolute',
-                top: isMobile ? 'calc(env(safe-area-inset-top, 0px) + 56px)' : '80px',
+                position: 'fixed',
+                top: isMobile ? 'calc(env(safe-area-inset-top, 0px) + 56px)' : `${desktopBounds?.top ?? 0}px`,
                 bottom: isMobile
                     ? 'calc(var(--mobile-map-panel-height, 110px) + var(--mobile-bottom-reserved-space, 0px) + env(safe-area-inset-bottom, 0px) + 12px)'
-                    : '48px',
-                left: isMobile ? '12px' : '48px',
-                right: isMobile ? '12px' : '48px',
-                zIndex: isMobile ? 2147483647 : 100,
+                    : 'auto',
+                left: isMobile ? '12px' : `${desktopBounds?.left ?? 0}px`,
+                right: isMobile ? '12px' : 'auto',
+                width: isMobile ? undefined : `${desktopBounds?.width ?? 0}px`,
+                height: isMobile ? undefined : `${desktopBounds?.height ?? 0}px`,
+                visibility: !isMobile && !desktopBounds ? 'hidden' : undefined,
+                zIndex: isMobile ? 2147483647 : 65010,
                 backgroundColor: isMobile
                     ? (isDarkMode ? 'rgba(24, 24, 27, 0.96)' : 'rgba(245, 245, 247, 0.96)')
                     : (isDarkMode ? 'rgba(24, 24, 27, 0.4)' : 'rgba(245, 245, 247, 0.6)'),
@@ -40,10 +50,11 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
                 border: isDarkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
                 backdropFilter: 'blur(25px)', WebkitBackdropFilter: 'blur(25px)',
                 display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px',
-                overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y'
+                overflowY: 'auto', pointerEvents: 'auto', color: isDarkMode ? '#e4e4e7' : '#1d1d1f', touchAction: 'pan-y',
+                transform: !isMobile ? `translate(${drag.offset.x}px, ${drag.offset.y}px)` : undefined
             }}
         >
-            <div className="room-info-card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+            <div className={`room-info-card-header${isMobile ? '' : ' is-draggable'}`} onPointerDown={drag.onPointerDown} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                 <h3 style={{ margin: 0, color: '#ffcc00', fontSize: '18px', fontWeight: 'bold' }}>Room Info</h3>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {mode === 'play' && onWalkStart && (
@@ -165,9 +176,10 @@ export const RoomInfoCard: React.FC<RoomInfoCardProps> = (props) => {
         </div>
     );
 
-    if (isMobile && typeof document !== 'undefined') {
+    if (typeof document !== 'undefined') {
         const overlayRoot = document.querySelector('.app-container') ?? document.body;
-        return createPortal(card, overlayRoot);
+        return <>{!isMobile && <div ref={anchorRef} aria-hidden="true" style={{position:'absolute',top:80,bottom:48,left:48,right:48,pointerEvents:'none'}}/>}
+            {createPortal(card, overlayRoot)}</>;
     }
     return card;
 };

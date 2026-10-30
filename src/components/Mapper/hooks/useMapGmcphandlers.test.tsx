@@ -10,7 +10,7 @@ import { gmcpBus } from '../../../events/gmcpBus';
 // --- Logic Section ---
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 
-function setup(preloaded: Record<string, unknown[]> = {}) {
+function setup(preloaded: Record<string, unknown[]> = {}, names: Record<string, string[]> = {}) {
     return renderHook(() => {
         const roomsRef = useRef<Record<string, MapperRoom>>({
             m_1: room('1', 0, 0, { n: '2' }),
@@ -25,7 +25,7 @@ function setup(preloaded: Record<string, unknown[]> = {}) {
             roomsRef, currentRoomIdRef, pendingMovesRef,
             setRooms: () => {},
             setCurrentRoomId: id => { currentRoomIdRef.current = typeof id === 'function' ? id(currentRoomIdRef.current) : id; },
-            preloadedCoordsRef: useRef(preloaded), nameIndexRef: useRef({}), serverIdIndexRef: useRef({}),
+            preloadedCoordsRef: useRef(preloaded), nameIndexRef: useRef(names), serverIdIndexRef: useRef({}),
             discoverySourceRef: useRef(null), exploredRef: useRef(new Set<string>()), setExploredVnums: () => {},
             lastDetectedTerrainRef: useRef(null), firstExploredAtRef: useRef({}),
             activeView: 'self', characterName: 'tester',
@@ -48,6 +48,39 @@ function room(id: string, x: number, y: number, exits: Record<string, string>): 
 const xml = (dir: string) => new CustomEvent('move', { detail: { source: 'xml', dir } });
 
 describe('movement response ownership', () => {
+    it('tracks XML following without locally queued movement commands', () => {
+        const h = setup().result.current;
+        act(() => h.handleMoveConfirmed(xml('n')));
+        expect(h.currentRoomIdRef.current).toBe('m_2');
+        act(() => h.handleRoomInfo({num:0,name:'Room 2',source:'text'}));
+        expect(h.currentRoomIdRef.current).toBe('m_2');
+        expect(h.pendingMovesRef.current).toEqual([]);
+    });
+    it('locates an unidentified respawn using a unique room name and matching exits', () => {
+        const h = setup({'118501':[429,-84,0,'CAVERN',{u:{target:'118502'}},'Halls of the Morruhk',0,[],[],'Goblin-town']},
+            {'Halls of the Morruhk':['118501']}).result.current;
+        act(() => h.handleRoomInfo({num:0,name:'Halls of the Morruhk',exits:{up:1}}));
+        expect(h.currentRoomIdRef.current).toBe('m_118501');
+    });
+    it('uses matching text to corroborate an unidentified GMCP room without claiming movement', () => {
+        const h = setup({'118501':[429,-84,0,'CAVERN',{u:{target:'118502'}},'Halls of the Morruhk',0,[],[],'Goblin-town']},
+            {'Halls of the Morruhk':['118501']}).result.current;
+        act(() => h.handleRoomInfo({num:0,name:'Halls of the Morruhk'}));
+        expect(h.currentRoomIdRef.current).toBe('m_1');
+        act(() => h.handleRoomInfo({num:0,name:'Halls of the Morruhk',exits:{u:1},source:'text'}));
+        expect(h.currentRoomIdRef.current).toBe('m_118501');
+        expect(h.pendingMovesRef.current).toEqual([]);
+    });
+    it('does not relocate unidentified looks with ambiguous names or conflicting exits', () => {
+        const preloaded = {'5':[5,5,0,'CAVERN',{u:6},'Hall',0,[],[],'test'],
+            '7':[7,7,0,'CAVERN',{u:8},'Hall',0,[],[],'test']};
+        const ambiguous = setup(preloaded, {Hall:['5','7']}).result.current;
+        act(() => ambiguous.handleRoomInfo({num:0,name:'Hall',exits:{u:1}}));
+        expect(ambiguous.currentRoomIdRef.current).toBe('m_1');
+        const mismatch = setup(preloaded, {Hall:['5']}).result.current;
+        act(() => mismatch.handleRoomInfo({num:0,name:'Hall',exits:{s:1}}));
+        expect(mismatch.currentRoomIdRef.current).toBe('m_1');
+    });
     it('tracks dark visible rooms from server directions without locally queued commands', () => {
         const h = setup().result.current;
         for (const [dir, num] of [['north', 2], ['east', 3]] as const) {
@@ -124,7 +157,7 @@ describe('movement response ownership', () => {
         act(() => gmcpBus.emit('Event.Moved', { dir: 'east' }));
         act(() => gmcpBus.emit('Connection.Disconnect', undefined));
         act(() => h.pushPendingMove('n'));
-        act(() => h.handleRoomInfo({ id: 0, name: 'Room 2' }));
+        act(() => h.handleRoomInfo({ id: 0, name: 'Room 2', exits:{e:1} }));
         expect(h.currentRoomIdRef.current).toBe('m_2');
         expect(h.predictions.current).toEqual([]);
     });

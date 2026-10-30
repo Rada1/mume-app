@@ -1,5 +1,5 @@
 /**
- * @file Tests grey up/down arrows and their dotted connection.
+ * @file Tests up/down icons without duplicate custom connectors.
  */
 // --- Logic Section ---
 
@@ -53,16 +53,14 @@ describe('vertical exit geometry', () => {
     expect(vertices).toHaveLength(42);
   });
 
-  it('draws connectors between reciprocal UP and DOWN exits in different rooms', () => {
+  it('draws only icons for reciprocal UP and DOWN exits, leaving connections to the shared builder', () => {
     const map = connectedVerticalMap();
     const vertices = buildVerticalExitGeometry(map, 0);
-    expect(vertices.length).toBeGreaterThan(21);
-    expect(vertices[21]).toBeCloseTo(0.26);
-    expect(vertices[22]).toBeCloseTo(0.9);
-    expect(buildVerticalExitGeometry(map, 1).length).toBeGreaterThan(21);
+    expect(vertices).toHaveLength(21);
+    expect(buildVerticalExitGeometry(map, 1)).toHaveLength(21);
   });
 
-  it('does not draw a connector when the destination lacks a reciprocal exit', () => {
+  it('keeps the up icon when the destination lacks a reciprocal exit', () => {
     const map = connectedVerticalMap();
     map.exitFlags[DIR_COUNT + DIR_SLOT.d] = 0;
     expect(buildVerticalExitGeometry(map, 0)).toHaveLength(21);

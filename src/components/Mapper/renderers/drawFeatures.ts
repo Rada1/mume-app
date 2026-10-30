@@ -1241,43 +1241,6 @@ export const drawFeatures = (
                     }
                 }
 
-                // 1. Vertical Arrow Connections (Bidirectional Only, Zoom > 0.3)
-                if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom > 0.3) {
-                    for (const dir in ghostExits) {
-                        if (dir !== 'u' && dir !== 'd') continue;
-                        const exObj = ghostExits[dir]; if (!exObj) continue;
-                        const targetVnum = String(exObj.target), targetData = preloaded[targetVnum];
-                        if (targetData && (Math.abs(targetData[2] - currentZ) <= 1.5)) {
-                            const isTargetExplored = explored.has(targetVnum);
-                            const isTargetRevealed = ring1Revealed.has(targetVnum);
-
-                            if (!unveilMap && !(isExplored && isTargetExplored)) continue;
-
-                            const oppDir = dir === 'u' ? 'd' : 'u';
-                            const targetExits = targetData[4];
-                            const pointsBack = targetExits?.[oppDir] &&
-                                String(targetExits[oppDir].target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
-
-                            if (pointsBack) {
-                                const iconColor = 'rgba(148, 163, 184, 0.8)';
-                                const cOff = 12;
-                                const startX = anchorX + (dir === 'u' ? -cOff : cOff);
-                                const startY = anchorY + (dir === 'u' ? -cOff : cOff);
-                                const endX = targetData[0] * s + s / 2 + (dir === 'u' ? cOff : -cOff);
-                                const endY = targetData[1] * s + s / 2 + (dir === 'u' ? cOff : -cOff);
-
-                                ctx.save();
-                                if (unveilMap) ctx.globalAlpha = 0.5;
-                                else if (!isExplored && !isRevealed) ctx.globalAlpha = 0.08;
-                                else if (isRevealed) ctx.globalAlpha = 0.15;
-                                else ctx.globalAlpha = exploredAlphaMul * 0.25;
-                                drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
-                                ctx.restore();
-                            }
-                        }
-                    }
-                }
-
                 // 1.2. Long-Distance Exit Connections (Cardinals & Intercardinals, Zoom > 0.3)
                 if (ghostExits && Object.keys(ghostExits).length > 0 && camera.zoom > 0.3) {
                     for (const dir in ghostExits) {
@@ -1530,21 +1493,6 @@ export const drawFeatures = (
                             ctx.restore();
                         }
 
-                        // --- Internal Dotted Connection (Bidirectional Validation) ---
-                        if (ghostExits.u && ghostExits.d) {
-                            const uTargetVnum = String(ghostExits.u.target), dTargetVnum = String(ghostExits.d.target);
-                            const uTarget = preloaded[uTargetVnum], dTarget = preloaded[dTargetVnum];
-                            const uPointsBack = uTarget?.[4]?.d && String(uTarget[4].d.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
-                            const dPointsBack = dTarget?.[4]?.u && String(dTarget[4].u.target).replace(/^m_/, '') === String(vnum).replace(/^m_/, '');
-
-                            if (uPointsBack && dPointsBack && explored.has(uTargetVnum) && explored.has(dTargetVnum)) {
-                                ctx.save();
-                                ctx.globalAlpha = isExplored ? exploredAlphaMul * 0.5 : 0.15;
-                                drawLine(ctx, anchorX - cOff, anchorY - cOff, anchorX + cOff, anchorY + cOff, iconColor, 1.5, dpr, invZoom, true);
-                                ctx.restore();
-                            }
-                        }
-
                         ctx.restore();
                     }
 
@@ -1622,27 +1570,6 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                     } else if (dx > 1.1 || dy > 1.1 || d === 'u' || d === 'd') {
                         const tpx = n.x * s + s / 2, tpy = n.y * s + s / 2;
                         drawLine(ctx, cX, cY, tpx, tpy, LONG_CONNECTION_COLOR, 2, dpr, invZoom);
-
-                        // --- Local Vertical Arrow Connections (Bidirectional Only) ---
-                        if ((d === 'u' || d === 'd') && camera.zoom > 0.2) {
-                            const oD = d === 'u' ? 'd' : 'u';
-                            const pointsBack = n?.exits?.[oD] && 
-                                String(n.exits[oD].target || n.exits[oD].gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
-
-                            if (pointsBack) {
-                                const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
-                                const cOff = 12;
-                                const startX = cX + (d === 'u' ? -cOff : cOff);
-                                const startY = cY + (d === 'u' ? -cOff : cOff);
-                                const endX = tpx + (d === 'u' ? cOff : -cOff);
-                                const endY = tpy + (d === 'u' ? cOff : -cOff);
-                                
-                                ctx.save();
-                                ctx.globalAlpha = 0.25;
-                                drawLine(ctx, startX, startY, endX, endY, iconColor, 1.5, dpr, invZoom, true);
-                                ctx.restore();
-                            }
-                        }
                     }
                 }
             }
@@ -1673,25 +1600,6 @@ export const drawLocalFeatures = (rCtx: RenderContext, localRooms: any[]) => {
                 if (hasDoor && isActiveRoom) drawDoorIndicatorOutline(ctx, cX + 12, cY + 12);
                 ctx.drawImage(icon, cX + 12 - icon.width / 2, cY + 12 - icon.height / 2);
                 ctx.restore();
-            }
-
-            // --- Local Internal Dotted Connection (Bidirectional Validation) ---
-            if (room.exits.u && room.exits.d) {
-                const uTargetId = String(room.exits.u.target || room.exits.u.gmcpDestId || "");
-                const dTargetId = String(room.exits.d.target || room.exits.d.gmcpDestId || "");
-                const uN = allRooms[uTargetId.startsWith('m_') ? uTargetId : `m_${uTargetId}`] || allRooms[uTargetId];
-                const dN = allRooms[dTargetId.startsWith('m_') ? dTargetId : `m_${dTargetId}`] || allRooms[dTargetId];
-                
-                const uPointsBack = uN?.exits?.d && String(uN.exits.d.target || uN.exits.d.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
-                const dPointsBack = dN?.exits?.u && String(dN.exits.u.target || dN.exits.u.gmcpDestId || "").replace(/^m_/, '') === String(room.id).replace(/^m_/, '');
-
-                if (uPointsBack && dPointsBack && rCtx.explored.has(String(uTargetId).replace(/^m_/, '')) && rCtx.explored.has(String(dTargetId).replace(/^m_/, ''))) {
-                    const iconColor = 'rgba(148, 163, 184, 0.8)'; // Tactical grey connection line
-                    ctx.save();
-                    ctx.globalAlpha = 0.5;
-                    drawLine(ctx, cX - 12, cY - 12, cX + 12, cY + 12, iconColor, 1.5, dpr, invZoom, true);
-                    ctx.restore();
-                }
             }
         }
     }

@@ -29,28 +29,6 @@ export function applyRoomVisibility(gl: WebGL2RenderingContext, map: FastMapData
     roomsByLayer.set(layer, rooms);
   }
   for (const [layer, rooms] of roomsByLayer) applyLayerVisibility(gl, layer, map, rooms, getState, batchGeometry);
-
-  const changedSet = new Set(changedRooms);
-  const affectedVerticalRooms = new Map<GpuLayer, Set<number>>();
-  for (const room of changedRooms) {
-    for (const direction of [4, 5]) {
-      const slot = room * DIR_COUNT + direction;
-      for (let edge = map.exitTargetStarts[slot]!; edge < map.exitTargetStarts[slot + 1]!; edge++) {
-        const neighbor = map.exitTargets[edge]!;
-        if (changedSet.has(neighbor)) continue;
-        const layer = roomLayerByRoom.get(neighbor);
-        if (!layer?.verticalExitMesh) continue;
-        const rooms = affectedVerticalRooms.get(layer) ?? new Set<number>();
-        rooms.add(neighbor);
-        affectedVerticalRooms.set(layer, rooms);
-      }
-    }
-  }
-  for (const [layer, rooms] of affectedVerticalRooms) {
-    const batch = batchGeometry || rooms.size > 8;
-    for (const room of rooms) refreshVerticalRoomGeometry(gl, layer, map, room, getState(room), getState, !batch);
-    if (batch) uploadVerticalGeometry(gl, layer);
-  }
 }
 
 function applyLayerVisibility(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastMapData, changedRooms: readonly number[], getState: (room: number) => number, batchGeometry: boolean): void {
@@ -69,7 +47,7 @@ function applyLayerVisibility(gl: WebGL2RenderingContext, layer: GpuLayer, map: 
     addSpriteState(layer.flags?.buffer, layer.mesh.flagVertices, layer.mesh.flagRoomRanges.get(room), state, spriteRanges);
     addSpriteState(layer.trails?.buffer, layer.mesh.trailVertices, layer.mesh.trailRoomRanges.get(room), state, spriteRanges);
     refreshDoorRoom(gl, layer, map, room, state, !batchGeometry);
-    refreshVerticalRoom(gl, layer, map, room, state, getState, !batchGeometry);
+    refreshVerticalRoom(gl, layer, map, room, state, !batchGeometry);
   }
   gl.bindBuffer(gl.ARRAY_BUFFER, layer.buffer);
   for (const range of mergeRanges(instanceRanges)) {
@@ -104,8 +82,8 @@ export function refreshDoorSlot(gl: WebGL2RenderingContext, layer: GpuLayer, map
   }
 }
 
-export function refreshVerticalRoomGeometry(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastMapData, room: number, state: number, getState: (room: number) => number = () => ROOM_VISITED, upload = true): void {
-  refreshVerticalRoom(gl, layer, map, room, state, getState, upload);
+export function refreshVerticalRoomGeometry(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastMapData, room: number, state: number, upload = true): void {
+  refreshVerticalRoom(gl, layer, map, room, state, upload);
 }
 
 export function setRoomFlagRenderState(gl: WebGL2RenderingContext, layer: GpuLayer, room: number, state: number): boolean {
@@ -144,7 +122,7 @@ export function applyDoorStateChanges(
     if (location?.layer.doorMesh) refreshDoorSlot(gl, location.layer, map, slot, getRoomState(room), location.vertexIndex);
     if (direction === 4 || direction === 5) {
       const exitLocation = verticalExitLocations.get(room);
-      if (exitLocation?.layer.verticalExitMesh) refreshVerticalRoomGeometry(gl, exitLocation.layer, map, room, getRoomState(room), getRoomState);
+      if (exitLocation?.layer.verticalExitMesh) refreshVerticalRoomGeometry(gl, exitLocation.layer, map, room, getRoomState(room));
     }
   }
   gl.bindBuffer(gl.ARRAY_BUFFER, null);
@@ -164,10 +142,10 @@ function refreshDoorRoom(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastM
   for (let i = 0; i < slots; i++) refreshDoorSlot(gl, layer, map, layer.mesh.doorSlots[firstSlot + i]!, state, firstSlot + i, upload);
 }
 
-function refreshVerticalRoom(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastMapData, room: number, state: number, getState: (room: number) => number, upload: boolean): void {
+function refreshVerticalRoom(gl: WebGL2RenderingContext, layer: GpuLayer, map: FastMapData, room: number, state: number, upload: boolean): void {
   const range = layer.mesh.verticalExitRoomRanges.get(room);
   if (!range || !layer.verticalExitMesh) return;
-  const vertices = shadeColorVertices(buildVerticalExitGeometry(map, room, target => getState(target) === ROOM_VISITED), state, true);
+  const vertices = shadeColorVertices(buildVerticalExitGeometry(map, room), state, true);
   if (vertices.length !== range.count * FLOATS_PER_VERTEX) return;
   const first = range.first * FLOATS_PER_VERTEX;
   layer.mesh.verticalExitVertices.set(vertices, first);

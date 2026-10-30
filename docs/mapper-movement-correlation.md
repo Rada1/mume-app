@@ -57,3 +57,49 @@ Regression coverage lives in `useMapGmcphandlers.test.tsx`, alongside existing
 mixed-protocol ownership tests. The reported screenshot has no packet capture,
 so these reproduce confirmed code defects rather than establish which packet
 sequence occurred in that specific session.
+
+## MMapper candidate tracking and recovery
+
+Tracking now follows MMapper's Approved / Experimenting / Syncing design,
+called `confirmed`, `uncertain`, and `searching` internally. Reference source:
+MUME/MMapper commit `90eb09d428f94089ffae5e15e6b33d91e299dc75`, especially
+`src/pathmachine/pathmachine.cpp`, `approved.cpp`, `experimenting.cpp`,
+`src/map/ParseTree.cpp`, `src/map/room.cpp`, and `src/parser/AbstractParser-Actions.cpp`.
+
+- `roomLocationMachine.ts` checks exact IDs, forward and reverse connections,
+  expected coordinates and adjacent floors, then indexed room evidence. Every
+  non-authoritative candidate must agree with available text, terrain and exits.
+  A coordinate collision cannot override contradictory room details.
+- `roomObservationIndex.ts` caches name+description, name, description, area and
+  reverse-connection indices per bundled map identity. Search falls back to rooms
+  without areas and finally the map if no narrower index applies. Successful
+  known-ID and forward-exit matches do not build or scan the search indices.
+- `roomObservationMatch.ts` allows 5% static-text differences and treats missing
+  fields as unknown. Absent versus explicitly empty exit lists are distinct.
+  Hidden and NO_MATCH exits are treated separately; one weak door discrepancy is
+  allowed. Conflicting known server IDs reject a candidate; matching IDs permit
+  changed descriptive fields. Dynamic room contents are not identity evidence.
+- Multiple matches retain weighted candidates, bounded to 500. Subsequent moves
+  extend/filter the candidates. A single match or a relative advantage above 10
+  confirms location. Normal play never creates speculative rooms.
+  The `.mm2` adapter retains multiple outgoing destinations as `targets` with no
+  single walk target, so candidate tracking can follow random exits while
+  autowalk continues to exclude them.
+- `useMapperLocationState.ts` clears pending travel, previews and predictions on
+  death, session start/reset, disconnect and character changes. The old marker
+  remains the last known position while searching, but is not a matching anchor.
+  Unconfirmed terrain/exit packets cannot mutate it. Scout/spectate observations
+  use separate temporary candidate state.
+- `useMapperRoomObservations.ts` retains GMCP evidence and enriches it with
+  compatible text without consuming another move. Incompatible names/IDs are
+  rejected. This adapts MMapper's prompt-assembled ParseEvent to the client's
+  immediate synchronous GMCP updates: evidence can refine identity, while only
+  the original arrival owns the movement queue.
+
+Only confirmed matches reach `applyRoomInfoObservation.ts`. Global recovery does
+not create an exit from the old location to a respawn/teleport destination. Missing
+server fields retain bundled descriptions and exits. Local overrides remain live.
+
+Regression coverage includes `roomLocationMachine.test.ts`,
+`useMapperLocationRecovery.test.tsx` and the Halls of the Morruhk test against the
+shipped `.mm2` map in `mapNavigation.test.tsx`.

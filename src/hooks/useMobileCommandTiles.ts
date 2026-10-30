@@ -123,6 +123,9 @@ export const useMobileCommandTiles = (controller: ReturnType<typeof useCommandTr
  };
  const execute = (button: import('../types').CustomButton,event: React.MouseEvent) => {
   if ((!useTacticalCommandPrefixStore.getState().prefix || controller.isHelpMode) && interceptCommand(button.command)) {controller.game.triggerHaptic(20);return;}
+  if (controller.game.viewport.isMobile && !controller.isHelpMode && controller.game.gameState === 'playing' && !controller.game.isSpectateMode
+   && MOBILE_SOCIAL_SHORTCUTS.some(entry => entry.command === button.command))
+   useMobileCommandTilesStore.getState().recordSocial(character,button.command.trim().split(/\s+/)[0]);
   if (isCommandTreeTransfer(button)) executeUntargetedTransferCommand(controller,button,event);
   else if (isCommandTreeObservation(button) || /^(?:assist|ass)(?:\s|$)/i.test(button.command)) {
    controller.game.handleButtonClick({...button,command:button.command.replace(/%n(?:\|[^\s]+)?/g,'').replace(/\s+/g,' ').trim()},event);

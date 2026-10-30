@@ -30,9 +30,9 @@
 }
 
 .client-death-background {
-    position: absolute;
+    position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 2147483647;
     pointer-events: none;
     background: #000;
     opacity: 0;
