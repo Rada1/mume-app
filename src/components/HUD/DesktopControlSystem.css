@@ -149,6 +149,16 @@
  --desktop-control-hover:var(--command-panel-surface-hover,#3b3024);
  border:0; border-radius:0; background:var(--command-panel-surface,#211b16)!important; box-shadow:none;
 }
+/* The movement menu is portaled to body, outside the app's theme inheritance. */
+:root:has(.app-container.immersion-mode:not(.is-mobile)) .desktop-map-movement-menu.command-tree-v2 {
+ --command-panel-surface:#000; --command-panel-surface-raised:#111; --command-panel-surface-hover:#222;
+ --mobile-command-chip-background:#111; --mobile-command-chip-selected:#222;
+}
+:root:has(.app-container.performance-mode:not(.classic-mode):not(.is-mobile)) .desktop-map-movement-menu.command-tree-v2,
+:root:has(.app-container.performance-mode.immersion-mode:not(.is-mobile)) .desktop-map-movement-menu.command-tree-v2 {
+ --command-panel-surface:#171717; --command-panel-surface-raised:#222; --command-panel-surface-hover:#303030;
+ --mobile-command-chip-background:#222; --mobile-command-chip-selected:#303030;
+}
 .desktop-map-movement-menu.command-tree-v2 .command-tree-target-header { display:none; }
 .desktop-map-movement-menu.command-tree-v2 :is(.command-tree-row,.popover-action-button) {
  display:flex; align-items:center; justify-content:center; width:100%; min-height:40px;

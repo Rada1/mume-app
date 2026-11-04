@@ -30,7 +30,7 @@
 .desktop-map-movement-menu.command-tree-v2 {
  position:fixed; z-index:65020; overflow-x:hidden!important; overflow-y:auto; overscroll-behavior:contain;
  padding:4px!important; box-sizing:border-box; background:var(--command-tree-surface,#211b16)!important;
- border:1px solid rgba(201,168,76,.3); box-shadow:0 6px 24px #0008; pointer-events:auto;
+ border:0; border-radius:0; box-shadow:0 6px 24px #0008; pointer-events:auto;
 }
 .desktop-map-movement-menu.command-tree-v2 .command-tree-branch {
  position:static!important; flex:none; width:100%!important; min-width:0; max-width:none;
