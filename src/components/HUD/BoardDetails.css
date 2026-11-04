@@ -1,0 +1,11 @@
+/** @file BoardDetails.css — Compact expandable board entries. */
+.board-details { padding:8px; color:#ddd7cb; font:11px/1.5 var(--font-mono,monospace); }
+.board-details-title { margin-bottom:6px; color:#c9a84c; font-size:10px; text-transform:uppercase; }
+.board-details-heading { white-space:pre-wrap; }
+.board-details-entry { display:block; width:100%; padding:3px 5px; border:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; }
+.board-details-entry span { color:var(--ansi-bright-green,#44ff70); }
+.board-details-entry:is(:hover,:focus-visible,[aria-expanded="true"]) { background:var(--command-panel-surface-hover,#303030); }
+.board-details-message { max-height:50dvh; overflow:auto; overscroll-behavior:contain; margin:4px 0 8px; padding:8px; white-space:pre-wrap; overflow-wrap:anywhere; color:#ddd7cb; background:var(--command-panel-surface-raised,#222); font:inherit; }
+.board-details-reply { margin:0 0 8px; padding:6px 12px; border:0; background:var(--command-panel-surface-raised,#222); color:#e6c96e; font:inherit; cursor:pointer; }
+.board-details-reply:is(:hover,:focus-visible) { background:var(--command-panel-surface-hover,#303030); }
+.board-details-composer textarea { display:block; box-sizing:border-box; width:100%; min-height:180px; margin:4px 0 8px; padding:8px; border:1px solid #c9a84c55; background:var(--command-panel-surface-raised,#222); color:inherit; font:inherit; resize:vertical; }

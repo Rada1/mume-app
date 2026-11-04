@@ -10,7 +10,6 @@ import { Tokenizer } from '../../services/parser/Tokenizer';
 import { buildPlayerLineTokens, extractPlayerName } from './playerLineTokens';
 import { parseAffectedByLines } from '../../utils/affectUtils';
 import { useArchiveStore } from '../../stores/useArchiveStore';
-import { BOARD_MAIL_INTERFACE_ENABLED, isBoardMailCapture } from '../../utils/archiveInterface';
 import { getArchiveListExpectedCount, mergeArchiveEntries, parseArchiveList, parseArchiveRead } from '../../utils/archiveAdapters';
 import { useShaperEntityStore } from '../../shaper/model/useShaperEntityStore';
 import { useShaperLiveImportStore } from '../../shaper/import/useShaperLiveImportStore';
@@ -96,6 +95,11 @@ export function useCaptureParser(deps: CaptureParserDeps) {
         if (captureStage.current === 'help_action' || sessionRef.current?.type === 'help_action') {
             return 'help_action';
         }
+        // Numbered archive rows and quoted message text may resemble other capture headers.
+        // Keep the command's response in one session until its real prompt boundary.
+        const archiveTypes: CaptureType[] = ['board_list', 'board_read', 'mail_list', 'mail_read', 'book_read'];
+        const archiveType = archiveTypes.find(type => type === sessionRef.current?.type || type === captureStage.current);
+        if (archiveType) return archiveType;
         // Prompt parsing can split content from a prompt line into attachedText.
         // Keep the current line in the trigger input so unrelated attached text
         // cannot hide a capture header that is present in the line itself.
@@ -150,11 +154,10 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             }
         }
 
-        return !BOARD_MAIL_INTERFACE_ENABLED && isBoardMailCapture(type) ? null : type;
+        return type;
     }, [captureStage]);
 
     const startSession = useCallback((type: CaptureType) => {
-        if (!BOARD_MAIL_INTERFACE_ENABLED && isBoardMailCapture(type)) return;
         // console.log(`[Capture] Starting ${type} session`);
         if (sessionRef.current?.type === type && (Date.now() - sessionRef.current.startTime < 100)) {
             return;
@@ -246,13 +249,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
             captureStage.current = stageMap[type];
         }
 
-        if (['board_list', 'mail_list'].includes(type)) {
-            useArchiveStore.getState().setIsLoadingList(true);
-            useArchiveStore.getState().setIsOpen(true);
-        } else if (['board_read', 'mail_read', 'book_read'].includes(type)) {
-            useArchiveStore.getState().setIsLoadingDetail(true);
-            useArchiveStore.getState().setIsOpen(true);
-        }
+
     }, [setCaptureSession, captureStage, sessionRef]);
 
     const decodeXmlEntities = (text: string) => text
@@ -560,8 +557,7 @@ export function useCaptureParser(deps: CaptureParserDeps) {
                     break;
                 }
                 case 'board_read':
-                case 'mail_read':
-                case 'book_read': {
+                case 'mail_read': {
                     const store = useArchiveStore.getState();
                     const view = session.metadata?.archiveView || store.activeView;
                     store.setActiveDetail(parseArchiveRead(lines, view, store.activeDetail));

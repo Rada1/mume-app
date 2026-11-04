@@ -12,12 +12,13 @@ import { useClientPanelStackStore } from '../../../stores/useClientPanelStackSto
 // --- Logic Section ---
 interface CapturedDetailsSidePanelProps extends React.ComponentProps<typeof CapturedDetailsCard> {
     onClose: () => void;
+    children?: React.ReactNode;
     className?: string;
     ariaLabel?: string;
 }
 
 // --- UI Section ---
-export const CapturedDetailsSidePanel: React.FC<CapturedDetailsSidePanelProps> = ({ onClose, className, ariaLabel, ...detailsProps }) => {
+export const CapturedDetailsSidePanel: React.FC<CapturedDetailsSidePanelProps> = ({ onClose, className, ariaLabel, children, ...detailsProps }) => {
     const { viewport } = useGame();
     const setDetailsOpen = useClientPanelStackStore(state => state.setDetailsOpen);
     const detailsEnabled = useClientPanelStackStore(state => state.detailsEnabled);
@@ -70,7 +71,7 @@ export const CapturedDetailsSidePanel: React.FC<CapturedDetailsSidePanelProps> =
                 <span>Details</span>
                 <button type="button" aria-label="Close details panel" onClick={() => { setDetailsEnabled(false); onClose(); }}>×</button>
             </header>
-            <CapturedDetailsCard {...detailsProps} />
+            {children ?? <CapturedDetailsCard {...detailsProps} />}
         </aside>,
         portalTarget
     );

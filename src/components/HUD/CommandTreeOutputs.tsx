@@ -5,6 +5,7 @@ import { CapturedDetailsSidePanel } from '../Popovers/StandardMenu/CapturedDetai
 import { CommandShopOutputPanel } from './CommandShopOutputPanel';
 import { CommandPracticeOutputPanel } from './CommandPracticeOutputPanel';
 import { isInlineActionPopover } from '../../utils/popoverPanelUtils';
+import { BoardDetails } from './BoardDetails';
 
 // --- Render Section ---
 export const CommandTreeOutputs = ({controller}: {controller: ReturnType<typeof useCommandTreeController>}) => {
@@ -38,6 +39,6 @@ export const CommandTreeOutputs = ({controller}: {controller: ReturnType<typeof 
             commandReportLabel={capture?.commandReportLabel}
             isCapturingCommandReport={capture?.isCapturingCommandReport}
             onClose={closeDetails}
-        />}
+        >{capture && ['board', 'mail'].includes(capture.setId) ? <BoardDetails mail={capture.setId === 'mail'} lines={capture.capturedCommandReportLines} label={capture.commandReportLabel} loading={capture.isCapturingCommandReport} executeCommand={controller.game.executeCommand}/> : undefined}</CapturedDetailsSidePanel>}
     </>;
 };

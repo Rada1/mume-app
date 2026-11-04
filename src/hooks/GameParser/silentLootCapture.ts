@@ -7,6 +7,6 @@ export const shouldHideSilentLootCapture = ({activeType, expectedType, activeSil
  isSnoop: boolean; isPrompt: boolean; isLive: boolean; isCommunication: boolean; isEnvironment: boolean;
 }): boolean => {
  if (isSnoop || isPrompt || isLive || isCommunication || isEnvironment) return false;
- return (activeSilent && ['inventory', 'examine'].includes(activeType))
-  || (pendingSilent && ['inventory', 'examine'].includes(expectedType));
+ return (activeSilent && ['inventory', 'examine', 'board_read', 'mail_read', 'mail_list'].includes(activeType))
+  || (pendingSilent && ['inventory', 'examine', 'board_read', 'mail_read', 'mail_list'].includes(expectedType));
 };

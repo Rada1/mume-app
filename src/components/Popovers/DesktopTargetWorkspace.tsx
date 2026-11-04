@@ -21,10 +21,10 @@ const DesktopTargetWorkspace = ({request, close}: {request: PopoverState; close:
  const navigation = useDesktopTargetWorkspace(controller, request, close);
  const workspaceRef = useRef<HTMLElement>(null);
  useMobileTargetWorkspaceSurface(workspaceRef, true);
- useMobileTargetPopoverPosition(workspaceRef, true, request);
+ useMobileTargetPopoverPosition(workspaceRef, true, request, controller.game.viewport?.isMobile === false);
  const target = navigation.initialTarget;
  return createPortal(<section ref={workspaceRef} popover="manual"
-  className="desktop-target-workspace is-commands-only command-tree-v2 is-floating is-mobile-target-workspace is-inline-target-popover" aria-label="Target commands">
+  className={`desktop-target-workspace is-commands-only command-tree-v2 is-floating is-mobile-target-workspace is-inline-target-popover${controller.game.viewport?.isMobile === false ? ' is-desktop-inline-target' : ''}`} aria-label="Target commands">
   <header className="desktop-target-workspace-header">
    <div className="desktop-target-workspace-name target-highlighter is-target"
     data-target-kind={getEntityHighlightKind(target?.category || request.category)} data-targetable="true">

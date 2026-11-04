@@ -289,7 +289,8 @@ export const useCommandInspection = ({ activeState, scope: activeScope, isVisibl
         capturedCommandReportLines: undefined,
         whoisTarget: undefined
     }));
-    const capture = ui.popoverState?.entityId === activeState.entityId ? ui.popoverState : null;
+    const globalReport = ui.popoverState?.commandPanelCapture && ['book', 'board', 'mail'].includes(ui.popoverState.setId);
+    const capture = globalReport || ui.popoverState?.entityId === activeState.entityId ? ui.popoverState : null;
     const hasCapturedDetails = isVisible && !!(capture?.hasInspectionCard || capture?.isCapturingExamine || capture?.isCapturingConsider || capture?.isCapturingHelp || capture?.isCapturingWhois || capture?.isCapturingWho || capture?.isCapturingWhere || capture?.isCapturingRoomAction || capture?.isCapturingPersonalAction || capture?.isCapturingCommandReport || capture?.capturedExamineLines || capture?.capturedConsiderLines || capture?.capturedHelpLines || capture?.capturedWhoisLines || capture?.capturedWhoLines || capture?.capturedWhereLines || capture?.capturedRoomActionLines || capture?.capturedPersonalActionLines || capture?.capturedCommandReportLines);
     React.useEffect(() => {
         document.body.classList.toggle('has-unified-command-details', hasCapturedDetails);

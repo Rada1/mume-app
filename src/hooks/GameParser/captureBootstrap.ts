@@ -4,7 +4,6 @@
  */
 
 import { CaptureType } from '../../types/capture';
-import { BOARD_MAIL_INTERFACE_ENABLED, isBoardMailCapture } from '../../utils/archiveInterface';
 
 // --- Logic Section ---
 
@@ -46,5 +45,5 @@ export const EXPECTED_CAPTURE_BOOTSTRAP_TYPES: CaptureType[] = [
 ];
 
 export const canBootstrapExpectedCapture = (captureType: string): boolean => (
-    (BOARD_MAIL_INTERFACE_ENABLED || !isBoardMailCapture(captureType)) && EXPECTED_CAPTURE_BOOTSTRAP_TYPES.includes(captureType as CaptureType)
+    EXPECTED_CAPTURE_BOOTSTRAP_TYPES.includes(captureType as CaptureType)
 );

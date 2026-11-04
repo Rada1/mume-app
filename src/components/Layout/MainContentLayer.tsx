@@ -149,7 +149,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
     const { activeDockedPanels, getPanelStyle } = useDockedPanelLayout(
         viewport.isMobile,
         layoutGameState,
-        isEditorOpen
+        false
     );
     const hasDockedPanels = activeDockedPanels.length > 0;
     const shouldBlurDockedPanels = hasDockedPanels && useTacticalPanelBlur;
@@ -604,7 +604,7 @@ export const MainContentLayer: FC<MainContentLayerProps> = ({
                 )}
                 {isEditorOpen && !isAccountScreen && (
                     <React.Suspense fallback={null}>
-                        <MumeEditor style={getPanelStyle('editor')} />
+                        <MumeEditor />
                     </React.Suspense>
                 )}
             </div>

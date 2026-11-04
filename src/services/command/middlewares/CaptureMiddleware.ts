@@ -9,7 +9,7 @@ import { useArchiveStore } from '../../../stores/useArchiveStore';
 import { useCommandShopStore } from '../../../stores/useCommandShopStore';
 import { useCommandPracticeStore } from '../../../stores/useCommandPracticeStore';
 import { useUIStore } from '../../../stores/useUIStore';
-import { BOARD_MAIL_INTERFACE_ENABLED } from '../../../utils/archiveInterface';
+import { useClientPanelStackStore } from '../../../stores/useClientPanelStackStore';
 import { isGameplayPagerControl, useGameplayPagerStore } from '../../../stores/useGameplayPagerStore';
 
 const COMMAND_CAPTURE_TYPES: Record<string, import('../../../types/capture').CaptureType> = {
@@ -69,7 +69,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         const pendingHelp = useUIStore.getState().popoverState;
         const pendingCommandReport = pendingHelp?.isCapturingCommandReport &&
             pendingHelp.commandReportCommand?.trim().toLowerCase() === lowerCmd;
-        if (pendingCommandReport && !captureType) captureType = 'command_report';
+        if (pendingCommandReport && !captureType && !['board', 'book', 'mail'].includes(pendingHelp.setId)) captureType = 'command_report';
         if (
             !captureType &&
             pendingHelp?.isCapturingHelp &&
@@ -134,7 +134,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         const isPopoverInspect = silent && isSystem && !fromDrawer;
 
         // Match "look ... board", "look ... b", "look ... bulletin", "tail ...", "tail"
-        const isBoardListCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
+        const isBoardListCommand = !isPopoverInspect && (
             (isLook && isBoardNoun) ||
             lowerCmd === 'look threads' ||
             lowerCmd === 'look all threads' ||
@@ -150,7 +150,7 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
             captureType = 'board_list';
         }
 
-        const isBoardReadCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
+        const isBoardReadCommand = !isPopoverInspect && (
             /^(?:read|view)\s+\d+$/i.test(lowerCmd) ||
             /^(?:read|view)\s+\d+\s+(?:board|b)$/i.test(lowerCmd) ||
             /^read\s+thread\s+\d+(?:\s+(?:next|whole))?$/i.test(lowerCmd)
@@ -159,17 +159,29 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         if (!captureType && isBoardReadCommand) {
             captureType = useArchiveStore.getState().activeView.startsWith('board') ? 'board_read' : 'mail_read';
         }
-        const isSentMailListCommand = /^look\s+(?:sent\s+mail|mail\s+sent)(?:\s+seen)?$/i.test(lowerCmd) ||
-            /^look\s+(?:seen\s+sent\s+mail|sent\s+seen\s+mail|mail\s+sent\s+seen)$/i.test(lowerCmd);
-        const isMailListCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && (
-            lowerCmd === 'look mail' || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(lowerCmd) ||
-            lowerCmd === 'look seen mail' || isSentMailListCommand ||
+        if (captureType === 'board_list' || captureType === 'board_read') {
+            useUIStore.getState().setPopoverState({x:0, y:0, setId:'board', type:'menu', commandPanelCapture:true,
+                hasInspectionCard:true, commandReportCommand:cmd.trim(),
+                commandReportLabel:captureType === 'board_list' ? 'Board' : cmd.trim(), isCapturingCommandReport:true});
+            useClientPanelStackStore.getState().setDetailsEnabled(true);
+        }
+        const mailLookCommand = isLook ? `look ${words.slice(1).join(' ')}` : lowerCmd;
+        const isSentMailListCommand = /^look\s+(?:sent\s+mail|mail\s+sent)(?:\s+seen)?$/i.test(mailLookCommand) ||
+            /^look\s+(?:seen\s+sent\s+mail|sent\s+seen\s+mail|mail\s+sent\s+seen)$/i.test(mailLookCommand);
+        const isMailListCommand = !isPopoverInspect && (
+            /^look (?:mail|mailbox)$/.test(mailLookCommand) || lowerCmd === 'tail' || /^tail\s+\d+$/i.test(mailLookCommand) ||
+            mailLookCommand === 'look seen mail' || isSentMailListCommand ||
             lowerCmd.startsWith('search mail ') || lowerCmd.startsWith('search sent mail ')
         );
         if (!captureType && isMailListCommand) {
             useArchiveStore.getState().setPanelMode('mail');
             useArchiveStore.getState().setActiveView(isSentMailListCommand || lowerCmd.startsWith('search sent mail ') ? 'mail-sent' : 'mail-inbox');
             captureType = 'mail_list';
+        }
+        if (captureType === 'mail_list' || captureType === 'mail_read') {
+            useUIStore.getState().setPopoverState({x:0, y:0, setId:'mail', type:'menu', commandPanelCapture:true,
+                hasInspectionCard:true, commandReportCommand:cmd.trim(), commandReportLabel:captureType === 'mail_list' ? 'Mail' : cmd.trim(), isCapturingCommandReport:true});
+            useClientPanelStackStore.getState().setDetailsEnabled(true);
         }
         const roomInspection = useUIStore.getState().popoverState;
         if (!captureType && (/^(?:exits|map)$/i.test(lowerCmd) || /^weather\s+(?:global|fog|local)$/i.test(lowerCmd))
@@ -179,54 +191,34 @@ export const CaptureMiddleware: CommandMiddleware = (cmd, context, { silent, isS
         if (!captureType && isLook && (words.length > 1 || (roomInspection?.isRoomDescription && roomInspection.isCapturingExamine))) {
             captureType = 'examine';
         }
-        const isMailReadCommand = BOARD_MAIL_INTERFACE_ENABLED && !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);
+        const isMailReadCommand = !isPopoverInspect && /^read\s+sent\s+\d+$/i.test(lowerCmd);
         if (!captureType && isMailReadCommand) {
             useArchiveStore.getState().setPanelMode('mail');
             useArchiveStore.getState().setActiveView('mail-sent');
             captureType = 'mail_read';
+            useUIStore.getState().setPopoverState({x:0,y:0,setId:'mail',type:'menu',commandPanelCapture:true,
+                hasInspectionCard:true,commandReportCommand:cmd.trim(),commandReportLabel:cmd.trim(),isCapturingCommandReport:true});
+            useClientPanelStackStore.getState().setDetailsEnabled(true);
         }
         const isBookReadCommand =
             !captureType &&
             !isPopoverInspect &&
-            /^(?:read|view)\s+(?!\d+\b|sent\b|thread\b|next\b|last\b|forward\b|origin\b).+/i.test(lowerCmd);
+            /^(?:read|view)\s+(?!\d+(?:\s|$)|sent\b|thread\b|next\b|last\b|forward\b|origin\b).+/i.test(lowerCmd);
         if (isBookReadCommand) {
             const title = cmd.trim().replace(/^(?:read|view)\s+/i, '').trim();
-            useArchiveStore.getState().setPanelMode('book');
-            useArchiveStore.getState().setActiveView('book');
-            useArchiveStore.getState().setActiveDetail({
-                id: Date.now(),
-                source: 'book',
-                view: 'book',
-                subject: title || 'Book',
-                author: '',
-                date: '',
-                body: ''
+            useUIStore.getState().setPopoverState({
+                x: 0, y: 0, setId: 'book', type: 'menu', commandPanelCapture: true, hasInspectionCard: true,
+                commandReportCommand: cmd.trim(), commandReportLabel: title || 'Book',
+                isCapturingCommandReport: true
             });
+            useClientPanelStackStore.getState().setDetailsEnabled(true);
             captureType = 'book_read';
         }
         if (captureType) {
             captureStage.current = captureType;
         }
 
-        // Intercept manual board commands to run them silently
-        if ((captureType === 'board_list' || captureType === 'board_read') && !silent) {
-            if (context.executeCommand) {
-                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
-            }
-            return null; // Intercept and cancel the original command execution
-        }
-        if ((captureType === 'mail_list' || captureType === 'mail_read') && !silent) {
-            if (context.executeCommand) {
-                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
-            }
-            return null;
-        }
-        if (captureType === 'book_read' && !silent) {
-            if (context.executeCommand) {
-                context.executeCommand(cmd, true, isSystem, false, fromDrawer);
-            }
-            return null;
-        }
+        if (captureType === 'book_read' || captureType === 'board_list' || captureType === 'board_read' || captureType === 'mail_list' || captureType === 'mail_read') return undefined;
     }
 
     if (!isSystem && !fromDrawer) {

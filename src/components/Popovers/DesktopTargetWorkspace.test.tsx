@@ -47,9 +47,20 @@ it('opens beside desktop log text, inspects in place and closes after an action'
  fireEvent.click([...panel.querySelectorAll('button')].find(button => button.textContent === 'Examine')!);
  expect(state.executeCommand).toHaveBeenCalledWith('examine elf',true,true,false,true,{shouldFocus:false,fromUi:true});
  expect(actions.getBoundingClientRect().top).toBe(originalActionTop);
- act(() => useCorpseContentsStore.getState().captureContents('examine elf', [{id:'description',html:'A watchful elf.',text:'A watchful elf.'}]));
+ act(() => useCorpseContentsStore.getState().captureContents('examine elf', [
+  {id:'description',html:'A watchful elf.',text:'A watchful elf.'},
+  {id:'heading',html:'An elf is using:',text:'An elf is using:'},
+  {id:'sword',html:'a sword',text:'a sword',prefix:'<wielded>'},
+ ]));
  expect(panel.textContent).toContain('A watchful elf.');
+ expect(panel.querySelector('.mobile-quick-target-equipment-heading')?.textContent).toBe('An elf is using:');
+ expect(panel.querySelector('.mobile-quick-target-equipment-item')?.textContent).toContain('wielded');
  expect(actions.getBoundingClientRect().top).toBe(originalActionTop);
+ fireEvent.click([...panel.querySelectorAll('button')].find(button => button.textContent?.includes('Consider'))!);
+ expect(state.executeCommand).toHaveBeenCalledWith('consider elf',true,true,false,true,{shouldFocus:false,fromUi:true});
+ expect(panel.textContent).toContain('Considering…');
+ act(() => useUIStore.setState(state => ({popoverState:{...state.popoverState!, isCapturingConsider:false, capturedConsiderLines:['You could beat the elf.']}})));
+ expect(panel.textContent).toContain('You could beat the elf.');
  fireEvent.click([...panel.querySelectorAll('button')].find(button => button.textContent === 'Hit')!);
  expect(state.executeCommand).toHaveBeenCalledWith('hit elf',false,false,false,false,{shouldFocus:false,fromUi:true});
  await waitFor(() => expect(document.querySelector('[aria-label="Target commands"]')).toBeNull());

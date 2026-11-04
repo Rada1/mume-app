@@ -9,6 +9,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { useUIStore } from '../../stores/useUIStore';
 import { CaptureParserDeps, useCaptureParser } from './useCaptureParser';
 import { useCorpseContentsStore } from '../../stores/useCorpseContentsStore';
+import { canBootstrapExpectedCapture } from './captureBootstrap';
+import { useArchiveStore } from '../../stores/useArchiveStore';
 
 // --- Tests Section ---
 
@@ -33,6 +35,24 @@ const createDeps = (): CaptureParserDeps => ({
 });
 
 describe('inline inspection capture', () => {
+    it('keeps numbered mailbox rows with their mailbox heading', () => {
+        const deps = createDeps();
+        deps.captureStage.current = 'mail_list';
+        useArchiveStore.getState().setActiveView('mail-inbox');
+        const {result} = renderHook(() => useCaptureParser(deps));
+        act(() => {
+            result.current.setPendingFlags(false, false, 'l mail');
+            result.current.startSession('mail_list');
+            result.current.accumulateLine('Mail - 1 message');
+            expect(result.current.checkTriggers('1 : @Ellessar (Ellessar)')).toBe('mail_list');
+            result.current.accumulateLine('1 : @Ellessar (Ellessar)');
+            result.current.finalizeSession();
+        });
+        expect(useArchiveStore.getState().entriesByView['mail-inbox']).toMatchObject([{id:1,subject:'@Ellessar',author:'Ellessar'}]);
+    });
+    it('allows board and book captures to start from plain output', () => {
+        expect(['board_list', 'board_read', 'book_read'].map(canBootstrapExpectedCapture)).toEqual([true, true, true]);
+    });
     it('stores silent corpse and inventory snapshots for the loot workflow', () => {
         const deps = createDeps();
         const {result} = renderHook(() => useCaptureParser(deps));
@@ -96,6 +116,23 @@ describe('inline inspection capture', () => {
             isCapturingCommandReport: false,
             commandReportLabel: 'Time',
             capturedCommandReportLines: [reply]
+        });
+    });
+
+    it('captures book contents into Details without opening the archive', () => {
+        const deps = createDeps();
+        const command = 'read 2.book';
+        useUIStore.getState().setPopoverState({x:0, y:0, setId:'book', commandPanelCapture:true,
+            commandReportCommand:command, commandReportLabel:'2.book', isCapturingCommandReport:true});
+        const {result} = renderHook(() => useCaptureParser(deps));
+        act(() => {
+            result.current.setPendingFlags(true, true, command);
+            result.current.startSession('book_read');
+            result.current.accumulateLine('First page of the story.');
+            result.current.finalizeSession();
+        });
+        expect(useUIStore.getState().popoverState).toMatchObject({
+            isCapturingCommandReport:false, capturedCommandReportLines:['First page of the story.']
         });
     });
 

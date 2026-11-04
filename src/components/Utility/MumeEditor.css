@@ -1,187 +1,27 @@
-/**
- * @file MumeEditor.css
- * @description Styles for docked MUME edit sessions and local editor.
- */
-
+/** @file MumeEditor.css — Floating editor using the shared command palette. */
+/* --- Popover surface --- */
 .mume-editor-panel {
-    position: fixed;
-    top: calc(env(safe-area-inset-top, 0px) + 52px);
-    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
-    z-index: 60000;
-    width: var(--desktop-editor-width, 32vw);
-    min-width: 300px;
-    max-width: 65vw;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    pointer-events: auto;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-card, 8px);
-    background: rgba(12, 15, 22, 0.72);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.28);
-    backdrop-filter: blur(10px);
-    animation: editor-panel-enter 140ms ease-out;
-    transition: right 0.2s cubic-bezier(0.16, 1, 0.3, 1), top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+ position:fixed; inset:0; margin:auto; box-sizing:border-box; padding:0;
+ width:min(760px,calc(100vw - 24px)); height:min(640px,calc(100dvh - 48px));
+ max-width:calc(100vw - 24px); max-height:calc(100dvh - 48px);
+ border:0; border-radius:0; background:var(--command-panel-surface,#211b16);
+ color:#ddd7cb; box-shadow:0 0 0 1px #ffffff14,0 12px 40px #000b;
+ font:12px/1.4 var(--font-mono,monospace); overflow:hidden;
 }
-
-.global-dragging .mume-editor-panel {
-    transition: none !important;
-}
-
-.light-mode .mume-editor-panel {
-    background: rgba(255, 255, 255, 0.72);
-    border-color: rgba(0, 0, 0, 0.08);
-}
-
-.mume-editor-panel-header {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 8px 10px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--accent);
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
-.mume-editor-panel-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.mume-editor-panel-title::before {
-    content: '';
-    width: 6px;
-    height: 6px;
-    border-radius: 999px;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
-    flex-shrink: 0;
-}
-
-.mume-editor-stats {
-    color: var(--text-dim);
-    font-size: 0.7rem;
-    font-weight: 500;
-    margin-left: 6px;
-}
-
-.mume-editor-panel-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border: none;
-    border-radius: 4px;
-    background: transparent;
-    color: var(--text-dim);
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.mume-editor-panel-close:hover {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-primary);
-}
-
-.mume-editor-content {
-    flex: 1;
-    min-height: 0;
-    padding: 8px 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.mume-editor-textarea {
-    flex: 1;
-    min-height: 0;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 10px;
-    color: var(--text-primary, #fff);
-    font-family: var(--font-mono, "Cascadia Code", monospace);
-    font-size: 0.82rem;
-    line-height: 1.4;
-    resize: none;
-    outline: none;
-    transition: border-color 0.2s ease;
-}
-
-.mume-editor-textarea:focus {
-    border-color: var(--accent);
-}
-
-.mume-editor-footer {
-    flex: 0 0 auto;
-    padding: 8px 10px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(0, 0, 0, 0.15);
-}
-
-.mume-editor-btn {
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 0.76rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    border: none;
-}
-
-.mume-editor-btn.cancel {
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-dim, #ccc);
-}
-
-.mume-editor-btn.cancel:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: var(--text-primary, #fff);
-}
-
-.mume-editor-btn.save {
-    background: var(--accent);
-    color: #000;
-}
-
-.mume-editor-btn.save:hover {
-    filter: brightness(1.1);
-}
-
-@media (max-width: 1024px) and (orientation: portrait) {
-    .mume-editor-panel {
-        top: auto;
-        left: 8px;
-        right: 8px !important;
-        bottom: 8px;
-        width: auto;
-        max-width: none;
-        height: min(50%, 360px);
-    }
-}
-
-@keyframes editor-panel-enter {
-    from {
-        opacity: 0;
-        transform: translateX(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
+.mume-editor-panel[open] { display:flex; flex-direction:column; }
+.mume-editor-panel::backdrop { background:#0006; }
+/* --- Header and actions --- */
+.mume-editor-panel-header { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px; }
+.mume-editor-panel-title { display:flex; flex-wrap:wrap; gap:8px; color:#c9a84c; text-transform:uppercase; }
+.mume-editor-stats { color:#a99f8d; font-size:10px; }
+.mume-editor-panel-close,.mume-editor-btn { padding:7px 12px; border:0; border-radius:0; background:var(--command-panel-surface-raised,#2d271e); color:#ddd7cb; font:inherit; cursor:pointer; }
+.mume-editor-panel-close { display:flex; align-items:center; justify-content:center; padding:6px; }
+.mume-editor-panel-close:hover,.mume-editor-btn:hover { background:var(--command-panel-surface-hover,#3b3024); }
+.mume-editor-btn.save { color:#e6c96e; }
+.mume-editor-footer { display:flex; justify-content:flex-end; gap:8px; padding:12px; }
+/* --- Text editing --- */
+.mume-editor-content { display:flex; flex:1; min-height:0; padding:0 12px; }
+.mume-editor-textarea { box-sizing:border-box; width:100%; min-height:0; padding:10px; resize:none;
+ background:var(--command-panel-surface-raised,#2d271e); color:#ddd7cb;
+ border:1px solid transparent; border-radius:0; font:13px/1.5 var(--font-mono,monospace); }
+.mume-editor-textarea:focus-visible { outline:1px solid #c9a84c; outline-offset:-1px; }

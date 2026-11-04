@@ -63,5 +63,10 @@
 .is-inline-target-popover .mobile-quick-target-actions [data-action="remove"] { color:#94a3b8; }
 .is-inline-target-popover .mobile-quick-target-actions [data-action="wield"] { color:#818cf8; }
 .is-inline-target-popover .mobile-quick-target-details { max-height:160px; overflow:auto; padding:8px; color:#c9c1b1; font-size:11px; line-height:1.45; overflow-wrap:anywhere; }
+.is-desktop-inline-target .mobile-quick-target-details { max-height:calc(100vh - 120px); }
+.is-inline-target-popover .mobile-quick-target-equipment-heading { margin:10px 0 5px; color:#b4a381; }
+.is-inline-target-popover .mobile-quick-target-equipment-item { display:flex; align-items:baseline; gap:8px; padding:4px 6px; margin-top:2px; background:var(--command-panel-surface-raised,#2d271e); }
+.is-inline-target-popover .mobile-quick-target-equipment-slot { flex:none; color:#a99b80; font-size:10px; white-space:nowrap; }
+.is-inline-target-popover .mobile-quick-target-equipment-name { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .is-inline-target-popover .mobile-quick-target-caption { display:block; color:#998a6f; margin-bottom:4px; }
 .is-inline-target-popover .mobile-quick-target-empty { padding:8px; color:#a69b89; }

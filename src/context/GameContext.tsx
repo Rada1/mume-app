@@ -278,12 +278,16 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
     }, [s.mumeEditState.key, s.setMumeEditState]);
 
-    // Abandons an edit session without saving. MUME's editor exits with %q;
-    // dropping local state alone leaves the server-side edit session open.
+    // Remote editing is a GMCP session; cancellation must release its server ID.
     const handleCancelMumeEdit = useCallback(() => {
-        telnetRef.current?.sendCommand('%q');
+        if (s.mumeEditState.key && telnetRef.current) {
+            const editId = Number(s.mumeEditState.key);
+            telnetRef.current.sendGMCP('MUME.Client.CancelEdit', {
+                id: isNaN(editId) ? s.mumeEditState.key : editId
+            });
+        }
         s.setMumeEditState(prev => ({ ...prev, isOpen: false, context: null }));
-    }, [s.setMumeEditState]);
+    }, [s.mumeEditState.key, s.setMumeEditState]);
 
     const gmcpHandlers = useGmcpHandlers({
         mapperRef: mapperRef, roomDescRef: s.userSession.game.roomDescRef,

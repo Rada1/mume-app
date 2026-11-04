@@ -16,3 +16,12 @@ it('keeps prompts, snoops, communication, weather and live game events visible',
  for (const key of ['isPrompt','isSnoop','isLive','isCommunication','isEnvironment'] as const)
   expect(shouldHideSilentLootCapture({...base,[key]:true})).toBe(false);
 });
+it('hides clicked board entry responses before and during capture', () => {
+ const pending = {...base, expectedType:'board_read'};
+ const active = {...base, expectedType:'none', pendingSilent:false, activeType:'board_read', activeSilent:true};
+ expect(shouldHideSilentLootCapture(pending)).toBe(true);
+ expect(shouldHideSilentLootCapture(active)).toBe(true);
+ expect(shouldHideSilentLootCapture({...pending, pendingSilent:false})).toBe(false);
+ for (const key of ['isPrompt','isSnoop','isLive','isCommunication','isEnvironment'] as const)
+  expect(shouldHideSilentLootCapture({...active,[key]:true})).toBe(false);
+});

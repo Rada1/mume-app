@@ -1,34 +1,23 @@
 /**
  * @file MumeEditor.tsx
- * @description Docked sliding editor panel for MUME edit sessions and local note composition.
+ * @description Floating editor popover for MUME edit sessions and local note composition.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useGame } from '../../context/GameContext';
-import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { X } from 'lucide-react';
 import './MumeEditor.css';
 
-interface MumeEditorProps {
-    style?: React.CSSProperties;
-}
-
 // --- Component Section ---
-
-export const MumeEditor: React.FC<MumeEditorProps> = ({ style }) => {
-    const { mumeEditState, setMumeEditState, handleSaveMumeEdit, handleCancelMumeEdit, viewport } = useGame() as {
-        mumeEditState: {
-            isOpen: boolean;
-            mode?: 'view' | 'edit';
-            title?: string;
-            text: string;
-            context?: { kind?: string };
-        };
-        setMumeEditState: React.Dispatch<React.SetStateAction<any>>;
-        handleSaveMumeEdit: (text: string) => void;
-        handleCancelMumeEdit: () => void;
-        viewport?: { isMobile: boolean };
-    };
+export const MumeEditor = () => {
+    const { mumeEditState, setMumeEditState, handleSaveMumeEdit, handleCancelMumeEdit } = useGame();
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    useEffect(() => {
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        dialog.showModal();
+        return () => dialog.close();
+    }, [mumeEditState.isOpen]);
 
     const [text, setText] = useState('');
     const isViewMode = mumeEditState.mode === 'view';
@@ -78,20 +67,9 @@ export const MumeEditor: React.FC<MumeEditorProps> = ({ style }) => {
     const charCount = text ? text.length : 0;
 
     return (
-        <aside
-            className="docked-panel mume-editor-panel"
-            style={style}
-            aria-label="MUME Editor"
+        <dialog ref={dialogRef} className="mume-editor-panel" aria-label="MUME Editor"
+            onCancel={event => { event.preventDefault(); handleCancel(); }}
         >
-            {!viewport?.isMobile && (
-                <DrawerResizeHandle
-                    handleType="left"
-                    widthVar="--desktop-editor-width"
-                    minWidth={20}
-                    maxWidth={65}
-                />
-            )}
-
             {/* Header */}
             <div className="mume-editor-panel-header">
                 <div className="mume-editor-panel-title">
@@ -144,7 +122,7 @@ export const MumeEditor: React.FC<MumeEditorProps> = ({ style }) => {
                     </button>
                 )}
             </div>
-        </aside>
+        </dialog>
     );
 };
 

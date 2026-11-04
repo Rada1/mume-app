@@ -27,7 +27,7 @@ const findLogSource = (source: Rect): HTMLElement | null => {
 
 // --- Initial placement and viewport bounds ---
 export const useMobileTargetPopoverPosition = (
-    ref: RefObject<HTMLElement | null>, enabled: boolean, request: PopoverState
+    ref: RefObject<HTMLElement | null>, enabled: boolean, request: PopoverState, desktop = false
 ) => {
     useLayoutEffect(() => {
         const panel = ref.current;
@@ -46,7 +46,8 @@ export const useMobileTargetPopoverPosition = (
                     height: Math.min(window.innerHeight - 8, logRect.bottom - 4) - Math.max(8, logRect.top + 4) }
                 : { left: 8, top: 8, width: window.innerWidth - 16, height: window.innerHeight - 16 };
             const above = sourceRect.top - bounds.top - 6;
-            panel.style.setProperty('--target-popover-max-height', `${Math.max(80, Math.min(360, bounds.height, above))}px`);
+            const maxHeight = desktop ? window.innerHeight - 16 : Math.min(360, bounds.height, above);
+            panel.style.setProperty('--target-popover-max-height', `${Math.max(80, maxHeight)}px`);
             panel.style.setProperty('--target-popover-max-width', `${Math.max(80, bounds.width)}px`);
             const { left, top } = positionMobileTargetPopover(sourceRect, bounds, panel.offsetWidth, panel.offsetHeight);
             panel.style.setProperty('--target-popover-left', `${left}px`);
@@ -64,5 +65,5 @@ export const useMobileTargetPopoverPosition = (
             window.removeEventListener('resize', schedule);
         };
     }, [ref, enabled, request.entityId, request.x, request.y, request.sourceRect?.left,
-        request.sourceRect?.top, request.sourceRect?.width, request.sourceRect?.height]);
+        request.sourceRect?.top, request.sourceRect?.width, request.sourceRect?.height, desktop]);
 };

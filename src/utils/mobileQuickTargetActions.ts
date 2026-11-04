@@ -21,6 +21,7 @@ export const getMobileQuickTarget = (entry: CommandActionTargetEntry, configs: I
   ...getResolvedTraitSections(entry.category, entry.label, configs).map(section => section.trait.id)]);
  if (!target || entry.scope === 'remote' || entry.id === 'command-panel-self') return { kind:'other', target, actions };
  if (axes.isCharacter) {
+  if (entry.category === 'cat-npc' || entry.category === 'cat-enemy' || entry.category === 'cat-mount') add('Consider', `consider ${target}`);
   if (entry.category === 'cat-mount' || traits.has('trait-mount')) {
    if (isMountEligibleForCharacter(entry.label, character)) { add('Ride', `ride ${target}`); add('Lead', `lead ${target}`); }
    add('Unsaddle all', `unsaddle ${target} all`);

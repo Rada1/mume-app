@@ -24,9 +24,10 @@ describe('mobile quick actions', () => {
  });
  it('distinguishes mounts, allies and enemies', () => {
   expect(actions(entry({label:'a pack horse', context:'2.horse', category:'cat-npc', group:'npcs'})).map(a => a.command))
-   .toEqual(['ride 2.horse','lead 2.horse','unsaddle 2.horse all']);
+   .toEqual(['consider 2.horse','ride 2.horse','lead 2.horse','unsaddle 2.horse all']);
   expect(actions(entry({label:'Elena', context:'Elena', category:'cat-ally', group:'players'})).map(a => a.label)).toEqual(['Follow','Group']);
-  expect(actions(entry({label:'an orc', context:'orc', category:'cat-enemy', group:'players'})).map(a => a.label)).toEqual(['Hit']);
+  expect(actions(entry({label:'an orc', context:'2.orc', category:'cat-enemy', group:'players'})).map(a => a.command)).toEqual(['consider 2.orc','hit 2.orc']);
+  expect(actions(entry({label:'a guard', context:'2.guard', category:'cat-npc', group:'npcs'})).map(a => a.command)).toEqual(['consider 2.guard','hit 2.guard']);
  });
  it('offers only the relevant item actions', () => {
   expect(actions(entry({label:'an ash arrow', context:'2.arrow'})).map(a => a.command)).toEqual(['get 2.arrow']);
