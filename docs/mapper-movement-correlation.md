@@ -103,3 +103,9 @@ server fields retain bundled descriptions and exits. Local overrides remain live
 Regression coverage includes `roomLocationMachine.test.ts`,
 `useMapperLocationRecovery.test.tsx` and the Halls of the Morruhk test against the
 shipped `.mm2` map in `mapNavigation.test.tsx`.
+
+Room comparison and search indices normalize Unicode accents consistently. The
+server's `Felak Khazâd` and the bundled map's `Felak Khazad` identify the same
+room; a single accent previously exceeded the short name's 5% text tolerance.
+The shipped-map regression covers south to Felak Uzbadul, north back to Felak
+Khazâd, and recovery with a decomposed Unicode accent and no server room ID.

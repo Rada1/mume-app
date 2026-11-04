@@ -26,7 +26,7 @@ describe('ImmersionBackgroundSettings', () => {
     });
 
     it('shows image and viewpoint controls in Appearance settings', () => {
-        render(<ImmersionBackgroundSettings />);
+        render(<ImmersionBackgroundSettings isImmersionMode />);
 
         expect(screen.getByRole('switch', { name: 'Show Background Image' })).toBeTruthy();
         expect(screen.getByRole('switch', { name: 'Show as Side Panel' })).toBeTruthy();
@@ -34,12 +34,22 @@ describe('ImmersionBackgroundSettings', () => {
     });
 
     it('keeps background options available when the image is hidden', () => {
-        render(<ImmersionBackgroundSettings />);
+        render(<ImmersionBackgroundSettings isImmersionMode />);
 
         fireEvent.click(screen.getByRole('switch', { name: 'Show Background Image' }));
 
         expect(useSettingsStore.getState().showImmersionBackgroundImage).toBe(false);
         expect(screen.getByRole('switch', { name: 'Show as Side Panel' })).toBeTruthy();
         expect(screen.getByTestId('immersion-background-viewpoint')).toBeTruthy();
+    });
+
+    it('shows viewpoint controls only while immersion mode is enabled', () => {
+        const { rerender } = render(<ImmersionBackgroundSettings isImmersionMode={false} />);
+
+        expect(screen.queryByTestId('immersion-background-viewpoint')).toBeNull();
+        rerender(<ImmersionBackgroundSettings isImmersionMode />);
+        expect(screen.getByTestId('immersion-background-viewpoint')).toBeTruthy();
+        rerender(<ImmersionBackgroundSettings isImmersionMode={false} />);
+        expect(screen.queryByTestId('immersion-background-viewpoint')).toBeNull();
     });
 });

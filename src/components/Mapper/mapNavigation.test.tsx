@@ -33,6 +33,17 @@ beforeAll(async () => {
 afterEach(cleanup);
 
 describe('reported rooms in the bundled MMapper map', () => {
+    it('tracks Felak Khazâd south and north despite accents absent from the bundled map', () => {
+        const inputs = {roomsRef:{current:{}},preloadedCoordsRef:{current:tuples as Record<string, MapperPreloadedRoom>},
+            serverIdIndexRef:{current:{}}};
+        const state = createRoomLocationState();
+        const exits = {n:1,e:1,s:1,w:1};
+        expect(locateRoomObservation(inputs,state,{num:0,name:'Felak Uzbadul',exits},'m_104031','s').id).toBe('m_28');
+        expect(locateRoomObservation(inputs,state,{num:0,name:'Felak Khazâd',exits},'m_28','n').id).toBe('m_104031');
+        expect(state.confidence).toBe('confirmed');
+        resetRoomLocation(state);
+        expect(locateRoomObservation(inputs,state,{num:0,name:'Felak Khaza\u0302d',exits},null,null).id).toBe('m_104031');
+    });
     it('reacquires the actual Halls of the Morruhk after death without a server room ID', () => {
         const index = map.names.indexOf('Halls of the Morruhk');
         expect(index).toBeGreaterThanOrEqual(0);

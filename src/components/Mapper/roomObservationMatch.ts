@@ -7,7 +7,8 @@ import { normalizeExitKey } from '../../utils/gmcpExitUtils';
 
 // --- Static text comparison ---
 export const normalizeRoomText = (value: unknown): string => stripAnsi(String(value ?? ''))
-    .replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    .replace(/<[^>]*>/g, '').normalize('NFD').replace(/\p{M}/gu, '')
+    .replace(/\s+/g, ' ').trim().toLowerCase();
 export const observedRoomName = (data: GmcpRoomInfo): string => {
     const name = normalizeRoomText(data.name);
     return /^(?:darkness|unknown room|pitch black|it is pitch black.*)$/.test(name) ? '' : name;

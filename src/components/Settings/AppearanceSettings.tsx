@@ -290,7 +290,7 @@ export const AppearanceSettings: React.FC<AppearanceSettingsProps> = ({
                     onToggle={() => setKeepScreenAwake(!keepScreenAwake)}
                 />
             </div>
-            <ImmersionBackgroundSettings />
+            <ImmersionBackgroundSettings isImmersionMode={isImmersionMode} />
         </>
     );
 };

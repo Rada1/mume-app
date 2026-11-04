@@ -10,7 +10,7 @@ import { ToggleRow } from './SettingHelpers';
 import ZoneBackgroundPositionSettings from './ZoneBackgroundPositionSettings';
 
 // --- Render Section ---
-const ImmersionBackgroundSettings: React.FC = () => {
+const ImmersionBackgroundSettings: React.FC<{ isImmersionMode: boolean }> = ({ isImmersionMode }) => {
     const showBackgroundImage = useSettingsStore(state => state.showImmersionBackgroundImage);
     const setShowBackgroundImage = useSettingsStore(state => state.setShowImmersionBackgroundImage);
     const useSidePanel = useSettingsStore(state => state.useImmersionBackgroundSidePanel);
@@ -33,7 +33,7 @@ const ImmersionBackgroundSettings: React.FC = () => {
                     onToggle={() => setUseSidePanel(!useSidePanel)}
                 />
             </div>
-            <ZoneBackgroundPositionSettings />
+            {isImmersionMode && <ZoneBackgroundPositionSettings />}
         </>
     );
 };
