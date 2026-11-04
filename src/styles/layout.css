@@ -3118,6 +3118,12 @@
         left: auto;
         right: 0;
     }
+
+    /* Reserve the resize handle's lane outside both log scrollbars. */
+    .message-log-container .message-log-layout {
+        box-sizing: border-box;
+        padding-right: 8px;
+    }
 }
 
 /* --- Neutral immersion glass: preserve the scene color behind each panel --- */

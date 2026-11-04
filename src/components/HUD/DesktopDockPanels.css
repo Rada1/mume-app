@@ -36,6 +36,11 @@
  position:absolute; z-index:30; bottom:100%; left:4px; right:auto; box-sizing:border-box;
  width:min(340px,calc(100vw - 16px)); max-width:calc(100% - 8px);
  padding:12px; background:var(--desktop-control-panel); color:#ddd7cb; font:12px/1.4 var(--font-mono,monospace);
+ box-shadow:0 0 0 1px #ffffff14, 0 8px 24px #000b;
+}
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-you-summary[data-front-menu="gear"] .command-tree-gear-controls { z-index:31; }
+.app-container:not(.is-mobile) .command-dock-shell .command-tree-gear-quick-menu {
+ filter:drop-shadow(0 0 1px #ffffff30) drop-shadow(0 8px 12px #000b);
 }
 .app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded .command-tree-you-vitals { margin-top:0; }
 .app-container:not(.is-mobile) .command-dock-shell .command-tree-you-expanded :is(.command-tree-you-vitals,.command-tree-you-combat-stats,.command-tree-you-details) {

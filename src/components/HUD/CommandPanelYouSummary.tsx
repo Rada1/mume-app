@@ -28,13 +28,17 @@ export const CommandPanelYouSummary = ({
     scoreLines,
     executeCommand,
     scopeKey,
-    headerActions
+    headerActions,
+    frontMenu,
+    onActivateCharacter
 }: {
     fallbackName: string | null;
     scoreLines: DrawerLine[];
     executeCommand: ExecuteCommand;
     scopeKey: string;
     headerActions?: React.ReactNode;
+    frontMenu?: 'character' | 'gear';
+    onActivateCharacter?: () => void;
 }) => {
     const vitals = useActiveVitals();
     const summaryRef = useCommandSummaryHeight();
@@ -135,12 +139,13 @@ export const CommandPanelYouSummary = ({
         move: vitals.move, maxMove: vitals.maxMove
     };
 
-    return <section ref={summaryRef} className="command-tree-you-summary" aria-label="Character status">
+    return <section ref={summaryRef} className="command-tree-you-summary" aria-label="Character status" data-front-menu={frontMenu}>
         <div className="command-tree-you-header">
         <button ref={node => { mobilePopover.anchorRef.current = node; }} type="button" className="command-tree-you-identity command-tree-you-toggle"
             aria-expanded={expanded} aria-controls={detailsId}
-            aria-label={`${collapsed ? 'Expand' : 'Collapse'} character info`} onPointerEnter={hoverPreview.enter} onPointerLeave={hoverPreview.leave}
-            onClick={() => { hoverPreview.clear(); toggle(); }}>
+            aria-label={`${collapsed ? 'Expand' : 'Collapse'} character info`} onPointerEnter={event => { if (event.pointerType !== 'touch') onActivateCharacter?.(); hoverPreview.enter(event); }} onPointerLeave={hoverPreview.leave}
+            onFocus={event => { if (event.currentTarget.matches(':focus-visible')) onActivateCharacter?.(); }}
+            onClick={() => { onActivateCharacter?.(); hoverPreview.clear(); toggle(); }}>
             <strong title={name}>{name}</strong>
             <span>Lv.{character.level || '\u2014'}</span>
             <span className="command-tree-you-gold">{(character.gold || 0).toLocaleString()} gold</span>
@@ -154,7 +159,7 @@ export const CommandPanelYouSummary = ({
         </div>
         <div id={detailsId} ref={node => { mobilePopover.menuRef.current = node; }} popover={viewport?.isMobile ? 'manual' : undefined} className="command-tree-you-expanded" hidden={!expanded}
             style={viewport?.isMobile ? {...mobilePopover.position, width:'min(340px, calc(100vw - 16px))'} : undefined}
-            onPointerEnter={hoverPreview.enter} onPointerLeave={hoverPreview.leave}>
+            onPointerEnter={event => { if (event.pointerType !== 'touch') onActivateCharacter?.(); hoverPreview.enter(event); }} onPointerLeave={hoverPreview.leave}>
         <div className={`command-tree-you-vitals${isRequestingVitalsScore ? ' is-requesting' : ''}`}
             role="button" aria-label="Refresh vitals with score command" aria-disabled={!canRefreshCombatStats}
             aria-busy={isRequestingVitalsScore} tabIndex={canRefreshCombatStats ? 0 : -1}
