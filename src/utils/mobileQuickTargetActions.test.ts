@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import type { CommandActionTargetEntry } from '../objects/commandActionTargetModel';
 import { getMobileQuickTarget } from './mobileQuickTargetActions';
 import type { CharacterInfo } from '../types';
+import { MUME_HERB_KEYWORDS, HERB_DESCRIPTIVE_KEYWORDS } from './herbKeywords';
 
 // --- Contextual action selection ---
 const entry = (overrides: Partial<CommandActionTargetEntry>): CommandActionTargetEntry => ({
@@ -25,7 +26,9 @@ describe('mobile quick actions', () => {
  it('distinguishes mounts, allies and enemies', () => {
   expect(actions(entry({label:'a pack horse', context:'2.horse', category:'cat-npc', group:'npcs'})).map(a => a.command))
    .toEqual(['consider 2.horse','ride 2.horse','lead 2.horse','unsaddle 2.horse all']);
-  expect(actions(entry({label:'Elena', context:'Elena', category:'cat-ally', group:'players'})).map(a => a.label)).toEqual(['Follow','Group']);
+  expect(actions(entry({label:'Elena', context:'Elena', category:'cat-ally', group:'players'})).map(a => a.label)).toEqual(['Whois','Follow','Group']);
+  expect(actions(entry({label:'Elena', context:'Elena', category:'cat-ally-remote', group:'players', scope:'remote'}))).toEqual([{label:'Whois', command:'whois elena'}]);
+  expect(actions(entry({label:'Elena', context:'Elena', category:'cat-ally-remote', group:'players', scope:'room'}))).toEqual([{label:'Whois', command:'whois elena'}]);
   expect(actions(entry({label:'an orc', context:'2.orc', category:'cat-enemy', group:'players'})).map(a => a.command)).toEqual(['consider 2.orc','hit 2.orc']);
   expect(actions(entry({label:'a guard', context:'2.guard', category:'cat-npc', group:'npcs'})).map(a => a.command)).toEqual(['consider 2.guard','hit 2.guard']);
  });
@@ -36,5 +39,16 @@ describe('mobile quick actions', () => {
   expect(actions(entry({label:'some bread', context:'2.bread'})).map(a => a.command)).toEqual(['get 2.bread', 'eat 2.bread']);
   expect(actions(entry({label:'a waterskin', context:'2.skin'})).map(a => a.command)).toEqual(['get 2.skin', 'drink 2.skin']);
   expect(actions(entry({label:'a cloak', context:'cloak', group:'worn', category:'cat-worn-object', scope:'self'})).map(a => a.command)).toEqual(['remove cloak']);
+ });
+ it('offers Crush for herbs and honeycomb in the room and inventory', () => {
+  expect(actions(entry({label:'a sprig of athelas', context:'2.athelas'}))).toContainEqual({label:'Crush', command:'crush 2.athelas'});
+  expect(actions(entry({label:'a honeycomb', context:'3.honeycomb', group:'inventory', category:'cat-inventory-object', scope:'self'})))
+   .toContainEqual({label:'Crush', command:'crush 3.honeycomb'});
+  expect(actions(entry({label:'a loaf of bread', context:'bread'})).map(action => action.label)).not.toContain('Crush');
+ });
+ it('offers Crush for every shared herb keyword', () => {
+  for (const keyword of [...MUME_HERB_KEYWORDS, ...HERB_DESCRIPTIVE_KEYWORDS]) {
+   expect(actions(entry({label:keyword, context:'2.herb'})), keyword).toContainEqual({label:'Crush', command:'crush 2.herb'});
+  }
  });
 });

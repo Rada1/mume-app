@@ -87,6 +87,8 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
         controller.game.setCommandPreview?.(`${prefix} ${destination.value}`);
     };
     const disabled = controller.game.gameState !== 'playing' || controller.game.isSpectateMode;
+    const recipientColor = (destination: CommandTargetSuggestion) => give
+        ? controller.targetSelection.colorFor(destination.meta) : undefined;
     const transfer = (destination: CommandTargetSuggestion, event: MouseEvent) => {
         if (controller.isHelpMode) { controller.executeHelp(verb); return; }
         if (disabled || (!selected && !currency) || (currency && (!amountValid || !amountSelected))
@@ -97,7 +99,7 @@ export const useCommandTreeTransfer = (controller: ReturnType<typeof useCommandT
             : `${verb} ${selected!.value} ${destination.value}`;
         controller.game.handleButtonClick({...command, actionType: 'command', command: syntax}, event);
     };
-    return {sources, selected, sections, chooseSource, previewDestination, transfer, disabled, label, preposition: give ? 'to' : 'into',
+    return {sources, selected, sections, chooseSource, previewDestination, recipientColor, transfer, disabled, label, preposition: give ? 'to' : 'into',
         currencies: give ? GIVE_CURRENCIES : [], currency, chooseCurrency, amount, amountValid,
         amountSelected, updateAmount, chooseAmount, confirmAmount,
         destinationLabel: give ? 'Give recipients in this room' : 'Put destination containers',

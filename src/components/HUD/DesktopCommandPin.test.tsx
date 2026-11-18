@@ -31,10 +31,13 @@ it('sets a default without executing the command row', () => {
  const view=render(<div onClick={parent}><DesktopCommandPin label="Look" selected={false} onSelect={select}>
   <button onClick={execute}>Look</button>
  </DesktopCommandPin></div>);
+ expect(view.getByRole('button',{name:'Set Look as default click action'}).querySelector('.lucide-square')).toBeTruthy();
  fireEvent.click(view.getByRole('button',{name:'Set Look as default click action'}));
  expect(select).toHaveBeenCalledOnce();
  expect(execute).not.toHaveBeenCalled();
  expect(parent).not.toHaveBeenCalled();
+ view.rerender(<div onClick={parent}><DesktopCommandPin label="Look" selected onSelect={select}><button onClick={execute}>Look</button></DesktopCommandPin></div>);
+ expect(view.getByRole('button',{name:'Set Look as default click action'}).querySelector('.lucide-square-check')).toBeTruthy();
  fireEvent.click(view.getByRole('button',{name:'Look'}));
  expect(execute).toHaveBeenCalledOnce();
 });

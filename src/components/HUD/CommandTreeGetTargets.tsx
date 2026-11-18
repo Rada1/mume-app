@@ -14,6 +14,7 @@ import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActiva
 import { MobileCommandTargetSections } from './MobileCommandTargetSections';
 import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
 import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 
 // --- Render Section ---
 export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = false}: {
@@ -56,10 +57,14 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
             onClick={() => getFrom.getContainer(target)}>
             <span className="command-tree-row-label is-gear-target"><CommandTreeObjectTargetLabel label={keyword} location={target.meta}/></span>
         </button>;
-        if (isMobile) return getButton;
+        const entry = targets.find(candidate => candidate.id === target.objectId || candidate.id === target.containerId
+            || (candidate.context === target.value && ((target.meta === 'room' && candidate.group === 'objects') || candidate.group === target.meta)));
+        const targetButton = controller.game.viewport?.isMobile === false && !heldMenu && entry
+            ? <DesktopCommandTargetPin characterName={controller.game.characterName} command={button.command} entry={entry}>{getButton}</DesktopCommandTargetPin> : getButton;
+        if (isMobile) return <React.Fragment key={target.key}>{targetButton}</React.Fragment>;
         return <div key={target.key} className="command-tree-get-container-option">
             <div className="command-tree-get-target-row" role="group" aria-label={keyword}>
-                {getButton}
+                {targetButton}
                 <button type="button" className="command-tree-row command-tree-get-expand" aria-label={`${expanded ? 'Hide' : 'Show'} contents of ${keyword}`}
                     aria-expanded={expanded} aria-controls={heldMenu ? `${contentsIdPrefix}-held-contents` : contentsId} disabled={getFrom.disabled}
                     onClick={event => { event.stopPropagation(); expanded ? getFrom.clearSelection() : getFrom.selectContainer(target); }}>
@@ -78,7 +83,7 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
             renderedRoomContainers.add(container.key);
             return renderContainerTarget(container);
         }
-        return <div key={entry.id} ref={heldTargetPreviewRef(() => controller.game.setCommandPreview?.(`get ${entry.context}`))} onPointerEnter={event => {
+        const row = <div ref={heldTargetPreviewRef(() => controller.game.setCommandPreview?.(`get ${entry.context}`))} onPointerEnter={event => {
             if (event.pointerType !== 'mouse') return;
             getFrom.clearSelection();
             controller.game.setCommandPreview?.(`get ${entry.keyword.toLowerCase() === 'all' ? 'all' : entry.context}`.trim());
@@ -87,6 +92,7 @@ export const CommandTreeGetTargets = ({controller, button, targets, heldMenu = f
         }}>
             <CommandTreeAction targetLabel={getCommandActionTargetDisplayLabel(entry)} targetGearRow={entry.gearRow} controller={controller} button={button} targetState={targetState(entry)}/>
         </div>;
+        return controller.game.viewport?.isMobile !== false || heldMenu || entry.id.startsWith('command-tree-all:') ? <React.Fragment key={entry.id}>{row}</React.Fragment> : <DesktopCommandTargetPin key={entry.id} characterName={controller.game.characterName} command={button.command} entry={entry}>{row}</DesktopCommandTargetPin>;
     });
     const additionalRoomContainers = roomContainers.filter(target => !renderedRoomContainers.has(target.key)).map(renderContainerTarget);
     const roomHasTargets = roomObjectTargets.length > 0 || additionalRoomContainers.length > 0;

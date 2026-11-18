@@ -6,16 +6,16 @@ import { getGroupMemberName, getGroupMemberHits, getGroupMemberMana, getGroupMem
 import './MobileStateControls.css';
 
 // --- Render Section ---
-export function MobileGroupControl({ dock = false }: { dock?: boolean }) {
-    const control = useMobileGroupControl();
+export function MobileGroupControl({ dock = false, active = true, onActivate }: { dock?: boolean; active?: boolean; onActivate?: () => void }) {
+    const control = useMobileGroupControl(active);
     const { members, otherEntities, colorFor } = control.entities;
     return <div className={dock ? 'command-tree-quick-state' : 'this-is-you-pill-wrapper'}>
         <button ref={control.anchor} type="button" className={dock ? 'group-state-button' : `this-is-you-pill${control.open ? ' is-active' : ''}`}
             disabled={control.disabled} aria-expanded={control.open} aria-haspopup="true"
-            onPointerEnter={control.hoverEnter} onPointerLeave={control.hoverLeave}
+            onPointerEnter={event => { if (event.pointerType === 'mouse') onActivate?.(); control.hoverEnter(event); }} onPointerLeave={control.hoverLeave}
             onPointerDown={control.pointerDown} onPointerMove={control.pointerMove}
             onPointerUp={() => control.pointerEnd(false)} onPointerCancel={() => control.pointerEnd(true)}
-            onLostPointerCapture={() => control.pointerEnd(true)} onClick={control.click}>
+            onLostPointerCapture={() => control.pointerEnd(true)} onClick={() => { onActivate?.(); control.click(); }}>
             {dock ? <>Group<small>{members.length} {members.length === 1 ? 'member' : 'members'}</small></> : <>
                 <span className="this-is-you-pill-category">Group:</span>
                 <strong className="this-is-you-pill-value">{members.length} {members.length === 1 ? 'member' : 'members'}</strong>

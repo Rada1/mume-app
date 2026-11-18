@@ -26,6 +26,16 @@ it('lets a hovered group menu be pinned and closed with clicks', () => {
     expect(game.executeCommand).not.toHaveBeenCalled();
 });
 
+it('closes a pinned group menu when another character panel becomes active', () => {
+    const { result, rerender } = renderHook(({ active }) => useMobileGroupControl(active), { initialProps: { active: true } });
+    act(() => result.current.click());
+    expect(result.current.open).toBe(true);
+    rerender({ active: false });
+    expect(result.current.open).toBe(false);
+    rerender({ active: true });
+    expect(result.current.open).toBe(false);
+});
+
 it('still sends the selected group target on a mobile hold and swipe', () => {
     vi.useFakeTimers();
     game.viewport.isMobile = true;

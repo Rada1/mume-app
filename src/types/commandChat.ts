@@ -55,4 +55,5 @@ export interface OnlineCommandTargetsProps {
     namesOnly?: boolean;
     onOpenChange?: (open: boolean) => void;
     excludedNames?: string[];
+    renderEntry?: (entry: CommandActionTargetEntry, row: React.ReactNode) => React.ReactNode;
 }

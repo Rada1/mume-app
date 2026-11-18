@@ -30,6 +30,7 @@ afterEach(() => {
 
 // --- Details Panel Slot Integration ---
 it('portals shop output into the desktop Details panel slot and marks detailsOpen', () => {
+    useClientPanelStackStore.setState({ detailsEnabled: true });
     const slot = document.createElement('div');
     slot.id = 'client-panel-details-slot';
     document.body.appendChild(slot);
@@ -55,7 +56,7 @@ it('portals shop output into the desktop Details panel slot and marks detailsOpe
 });
 
 // --- Repeated Shop Chip Clicks ---
-it('reopens Objects -> Shop -> List every time the shop chip requests it', () => {
+it('reopens the mobile Shop list every time the shop chip requests it', () => {
     const makeController = (shopOpenRequest: number) => ({
         shopOpenRequest,
         practiceOpenRequest: 0,
@@ -63,7 +64,7 @@ it('reopens Objects -> Shop -> List every time the shop chip requests it', () =>
         practice: { setOpen: vi.fn() },
         entries: [],
         menuButtons: [],
-        game: { characterName: 'Tester', inlineCategories: [], roomNpcs: [], entities: {}, currentTerrain: 'city', roomItems: [], roomNum: 1 },
+        game: { viewport: { isMobile: true }, characterName: 'Tester', inlineCategories: [], roomNpcs: [], entities: {}, currentTerrain: 'city', roomItems: [], roomNum: 1 },
         vitals: { characterInfo: {} },
         ui: { displayInventoryLines: [], displayEqLines: [] },
         previewEntity: vi.fn(),

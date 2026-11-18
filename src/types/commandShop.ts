@@ -17,6 +17,7 @@ export interface CommandShopState {
     completedCommand: string | null;
     completedId: number;
     openCatalog: () => void;
+    closeCatalog: () => void;
     selectItem: (item: ShopItem | null) => void;
     setPurchaseQuantity: (quantity: number) => void;
     setCompareFirst: (item: ShopItem | null) => void;

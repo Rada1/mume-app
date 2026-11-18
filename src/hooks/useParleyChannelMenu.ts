@@ -52,10 +52,11 @@ export function useParleyChannelMenu(props: ParleyChannelChipProps) {
         const logRect = !viewport?.isMobile && anchorRef.current?.closest('.message-log-docked-input')
             ? (anchorRef.current?.closest('.desktop-center-column') ?? document.querySelector('.desktop-center-column'))?.getBoundingClientRect()
             : null;
+        const dockedHistory = Boolean(!viewport?.isMobile && anchorRef.current?.closest('.message-log-docked-input') && document.getElementById('desktop-map-chat-history-slot'));
         const leftLaneWidth = logRect ? logRect.left - MENU_EDGE_GUTTER * 2 : 0;
         const useLeftLane = leftLaneWidth >= 240;
-        const width = Math.min(620, useLeftLane ? leftLaneWidth : availableWidth);
-        const left = useLeftLane && logRect
+        const width = Math.min(dockedHistory ? 300 : 620, useLeftLane && !dockedHistory ? leftLaneWidth : availableWidth);
+        const left = useLeftLane && logRect && !dockedHistory
             ? logRect.left - width - MENU_EDGE_GUTTER
             : Math.max(MENU_EDGE_GUTTER, Math.min(rect.left, window.innerWidth - width - MENU_EDGE_GUTTER));
         setPosition({ left, width,

@@ -10,6 +10,7 @@ import { useCommandShopCatalog } from './useCommandShopCatalog';
 import { useCommandShopStore } from '../stores/useCommandShopStore';
 import { usePanelDataStore } from '../stores/usePanelDataStore';
 import { CommandShopStock } from '../components/HUD/CommandShopStock';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 vi.mock('../context/GameContext', () => ({
     useGame: () => ({ executeCommand, roomNpcs: [], entities: {}, inlineCategories: [], roomName: 'Shop' }),
@@ -42,7 +43,9 @@ it('hides initial stock, filtered catalogs, and individual variant requests', ()
         const catalog = useCommandShopCatalog(shop);
         return { shop, catalog };
     });
+    useSettingsStore.getState().setShowChatWindow(true);
     act(() => result.current.shop.browse());
+    expect(useSettingsStore.getState().showChatWindow).toBe(false);
     finishCatalogAndBalance();
     act(() => result.current.shop.browse('list sword'));
     finishCatalogAndBalance();

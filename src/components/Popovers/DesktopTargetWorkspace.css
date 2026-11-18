@@ -197,10 +197,7 @@
 :is(.app-container:not(.is-mobile) .desktop-target-workspace,.desktop-target-workspace.is-mobile-target-workspace) .workspace-action-flow :is(.command-tree-row,.popover-action-button):is(:hover,:focus-visible,[aria-pressed="true"]) {
  background:var(--command-panel-surface-hover,#3b3024);
 }
-/* The mobile workspace is portaled to the body and cannot inherit app theme variables. */
-.desktop-target-workspace.is-mobile-target-workspace {
- --command-panel-surface:#211b16; --command-panel-surface-raised:#2d271e; --command-panel-surface-hover:#3b3024;
-}
+/* The floating workspace inherits the active palette from the document root. */
 .desktop-target-workspace.is-floating.is-mobile-target-workspace {
  height:auto; max-height:min(480px,calc(100dvh - 16px));
 }
@@ -208,12 +205,6 @@
  .desktop-target-workspace.is-floating.is-mobile-target-workspace {
   max-height:min(480px,calc(100dvh - max(16px,env(safe-area-inset-top,0px)) - max(8px,env(safe-area-inset-bottom,0px))));
  }
-}
-:root:has(.app-container.is-mobile.immersion-mode) .desktop-target-workspace.is-mobile-target-workspace {
- --command-panel-surface:#000; --command-panel-surface-raised:#111; --command-panel-surface-hover:#222; --command-panel-surface-rgb:0,0,0;
-}
-:root:has(.app-container.is-mobile.performance-mode) .desktop-target-workspace.is-mobile-target-workspace {
- --command-panel-surface:#171717; --command-panel-surface-raised:#222; --command-panel-surface-hover:#303030; --command-panel-surface-rgb:23,23,23;
 }
 .desktop-target-workspace.is-mobile-target-workspace.is-commands-only .workspace-action-category { min-height:44px; }
 .desktop-target-workspace.is-mobile-target-workspace.is-commands-only .desktop-target-workspace-header .desktop-target-workspace-name { min-height:40px!important; height:40px!important; }

@@ -13,6 +13,7 @@ import { CommandTreeAction } from './CommandTreeAction';
 import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { DesktopCommandPin } from './DesktopCommandPin';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 import { useDesktopCommandDefaults } from '../../hooks/useDesktopCommandDefaults';
 import { DESKTOP_SOCIAL_COMMANDS } from '../../utils/desktopSocialCommands';
 import { useMobileCommandTilesStore } from '../../stores/useMobileCommandTilesStore';
@@ -111,11 +112,12 @@ export const CommandTreeSocialTargets = ({controller, button, targets, onCommand
                     </button>)}
                     {!selected.targetOptions && roomTargets.map(entry => {
                         const label = getCommandActionTargetDisplayLabel(entry);
-                        return <div key={entry.id} onClick={() => { record(selected); onCommandExecuted?.(); }}>
+                        const row = <div onClick={() => { record(selected); onCommandExecuted?.(); }}>
                             <CommandTreeAction controller={controller} button={createSocialEmoteButton(selected, true)} targetLabel={label}
                                 targetState={{x: 0, y: 0, type: 'menu', setId: entry.category, category: entry.category, context: entry.context,
                                     keyword: entry.keyword, displayName: label, entityId: entry.id}}/>
                         </div>;
+                        return desktopPin ? <DesktopCommandTargetPin key={entry.id} characterName={controller.game.characterName} command={selected.command} entry={entry}>{row}</DesktopCommandTargetPin> : <React.Fragment key={entry.id}>{row}</React.Fragment>;
                     })}
                     {!selected.targetOptions && !isPoint && !roomTargets.length && <p className="command-tree-section-empty">No one else is here.</p>}
                 </div>

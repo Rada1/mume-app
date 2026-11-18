@@ -47,6 +47,16 @@ it('uses the existing collapsible trait header and syntax rows for selected stoc
     expect(container.querySelector('.inline-action-list')?.hasAttribute('hidden')).toBe(true);
 });
 
+it('keeps desktop popover actions visible without a header or syntax', () => {
+    const { result } = renderHook(useShopModel);
+    const { container, getByRole } = render(<CommandShopActions shop={result.current} hideSyntax flat />);
+    expect(container.querySelector('.inline-action-group-toggle')).toBeNull();
+    expect(container.textContent).not.toContain('<show 23>');
+    expect(getByRole('button', { name: 'show' })).toBeTruthy();
+    expect(getByRole('button', { name: 'compare' })).toBeTruthy();
+    expect(getByRole('button', { name: 'buy' })).toBeTruthy();
+});
+
 it('presents carried-item shop actions with the resolved command syntax', () => {
     const { result } = renderHook(useShopModel);
     const runInventoryAction = vi.fn();

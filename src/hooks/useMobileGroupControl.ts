@@ -5,12 +5,13 @@ import { useRoomEntitiesPanel } from './useRoomEntitiesPanel';
 import { useDesktopHoverPreview } from './useDesktopHoverPreview';
 
 // --- Interaction Section ---
-export function useMobileGroupControl() {
+export function useMobileGroupControl(active = true) {
     const game = useGame();
     const entities = useRoomEntitiesPanel();
     const [open, setOpen] = useState(false);
     const preview = useDesktopHoverPreview(game.viewport?.isMobile === false && !game.isSpectateMode);
-    const visible = open || preview.open;
+    const visible = active && (open || preview.open);
+    useEffect(() => { if (!active) { setOpen(false); preview.clear(); } }, [active, preview.clear]);
     const [heldTarget, setHeldTarget] = useState<string | null>(null);
     const [position, setPosition] = useState({ top: 0, left: 0 });
     const anchor = useRef<HTMLButtonElement>(null);

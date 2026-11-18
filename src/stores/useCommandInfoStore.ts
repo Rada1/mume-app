@@ -6,7 +6,9 @@ import { persist } from 'zustand/middleware';
 export const useCommandInfoStore = create<{
     collapsed: boolean;
     toggle: () => void;
+    collapse: () => void;
 }>()(persist(set => ({
     collapsed: false,
-    toggle: () => set(state => ({ collapsed: !state.collapsed }))
+    toggle: () => set(state => ({ collapsed: !state.collapsed })),
+    collapse: () => set({ collapsed: true })
 }), { name: 'mume-command-info' }));

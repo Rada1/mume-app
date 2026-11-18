@@ -56,6 +56,15 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
 }) => {
     const isImmersionMode = useSettingsStore(state => state.isImmersionMode);
     const isClassicMode = useSettingsStore(state => state.isClassicMode);
+    const theme = useSettingsStore(state => state.theme);
+    const commandColor = (command: string) => {
+        const color = getCommandTextColor(command);
+        if (theme !== 'light') return color;
+        if (color === '#ffd700') return '#775700';
+        if (color === '#f8fafc') return '#2f2a20';
+        if (color === '#f97316') return '#9a4800';
+        return color;
+    };
     const targetAppearance = useCommandSuggestionAppearance();
     const [now, setNow] = useState(Date.now());
     const hasExpiringPortkeys = show && targetSuggestions.some(entry => entry.meta === 'magic-key' && entry.expiresAt !== undefined);
@@ -84,7 +93,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                             key={entry.key}
                             type="button"
                             className={`command-suggestion-option target-suggestion-option is-command-row${index === 0 ? ' is-selected' : ''}`}
-                            style={{ '--suggestion-command-color': getCommandTextColor(`cast '${entry.value}'`) } as React.CSSProperties}
+                            style={{ '--suggestion-command-color': commandColor(`cast '${entry.value}'`) } as React.CSSProperties}
                             onPointerDown={event => {
                                 event.preventDefault();
                                 onChooseSpell(entry.value);
@@ -175,7 +184,7 @@ export const CommandSuggestionPopup: FC<CommandSuggestionPopupProps> = ({
                             key={entry.display}
                             type="button"
                             className={`command-suggestion-option is-command-row${isSelected ? ' is-selected' : ''}${entry.aliasExpansion ? ' is-alias' : ''}`}
-                            style={{ '--suggestion-command-color': getCommandTextColor(entry.aliasExpansion || entry.full) } as React.CSSProperties}
+                            style={{ '--suggestion-command-color': commandColor(entry.aliasExpansion || entry.full) } as React.CSSProperties}
                             onPointerDown={event => {
                                 event.preventDefault();
                                 onChooseCommand(entry);

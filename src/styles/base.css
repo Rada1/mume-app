@@ -1,7 +1,7 @@
 :root {
     /* Common variables */
-    --accent: #d4aa00;
-    --accent-rgb: 212, 170, 0;
+    --accent: #c9a84c;
+    --accent-rgb: 201, 168, 76;
     --accent-glow: rgba(var(--accent-rgb), 0.5);
     --map-accent: #fcd34d;
     --font-main: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
@@ -16,12 +16,12 @@
     --bg-app: rgb(var(--bg-app-rgb));
     --bg-panel: #171512;
     --bg-overlay: rgba(0, 0, 0, 0.70);
-    --text-primary: #d4cdb8;   /* Warm parchment */
+    --text-primary: #d4c9b0;   /* Wiki parchment */
     --text-dim: #a9a18d;       /* Muted parchment */
     --text-faded: #756f60;     /* Faded parchment */
-    --border-color: rgba(212, 170, 0, 0.4);
-    --input-bg: rgb(32, 29, 24);
-    --command-surface-bg: rgb(45, 39, 30);
+    --border-color: #3d3020;
+    --input-bg: #231c16;
+    --command-surface-bg: #231c16;
     --header-bg: rgba(13, 12, 10, 0.88);
     --bg-modal: #171512;
     --border-modal: rgba(212, 170, 0, 0.2);

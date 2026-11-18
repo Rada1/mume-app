@@ -1,7 +1,7 @@
 /** @file ShopBrowseNavigation.tsx — Shared shop category and filter controls. */
 
 import React from 'react';
-import { SHOP_BROWSE_CATEGORIES } from './shopBrowseCategories';
+import { SHOP_BROWSE_CATEGORIES, type ShopBrowseCategory } from './shopBrowseCategories';
 import './ShopBrowseNavigation.css';
 
 interface ShopBrowseNavigationProps {
@@ -9,6 +9,7 @@ interface ShopBrowseNavigationProps {
     activeFilter: string;
     onCategorySelect: (categoryId: string) => void;
     onFilterSelect: (filterId: string) => void;
+    categories?: readonly ShopBrowseCategory[];
 }
 
 export const ShopBrowseNavigation: React.FC<ShopBrowseNavigationProps> = ({
@@ -16,8 +17,9 @@ export const ShopBrowseNavigation: React.FC<ShopBrowseNavigationProps> = ({
     activeFilter,
     onCategorySelect,
     onFilterSelect,
+    categories = SHOP_BROWSE_CATEGORIES,
 }) => {
-    const activeCategoryDefinition = SHOP_BROWSE_CATEGORIES.find(category => category.id === activeCategory);
+    const activeCategoryDefinition = categories.find(category => category.id === activeCategory);
     const handlePointerDown = (event: React.PointerEvent<HTMLButtonElement>, action: () => void) => {
         event.stopPropagation();
         event.preventDefault();
@@ -26,7 +28,7 @@ export const ShopBrowseNavigation: React.FC<ShopBrowseNavigationProps> = ({
 
     return <>
         <nav className="shop-target-categories" aria-label="Shop categories">
-            {SHOP_BROWSE_CATEGORIES.map(category => <button
+            {categories.map(category => <button
                 key={category.id}
                 type="button"
                 className={activeCategory === category.id ? 'active' : ''}

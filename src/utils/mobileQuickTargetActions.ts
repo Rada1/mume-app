@@ -19,7 +19,11 @@ export const getMobileQuickTarget = (entry: CommandActionTargetEntry, configs: I
  const axes = getInlineCategoryAxes(entry.category);
  const traits = new Set([...getObjectTraits(entry.gearRow?.line || entry.label),
   ...getResolvedTraitSections(entry.category, entry.label, configs).map(section => section.trait.id)]);
- if (!target || entry.scope === 'remote' || entry.id === 'command-panel-self') return { kind:'other', target, actions };
+ if (!target || entry.id === 'command-panel-self') return { kind:'other', target, actions };
+ if (entry.scope === 'remote' || entry.category === 'cat-ally-remote') {
+  if (entry.category === 'cat-ally' || entry.category === 'cat-ally-remote' || entry.groupMember) add('Whois', `whois ${target}`);
+  return { kind:'other', target, actions };
+ }
  if (axes.isCharacter) {
   if (entry.category === 'cat-npc' || entry.category === 'cat-enemy' || entry.category === 'cat-mount') add('Consider', `consider ${target}`);
   if (entry.category === 'cat-mount' || traits.has('trait-mount')) {
@@ -28,6 +32,7 @@ export const getMobileQuickTarget = (entry: CommandActionTargetEntry, configs: I
    return {kind:'mount', target, actions};
   }
   if (entry.category === 'cat-ally' || entry.category === 'cat-ally-remote' || entry.groupMember) {
+   add('Whois', `whois ${target}`);
    add('Follow', `follow ${target}`); add('Group', `group ${target}`);
   } else add('Hit', `hit ${target}`);
   return {kind:'character', target, actions};
@@ -55,5 +60,6 @@ export const getMobileQuickTarget = (entry: CommandActionTargetEntry, configs: I
   if (traits.has('trait-food')) add('Eat', `eat ${target}`);
   else if (traits.has('trait-water') || traits.has('trait-fluid-container')) add('Drink', `drink ${target}`);
  }
+ if (traits.has('trait-herb')) add('Crush', `crush ${target}`);
  return {kind:'object', target, actions};
 };

@@ -12,6 +12,7 @@ import { CommandTreeCollapsibleSection } from './CommandTreeCollapsibleSection';
 import { CommandTreeTargetHeader } from './CommandTreeTargetHeader';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 // --- Render Section ---
 export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu = false}: {
     controller: ReturnType<typeof useCommandTreeController>; tree: ReturnType<typeof useCommandTree>; command: CustomButton; heldMenu?: boolean;
@@ -21,29 +22,37 @@ export const CommandTreeTransferTargets = ({controller, tree, command, heldMenu 
     const branchClass = `command-tree-branch terminal-inline-popover${heldMenu ? ' command-tree-held-command-targets' : ''}`;
     const isTargetDestination = (value: string) => transfer.label === 'Give' && controller.entries.some(entry => entry.context === value && isCurrentCommandTarget(entry, controller.vitals.target));
     const renderDestinations = (section: (typeof transfer.sections)[number]) => <div className="command-tree-section-commands" role="group" aria-label={`${section.label} destinations`} tabIndex={0}>
-        {section.targets.map(destination => <button key={destination.key} type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
+        {section.targets.map(destination => {
+            const entry = controller.entries.find(item => item.id === destination.key || (item.context === destination.value && (transfer.label === 'Give' ? ['players','npcs'].includes(item.group) : ['inventory','worn','objects'].includes(item.group))));
+            const row = <button type="button" data-menu-item="true" className={`command-tree-row${isTargetDestination(destination.value) ? ' command-tree-current-target' : ''}`}
             ref={heldTargetPreviewRef(() => transfer.previewDestination(destination))}
             disabled={transfer.disabled || Boolean(transfer.currency && (!transfer.amountValid || !transfer.amountSelected))} title={destination.label}
             onPointerEnter={event => { if (event.pointerType === 'mouse') transfer.previewDestination(destination); }} onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.previewDestination(destination); }}
             onClick={event => transfer.transfer(destination, event)}>
-            <span className={`command-tree-row-label${transfer.label === 'Put' ? ' is-gear-target' : ''}`}>{transfer.label === 'Put'
+            <span className={`command-tree-row-label${transfer.label === 'Put' ? ' is-gear-target' : ''}`} style={transfer.label === 'Give' ? {color: transfer.recipientColor(destination)} : undefined}>{transfer.label === 'Put'
                 ? <CommandTreeObjectTargetLabel label={destination.label} location={destination.meta}>{getCommandObjectTargetDisplayLabel(destination.value, destination.label)}</CommandTreeObjectTargetLabel>
                 : destination.label}</span>
             {isTargetDestination(destination.value) && <Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/>}
-        </button>)}
+        </button>;
+            return entry && controller.game.viewport?.isMobile === false && !heldMenu ? <DesktopCommandTargetPin key={destination.key} characterName={controller.game.characterName} command={`${command.command}::destination`} entry={entry}>{row}</DesktopCommandTargetPin> : <React.Fragment key={destination.key}>{row}</React.Fragment>;
+        })}
     </div>;
     return <>
         <section className={branchClass} aria-label={`${transfer.label} objects`} {...touchActivation}>
             <CommandTreeTargetHeader/>
             <CommandTreeCollapsibleSection label="Inventory">
                 <div className="command-tree-section-commands" role="group" aria-label="Inventory objects" tabIndex={0}>
-                    {transfer.sources.map(source => <button key={source.key} type="button" className="command-tree-row"
+                    {transfer.sources.map(source => {
+                        const entry = controller.entries.find(item => item.group === 'inventory' && (item.id === source.objectId || item.context === source.value));
+                        const row = <button type="button" className="command-tree-row"
                         aria-expanded={transfer.selected?.key === source.key} title={source.label}
                         onPointerEnter={event => { if (event.pointerType === 'mouse') tree.defer(() => transfer.chooseSource(source)); }} onMouseLeave={tree.cancelPreview}
                         onFocus={event => { if (event.currentTarget.matches(':focus-visible')) transfer.chooseSource(source); }} onClick={() => transfer.chooseSource(source)}>
                         <span className={`command-tree-row-label${source.value === 'all' ? '' : ' is-gear-target'}`}>{source.value === 'all'
                             ? source.label : <CommandTreeObjectTargetLabel label={source.label} location={source.meta}>{getCommandObjectTargetDisplayLabel(source.value, source.label)}</CommandTreeObjectTargetLabel>}</span><span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>
-                    </button>)}
+                    </button>;
+                        return entry && controller.game.viewport?.isMobile === false && !heldMenu ? <DesktopCommandTargetPin key={source.key} characterName={controller.game.characterName} command={`${command.command}::source`} entry={entry}>{row}</DesktopCommandTargetPin> : <React.Fragment key={source.key}>{row}</React.Fragment>;
+                    })}
                 </div>
             </CommandTreeCollapsibleSection>
             {transfer.label === 'Give' && <CommandTreeCollapsibleSection label="Money">

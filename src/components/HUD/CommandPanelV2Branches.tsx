@@ -41,6 +41,7 @@ import { getCommandTreeTargetPreview } from '../../utils/commandTreePreview';
 import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
 import { isCommandTreeSocial } from '../../utils/commandTreeSocial';
 import { CommandTreeSocialTargets } from './CommandTreeSocialTargets';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 
 // --- Branch Layout Section ---
 type BranchListRef = React.MutableRefObject<HTMLDivElement | null>;
@@ -140,12 +141,15 @@ export const CommandPanelV2Branches = ({
         else if (entry.id === 'command-panel-room') controller.previewTargetContext('room');
         else controller.previewEntity(entry);
     };
-    const renderTarget = (entry: CommandActionTargetEntry, displayLabel = entry.id === 'command-panel-self' ? 'Self' : getCommandActionTargetDisplayLabel(entry)) => <div key={entry.id}
+    const renderTarget = (entry: CommandActionTargetEntry, displayLabel = entry.id === 'command-panel-self' ? 'Self' : getCommandActionTargetDisplayLabel(entry)) => {
+        const row = <div
         onPointerEnter={event => { if (event.pointerType === 'mouse') previewTarget(entry); }}
         onFocus={event => { if (event.target instanceof Element && event.target.matches(':focus-visible')) previewTarget(entry); }}>
         <CommandTreeAction targetLabel={displayLabel} targetGearRow={entry.gearRow}
             controller={controller} button={tree.command!} targetState={{x:0,y:0,type:'menu',setId:entry.category,category:entry.category,context:entry.context,keyword:entry.keyword,displayName:entry.group === 'objects' && entry.scope === 'room' ? entry.label : displayLabel,entityId:entry.id,parentNoun:entry.parentNoun,hasDoor:entry.hasDoor}}/>
     </div>;
+        return !isMobile && tree.command ? <DesktopCommandTargetPin key={entry.id} characterName={game.characterName} command={tree.command.command} entry={entry}>{row}</DesktopCommandTargetPin> : <React.Fragment key={entry.id}>{row}</React.Fragment>;
+    };
     const targetBranches = <CommandTargetMenuContext.Provider value={true}>
         {!heldCommand && !heldDirection && tree.command && parseKeyedSpellCommand(tree.command.command)
             && <CommandTreeMagicKeyTargets controller={controller} button={tree.command} onCommandExecuted={onCommandExecuted}/>}
@@ -168,6 +172,7 @@ export const CommandPanelV2Branches = ({
             </CommandTreeCollapsibleSection>}
             {isOnlinePlayerTargetCommand && <CommandTreeCollapsibleSection label="Online Players">
                 <OnlineCommandTargets hideHeader open namesOnly={isOnlinePlayerTargetCommand} excludedNames={isTellTargetCommand ? [game.characterName || ''] : []}
+                    renderEntry={!isMobile && tree.command ? (entry, row) => <DesktopCommandTargetPin key={entry.id} characterName={game.characterName} command={tree.command!.command} entry={entry}>{row}</DesktopCommandTargetPin> : undefined}
                     onPreviewTarget={entry => {
                         if (tree.command) controller.game.setCommandPreview?.(getCommandTreeTargetPreview(tree.command.command, entry.context));
                         controller.previewEntity(entry);

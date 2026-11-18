@@ -10,7 +10,8 @@ import { BoardDetails } from './BoardDetails';
 // --- Render Section ---
 export const CommandTreeOutputs = ({controller}: {controller: ReturnType<typeof useCommandTreeController>}) => {
     const { hasCapturedDetails, capture, closeDetails, shop, practice } = controller;
-    if (shop.outputVisible) return <CommandShopOutputPanel shop={shop} />;
+    const inlineShopReport = controller.game.viewport?.isMobile === false && shop.browsing && shop.available;
+    if (shop.outputVisible && !inlineShopReport) return <CommandShopOutputPanel shop={shop} />;
     if (practice.outputVisible) return <CommandPracticeOutputPanel practice={practice} />;
     const showCapturedDetails = hasCapturedDetails && !isInlineActionPopover(capture);
     return <>

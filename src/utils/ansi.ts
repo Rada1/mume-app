@@ -36,13 +36,13 @@ const generatePalette = () => {
         const rv = r === 0 ? 0 : r * 40 + 55;
         const gv = g === 0 ? 0 : g * 40 + 55;
         const bv = b === 0 ? 0 : b * 40 + 55;
-        palette[i] = `rgb(${rv},${gv},${bv})`;
+        palette[i] = `var(--ansi-color-${i}, rgb(${rv},${gv},${bv}))`;
     }
 
     // Grayscale ramp (indices 232-255)
     for (let i = 232; i < 256; i++) {
         const gray = (i - 232) * 10 + 8;
-        palette[i] = `rgb(${gray},${gray},${gray})`;
+        palette[i] = `var(--ansi-color-${i}, rgb(${gray},${gray},${gray}))`;
     }
 
     return palette;

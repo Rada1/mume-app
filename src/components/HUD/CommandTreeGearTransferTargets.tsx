@@ -17,7 +17,7 @@ export const CommandTreeGearTransferTargets = ({transfer}: {transfer: ReturnType
     onPointerEnter={event => {if(event.pointerType==='mouse')transfer.previewDestination(destination);}}
     onFocus={event => {if(event.currentTarget.matches(':focus-visible'))transfer.previewDestination(destination);}}
     onClick={event => {event.stopPropagation();transfer.transfer(destination,event);}}>
-    <span className="command-tree-row-label">{destination.label}</span>
+    <span className="command-tree-row-label" style={transfer.label === 'Give' ? {color:transfer.recipientColor(destination)} : undefined}>{destination.label}</span>
    </button>)}
   </div>)}
   {!transfer.sections.length&&<p className="command-tree-section-empty">{transfer.emptyLabel}</p>}

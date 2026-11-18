@@ -37,6 +37,7 @@ import { formatMovementArrow, getMovementDirectionLabel, normalizeMovementDirect
 import { RunnerIcon } from '../HUD/PromptBox';
 import { useLiveLogPaneResize } from '../../hooks/useLiveLogPaneResize';
 import { useCurrentMapRoomNote } from '../../hooks/useCurrentMapRoomNote';
+import { parseEntityCountPrompt } from './entityCountPrompt';
 
 const formatTimestamp = (ts: number) => {
     const date = new Date(ts);
@@ -92,12 +93,6 @@ const getMovementDisplay = (raw: string) => {
     const arrow = direction ? formatMovementArrow(direction) : trimmed;
     const label = direction ? getMovementDirectionLabel(direction) : 'movement';
     return { arrow, label, direction };
-};
-
-const parseEntityCountPrompt = (text: string) => {
-    const matches = [...text.matchAll(/\[(Player|NPC|Object):\s*(\d+)\]/g)];
-    if (matches.length === 0 || matches.map(match => match[0]).join('') !== text) return null;
-    return matches.map(([, kind, count]) => ({ kind, count }));
 };
 
 const renderClassicMessage = (msg: Message): React.ReactNode => {
@@ -494,7 +489,7 @@ const MessageItem = React.memo(({
                             </>
                         )}
                         <span
-                            className={`comm-text${msg.replyCommand === 'tell' ? ' tell-body' : ''}`}
+                            className={`comm-text comm-message-highlight${msg.replyCommand === 'tell' ? ' tell-body' : ''}`}
                             dangerouslySetInnerHTML={{ __html: sanitizeMumeHtml(ansiConvert.toHtml(msg.commText || '')) }}
                         />
                     </div>

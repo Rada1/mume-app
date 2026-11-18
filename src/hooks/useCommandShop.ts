@@ -5,6 +5,7 @@ import type { CommandActionTargetEntry } from '../objects/commandActionTargetMod
 import { useGame, useUI } from '../context/GameContext';
 import { useMapper } from '../context/MapperContext';
 import { useUIStore } from '../stores/useUIStore';
+import { useSettingsStore } from '../stores/useSettingsStore';
 import { useCommandShopStore } from '../stores/useCommandShopStore';
 import { usePanelDataStore } from '../stores/usePanelDataStore';
 import { findRoomShopkeeper } from '../utils/shopkeeperUtils';
@@ -55,6 +56,7 @@ export const useCommandShop = (activeState: PopoverState, isVisible: boolean, ac
         game.executeCommand(command, true, true, false, true, { fromUi: true, shouldFocus: false }), true);
     const browse = (command = 'list') => {
         if (!available || shop.pendingCommand || stockPending) return;
+        if (!game.viewport?.isMobile) useSettingsStore.getState().setShowChatWindow(false);
         activate();
         shop.openCatalog();
         shop.selectItem(null);
@@ -125,6 +127,7 @@ export const useCommandShop = (activeState: PopoverState, isVisible: boolean, ac
         return true;
     };
     const closeWorkspace = () => {
+        shop.closeCatalog();
         shop.setCompareFirst(null);
         shop.setOutputOpen(false);
         useUIStore.getState().setIsShopOpen(false);

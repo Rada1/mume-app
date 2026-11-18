@@ -95,8 +95,8 @@ export const useCommandTree = (controller: ReturnType<typeof useCommandTreeContr
    });
   return labels.map(label => ({label, buttons: label === 'Shop' ? COMMAND_TREE_SHOP_BUTTONS : buttons.filter(button => sectionFor(button) === label)}));
  }, [group, grouped, sectionFor]);
- useEffect(() => { if (controller.shopOpenRequest && atShop) {useCommandPanelStore.getState().clearShopOpenRequest(); setGroup(3); setSection('Shop'); setCommand(COMMAND_TREE_SHOP_LIST_BUTTON); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop'));} }, [controller.shopOpenRequest, atShop]);
- useEffect(() => { if (controller.shop.browsing && atShop) {setGroup(3); setSection('Shop'); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop')); if (!isCommandTreeShopAction(command)) setCommand(COMMAND_TREE_SHOP_LIST_BUTTON);} }, [controller.shop.browsing, atShop]);
+ useEffect(() => { if (controller.shopOpenRequest && atShop) {useCommandPanelStore.getState().clearShopOpenRequest(); if (controller.game.viewport?.isMobile) {setGroup(3); setSection('Shop'); setCommand(COMMAND_TREE_SHOP_LIST_BUTTON); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop'));}} }, [controller.shopOpenRequest, atShop, controller.game.viewport?.isMobile]);
+ useEffect(() => { if (controller.game.viewport?.isMobile && controller.shop.browsing && atShop) {setGroup(3); setSection('Shop'); useCommandMenuSectionsStore.getState().expand(getCommandMenuSectionKey('Objects','Shop')); if (!isCommandTreeShopAction(command)) setCommand(COMMAND_TREE_SHOP_LIST_BUTTON);} }, [controller.shop.browsing, atShop, controller.game.viewport?.isMobile]);
  useEffect(() => { if (controller.practiceOpenRequest) {useCommandPanelStore.getState().clearPracticeOpenRequest(); setGroup(2); setSection('Character'); setCommand(COMMAND_TREE_PRACTICE_BUTTON);} }, [controller.practiceOpenRequest]);
  useEffect(() => { controller.practice.setOpen(group === 2 && isCommandTreePracticeAction(command)); }, [group, command, controller.practice.setOpen]);
  useEffect(() => {

@@ -15,6 +15,7 @@ import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActiva
 import { MobileCommandTargetSections } from './MobileCommandTargetSections';
 import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
 import { CommandTargetMenuContext } from '../../context/CommandTargetMenuContext';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 // --- Render Section ---
 export const CommandTreeObservationTargets = ({controller, button, targets, heldMenu = false}: {
     controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[]; heldMenu?: boolean;
@@ -26,7 +27,7 @@ export const CommandTreeObservationTargets = ({controller, button, targets, held
     const renderTargets = (section: (typeof observation.sections)[number]) => <div className="command-tree-section-commands" role="group" aria-label={`${section.label} targets`} tabIndex={0}>
                 {section.entries.map(entry => {
                     const targetLabel = entry.id === 'command-panel-self' ? 'Self' : getCommandActionTargetDisplayLabel(entry);
-                    return <button key={entry.id} type="button" data-menu-item="true"
+                    const row = <button type="button" data-menu-item="true"
                         ref={heldTargetPreviewRef(() => observation.preview(entry))}
                         className={`command-tree-row${isCurrentCommandTarget(entry, controller.vitals.target) ? ' command-tree-current-target' : ''}`}
                         disabled={observation.disabled} aria-expanded={entry.id === LOOK_IN_TARGET_ID ? observation.lookInOpen : undefined}
@@ -38,6 +39,7 @@ export const CommandTreeObservationTargets = ({controller, button, targets, held
                         {entry.id === LOOK_IN_TARGET_ID && <span className="command-tree-row-chevron" aria-hidden="true">&#8249;</span>}
                         {isCurrentCommandTarget(entry, controller.vitals.target) && <Crosshair size={14} className="command-tree-target-crosshair" aria-label="Current target"/>}
                     </button>;
+                    return controller.game.viewport?.isMobile !== false || heldMenu || entry.id === LOOK_IN_TARGET_ID ? <React.Fragment key={entry.id}>{row}</React.Fragment> : <DesktopCommandTargetPin key={entry.id} characterName={controller.game.characterName} command={button.command} entry={entry}>{row}</DesktopCommandTargetPin>;
                 })}
             </div>;
     const renderContainers = () => <>

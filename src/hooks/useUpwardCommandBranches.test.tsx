@@ -32,6 +32,29 @@ const mockRect = (el: HTMLElement, getRect: () => { top: number; bottom: number;
 
 // --- Submenu Alignment & Full-Height Clamping ---
 describe('useUpwardCommandBranches', () => {
+    it('moves the floating gear action wrapper along with its pointer bridge', () => {
+        const Harness = () => {
+            const ref = React.useRef<HTMLDivElement>(null);
+            React.useLayoutEffect(() => {
+                const root = ref.current!;
+                const roster = root.querySelector<HTMLElement>('.command-tree-gear-quick-list')!;
+                const row = roster.querySelector<HTMLElement>('button')!;
+                const action = root.querySelector<HTMLElement>('.command-tree-gear-quick-actions')!;
+                mockRect(root, () => ({ top: 400, bottom: 700, height: 300 }));
+                mockRect(roster, () => ({ top: 400, bottom: 700, height: 300 }));
+                mockRect(row, () => ({ top: 450, bottom: 480, height: 30 }));
+                mockRect(action, () => ({ top: 600, bottom: 700, height: 100 }));
+            }, []);
+            useUpwardCommandBranches(ref, true, 'gear');
+            return <div ref={ref} className="has-floating-gear-actions">
+                <div className="command-tree-gear-quick-details"><section className="command-tree-gear-quick-actions" /></div>
+                <section className="command-tree-gear-quick-list"><button className="command-tree-object" aria-expanded="true">Item</button></section>
+            </div>;
+        };
+        const { container } = render(<Harness />);
+        expect((container.querySelector('.command-tree-gear-quick-details') as HTMLElement).style.transform).toBe('translateY(-150px)');
+        expect((container.querySelector('.command-tree-gear-quick-actions') as HTMLElement).style.transform).toBe('');
+    });
     it('keeps a short submenu top-aligned with its parent command row when there is room below', () => {
         Object.defineProperty(window, 'innerHeight', { value: 900, configurable: true });
         const ref = React.createRef<HTMLDivElement>();

@@ -10,6 +10,7 @@ import { ClientPanelStackResizeHandle } from './ClientPanelStackResizeHandle';
 import { DrawerResizeHandle } from '../Drawers/DrawerResizeHandle';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { useCommandShopStore } from '../../stores/useCommandShopStore';
 import { isDesktopTargetWorkspaceRequest } from '../../utils/popoverPanelUtils';
 const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 
@@ -17,6 +18,10 @@ const HelpPanel = React.lazy(() => import('../Help/HelpPanel'));
 export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mobileDetailsOnly = false }) => {
     const showGroupPanel = useSettingsStore(state => state.showGroupPanel);
     const showChatWindow = useSettingsStore(state => state.showChatWindow);
+    const shopOpen = useCommandShopStore(state => state.browsing);
+    React.useEffect(() => {
+        if (!mobileDetailsOnly && showChatWindow && shopOpen) useCommandShopStore.getState().closeCatalog();
+    }, [showChatWindow, mobileDetailsOnly, shopOpen]);
     const showHelpPanel = useHelpStore(state => state.isOpen);
     const order = useClientPanelStackStore(state => state.order);
     const weights = useClientPanelStackStore(state => state.weights);
@@ -36,7 +41,7 @@ export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mo
         : panel === 'entities'
             ? showGroupPanel
             : panel === 'chat'
-                ? showChatWindow
+                ? showChatWindow || shopOpen
                 : panel === 'actions'
                     ? inlineActionsOpen
                     : panel === 'help' ? showHelpPanel : detailsEnabled;
@@ -79,7 +84,7 @@ export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mo
             className="client-panels-stack"
             data-active={visiblePanels.length > 0}
             data-mobile-details-only={mobileDetailsOnly ? 'true' : undefined}
-            data-overlay-panel-open={showHelpPanel || showChatWindow ? 'true' : undefined}
+            data-overlay-panel-open={showHelpPanel || showChatWindow || (!mobileDetailsOnly && shopOpen) ? 'true' : undefined}
             data-single-panel={isSingle ? 'true' : undefined}
             style={{
                 '--client-single-panel-height': isSingle ? `${Math.round(singleRatio * 1000) / 10}%` : '100%',
@@ -125,6 +130,7 @@ export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mo
                             data-inline-actions-slot={panel === 'actions' ? 'true' : undefined}
                             id={panel === 'actions'
                                 ? 'client-panel-inline-actions-slot'
+                                : panel === 'chat' && !mobileDetailsOnly ? 'client-panel-shop-slot'
                                 : panel === 'details'
                                     ? mobileDetailsOnly ? 'client-panel-mobile-details-slot' : 'client-panel-details-slot'
                                     : undefined}
@@ -136,7 +142,7 @@ export const ClientPanelStack: React.FC<{ mobileDetailsOnly?: boolean }> = ({ mo
                             onKeyDown={event => reorderByKeyboard(panel, event)}
                         >
                             {panel === 'entities' && visible && <GroupStatusWindow stacked />}
-                            {panel === 'chat' && visible && <ChatWindow stacked />}
+                            {panel === 'chat' && visible && showChatWindow && <ChatWindow stacked />}
                             {panel === 'help' && visible && <React.Suspense fallback={<p>Loading help…</p>}><HelpPanel stacked /></React.Suspense>}
                             {panel === 'details' && visible && !detailsOpen && <div className="client-panel-stack-empty">
                                 <header className="popover-inspection-panel-heading"><span>Details</span>

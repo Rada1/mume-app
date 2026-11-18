@@ -1,0 +1,59 @@
+/** @file lightModeSurfaces.css — Warm wiki-inspired light surfaces and readable controls. */
+/* --- Shared palette, including menus portaled outside the app --- */
+:root:has(.app-container.light-mode), :root .app-container.light-mode {
+ --command-panel-surface:#eee6d5!important; --command-panel-surface-rgb:238,230,213!important;
+ --command-panel-surface-deep:#eee6d5!important; --command-panel-surface-raised:#eee6d5!important;
+ --command-panel-surface-alt:#f3eee3!important; --command-panel-surface-hover:#e4d9c4!important;
+ --command-panel-value-surface:#eee6d5!important;
+ --desktop-control-panel:#eee6d5!important; --desktop-control-surface:#eee6d5!important; --desktop-control-hover:#e4d9c4!important; --desktop-control-muted:#6b6252!important;
+ --text-primary:#2f2a20; --text-dim:#6b6252; --text-faded:#786e5c;
+ --ansi-red:#a52a2a; --ansi-bright-red:#b32626;
+ --ansi-green:#28632d; --ansi-bright-green:#21702c;
+ --ansi-yellow:#775700; --ansi-bright-yellow:#806000;
+ --ansi-blue:#3545a0; --ansi-bright-blue:#304fb0;
+ --ansi-magenta:#8c328d; --ansi-bright-magenta:#953395;
+ --ansi-cyan:#00666b; --ansi-bright-cyan:#006c75;
+ --ansi-white:#4d463a; --ansi-bright-white:#2f2a20; --ansi-bright-black:#665e50;
+}
+/* --- Command dock, character controls, and floating menus --- */
+:root .app-container.light-mode .command-tree-v2,
+:root .app-container.light-mode .command-tree-you-expanded,
+:root .app-container.light-mode .command-tree-dock-controls-inner small,
+:root .app-container.light-mode .desktop-dock-toggle,
+:root .app-container.light-mode .command-tree-you-vital-value,
+:root .app-container.light-mode .command-tree-you-combat-stats span,
+:root .app-container.light-mode .command-tree-you-details span,
+:root .app-container.light-mode .board-details,
+:root .app-container.light-mode .board-details-message { color:var(--text-primary)!important; }
+:root .app-container.light-mode .desktop-control-label,
+:root .app-container.light-mode .desktop-command-category-name,
+:root .app-container.light-mode .command-tree-you-identity small { color:var(--text-dim)!important; }
+:root .app-container.light-mode .command-tree-you-identity strong { color:#00666b; }
+:root .app-container.light-mode .command-tree-you-gold,
+:root .app-container.light-mode .command-tree-you-progression { color:#775700; }
+:root .app-container.light-mode .docked-input-field,
+:root .app-container.light-mode .docked-input-highlight,
+:root .app-container.light-mode .docked-prompt-symbol { color:var(--text-primary)!important; }
+:root .app-container.light-mode .docked-input-field::placeholder { color:var(--text-dim)!important; }
+/* --- Details and editor surfaces --- */
+:root .app-container.light-mode .popover-inspection-panel,
+:root .app-container.light-mode .client-panel-stack-empty { background:var(--command-panel-surface)!important; color:var(--text-primary)!important; }
+:root:has(.app-container.light-mode) :is(.mume-editor-panel,.mume-editor-textarea,.mume-editor-btn,.board-details-composer textarea,.captured-report-copy,.captured-detail-panel) { color:var(--text-primary)!important; }
+:root:has(.app-container.light-mode) :is(.mume-editor-panel-title,.board-details-title,.board-details-reply,.captured-detail-kicker) { color:#775700; }
+/* --- Portal menus inherit the same palette, without dark-mode overrides --- */
+:root:has(.app-container.light-mode) :is(.desktop-map-movement-menu.command-tree-v2,.mobile-group-popover) {
+ --command-panel-surface:#eee6d5!important; --command-panel-surface-raised:#eee6d5!important; --command-panel-surface-hover:#e4d9c4!important;
+ --desktop-control-surface:#eee6d5!important; --desktop-control-hover:#e4d9c4!important;
+ --mobile-command-chip-background:#eee6d5!important; --mobile-command-chip-selected:#e4d9c4!important;
+ --group-panel:#eee6d5!important; --group-tile:#eee6d5!important; --group-hover:#e4d9c4!important;
+ color:#2f2a20;
+}
+/* --- Command suggestions are portaled beside body, outside .light-mode --- */
+:root:has(.app-container.light-mode) .command-suggestion-popup:is(.placement-top,.placement-bottom) {
+ background:#eee6d5!important; color:#2f2a20!important;
+}
+:root:has(.app-container.light-mode) .command-suggestion-popup .command-suggestion-option { color:#2f2a20!important; }
+:root:has(.app-container.light-mode) .command-suggestion-popup .command-suggestion-option:is(:hover,:focus-visible,.is-selected) { background:#dcd0b8!important; color:#2f2a20!important; }
+:root:has(.app-container.light-mode) .command-suggestion-popup .command-suggestion-full { color:#6b6252!important; }
+:root:has(.app-container.light-mode) .command-suggestion-popup .command-suggestion-portkey-favorite,
+:root:has(.app-container.light-mode) .command-suggestion-popup .command-suggestion-portkey-clear { color:#775700!important; }

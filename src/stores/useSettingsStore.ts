@@ -155,6 +155,8 @@ interface SettingsState {
     showMapSwipeDirectionLetters: boolean;
     mapDrawerOpacity: number;
     mapBrightness: number;
+    mapBrightnessDark: number;
+    mapBrightnessLight: number;
     characterDrawerOpacity: number;
     bottomBarOpacity: number;
     mapTileVisuals: MapTileVisualAdjustments;
@@ -436,6 +438,8 @@ export const useSettingsStore = create<SettingsState>()(
             showMapSwipeDirectionLetters: true,
             mapDrawerOpacity: 1.0,
             mapBrightness: 50,
+            mapBrightnessDark: 50,
+            mapBrightnessLight: 100,
             characterDrawerOpacity: 1.0,
             bottomBarOpacity: 1.0,
             mapTileVisuals: DEFAULT_MAP_TILE_VISUALS,
@@ -457,7 +461,8 @@ export const useSettingsStore = create<SettingsState>()(
             setLoginPassword: (loginPassword) => set({ loginPassword }),
             setRememberLogin: (rememberLogin) => set({ rememberLogin }),
             setAutoConnect: (autoConnect) => set({ autoConnect }),
-            setTheme: (theme) => set({ theme }),
+            setTheme: (theme) => set(state => ({ theme,
+                mapBrightness: theme === 'light' ? state.mapBrightnessLight : state.mapBrightnessDark })),
             setDrawerZoom: (drawerZoom) => set({ drawerZoom }),
             setIsImmersionMode: (isImmersionMode) => set({ isImmersionMode }),
             setIsEdgeLightingEnabled: (isEdgeLightingEnabled) => set({ isEdgeLightingEnabled }),
@@ -581,7 +586,10 @@ export const useSettingsStore = create<SettingsState>()(
             setHideMapHeaderFooter: (hideMapHeaderFooter) => set({ hideMapHeaderFooter }),
             setShowMapSwipeDirectionLetters: (showMapSwipeDirectionLetters) => set({ showMapSwipeDirectionLetters }),
             setMapDrawerOpacity: (mapDrawerOpacity) => set({ mapDrawerOpacity }),
-            setMapBrightness: (mapBrightness) => set({ mapBrightness: Math.max(50, Math.min(100, mapBrightness)) }),
+            setMapBrightness: (value) => set(state => {
+                const mapBrightness = Math.max(50, Math.min(100, value));
+                return { mapBrightness, ...(state.theme === 'light' ? {mapBrightnessLight:mapBrightness} : {mapBrightnessDark:mapBrightness}) };
+            }),
             setCharacterDrawerOpacity: (characterDrawerOpacity) => set({ characterDrawerOpacity }),
             setBottomBarOpacity: (bottomBarOpacity) => set({ bottomBarOpacity }),
             setMapTileVisuals: (mapTileVisuals) => set((state) => ({
@@ -998,6 +1006,10 @@ export const useSettingsStore = create<SettingsState>()(
                     ...(merged.mapBackgroundVisuals || {})
                 };
                 merged.mapBrightness = Math.max(50, Math.min(100, merged.mapBrightness ?? 50));
+                merged.mapBrightnessDark = Math.max(50, Math.min(100, persistedState?.mapBrightnessDark ?? merged.mapBrightness));
+                merged.mapBrightnessLight = Math.max(50, Math.min(100, persistedState?.mapBrightnessLight
+                    ?? (merged.theme === 'light' && merged.mapBrightness !== 50 ? merged.mapBrightness : 100)));
+                merged.mapBrightness = merged.theme === 'light' ? merged.mapBrightnessLight : merged.mapBrightnessDark;
                 merged.showBackgroundImage = merged.showBackgroundImage ?? true;
                 merged.useLegacyMapArt = merged.useLegacyMapArt ?? true;
                 merged.hideMapHeaderFooter = merged.hideMapHeaderFooter ?? false;

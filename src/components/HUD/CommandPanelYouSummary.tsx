@@ -30,15 +30,17 @@ export const CommandPanelYouSummary = ({
     scopeKey,
     headerActions,
     frontMenu,
-    onActivateCharacter
+    onActivateCharacter,
+    onActivateGroup
 }: {
     fallbackName: string | null;
     scoreLines: DrawerLine[];
     executeCommand: ExecuteCommand;
     scopeKey: string;
     headerActions?: React.ReactNode;
-    frontMenu?: 'character' | 'gear';
+    frontMenu?: 'character' | 'gear' | 'group';
     onActivateCharacter?: () => void;
+    onActivateGroup?: () => void;
 }) => {
     const vitals = useActiveVitals();
     const summaryRef = useCommandSummaryHeight();
@@ -47,7 +49,9 @@ export const CommandPanelYouSummary = ({
     const detailsId = React.useId();
     const { characterInfo: gameCharacterInfo, gameState, isSpectateMode, triggerHaptic, viewport } = useGame();
     const hoverPreview = useDesktopHoverPreview(viewport?.isMobile === false);
-    const expanded = !collapsed || hoverPreview.open;
+    const desktopActive = viewport?.isMobile !== false || !frontMenu || frontMenu === 'character';
+    const expanded = desktopActive && (!collapsed || hoverPreview.open);
+    React.useEffect(() => { if (!desktopActive) hoverPreview.clear(); }, [desktopActive, hoverPreview.clear]);
     const mobilePopover = useQuickStateMenuPosition(viewport?.isMobile && expanded ? 'character' : null, true);
     const { displayEqLines } = useUI();
     const { value: wimpyValue, canChange: canChangeWimpy, changeThreshold } = useWimpyThresholdControl();
@@ -155,7 +159,7 @@ export const CommandPanelYouSummary = ({
             {subtext && <small title={subtext} hidden={!expanded}>{subtext}</small>}
         </button>
         {headerActions}
-        <MobileGroupControl dock />
+        <MobileGroupControl dock active={viewport?.isMobile !== false || !frontMenu || frontMenu === 'group'} onActivate={viewport?.isMobile === false ? onActivateGroup : undefined} />
         </div>
         <div id={detailsId} ref={node => { mobilePopover.menuRef.current = node; }} popover={viewport?.isMobile ? 'manual' : undefined} className="command-tree-you-expanded" hidden={!expanded}
             style={viewport?.isMobile ? {...mobilePopover.position, width:'min(340px, calc(100vw - 16px))'} : undefined}

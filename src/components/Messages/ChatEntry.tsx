@@ -68,7 +68,7 @@ export const ChatEntry: React.FC<{ message: Message; triggerParley?: (event: Rea
                     </>
                 )}
                 <span
-                    className={`comm-text${message.replyCommand === 'tell' ? ' tell-body' : ''}`}
+                    className={`comm-text comm-message-highlight${message.replyCommand === 'tell' ? ' tell-body' : ''}`}
                     dangerouslySetInnerHTML={{ __html: fallbackText }}
                 />
             </div>

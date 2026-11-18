@@ -26,6 +26,7 @@ it('keeps the equipment slot visible when an item is selected',()=>{
  fixture.objects=[sword];fixture.selected=sword;
  const controller={game:{viewport:{isMobile:false}}} as unknown as ReturnType<typeof useCommandTreeController>;
  const view=render(<CommandTreeGearQuickMenu kind="Equipment" controller={controller} tree={{defer:vi.fn(),cancelPreview:vi.fn()}}/>);
+ expect(view.container.querySelector('.has-floating-gear-actions')).not.toBeNull();
  const row=view.container.querySelector('[data-target-id="sword"]')!;
  expect(row.getAttribute('aria-expanded')).toBe('true');
  expect(row.querySelector('.gear-slot')?.textContent).toBe('Wield');
@@ -33,6 +34,7 @@ it('keeps the equipment slot visible when an item is selected',()=>{
  expect(row.getAttribute('title')).toBe('a broadsword');
  const mobile={game:{viewport:{isMobile:true}}} as unknown as ReturnType<typeof useCommandTreeController>;
  view.rerender(<CommandTreeGearQuickMenu kind="Equipment" controller={mobile} tree={{defer:vi.fn(),cancelPreview:vi.fn()}}/>);
+ expect(view.container.querySelector('.has-floating-gear-actions')).toBeNull();
  expect(view.container.querySelector('[data-target-id="sword"] .gear-slot')).toBeNull();
  fixture.selected=null;fixture.objects=[];
 });

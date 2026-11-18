@@ -6,19 +6,24 @@
 /* --- Command workspace width shared by the panel and reserved log lane --- */
 :root {
     --desktop-command-panel-width: min(60vw, max(420px, var(--desktop-command-width, calc(var(--desktop-character-width, 260px) + 200px))));
+    --command-panel-surface: #231c16;
+    --command-panel-surface-rgb: 35, 28, 22;
+    --command-panel-surface-raised: #231c16;
+    --command-panel-surface-hover: #3a301e;
 }
 
 /* --- Command panel color profiles --- */
 .app-container {
-    --command-panel-surface: #211b16;
-    --command-panel-surface-rgb: 33, 27, 22;
+    --command-panel-surface: #231c16;
+    --command-panel-surface-rgb: 35, 28, 22;
     --command-panel-surface-deep: #17120f;
-    --command-panel-surface-raised: #2d271e;
+    --command-panel-surface-raised: #231c16;
     --command-panel-surface-alt: #29221a;
-    --command-panel-surface-hover: #3b3024;
+    --command-panel-surface-hover: #3a301e;
     --command-panel-value-surface: #342c22;
 }
 
+:root:has(.app-container.immersion-mode),
 .app-container.immersion-mode {
     --command-panel-surface: #000;
     --command-panel-surface-rgb: 0, 0, 0;
@@ -29,6 +34,7 @@
     --command-panel-value-surface: #292929;
 }
 
+:root:has(.app-container.performance-mode:not(.immersion-mode):not(.classic-mode)),
 .app-container.performance-mode:not(.immersion-mode):not(.classic-mode) {
     --command-panel-surface: #171717;
     --command-panel-surface-rgb: 23, 23, 23;
@@ -39,6 +45,7 @@
     --command-panel-value-surface: #292929;
 }
 
+:root:has(.app-container.performance-mode.immersion-mode),
 .app-container.performance-mode.immersion-mode {
     --command-panel-surface: #171717;
     --command-panel-surface-rgb: 23, 23, 23;

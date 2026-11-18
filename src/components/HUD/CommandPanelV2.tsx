@@ -4,12 +4,13 @@ import React from 'react';
 import { UiProfiler, withUiProfiler } from '../Utility/UiProfiler';
 import { uiPerformance } from '../../utils/uiPerformance';
 import { createPortal } from 'react-dom';
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, Pin } from 'lucide-react';
 import { useCommandTreeController } from '../../hooks/useCommandTreeController';
 import { useCommandTree } from '../../hooks/useCommandTree';
 import type { UnifiedCommandActionScope } from '../../hooks/useUnifiedCommandActions';
 import { CommandTreeAction } from './CommandTreeAction';
 import { CommandTreeOutputs } from './CommandTreeOutputs';
+import { DesktopShopPanel } from './DesktopShopPanel';
 import { CommandTreeGearQuickMenu } from './CommandTreeGearQuickMenu';
 import { CommandPanelYouSummary } from './CommandPanelYouSummary';
 import { CommandTreeMenuHeader } from './CommandTreeMenuHeader';
@@ -31,6 +32,8 @@ import './DesktopCommandTargets.css';
 import './DesktopControlSystem.css';
 import './DesktopDockPanels.css';
 import { useDesktopDockPanels } from '../../hooks/useDesktopDockPanels';
+import { useDesktopGearPin } from '../../hooks/useDesktopGearPin';
+import { useCommandInfoStore } from '../../stores/useCommandInfoStore';
 import { useCommandDockPosition } from '../../hooks/useCommandDockPosition';
 import { useQuickStateMenuPosition } from '../../hooks/useQuickStateMenuPosition';
 import { useQuickStateMenuGesture } from '../../hooks/useQuickStateMenuGesture';
@@ -49,7 +52,7 @@ const isInlineEntityPopover = (state: PopoverState | null | undefined): boolean 
 
 export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose}: {initialScope?: UnifiedCommandActionScope; onClose?: () => void}) => {
  const [gearMenu, setGearMenu] = React.useState<'Inventory'|'Equipment'|'Room'|null>(null);
- const [frontCharacterMenu, setFrontCharacterMenu] = React.useState<'character'|'gear'>('character');
+ const [frontCharacterMenu, setFrontCharacterMenu] = React.useState<'character'|'gear'|'group'>('character');
  // V2 builds its own command tree; the legacy action groups are only needed by gear quick menus.
  const controller = useCommandTreeController(initialScope, onClose, gearMenu !== null);
  const finishTree = uiPerformance.startWork('Target tree');
@@ -68,6 +71,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  const gearMenuButtonRef = React.useRef<HTMLElement|null>(null);
  const isMobile = game.viewport?.isMobile === true;
  const dockPanels = useDesktopDockPanels();
+ const gearPin = useDesktopGearPin();
  const quickMenuPlacement = useQuickStateMenuPosition(tree.quick,true);
  const quickHover = useQuickStateHover(tree.quick, () => tree.setQuick(null));
  const mobileCommandFocus = isMobile;
@@ -103,7 +107,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  };
  const openCommandGroup = (index:number) => {
   cancelScheduledMenuClose();
-  if (gearMenu) closeGearMenu();
+  if (gearMenu && !gearPin.pinned) closeGearMenu();
   const replacingInlinePopover = dismissReadabilityInlinePopover();
   if (replacingInlinePopover) {
    tree.setQuick(null);
@@ -123,6 +127,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  }, []);
  const openGearMenu = (label: 'Inventory'|'Equipment'|'Room', button: HTMLElement) => {
   if (isMobile) return;
+  useCommandInfoStore.getState().collapse();
   setFrontCharacterMenu('gear');
   dismissReadabilityInlinePopover();
   if (tree.group !== null || controller.isHelpMode) closeSubmenu();
@@ -131,7 +136,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   updateGearMenuPosition();
   setGearMenu(label);
  };
- const closeGearMenu = () => {setGearMenu(null); setGearMenuMaxWidth(null); controller.previewEntity(null);};
+ const closeGearMenu = () => {setGearMenu(null); setGearMenuMaxWidth(null); gearPin.clearPin(); controller.previewEntity(null);};
  const isRotatedLandscape = game.viewport?.isRotatedLandscape === true;
  const landscapeSummaryOverlay = Boolean(isMobile && game.viewport?.isLandscape && !isRotatedLandscape);
  const [dockSlots, setDockSlots] = React.useState<{summary:HTMLElement;controls:HTMLElement;actions:HTMLElement;menu:HTMLElement;app:HTMLElement}|null>(null);
@@ -148,7 +153,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  const openQuickMenu = (label: string, button: HTMLElement) => {
   quickHover.cancel();
   dismissReadabilityInlinePopover();
-  closeGearMenu();
+  if (!gearPin.pinned) closeGearMenu();
   quickMenuPlacement.anchorRef.current = button;
   tree.setQuick(label);
  };
@@ -216,17 +221,19 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
   <div id="desktop-movement-pad-slot" className="desktop-movement-pad-slot" />
  </div></>;
  const gearControls = !isMobile && <nav className="command-tree-gear-controls" aria-label="Equipment and inventory">
-  {(['Equipment','Inventory'] as const).map(label=><div key={label} className="command-tree-quick-gear" onPointerEnter={event=>{if(event.pointerType!=='touch'){const button=event.currentTarget.querySelector('button');if(button)openGearMenu(label,button);}}} onPointerLeave={event=>{if(event.pointerType!=='touch'&&gearMenu===label)closeGearMenu();}} onBlur={event=>{if(event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget as Node))closeGearMenu();}}>
-   <button type="button" aria-haspopup="true" aria-expanded={gearMenu===label && !readabilityInlinePopoverOpen} title={label} onFocus={event=>{if(event.currentTarget.matches(':focus-visible'))openGearMenu(label,event.currentTarget);}} onClick={event=>gearMenu!==label||readabilityInlinePopoverOpen?openGearMenu(label,event.currentTarget):closeGearMenu()}><span className="desktop-control-label">{label}</span></button>
-   {gearMenu===label&&!readabilityInlinePopoverOpen&&<CommandTreeGearQuickMenu kind={label} controller={controller} tree={tree} mobileReadabilitySplit={mobileReadabilitySplit} style={{position:'absolute',bottom:'100%',right:0,maxWidth:gearMenuMaxWidth??'calc(100vw - 16px)'}}/>}
+  {(['Equipment','Inventory'] as const).map(label=><div key={label} className="command-tree-quick-gear" onPointerEnter={event=>{if(event.pointerType!=='touch'&&(!gearPin.pinned||gearMenu===label)){const button=event.currentTarget.querySelector('button');if(button)openGearMenu(label,button);}}} onPointerLeave={event=>{if(event.pointerType!=='touch'&&gearMenu===label&&!gearPin.pinned)closeGearMenu();}} onBlur={event=>{if(!gearPin.pinned&&event.relatedTarget&&!event.currentTarget.contains(event.relatedTarget as Node))closeGearMenu();}}>
+   <button type="button" aria-haspopup="true" aria-expanded={gearMenu===label && !readabilityInlinePopoverOpen} title={label} onFocus={event=>{if(event.currentTarget.matches(':focus-visible')&&(!gearPin.pinned||gearMenu===label))openGearMenu(label,event.currentTarget);}} onClick={event=>{if(gearMenu===label&&gearPin.pinned&&!readabilityInlinePopoverOpen)closeGearMenu();else{openGearMenu(label,event.currentTarget);gearPin.pin();}}}><span className="desktop-control-label">{label}</span></button>
+   {gearMenu===label&&!readabilityInlinePopoverOpen&&<CommandTreeGearQuickMenu kind={label} controller={controller} tree={tree} mobileReadabilitySplit={mobileReadabilitySplit} style={{position:'absolute',bottom:'calc(100% + 4px)',right:0,maxWidth:gearMenuMaxWidth??'calc(100vw - 16px)'}} pinControl={<div className="command-tree-gear-pin-header"><span>{label}</span><button type="button" className="command-tree-gear-pin" aria-label={`${gearPin.pinned?'Unpin':'Pin'} ${label.toLowerCase()} panel`} aria-pressed={gearPin.pinned} title={gearPin.pinned?'Unpin panel':'Pin panel open'} onClick={gearPin.togglePin}><Pin size={13}/></button></div>}/>}
   </div>)}
  </nav>;
  const characterSummary = <UiProfiler id="Character summary"><CommandPanelYouSummary fallbackName={game.characterName} scoreLines={controller.ui?.scoreLines}
-  executeCommand={game.executeCommand} scopeKey={summaryScopeKey} headerActions={gearControls} frontMenu={frontCharacterMenu} onActivateCharacter={() => setFrontCharacterMenu('character')}/></UiProfiler>;
+  executeCommand={game.executeCommand} scopeKey={summaryScopeKey} headerActions={gearControls} frontMenu={frontCharacterMenu}
+  onActivateCharacter={() => {if (!isMobile && gearMenu) closeGearMenu(); setFrontCharacterMenu('character');}}
+  onActivateGroup={() => {if (gearMenu) closeGearMenu(); useCommandInfoStore.getState().collapse(); setFrontCharacterMenu('group');}}/></UiProfiler>;
  const characterSummaryPortal = landscapeSummaryOverlay
   ? <div className="command-tree-v2 landscape-character-summary-overlay">{characterSummary}</div>
   : characterSummary;
- const characterControls = <>{!isMobile && dockSlots && <button type="button" className="desktop-dock-toggle desktop-character-toggle" aria-expanded={dockPanels.characterOpen} aria-controls="desktop-character-controls command-dock-summary" onClick={()=>{if(dockPanels.characterOpen){tree.setQuick(null);closeGearMenu();}dockPanels.toggle('character');}}><span>Character</span><ChevronUp aria-hidden="true" size={14}/></button>}<div id={!isMobile && dockSlots ? 'desktop-character-controls' : undefined} hidden={!isMobile && !!dockSlots && !dockPanels.characterOpen} className="command-tree-dock-controls-inner">
+ const characterControls = <>{!isMobile && dockSlots && <button type="button" className="desktop-dock-toggle desktop-character-toggle" aria-expanded={dockPanels.characterOpen} aria-controls="desktop-character-controls command-dock-summary" onClick={()=>{if(dockPanels.characterOpen){tree.setQuick(null);closeGearMenu();useCommandInfoStore.getState().collapse();setFrontCharacterMenu('character');}dockPanels.toggle('character');}}><span>Character</span><ChevronUp aria-hidden="true" size={14}/></button>}<div id={!isMobile && dockSlots ? 'desktop-character-controls' : undefined} hidden={!isMobile && !!dockSlots && !dockPanels.characterOpen} className="command-tree-dock-controls-inner">
     <nav className="command-tree-state-controls" aria-label="Quick state controls">
      {[['Position', stanceValue], ['Mood', game.mood], ['Cast Speed', game.spellSpeed], ['Alertness', game.alertness]].map(([label,value]) =>
       <div key={label} className="command-tree-quick-state" onPointerDown={event=>quickGesture.onPointerDown(label,event)} onPointerMove={quickGesture.onPointerMove} onPointerUp={quickGesture.onPointerUp} onPointerCancel={quickGesture.onPointerCancel} onLostPointerCapture={quickGesture.onLostPointerCapture} onPointerEnter={event=>{if(event.pointerType!=='touch'&&!game.isSpectateMode)openQuickMenu(label,event.currentTarget);}} onPointerLeave={event=>{if(tree.quick===label)quickHover.leave(label,event.pointerType);}} onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget as Node|null)&&tree.quick===label)tree.setQuick(null);}}>
@@ -270,7 +277,7 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
  if (dockSlots) return <>
   {createPortal(characterSummaryPortal, landscapeSummaryOverlay ? dockSlots.app : dockSlots.summary)}{createPortal(characterControls, dockSlots.controls)}{createPortal(commandToolbar, dockSlots.actions)}
   {(isMobile || tree.group !== null || controller.isHelpMode) && !hideCommandMenuForInlinePopover && createPortal(commandMenu, mobileCommandFocus ? dockSlots.app : dockSlots.menu)}
-  <span className="command-tree-portal-host" aria-hidden="true" /><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
+  <span className="command-tree-portal-host" aria-hidden="true" /><DesktopShopPanel controller={controller}/><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </>;
  return <aside className="command-guide-panel unified-command-panel command-tree-v2" aria-label="Command tree">
   {!isMobile && <div className="command-tree-desktop-category-bar">{categoryMenu}</div>}
@@ -283,6 +290,6 @@ export const CommandPanelV2 = withUiProfiler('Commands', ({initialScope, onClose
      : commandMenu
     : null}
   </div>
-  <UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
+  <DesktopShopPanel controller={controller}/><UiProfiler id="Captured output"><CommandTreeOutputs controller={controller}/></UiProfiler>
  </aside>;
 });

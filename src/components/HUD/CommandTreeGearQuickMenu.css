@@ -5,6 +5,10 @@
 .command-tree-gear-quick-details { display:contents; }
 .command-tree-gear-quick-list,.command-tree-gear-quick-actions { box-sizing:border-box; width:min(220px,calc(100dvw - 24px)); max-height:min(55dvh,480px); overflow:auto; padding:4px; background:var(--command-tree-surface); }
 .command-tree-gear-quick-list.is-equipment { width:min(290px,calc(100dvw - 24px)); }
+.command-tree-gear-pin-header { display:flex; align-items:center; justify-content:space-between; min-height:30px; padding:2px 6px; color:var(--text-dim); font:10px var(--font-mono,monospace); text-transform:uppercase; }
+.command-tree-gear-pin { display:grid; place-items:center; width:28px; height:28px; padding:0; border:0; background:transparent; color:var(--text-dim); cursor:pointer; }
+.command-tree-gear-pin:is(:hover,:focus-visible,[aria-pressed="true"]) { color:var(--accent); background:color-mix(in srgb,var(--accent) 12%,transparent); }
+.command-tree-gear-pin:focus-visible { outline:1px solid var(--accent); outline-offset:-1px; }
 .command-tree-gear-quick-actions { width:min(190px,calc(100dvw - 24px)); background:var(--command-tree-surface-raised); }
 .command-tree-gear-quick-contents { box-sizing:border-box; flex:0 1 220px; width:min(220px,calc(100dvw - 24px)); min-width:0; max-height:min(55dvh,480px); overflow:auto; padding:4px; background:var(--command-tree-surface-alt); }
 .command-tree-gear-quick-put-targets { box-sizing:border-box; flex:0 1 190px; width:min(190px,calc(100dvw - 24px)); min-width:0; max-height:min(55dvh,480px); overflow:auto; padding:8px; background:var(--command-tree-surface-deep); }
@@ -19,6 +23,17 @@
     border-radius:0;
     background:var(--command-panel-surface,#211b16);
     box-shadow:none!important;
+}
+/* The action column floats beside the roster, so its height cannot stretch it. */
+.command-tree-v2:not(.desktop-target-workspace) .command-tree-gear-quick-menu.has-floating-gear-actions { align-items:flex-end; overflow:visible; }
+.has-floating-gear-actions::after {
+    content:''; position:absolute; top:100%; right:0; width:100%; height:4px;
+}
+.has-floating-gear-actions > .command-tree-gear-quick-details {
+    position:absolute; right:calc(100% + 4px); bottom:0; display:block;
+}
+.has-floating-gear-actions > .command-tree-gear-quick-details::after {
+    content:''; position:absolute; top:0; bottom:0; left:100%; width:4px;
 }
 .command-tree-v2:not(.desktop-target-workspace) .command-tree-gear-quick-list,
 .command-tree-v2:not(.desktop-target-workspace) .command-tree-gear-quick-actions,

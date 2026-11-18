@@ -15,10 +15,11 @@ interface CommandShopStockProps extends CommandShopProps {
     onOpenChange: (open: boolean) => void;
     inline?: boolean;
     selectOnClick?: boolean;
+    panel?: boolean;
 }
 
-export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, onOpenChange, inline = false, selectOnClick = false }) => {
-    const catalog = useCommandShopCatalog(shop);
+export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, onOpenChange, inline = false, selectOnClick = false, panel = false }) => {
+    const catalog = useCommandShopCatalog(shop, panel);
     if (!shop.available) return null;
     const stockContent = <>
         <div className="command-shop-stock-tools">
@@ -30,15 +31,16 @@ export const CommandShopStock: React.FC<CommandShopStockProps> = ({ shop, open, 
             <span className="command-shop-search-chip" aria-label="Command: list">list</span>
             <input className="chat-communication-input command-shop-search-input" type="search" value={catalog.search} onChange={event => catalog.setSearch(event.target.value)} aria-label="Search shop stock" placeholder="Search stock…" />
         </div>
-        <ShopBrowseNavigation activeCategory={catalog.category} activeFilter={catalog.filter}
+        <ShopBrowseNavigation activeCategory={catalog.category} activeFilter={catalog.filter} categories={catalog.categories}
             onCategorySelect={catalog.selectCategory} onFilterSelect={catalog.selectFilter} />
         {catalog.items.length ? catalog.items.map(item => <ShopItemGroup key={item.num} item={item} objectColorTargets
             variants={shop.variants[item.num]} expanded={catalog.expanded === item.num} loading={catalog.variantLoading}
             selectedNum={shop.selectedStock?.num ?? null} compareNum={shop.compareFirst?.num ?? null}
-            targeting={Boolean(shop.compareFirst)} compact selectOnClick={selectOnClick} showInspect={!selectOnClick} onSelect={shop.selectStock} onToggle={catalog.toggleProduct}
+            targeting={Boolean(shop.compareFirst)} compact selectOnClick={selectOnClick || panel} showInspect={!selectOnClick} onSelect={shop.selectStock} onToggle={catalog.toggleProduct}
             onInspect={num => shop.runShow(num)} />)
-            : <p className="command-action-target-empty">No stock listed. Choose another shop category.</p>}
+            : <p className="command-action-target-empty">{catalog.search.trim() ? 'No items match your search.' : 'No stock listed. Choose another shop category.'}</p>}
     </>;
+    if (panel) return <div className="command-shop-stock">{stockContent}</div>;
     if (inline) return <CommandTreeCollapsibleSection className="command-action-target-group command-shop-stock command-shop-stock-inline" label="Shop">
         {stockContent}
     </CommandTreeCollapsibleSection>;

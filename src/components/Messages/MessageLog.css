@@ -1618,11 +1618,16 @@
     color: inherit !important;
     -webkit-text-fill-color: currentColor !important;
 }
-.sent-command-display {
+.sent-command-display,
+.comm-message-highlight {
     padding: 2px 6px;
     background: var(--command-panel-surface-raised, #292929);
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+}
+.comm-message-highlight {
+    background: color-mix(in srgb, var(--command-panel-surface-raised, #292929) 92%, var(--text-primary, #d4cdb8));
+    opacity: 1 !important;
 }
 
 .user-command-bubble .user-command-expansion {

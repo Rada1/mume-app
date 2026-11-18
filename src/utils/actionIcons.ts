@@ -11,7 +11,7 @@ import {
     Eye, Tent, FlameKindling, Moon, Sunrise, Armchair, PersonStanding, Search,
     BookOpen, LogIn, LogOut, Mountain, Waves, Ear, Hand, Sparkles, ShoppingCart,
     Coins, Utensils, DoorOpen, DoorClosed, ScrollText, Swords, Play, Flag, MapPin,
-    Droplets, Shield, Package, PackageOpen, UserRound, Users, Skull, Footprints, ArrowDown
+    Droplets, Shield, Package, PackageOpen, UserRound, Users, Skull, Footprints, ArrowDown, Hammer
 } from 'lucide-react';
 
 export type ActionIcon = React.ComponentType<{ size?: number; strokeWidth?: number }>;
@@ -25,7 +25,7 @@ const COMMAND_ICONS: Record<string, ActionIcon> = {
 // Keyed by the command's first word (the verb). Short MUME aliases included.
 const VERB_ICONS: Record<string, ActionIcon> = {
     watch: Eye, look: Eye, examine: Eye, exa: Eye, glance: Eye,
-    read: BookOpen,
+    read: BookOpen, whois: UserRound,
     camp: FlameKindling,
     rest: Armchair, sit: Armchair,
     sleep: Moon,
@@ -48,7 +48,7 @@ const VERB_ICONS: Record<string, ActionIcon> = {
     close: DoorClosed, lock: DoorClosed,
     kill: Swords, hit: Swords, attack: Swords, consider: Swords,
     remove: Shield, wear: Shield, wield: Shield, drop: Shield,
-    get: Package, loot: PackageOpen, butcher: Skull, drain: Skull,
+    get: Package, loot: PackageOpen, butcher: Skull, drain: Skull, crush: Hammer,
     ride: Footprints, lead: Hand, unsaddle: ArrowDown, follow: UserRound, group: Users,
     recall: MapPin, where: MapPin,
     quest: Flag

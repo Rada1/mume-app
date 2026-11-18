@@ -1,0 +1,50 @@
+/** @file controlBorders.css - Flat, borderless command controls in every theme and mode. */
+/* --- App controls and menus portaled to body share the same shape. --- */
+:root .app-container:not(.classic-mode) :is(
+ .command-tree-row,.movement-pad-cell,.command-tree-quick-state > button,
+ .command-tree-quick-gear > button,.command-tree-you-toggle,.group-state-button,
+ .client-time-control,.client-time-chip,.client-menu-trigger,.command-dock-input-main,
+ .board-details-reply,.popover-inspection-panel,.client-panel-stack-empty,
+ .command-tree-you-expanded,.command-tree-branch
+),
+:root:has(.app-container:not(.classic-mode)) :is(
+ .command-suggestion-popup,.command-suggestion-option,.mume-editor-panel,.mume-editor-btn,
+ .mume-editor-panel-close,.mobile-quick-target-actions button,.mobile-group-target,
+ .desktop-map-movement-menu.command-tree-v2,.mobile-group-popover,.is-inline-target-popover
+) {
+ border-radius:0!important;
+ border-color:transparent!important;
+ box-shadow:none!important;
+}
+/* --- Floating surfaces need separation from content beneath them. --- */
+:root { --floating-menu-shadow:0 8px 24px #0009; }
+:root:has(.app-container.light-mode) { --floating-menu-shadow:0 8px 24px #51401c33; }
+:root .app-container:not(.classic-mode) :is(
+ .command-tree-you-expanded,.command-tree-branch,.command-tree-quick-options,
+ .command-tree-gear-quick-menu,.client-time-control[open]
+):not([hidden]),
+:root:has(.app-container:not(.classic-mode)) :is(
+ .command-suggestion-popup,.desktop-map-movement-menu.command-tree-v2,
+ .mobile-group-popover,.mume-editor-panel,.is-inline-target-popover,.client-menu-popover
+):not([hidden]) {
+ box-shadow:var(--floating-menu-shadow)!important;
+}
+/* Gear menus previously used a filter shadow; keep a single shared shadow. */
+:root .app-container:not(.classic-mode) .command-dock-shell .command-tree-gear-quick-menu { filter:none; }
+/* Desktop gear columns use small gaps and individual surface shadows. */
+:root .app-container:not(.classic-mode):not(.is-mobile) .command-dock-shell .command-tree-gear-quick-menu.has-floating-gear-actions {
+ background:transparent!important; box-shadow:none!important;
+}
+:root .app-container:not(.classic-mode):not(.is-mobile) .command-dock-shell .has-floating-gear-actions > .command-tree-gear-quick-details {
+ z-index:20; filter:none;
+}
+:root .app-container:not(.classic-mode):not(.is-mobile) .command-dock-shell .has-floating-gear-actions :is(.command-tree-gear-quick-list,.command-tree-gear-quick-actions,.command-tree-gear-quick-contents,.command-tree-gear-quick-put-targets) {
+ box-shadow:var(--floating-menu-shadow)!important;
+}
+/* Desktop command and character panels use gaps between surfaces. */
+:root .app-container:not(.classic-mode):not(.is-mobile) .command-dock-shell .command-tree-dock-popup .command-tree-branches {
+ gap:4px; background:transparent;
+}
+:root .app-container:not(.classic-mode):not(.is-mobile) .command-dock-shell :is(.command-tree-quick-options,.command-tree-you-expanded):not([hidden]) {
+ bottom:calc(100% + 4px); clip-path:none;
+}

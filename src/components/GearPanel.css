@@ -40,14 +40,13 @@
 .gear-item-row.has-container-toggle > .gear-container-toggle { flex: 0 0 24px; }
 .object-chip-dragging .gear-item-select { cursor: grabbing; }
 .gear-slot { flex: 0 0 68px; color: var(--text-dim); font-size: 9px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gear-item-text { min-width: 0; overflow-wrap: anywhere; }
-.gear-article { color: var(--text-dim); }
-.gear-item-name { color: var(--color-obj); text-decoration: none; }
+.gear-item-text { display: inline-flex; align-items: baseline; min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+.gear-article { flex: none; margin-right: .3em; color: var(--text-dim); }
+.gear-item-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--color-obj); text-decoration: none; }
 .gear-item-name[class*="inline-item-tier-"] { color: var(--inline-item-tier-color) !important; }
 .light-mode .gear-item-name[class*="inline-item-tier-"] { color: color-mix(in srgb, var(--inline-item-tier-color) 68%, #000) !important; }
-.gear-condition-indicator { display: inline-block; width: 6px; height: 6px; margin-left: 5px; border-radius: 50%; vertical-align: middle; background: var(--item-state-color, var(--text-dim)); box-shadow: 0 0 4px color-mix(in srgb, var(--item-state-color, var(--text-dim)) 55%, transparent); }
-.gear-condition-indicator.is-unknown { opacity: .65; }
-.light-mode .gear-condition-indicator { background: color-mix(in srgb, var(--item-state-color, var(--text-dim)) 68%, #000); }
+.gear-condition-text { flex: none; margin-left: .3em; color: var(--text-dim); white-space: nowrap; }
+.gear-condition-text .inline-item-condition { margin-left: 0; }
 .gear-container-toggle { flex: 0 0 24px; align-self: center; }
 .gear-container-contents { margin: 2px 0 5px 12px; padding-left: 12px; border-left: 1px solid rgba(201,168,76,.4); }
 .gear-container-level-heading { display: flex; align-items: center; justify-content: space-between; min-height: 24px; color: var(--text-dim); font-size: 9px; letter-spacing: .04em; text-transform: uppercase; }

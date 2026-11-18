@@ -11,6 +11,7 @@ import { getCommandActionTargetDisplayLabel } from '../../utils/commandTreeTarge
 import { getCommandTreeTargetPreview } from '../../utils/commandTreePreview';
 import { useSecondaryTouchActivation } from '../../hooks/useSecondaryTouchActivation';
 import { heldTargetPreviewRef } from '../../utils/heldTargetPreview';
+import { DesktopCommandTargetPin } from './DesktopCommandTargetPin';
 // --- Render Section ---
 export const CommandTreeAccessTargets = ({controller, button, targets, onCommandExecuted, padOnly = false, heldMenu = false}: {
     controller: ReturnType<typeof useCommandTreeController>; button: CustomButton; targets: CommandActionTargetEntry[]; onCommandExecuted?: () => void; padOnly?: boolean; heldMenu?: boolean;
@@ -26,11 +27,12 @@ export const CommandTreeAccessTargets = ({controller, button, targets, onCommand
                         controller.game.setCommandPreview?.(getCommandTreeTargetPreview(action.command, entry.context, entry.parentNoun));
                         access.preview(entry);
                     };
-                    return <div key={entry.id} ref={heldTargetPreviewRef(preview)} onClick={() => onCommandExecuted?.()}
+                    const row = <div ref={heldTargetPreviewRef(preview)} onClick={() => onCommandExecuted?.()}
                         onPointerEnter={event => { if (event.pointerType === 'mouse') preview(); }}
                         onFocus={event => { if (event.target instanceof Element && event.target.matches(':focus-visible')) preview(); }}>
                         <CommandTreeAction controller={controller} button={action} targetLabel={getCommandActionTargetDisplayLabel(entry)} targetGearRow={entry.gearRow} targetState={access.targetState(entry)}/>
                     </div>;
+                    return controller.game.viewport?.isMobile !== false || heldMenu || padOnly ? <React.Fragment key={entry.id}>{row}</React.Fragment> : <DesktopCommandTargetPin key={entry.id} characterName={controller.game.characterName} command={button.command} entry={entry}>{row}</DesktopCommandTargetPin>;
                 })}
             </div>
         </CommandTreeCollapsibleSection>

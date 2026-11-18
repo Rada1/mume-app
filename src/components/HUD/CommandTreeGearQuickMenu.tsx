@@ -17,7 +17,7 @@ import { CommandTreeGearLocationSection } from './CommandTreeGearLocationSection
 import type { CommandActionTargetEntry } from '../../objects/commandActionTargetModel';
 
 // --- Gear Menu Section ---
-export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabilitySplit = false, style, workspace = false, commandsOnly = false, initialTarget, onSelect}: {
+export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabilitySplit = false, style, workspace = false, commandsOnly = false, initialTarget, onSelect, pinControl}: {
  kind: 'Inventory'|'Equipment'|'Room';
  controller: ReturnType<typeof useCommandTreeController>;
  tree: Pick<ReturnType<typeof useCommandTree>, 'defer' | 'cancelPreview'>;
@@ -27,6 +27,7 @@ export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabil
  commandsOnly?: boolean;
  initialTarget?: CommandActionTargetEntry;
  onSelect?: (entry: CommandActionTargetEntry) => void;
+ pinControl?: React.ReactNode;
 }) => {
  const menu = useCommandGearQuickMenu(controller, kind, initialTarget, workspace, onSelect);
  const {items, getFrom, selectedContent, chooseObject, roomEntities, roomObjects, containerFor, toggleContainer} = menu;
@@ -57,7 +58,8 @@ export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabil
   {expanded&&<div id={contentsId} className="desktop-target-container-contents">{contents}</div>}
  </div> : button;
  };
- return <div ref={menuRef} className={`command-tree-gear-quick-menu${workspace?' desktop-target-columns':''}`} style={style} aria-label={`${kind} contents`}>
+ const floatingActions = !workspace && !commandsOnly && controller.game.viewport?.isMobile === false;
+ return <div ref={menuRef} className={`command-tree-gear-quick-menu${workspace?' desktop-target-columns':''}${floatingActions?' has-floating-gear-actions':''}`} style={style} aria-label={`${kind} contents`}>
   <div className="command-tree-gear-quick-details">
    <CommandTreeGearActions menu={menu} controller={controller} transfer={transfer} workspace={workspace}/>
   </div>
@@ -65,6 +67,7 @@ export const CommandTreeGearQuickMenu = ({kind, controller, tree, mobileReadabil
    ? <CommandTreeCollapsibleSection className="command-tree-gear-quick-contents" label={`Contents of ${items.selected.label}`}>{contents}</CommandTreeCollapsibleSection>
    : <section className="command-tree-gear-quick-contents" aria-label={`Contents of ${items.selected.label}`}>{contents}</section>)}
   {!commandsOnly&&<CommandTreeGearLocationSection workspace={workspace} collapsible={kind==='Room'} className={`command-tree-gear-quick-list${kind==='Equipment'?' is-equipment':''}`} label={kind}>
+   {pinControl}
    {!section?.ready&&<p className="command-tree-section-empty">Loading {kind.toLowerCase()}…</p>}
    {section?.ready&&kind==='Equipment'&&<>
     {section.objects.filter(entry=>entry.id===`command-tree-${kind.toLowerCase()}-all`).map(entry=>renderEntry(entry))}

@@ -8,6 +8,7 @@ import { useSettingsStore } from '../../stores/useSettingsStore';
 import { useHelpStore } from '../../stores/useHelpStore';
 import { useClientPanelStackStore } from '../../stores/useClientPanelStackStore';
 import { useUIStore } from '../../stores/useUIStore';
+import { useCommandShopStore } from '../../stores/useCommandShopStore';
 
 vi.mock('../Drawers/DrawerResizeHandle', () => ({
     DrawerResizeHandle: () => <div data-testid="drawer-resize-handle" />
@@ -28,6 +29,7 @@ vi.mock('../Help/HelpPanel', () => ({
 describe('ClientPanelStack', () => {
     beforeEach(() => {
         useSettingsStore.setState({ showGroupPanel: false, showChatWindow: false });
+        useCommandShopStore.getState().closeCatalog();
         useHelpStore.setState({ isOpen: false });
         useUIStore.setState({ popoverState: null });
         useClientPanelStackStore.setState({
@@ -48,6 +50,17 @@ describe('ClientPanelStack', () => {
         const handles = container.querySelectorAll('.client-panel-stack-resize-handle');
         expect(handles.length).toBe(1);
         expect(handles[0].getAttribute('aria-label')).toBe('Resize details panel height');
+    });
+
+    it('uses the chat slot for the shop and replaces it when chat opens', () => {
+        useClientPanelStackStore.setState({ detailsEnabled: false });
+        useCommandShopStore.getState().openCatalog();
+        const { container, queryByTestId } = render(<ClientPanelStack />);
+        expect(container.querySelector('#client-panel-shop-slot')?.getAttribute('data-active')).toBe('true');
+        expect(queryByTestId('chat-transcript-window')).toBeNull();
+        act(() => useSettingsStore.getState().setShowChatWindow(true));
+        expect(useCommandShopStore.getState().browsing).toBe(false);
+        expect(queryByTestId('chat-transcript-window')).not.toBeNull();
     });
 
     it('adjusts single panel height via arrow keys on the resize handle', () => {

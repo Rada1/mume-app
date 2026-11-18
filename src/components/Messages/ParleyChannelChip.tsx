@@ -1,5 +1,5 @@
 /** @file ParleyChannelChip.tsx — Shared channel chip with cascading recipient menus. */
-import React from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { MessageCircle } from 'lucide-react';
 import type { ParleyChannelChipProps } from '../../types/commandChat';
@@ -16,6 +16,9 @@ export const ParleyChannelChip: React.FC<ParleyChannelChipProps> = props => {
     const menu = useParleyChannelMenu(props);
     const settings = useSettingsStore();
     const { viewport } = useGame();
+    const [historyOpen, setHistoryOpen] = useState(false);
+    const historySlot = !viewport?.isMobile && menu.anchorRef.current?.closest('.message-log-docked-input')
+        ? document.getElementById('desktop-map-chat-history-slot') : null;
     const mobileBounds = useParleyMobileBounds(menu.open, Boolean(viewport?.isMobile), Boolean(viewport?.isLandscape));
     const color = getChatChannelColor(props.command);
     return <>
@@ -23,12 +26,12 @@ export const ParleyChannelChip: React.FC<ParleyChannelChipProps> = props => {
             <button type="button" className="parley-action" disabled={props.disabled} aria-haspopup="dialog" aria-expanded={menu.open}
                 aria-label={props.iconOnly ? 'Choose chat channel' : `Chat channel: ${props.command}${props.target ? ` ${props.target}` : ''}`}
                 title={props.iconOnly ? 'Choose chat channel' : 'Change chat channel'}
-                onClick={menu.open ? menu.close : menu.show} style={props.iconOnly ? undefined : { color }}>
+                onClick={() => { if (menu.open) menu.close(); else { if (!viewport?.isMobile && menu.anchorRef.current?.closest('.message-log-docked-input') && document.getElementById('desktop-map-chat-history-slot')) setHistoryOpen(true); menu.show(); } }} style={props.iconOnly ? undefined : { color }}>
                 {props.iconOnly ? <MessageCircle size={16} aria-hidden="true" /> : <>{props.command === 'group' ? 'tell group' : props.command}{isDirectedParleyChannel(props.command) && ` ${props.target || '…'}`}</>}
             </button>
             {!props.iconOnly && props.onClear && <button type="button" className="parley-clear" aria-label="Return to command input" onClick={() => { menu.close(); props.onClear?.(); }}>×</button>}
         </div>
-        {menu.open && (!viewport?.isMobile || mobileBounds) && createPortal(<div ref={menu.menuRef} className={`parley-communication-popover${viewport?.isMobile ? ' is-mobile' : ''}${mobileBounds?.landscape ? ' is-split' : ''}`} style={mobileBounds ? (mobileBounds.landscape ? {} : mobileBounds.channels) : menu.position} role="dialog" aria-label="Communication">
+        {menu.open && (!viewport?.isMobile || mobileBounds) && createPortal(<div ref={menu.menuRef} className={`parley-communication-popover${viewport?.isMobile ? ' is-mobile' : ''}${mobileBounds?.landscape ? ' is-split' : ''}${historySlot ? ' has-docked-history' : ''}`} style={mobileBounds ? (mobileBounds.landscape ? {} : mobileBounds.channels) : menu.position} role="dialog" aria-label="Communication">
             <section className="parley-branch-menu" style={mobileBounds?.landscape ? mobileBounds.channels : undefined} aria-label={isDirectedParleyChannel(menu.preview) ? `${menu.preview} recipients` : 'Communication channels'}>
                 {isDirectedParleyChannel(menu.preview) ? <>
                     <button type="button" className="parley-back" onClick={menu.clearPreview}>‹ Channels</button>
@@ -45,7 +48,8 @@ export const ParleyChannelChip: React.FC<ParleyChannelChipProps> = props => {
                 </button>)}
                 </>}
             </section>
-            <ParleyHistory onClose={menu.close} onReply={reply => { menu.clearPreview(); menu.choose(reply.command, reply.target); }} style={mobileBounds?.landscape ? mobileBounds.history : undefined} />
+            {!historySlot && <ParleyHistory onClose={menu.close} onReply={reply => { menu.clearPreview(); menu.choose(reply.command, reply.target); }} style={mobileBounds?.landscape ? mobileBounds.history : undefined} />}
         </div>, document.body)}
+        {historySlot && historyOpen && createPortal(<ParleyHistory onClose={() => { setHistoryOpen(false); menu.close(); }} onReply={reply => { menu.clearPreview(); menu.choose(reply.command, reply.target); }} />, historySlot)}
     </>;
 };

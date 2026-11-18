@@ -13,6 +13,9 @@ import { isCommandTreeTransfer } from '../../utils/commandTreeTransfer';
 import { usePressAndHold } from '../../hooks/usePressAndHold';
 import { isMobileCommandHoldGroup } from '../../utils/commandTreeMobileGestures';
 import { isCommandTreeSocial } from '../../utils/commandTreeSocial';
+import { useDesktopCommandDefaultsStore } from '../../stores/useDesktopCommandDefaultsStore';
+import { executeDesktopRememberedTarget, resolveDesktopRememberedTarget } from '../../hooks/desktopRememberedTarget';
+import { getOnlineCommunicationTargets } from '../../utils/commandCommunication';
 
 // --- Render Section ---
 export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExecuted, explicitTargetSelection, onTouchHoldStart, onTouchHoldEnd, beforeChooseCommand, renderCommandRow}: {
@@ -27,6 +30,7 @@ export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExec
     renderCommandRow?: (button: CustomButton, row: React.ReactNode) => React.ReactNode;
 }) => {
     const isMobile = controller.game?.viewport?.isMobile === true;
+    const rememberedTargets = useDesktopCommandDefaultsStore(state => state.targets?.[controller.game.characterName?.toLowerCase() || 'guest']);
     const touchHold = usePressAndHold(onTouchHoldStart ?? (() => undefined), onTouchHoldEnd ?? (() => undefined), Boolean(onTouchHoldStart && onTouchHoldEnd));
     const chooseCommand = (button:CustomButton) => {beforeChooseCommand?.(button);tree.chooseCommand(button);};
     return <>
@@ -54,6 +58,21 @@ export const CommandTreeCommandList = ({buttons, tree, controller, onCommandExec
                         tree.cancelPreview();
                         if (controller.isHelpMode) controller.executeHelp(button.command, button.label);
                         else if (isSocialCommand) chooseCommand(button);
+                        else if (!isMobile && controller.game.gameState === 'playing' && !controller.game.isSpectateMode && isCommandTreeTransfer(button)
+                            && (rememberedTargets?.[`${button.command}::source`] || rememberedTargets?.[`${button.command}::destination`])) {
+                            const savedSource = rememberedTargets?.[`${button.command}::source`], savedDestination = rememberedTargets?.[`${button.command}::destination`];
+                            const source = savedSource && resolveDesktopRememberedTarget(savedSource, controller.entries);
+                            const destination = savedDestination && resolveDesktopRememberedTarget(savedDestination, controller.entries);
+                            if (source && destination && source.id !== destination.id) {
+                                controller.game.handleButtonClick({...button, actionType:'command', command:`${button.command.trim().split(/\s+/)[0]} ${source.context} ${destination.context}`}, event);
+                                onCommandExecuted?.();
+                            } else chooseCommand(button);
+                        }
+                        else if (!isMobile && controller.game.gameState === 'playing' && !controller.game.isSpectateMode && rememberedTargets?.[button.command]) {
+                            const entry = resolveDesktopRememberedTarget(rememberedTargets[button.command], [...targets, ...controller.entries, ...getOnlineCommunicationTargets(controller.game.whoList || [])]);
+                            if (entry) { executeDesktopRememberedTarget(controller, button, entry, event); onCommandExecuted?.(); }
+                            else chooseCommand(button);
+                        }
                         else if (hasHoldTargetMenu) {
                             if (isCommandTreeTransfer(button)) executeUntargetedTransferCommand(controller, button, event);
                             else if (isObservationCommand) {

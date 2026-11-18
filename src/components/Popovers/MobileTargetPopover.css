@@ -40,6 +40,7 @@
 /* --- Direct target actions --- */
 .is-inline-target-popover .mobile-quick-target { display:flex; flex-direction:column; gap:4px; }
 .is-inline-target-popover .mobile-quick-target-actions { display:flex; flex-wrap:wrap; gap:4px; }
+.is-inline-target-popover .mobile-quick-target-channels { padding-top:4px; }
 .is-inline-target-popover .mobile-quick-target-actions button {
  display:flex; align-items:center; justify-content:center; gap:7px;
  flex:1 1 80px; min-height:40px; padding:8px 10px; border:0; border-radius:0;

@@ -9,6 +9,7 @@ import { DrawerShell } from './DrawerShell';
 import { Mapper } from '../Mapper/Mapper';
 import { MapperRef } from '../Mapper/mapperTypes';
 import { DrawerResizeHandle } from './DrawerResizeHandle';
+import { MapChatHistoryResizeHandle } from '../Messages/MapChatHistoryResizeHandle';
 import { AccountDrawer } from './AccountDrawer';
 import { useSettingsStore } from '../../stores/useSettingsStore';
 import './PlaceholderDrawers.css';
@@ -131,6 +132,7 @@ export const DrawerManager: React.FC<DrawerManagerProps> = ({
                             </div>
                         </div>
                     </div>
+                    {!viewport.isMobile && <><MapChatHistoryResizeHandle /><div id="desktop-map-chat-history-slot" className="desktop-map-chat-history-slot" /></>}
                 </div>
             )}
 

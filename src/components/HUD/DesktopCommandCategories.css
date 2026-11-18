@@ -65,3 +65,4 @@
 .app-container:not(.is-mobile) .command-tree-v2 .desktop-command-pin-row > .desktop-command-pin:focus-visible {
  outline:1px solid #c9a84c; outline-offset:-1px;
 }
+.desktop-command-missing-target { display:flex; align-items:center; min-width:0; padding:6px; color:var(--text-dim,#a99c86); overflow-wrap:anywhere; }

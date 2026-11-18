@@ -49,8 +49,10 @@ export const useUpwardCommandBranches = (ref: RefObject<HTMLDivElement | null>, 
                 } else if (column.style.height) {
                     column.style.height = '';
                 }
+                const positioned = kind === 'gear' && column.classList.contains('command-tree-gear-quick-actions')
+                    && list.classList.contains('has-floating-gear-actions') ? column.parentElement || column : column;
                 const columnRect = column.getBoundingClientRect();
-                const currentOffset = offsets.get(column) || 0;
+                const currentOffset = offsets.get(positioned) || 0;
                 const naturalTop = columnRect.top - currentOffset;
                 const desiredTop = isFullHeight
                     ? topBound
@@ -60,8 +62,8 @@ export const useUpwardCommandBranches = (ref: RefObject<HTMLDivElement | null>, 
                     );
                 const offset = Math.round(desiredTop - naturalTop);
                 if (currentOffset !== offset) {
-                    column.style.transform = `translateY(${offset}px)`;
-                    offsets.set(column, offset);
+                    positioned.style.transform = `translateY(${offset}px)`;
+                    offsets.set(positioned, offset);
                 }
             }
         };
@@ -83,6 +85,10 @@ export const useUpwardCommandBranches = (ref: RefObject<HTMLDivElement | null>, 
             window.removeEventListener('resize', schedule);
             getColumns().forEach(column => {
                 column.style.transform = '';
+                if (column.classList.contains('command-tree-gear-quick-actions') && list.classList.contains('has-floating-gear-actions')) {
+                    const wrapper = column.parentElement;
+                    if (wrapper) wrapper.style.transform = '';
+                }
                 column.style.maxHeight = '';
                 column.style.height = '';
                 column.style.zIndex = '';

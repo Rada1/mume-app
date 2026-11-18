@@ -16,6 +16,7 @@ const emptySession = {
 export const useCommandShopStore = create<CommandShopState>((set) => ({
     ...emptySession, roomKey: roomKey(useRoomStore.getState()), requestId: 0,
     openCatalog: () => set({ browsing: true }),
+    closeCatalog: () => set({ browsing: false, selectedItem: null, compareFirst: null }),
     selectItem: selectedItem => set({ selectedItem, purchaseQuantity: 1 }),
     setPurchaseQuantity: quantity => set(state => ({ purchaseQuantity: clampShopPurchaseQuantity(state.selectedItem, quantity) })),
     setCompareFirst: compareFirst => set({ compareFirst }),
